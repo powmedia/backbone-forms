@@ -1,67 +1,7 @@
-formal
-======
+backbone-forms
+==============
 
 A form framework for Backbone.JS applications.
-
-
-Usage
------
-
-Define a 'schema' attribute on your Backbone models as below. The schema should match the attributes 
-that get set on the model.
-
-    var User = Backbone.Model.extend({
-        schema: {
-            
-            id:         { type: 'Number' },
-            name:       {},
-            address:    { type: 'NestedModel' },
-            email:      {title: 'Email address' },
-            password:   { type: 'Password' }
-        }
-    });
-
-Create the form in your Views:
-
-    var formView = Backbone.View.extend({
-        render: function() {
-            var form = new formal.Form({
-                model: this.model
-            }).render();
-            
-            $(this.el).append(form.el);
-            
-            return this;
-        }
-    });
-    
-
-You can include selected fields, in custom order with the 'fields' parameter:
-    
-    var form = new formal.Form({
-        model: this.model,
-        fields: ['name', 'email', 'address']
-    });
-
-Once the user is done with the form, call commit() to apply the updated values to the model. If there are validation errors they will be returned:
-
-    var errors = form.commit();
-
-
-Schema definition
-----------------
-- Default editors can be referenced by their name as a string e.g. type: 'TextField'
-- Custom editors can be created and referenced by their constructor functions e.g. type: MyCustomEditor
-- Default editor type is 'TextField'
-- Titles (which appear in &lt;label&gt;s) are automatically generated based on the key. camelCased keys will be converted to normal text e.g. emailAddress = 'Email Addresss'.
-- Titles can be overridden by including the title option
-
-
-Editors
--------
-
-A Form is made up of various Fields.
-A Field is made up of a &lt;label&gt; and an editor.
 
 The following default editors are included:
 
@@ -80,18 +20,207 @@ In addition there is a separate file with editors that depend on jQuery UI:
 - List
 
 
-Custom Editors
+Installation
+============
+
+Requires BackboneJS and jQuery.
+
+Include backbone-forms.js:
+
+    <script src="backbone-forms/src/backbone-forms.js"></script>
+
+Optionally, you can include the extra editors, for example those that require jQuery UI:
+
+    <script src="backbone-forms/src/jquery-ui-editors.js"></script>
+    
+    
+Usage
+=====
+
+Define a 'schema' attribute on your Backbone models. The schema keys should match the attributes 
+that get set on the model.
+
+    var User = Backbone.Model.extend({
+        schema: {
+            id:         { type: 'Number' },
+            name:       {},
+            address:    { type: 'NestedModel' },
+            email:      {title: 'Email address' },
+            password:   { type: 'Password' }
+        }
+    });
+
+Create the form in your Views:
+
+    var formView = Backbone.View.extend({
+        render: function() {
+            var form = new Backbone.Form({
+                model: this.model
+            }).render();
+            
+            $(this.el).append(form.el);
+            
+            return this;
+        }
+    });
+    
+
+You can include selected fields, in custom order with the 'fields' parameter:
+    
+    var form = new Backbone.Form({
+        model: this.model,
+        fields: ['name', 'email', 'address']
+    });
+
+
+Once the user is done with the form, call commit() to apply the updated values to the model. If there are validation errors they will be returned:
+
+    var errors = form.commit();
+
+
+Usage without models
+--------------------
+
+You can create a form without tying it to a model. For example, to create a form for a simple object of data:
+
+    var form = new Backbone.Form({
+        data: { id: 123, name: 'Rod Kimble', password: 'cool beans' }, //Data to populate the form with
+        schema: {
+            id: { type: 'Number' },
+            name: {},
+            password: { type: 'Password' }
+        }
+    }).render();
+
+Then instead of form.commit(), do:
+    
+    var data = form.getValue(); //Returns object with new form values
+
+
+
+Schema definition
+=================
+
+Main attributes
 ---------------
 
-Custom editors can be written. They must extend from formal.editors.Base.
+For each field definition in the schema you can use the following optional attributes:
 
-    var CustomEditor = formal.editors.Base.extend({
+**`type`**
+
+- The editor to use in the field
+- Can be a string e.g.: `{ type: 'TextArea' }`
+- Or can be a constructor function, e.g. for a custom editor: `{ type: MyEditor }`
+- If not defined, defaults to 'TextField'
+
+**`title`**
+
+- Defines the text that appears in a form field's `&lt;label&gt;`
+- If not defined, defaults to a formatted version of the camelCased field key. E.g. `firstName` becomes `First Name`
+
+
+Editor-specific attributes
+--------------------------
+
+If the schema `type` is one of the following, some extra schema attributes are required:
+
+Select
+------
+
+Creates and populates a `&lt;select&gt;` element.
+
+**`options`**
+
+- Options to populate the `&lt;select&gt;`
+- Can be either:
+    - String of HTML `&lt;option&gt;`s
+    - Array of items
+    - Array of objects in the form `{ val: 123, label: 'Text' }`
+    - A Backbone collection
+    - A function that calls back with one of the above 
+
+Examples:
+    
+    var schema = {
+        country: { 'Select', options: new CountryCollection() }
+    };
+    
+    var schema = {
+        users: { 'Select', options: function(callback) {
+            users = db.getUsers();
+            
+            callback(users);
+        }}
+    }
+
+**Backbone collection notes**
+If using a Backbone collection as the `option` attribute, models in the collection must implement a `toString()` method. This populates the label of the `&lt;option&gt;`. The ID of the model populates the `value` attribute.
+
+If there are no models in the collection, it will be `fetch()`ed.
+
+
+Object
+------
+
+The Object editor creates an embedded child form representing a Javascript object.
+
+**`subSchema`**
+
+- A schema object which defines the field schema for each attribute in the object
+
+Examples:
+
+    var schema = {
+        address: { type: 'Object', subSchema: {
+            street: {},
+            zip: { type: 'Number' },
+            country: { 'Select', options: countries }
+        }}
+    };
+
+
+NestedModel
+-----------
+
+Used to embed models within models.  Similar to the Object editor, but adds validation of the child form (if it is defined on the model).
+
+**`model`**
+
+- A reference to the constructor function for your nested model
+
+Examples:
+
+    var schema = {
+        address: { type: 'NestedModel', model: Address }
+    };
+    
+
+List
+----
+
+Creates a sortable and editable list of items, which can be any of the above schema types, e.g. Object, Number, TextField etc.
+
+(Requires jQuery UI)
+
+**`listType`**
+
+- Defines the editor that will be used for each item in the list.
+- Similar in use to the main 'type' schema attribute.
+- Defaults to 'TextField'
+
+
+Custom Editors
+==============
+
+Custom editors can be written. They must extend from Backbone.Form.editors.Base.
+    
+    var CustomEditor = Backbone.Form.editors.Base.extend({
         
         tagName: 'input',
         
         initialize: function(options) {
             //Call parent constructor
-            formal.editors.Base.prototype.initialize.call(this, options);
+            Backbone.Form.editors.Base.prototype.initialize.call(this, options);
             
             //Custom setup code.
             if (this.schema.customParam) this.doSomething();
@@ -109,14 +238,14 @@ Custom editors can be written. They must extend from formal.editors.Base.
         
     });
 
-Notes:
+**Notes:**
 - The editor must implement a getValue().
 - The original value is available through this.value.
 - The field schema can be accessed via this.schema. This allows you to pass in custom parameters.
 
 
 Defaults & Validation
-----------
+=====================
 
 Formal uses the built in Backbone validation and defaults as defined on the model.
 
@@ -125,21 +254,7 @@ For validation, it will attempt to update the model and if there are validation 
 See the Backbone documentation for more details.
 
 
-Installation
-------------
-
-Requires BackboneJS and jQuery.
-
-Include formal.js:
-
-    <script src="lib/formal.js"></script>
-
-Optionally, you can include the extra editors, for example those that require jQuery UI:
-
-    <script src="lib/jquery-ui-editors.js"></script>
-
-
 Contributors
-------------
+============
 
 - Charles Davison - [powmedia](http://github.com/powmedia)
