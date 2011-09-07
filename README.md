@@ -127,13 +127,13 @@ If the schema `type` is one of the following, some extra schema attributes are r
 Select
 ------
 
-Creates and populates a `&lt;select&gt;` element.
+Creates and populates a &lt;select&gt; element.
 
 **`options`**
 
-- Options to populate the `&lt;select&gt;`
+- Options to populate the &lt;select&gt;
 - Can be either:
-    - String of HTML `&lt;option&gt;`s
+    - String of HTML &lt;option&gt;`s
     - Array of items
     - Array of objects in the form `{ val: 123, label: 'Text' }`
     - A Backbone collection
@@ -154,7 +154,8 @@ Examples:
     }
 
 **Backbone collection notes**
-If using a Backbone collection as the `option` attribute, models in the collection must implement a `toString()` method. This populates the label of the `&lt;option&gt;`. The ID of the model populates the `value` attribute.
+
+If using a Backbone collection as the `option` attribute, models in the collection must implement a `toString()` method. This populates the label of the &lt;option&gt;. The ID of the model populates the `value` attribute.
 
 If there are no models in the collection, it will be `fetch()`ed.
 
@@ -239,6 +240,7 @@ Custom editors can be written. They must extend from Backbone.Form.editors.Base.
     });
 
 **Notes:**
+
 - The editor must implement a getValue().
 - The original value is available through this.value.
 - The field schema can be accessed via this.schema. This allows you to pass in custom parameters.
