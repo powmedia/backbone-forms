@@ -45,7 +45,7 @@ that get set on the model.
             id:         { type: 'Number' },
             name:       {},
             address:    { type: 'NestedModel' },
-            email:      {title: 'Email address' },
+            email:      { title: 'Email address' },
             password:   { type: 'Password' }
         }
     });
@@ -62,14 +62,6 @@ Create the form in your Views:
             
             return this;
         }
-    });
-    
-
-You can include selected fields, in custom order with the 'fields' parameter:
-    
-    var form = new Backbone.Form({
-        model: this.model,
-        fields: ['name', 'email', 'address']
     });
 
 
@@ -225,6 +217,10 @@ If not using the `model` option, pass a native object through the `data` option.
 **`schema`**
 
 The schema to use to create the form. Pass it in if you don't want to store the schema on the model, or to override the model schema.
+
+**`fields`**
+
+An array of field names (keys). Only the fields defined here will be added to the form. You can also use this to re-order the fields.
 
 **`idPrefix`**
 
