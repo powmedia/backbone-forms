@@ -120,7 +120,7 @@
 
         itemTemplate: createTemplate('\
             <li class="cf">\
-                {{text}}\
+                <span class="text">{{text}}</span>\
                 <div class="actions">\
                     <button class="edit">Edit</button>\
                     <button class="del">Delete</button>\
