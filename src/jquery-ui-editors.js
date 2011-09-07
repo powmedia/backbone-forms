@@ -74,7 +74,6 @@
             });
 
             //Render time selects
-            console.log(this.template)
             $(this.el).append(this.template({
                 hours: hoursOptions.join(),
                 mins: minsOptions.join()
@@ -207,7 +206,7 @@
         /**
          * Add a new item to the list if it is completed in the editor
          */
-        addNewItem: function() {
+        addNewItem: function(event) {            
             var self = this;
 
             this.openEditor(null, function(value) {
@@ -269,9 +268,10 @@
             console.log('openEditor');
 
             var self = this,
-                schema = this.schema;
+                schema = this.schema,
+                listType = schema.listType || 'TextField';
 
-            var editor = Form.createEditor(schema.listType, {
+            var editor = Form.helpers.createEditor(listType, {
                 key: '',
                 schema: schema,
                 value: data
@@ -312,6 +312,6 @@
 
 
     //Exports
-    _.extend(Backbone.Form.editors, exports);
+    _.extend(Form.editors, exports);
     
 })();
