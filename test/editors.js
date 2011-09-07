@@ -3,7 +3,7 @@ module('Base');
     test('commit()', function() {
         var post = new Post;
     
-        var field = new editors.TextField({
+        var field = new editors.Text({
             model: post,
             key: 'title'
         }).render();
@@ -23,11 +23,11 @@ module('Base');
 
 
 
-module('TextField');
+module('Text');
 
 (function() {
     
-    var editor = editors.TextField;
+    var editor = editors.Text;
     
     test('Default value', function() {
         var field = new editor().render();

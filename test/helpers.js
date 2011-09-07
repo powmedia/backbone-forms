@@ -28,7 +28,7 @@ module('createEditor');
     };    
     
     test('Accepts strings for included editors', function() {
-        ok(create('TextField', options) instanceof editors.TextField);
+        ok(create('Text', options) instanceof editors.Text);
         ok(create('Number', options) instanceof editors.Number);
         ok(create('TextArea', options) instanceof editors.TextArea);
         ok(create('Password', options) instanceof editors.Password);
@@ -41,7 +41,7 @@ module('createEditor');
     });
 
     test('Accepts editor constructors', function() {
-        ok(create(editors.TextField, options) instanceof editors.TextField);
+        ok(create(editors.Text, options) instanceof editors.Text);
         ok(create(editors.Select, options) instanceof editors.Select);
         ok(create(editors.List, options) instanceof editors.List);
         ok(create(editors.Date, options) instanceof editors.Date);

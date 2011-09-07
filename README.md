@@ -5,7 +5,7 @@ A form framework for Backbone.JS applications.
 
 The following default editors are included:
 
-- TextField
+- Text
 - Number
 - Password
 - TextArea
@@ -97,7 +97,6 @@ Then instead of form.commit(), do:
     var data = form.getValue(); //Returns object with new form values
 
 
-
 Schema definition
 =================
 
@@ -111,7 +110,7 @@ For each field definition in the schema you can use the following optional attri
 - The editor to use in the field
 - Can be a string e.g.: `{ type: 'TextArea' }`
 - Or can be a constructor function, e.g. for a custom editor: `{ type: MyEditor }`
-- If not defined, defaults to 'TextField'
+- If not defined, defaults to 'Text'
 
 **`title`**
 
@@ -199,7 +198,7 @@ Examples:
 List
 ----
 
-Creates a sortable and editable list of items, which can be any of the above schema types, e.g. Object, Number, TextField etc.
+Creates a sortable and editable list of items, which can be any of the above schema types, e.g. Object, Number, Text etc.
 
 (Requires jQuery UI)
 
@@ -207,7 +206,45 @@ Creates a sortable and editable list of items, which can be any of the above sch
 
 - Defines the editor that will be used for each item in the list.
 - Similar in use to the main 'type' schema attribute.
-- Defaults to 'TextField'
+- Defaults to 'Text'
+
+
+
+
+Form options
+============
+
+**`model`**
+
+The model to tie the form to. Calling `form.commit()` will update the model with new values.
+
+**`data`**
+
+If not using the `model` option, pass a native object through the `data` option. Then use `form.getValue()` to get the new values.
+
+**`schema`**
+
+The schema to use to create the form. Pass it in if you don't want to store the schema on the model, or to override the model schema.
+
+**`idPrefix`**
+
+A string that will be prefixed to the form DOM element IDs. Useful if you will have multiple forms on the same page. E.g. `idPrefix: 'user-'` will result in IDs like 'user-name', 'user-email', etc.
+
+
+
+Editors without forms
+=====================
+
+You can add editors by themselves, without being part of a form. For example: 
+
+    var select = new Backbone.Form.editors.Select({
+        model: user,
+        key: 'country',
+        options: getCountries()
+    }).render();
+    
+    //When done, apply selection to model:
+    select.commit();
 
 
 Custom Editors

@@ -49,7 +49,7 @@
      * Accepts strings for the default editors, or the reference to the constructor function
      * for custom editors
      * 
-     * @param {String|Function} The schema type e.g. 'TextField', 'Select', or the editor constructor e.g. editors.Date
+     * @param {String|Function} The schema type e.g. 'Text', 'Select', or the editor constructor e.g. editors.Date
      * @param {Object}          Options to pass to editor, including required 'key', 'schema'
      * @return {Mixed}          An instance of the mapped editor
      */
@@ -218,7 +218,7 @@
 
             //Set schema defaults
             var schema = this.schema;
-            if (!schema.type) schema.type = 'TextField';
+            if (!schema.type) schema.type = 'Text';
             if (!schema.title) schema.title = helpers.keyToTitle(this.key);
         },
 
@@ -354,11 +354,9 @@
 
     });
 
-    editors.TextField = editors.Base.extend({
+    editors.Text = editors.Base.extend({
 
         tagName: 'input',
-
-        className: 'TextField',
 
         defaultValue: '',
 
@@ -385,7 +383,7 @@
     /**
      * Normal text input that only allows a number. Letters etc. are not entered
      */
-    editors.Number = editors.TextField.extend({
+    editors.Number = editors.Text.extend({
 
         defaultValue: 0,
 
@@ -411,12 +409,10 @@
     });
 
 
-    editors.Password = editors.TextField.extend({
-
-        className: 'Password',
+    editors.Password = editors.Text.extend({
 
         initialize: function(options) {
-            editors.TextField.prototype.initialize.call(this);
+            editors.Text.prototype.initialize.call(this);
 
             $(this.el).attr('type', 'password');
         }
@@ -424,11 +420,9 @@
     });
 
 
-    editors.TextArea = editors.TextField.extend({
+    editors.TextArea = editors.Text.extend({
 
        tagName: 'textarea',
-
-       className: 'TextArea'
 
     });
 
@@ -577,7 +571,7 @@
      */
     editors.Object = editors.Base.extend({
 
-        className: 'formal-object',
+        className: 'bbf-object',
 
         defaultValue: {},
 

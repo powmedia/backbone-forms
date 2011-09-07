@@ -269,7 +269,7 @@
 
             var self = this,
                 schema = this.schema,
-                listType = schema.listType || 'TextField';
+                listType = schema.listType || 'Text';
 
             var editor = Form.helpers.createEditor(listType, {
                 key: '',

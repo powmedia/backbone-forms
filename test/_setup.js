@@ -11,7 +11,7 @@ var Post = Backbone.Model.extend({
     },
     
     schema: {
-        title:      { type: 'TextField' },
+        title:      { type: 'Text' },
         content:    { type: 'TextArea' },
         author:     {},
         slug:       {}

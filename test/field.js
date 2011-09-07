@@ -4,10 +4,10 @@ test("'schema.type' option - Specifies editor to use", function() {
     var field = new Field({
         value: 'test',
         key: 'title',
-        schema: { type: 'TextField' }
+        schema: { type: 'Text' }
     }).render();
     
-    ok(field.editor instanceof editors.TextField);
+    ok(field.editor instanceof editors.Text);
     
     var field = new Field({
         value: 'test',
@@ -18,14 +18,14 @@ test("'schema.type' option - Specifies editor to use", function() {
     ok(field.editor instanceof editors.Number);
 });
 
-test("'schema.type' option - Defaults to 'TextField'", function() {
+test("'schema.type' option - Defaults to 'Text'", function() {
     var field = new Field({
         value: 'test',
         key: 'title',
         schema: {}
     }).render();
     
-    ok(field.editor instanceof editors.TextField);
+    ok(field.editor instanceof editors.Text);
 });
 
 test("'schema.title' option - Populates the <label>", function() {
