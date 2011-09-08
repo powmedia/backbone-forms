@@ -307,7 +307,7 @@ Known issues
 ============
 
 - List editor only displays Object and NestedModels properly in sub-editor
-- List editor with listType NestedModel doesn't update after edit/add and doesn't run validation
+- List editor with listType NestedModel doesn't run validation
 
 Contributors
 ============

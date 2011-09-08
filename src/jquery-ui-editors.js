@@ -141,21 +141,8 @@
             
             this.schema.listType = this.schema.listType || 'Text';
             
-            //If NestedModel, convert them to models
-            if (this.schema.listType == 'NestedModel') {
-                if (!this.schema.model) throw "Missing required option 'schema.model'";
-                
-                var models = [],
-                    model = this.schema.model;
-                _.each(this.value, function(item) {
-                    console.log(item)
-                    models.push(new (model)(item));
-                });
-                
-                this.value = models;
-            }
-
-            this.items = [];
+            if (this.schema.listType == 'NestedModel' && !this.schema.model)
+                throw "Missing required option 'schema.model'";
         },
 
         render: function() {
@@ -216,18 +203,16 @@
             
             var schema = this.schema;
             
-            //Handle NestedModel types
-            if (data instanceof Backbone.Model) {
-                if (schema.itemToString)
-                    return schema.itemToString(data.toJSON());
-                else
-                    return data.toString();
-            }
-            
-            //Handle other types
             //If there's a specified toString use that
             if (schema.itemToString)
                 return schema.itemToString(data);
+            
+            //Otherwise check if it's NestedModel with it's own toString() method
+            if (this.schema.listType == 'NestedModel') {
+                var model = new (this.schema.model)(data);
+                
+                return model.toString();
+            }
             
             //Last resort, just return the data as is
             return data;
@@ -240,6 +225,7 @@
             var self = this;
 
             this.openEditor(null, function(value) {
+                console.warn(value)
                 var text = self.itemToString(value);
 
                 //Create DOM element
@@ -266,8 +252,6 @@
          * Edit an existing item in the list
          */
         editItem: function(event) {
-            console.log('edit');
-
             var self = this,
                 li = $(event.target).closest('li'),
                 originalValue = $.data(li[0], 'data');
@@ -282,8 +266,6 @@
         },
 
         deleteItem: function(event) {
-            console.log('delete');
-
             var li = $(event.target).closest('li');
 
             li.remove();
@@ -295,8 +277,6 @@
          * @param {Function}    Save callback. receives: value
          */
         openEditor: function(data, callback) {
-            console.log('openEditor');
-
             var self = this,
                 schema = this.schema,
                 listType = schema.listType || 'Text';
