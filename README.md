@@ -37,14 +37,13 @@ Optionally, you can include the extra editors, for example those that require jQ
 Usage
 =====
 
-Define a 'schema' attribute on your Backbone models. The schema keys should match the attributes 
-that get set on the model.
+Define a 'schema' attribute on your Backbone models. The schema keys should match the attributes that get set on the model. Note that `type` defaults to `Text`.
 
     var User = Backbone.Model.extend({
         schema: {
             id:         { type: 'Number' },
             name:       {},
-            address:    { type: 'NestedModel' },
+            address:    { type: 'NestedModel', model: Address },
             email:      { title: 'Email address' },
             password:   { type: 'Password' }
         }
@@ -78,9 +77,9 @@ You can create a form without tying it to a model. For example, to create a form
     var form = new Backbone.Form({
         data: { id: 123, name: 'Rod Kimble', password: 'cool beans' }, //Data to populate the form with
         schema: {
-            id: { type: 'Number' },
-            name: {},
-            password: { type: 'Password' }
+            id:         { type: 'Number' },
+            name:       {},
+            password:   { type: 'Password' }
         }
     }).render();
 
@@ -100,14 +99,14 @@ For each field definition in the schema you can use the following optional attri
 **`type`**
 
 - The editor to use in the field
-- Can be a string e.g.: `{ type: 'TextArea' }`
+- Can be a string for any editor that has been added to Backbone.Form.editors, such as the built-in editors. E.g.: `{ type: 'TextArea' }`
 - Or can be a constructor function, e.g. for a custom editor: `{ type: MyEditor }`
 - If not defined, defaults to 'Text'
 
 **`title`**
 
-- Defines the text that appears in a form field's `&lt;label&gt;`
-- If not defined, defaults to a formatted version of the camelCased field key. E.g. `firstName` becomes `First Name`
+- Defines the text that appears in a form field's &lt;label&gt;
+- If not defined, defaults to a formatted version of the camelCased field key. E.g. `firstName` becomes `First Name`. This behaviour can be changed by assigning your own function to Backbone.Form.helpers.keyToTitle.
 
 
 Editor-specific attributes
@@ -125,7 +124,7 @@ Creates and populates a &lt;select&gt; element.
 - Options to populate the &lt;select&gt;
 - Can be either:
     - String of HTML &lt;option&gt;`s
-    - Array of items
+    - Array of strings/numbers
     - Array of objects in the form `{ val: 123, label: 'Text' }`
     - A Backbone collection
     - A function that calls back with one of the above 
@@ -174,11 +173,12 @@ Examples:
 NestedModel
 -----------
 
-Used to embed models within models.  Similar to the Object editor, but adds validation of the child form (if it is defined on the model).
+Used to embed models within models.  Similar to the Object editor, but adds validation of the child form (if it is defined on the model), and keeps your schema cleaner.
 
 **`model`**
 
 - A reference to the constructor function for your nested model
+- The referenced model must have it's own `schema` attribute
 
 Examples:
 
@@ -190,9 +190,7 @@ Examples:
 List
 ----
 
-Creates a sortable and editable list of items, which can be any of the above schema types, e.g. Object, Number, Text etc.
-
-(Requires jQuery UI)
+Creates a sortable and editable list of items, which can be any of the above schema types, e.g. Object, Number, Text etc. Currently requires jQuery UI for creating dialogs etc.
 
 **`listType`**
 
