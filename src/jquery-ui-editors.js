@@ -139,7 +139,7 @@
 
             if (!this.schema) throw "Missing required option 'schema'";
             
-            if (!this.schema.listType) throw "Missing required option 'schema.listType";
+            this.schema.listType = this.schema.listType || 'Text';
             
             //If NestedModel, convert them to models
             if (this.schema.listType == 'NestedModel') {
