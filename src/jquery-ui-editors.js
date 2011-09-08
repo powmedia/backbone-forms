@@ -115,11 +115,11 @@
         //Note: The extra div around the <ul> is used to limit the drag area
         template: createTemplate('\
             <ul></ul>\
-            <div class="cf"><button class="bbf-list-add">Add</div>\
+            <div><button class="bbf-list-add">Add</div>\
         '),
 
         itemTemplate: createTemplate('\
-            <li class="cf">\
+            <li>\
                 <span class="bbf-list-text">{{text}}</span>\
                 <div class="bbf-list-actions">\
                     <button class="bbf-list-edit">Edit</button>\
