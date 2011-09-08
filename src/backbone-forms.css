@@ -1,0 +1,81 @@
+.bbf-field {
+    margin: 1em 0;
+}
+
+    .bbf-field label {
+        float: left;
+        width: 25%;
+    }
+    
+    .bbf-field .editor {
+        margin-left: 25%;
+        width: 70%;
+    }
+        
+        .bbf-field input, .bbf-field textarea, .bbf-field select {
+            width: 100%;
+        }
+
+    .bbf-field .error {
+        outline: 2px solid red;
+    }
+
+
+    .bbf-date input, .bbf-datetime input {
+        width: 100px;
+        text-align: center;
+    }
+    
+        .bbf-datetime input {
+            margin-right: 1em;
+        }
+    
+        .bbf-datetime select {
+            width: 50px;
+            text-align: center;
+        }
+    
+    
+    .bbf-list {
+        list-style-type: none;
+    }
+        
+        .bbf-list ul {
+            border: 1px solid #ccc;
+            border-bottom: none;
+            max-height: 150px;
+            overflow: auto;
+        }
+    
+        .bbf-list li {
+            border-top: 1px solid #ccc;
+            border-bottom: 1px solid #ccc;
+            height: 16px;
+            background: #fff;
+            padding: 4px;
+            cursor: move;
+            margin-top: -1px;
+            position: relative;
+        }
+            
+            .bbf-list .actions {
+                position: absolute;
+                top: 2px;
+                right: 2px;
+            }
+            
+            .bbf-list .actions {
+                
+            }
+        
+            .bbf-list .actions button {
+                width: 19px;
+                height: 19px;
+            }
+        
+            .bbf-list .add {
+                width: 100%;
+                height: 20px;
+                margin-top: -2px;
+            }
+            

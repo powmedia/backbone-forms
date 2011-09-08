@@ -25,8 +25,9 @@ Installation
 
 Requires BackboneJS and jQuery.
 
-Include backbone-forms.js:
+Include backbone-forms.js and backbone-forms.css:
 
+    <link href="backbone-forms/backbone-forms.css" rel="stylesheet" type="text/css"/> 
     <script src="backbone-forms/src/backbone-forms.js"></script>
 
 Optionally, you can include the extra editors, for example those that require jQuery UI:
