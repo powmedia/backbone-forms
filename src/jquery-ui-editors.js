@@ -115,15 +115,15 @@
         //Note: The extra div around the <ul> is used to limit the drag area
         template: createTemplate('\
             <ul></ul>\
-            <div class="cf"><button class="add">Add</div>\
+            <div class="cf"><button class="bbf-list-add">Add</div>\
         '),
 
         itemTemplate: createTemplate('\
             <li class="cf">\
-                <span class="text">{{text}}</span>\
-                <div class="actions">\
-                    <button class="edit">Edit</button>\
-                    <button class="del">Delete</button>\
+                <span class="bbf-list-text">{{text}}</span>\
+                <div class="bbf-list-actions">\
+                    <button class="bbf-list-edit">Edit</button>\
+                    <button class="bbf-list-del">Delete</button>\
                 </div>\
             </li>\
         '),
@@ -135,9 +135,9 @@
         '),
 
         events: {
-            'click .add':   'addNewItem',
-            'click .edit':  'editItem',
-            'click .del':   'deleteItem'
+            'click .bbf-list-add':   'addNewItem',
+            'click .bbf-list-edit':  'editItem',
+            'click .bbf-list-del':   'deleteItem'
         },
 
         initialize: function(options) {
@@ -183,15 +183,15 @@
             });
 
             //jQuery UI buttonize
-            $('button.add', this.el).button({
+            $('button.bbf-list-add', this.el).button({
                 text: false,
                 icons: { primary: 'ui-icon-plus' }
             });
-            $('button.edit', this.el).button({
+            $('button.bbf-list-edit', this.el).button({
                 text: false,
                 icons: { primary: 'ui-icon-pencil' }
             });
-            $('button.del', this.el).button({
+            $('button.bbf-list-del', this.el).button({
                 text: false,
                 icons: { primary: 'ui-icon-trash' }
             });
@@ -243,11 +243,11 @@
                 $('ul', self.el).append(li);
 
                 //jQuery UI buttonize
-                $('button.edit', this.el).button({
+                $('button.bbf-list-edit', this.el).button({
                     text: false,
                     icons: { primary: 'ui-icon-pencil' }
                 });
-                $('button.del', this.el).button({
+                $('button.bbf-list-del', this.el).button({
                     text: false,
                     icons: { primary: 'ui-icon-trash' }
                 });

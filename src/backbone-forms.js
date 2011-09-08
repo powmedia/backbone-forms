@@ -196,7 +196,7 @@
         
         template: helpers.createTemplate('\
              <label for="{{id}}">{{title}}</label>\
-             <div class="editor"></div>\
+             <div class="bbf-editor"></div>\
         '),
 
         /**
@@ -250,7 +250,7 @@
             }));
 
             //Add the editor
-            $('.editor', el).html(editor.render().el);
+            $('.bbf-editor', el).html(editor.render().el);
 
             this.editor = editor;
 
