@@ -257,16 +257,14 @@
         /**
          * Edit an existing item in the list
          */
-        editItem: function(event) {
-            event.preventDefault()
-            
+        editItem: function(event) {            
             var self = this,
                 li = $(event.target).closest('li'),
                 originalValue = $.data(li[0], 'data');
 
             this.openEditor(originalValue, function(newValue) {
                 //Update display
-                $('.text', li).html(self.itemToString(newValue));
+                $('.bbf-list-text', li).html(self.itemToString(newValue));
 
                 //Store data
                 $.data(li[0], 'data', newValue);
