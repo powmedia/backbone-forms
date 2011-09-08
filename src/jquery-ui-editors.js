@@ -138,6 +138,22 @@
             Base.prototype.initialize.call(this, options);
 
             if (!this.schema) throw "Missing required option 'schema'";
+            
+            if (!this.schema.listType) throw "Missing required option 'schema.listType";
+            
+            //If NestedModel, convert them to models
+            if (this.schema.listType == 'NestedModel') {
+                if (!this.schema.model) throw "Missing required option 'schema.model'";
+                
+                var models = [],
+                    model = this.schema.model;
+                _.each(this.value, function(item) {
+                    console.log(item)
+                    models.push(new (model)(item));
+                });
+                
+                this.value = models;
+            }
 
             this.items = [];
         },
@@ -200,16 +216,18 @@
             
             var schema = this.schema;
             
+            //Handle NestedModel types
+            if (data instanceof Backbone.Model) {
+                if (schema.itemToString)
+                    return schema.itemToString(data.toJSON());
+                else
+                    return data.toString();
+            }
+            
+            //Handle other types
             //If there's a specified toString use that
             if (schema.itemToString)
                 return schema.itemToString(data);
-            
-            //Otherwise check if it's a model with a toString method
-            if (schema.listType == 'NestedModel' && schema.model) {
-                var model = new schema.model(data);
-                if (model.toString)
-                    return model.toString();
-            }
             
             //Last resort, just return the data as is
             return data;
