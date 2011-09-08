@@ -17,7 +17,7 @@ In addition there is a separate file with editors that depend on jQuery UI:
 
 - Date
 - DateTime
-- List
+- List (Editable and sortable. Can use any of the other editors for each item)
 
 
 Installation
