@@ -127,6 +127,12 @@
                 </div>\
             </li>\
         '),
+        
+        editorTemplate: createTemplate('\
+            <div class="bbf-field">\
+                <div class="bbf-list-editor"></div>\
+            </div>\
+        '),
 
         events: {
             'click .add':   'addNewItem',
@@ -252,6 +258,8 @@
          * Edit an existing item in the list
          */
         editItem: function(event) {
+            event.preventDefault()
+            
             var self = this,
                 li = $(event.target).closest('li'),
                 originalValue = $.data(li[0], 'data');
@@ -286,14 +294,18 @@
                 schema: schema,
                 value: data
             }).render();
+            
+            var container = $(this.editorTemplate());
+            $('.bbf-list-editor', container).html(editor.el);
 
             var close = function() {
-                $(editor.el).dialog('close');
+                container.dialog('close');
 
                 editor.remove();
+                container.remove();
             };
 
-            $(editor.el).dialog({
+            $(container).dialog({
                 resizable:  false,
                 modal:      true,
                 width:      500,
