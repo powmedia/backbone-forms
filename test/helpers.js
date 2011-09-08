@@ -35,17 +35,11 @@ module('createEditor');
         ok(create('Select', options) instanceof editors.Select);
         ok(create('Object', options) instanceof editors.Object);
         ok(create('NestedModel', options) instanceof editors.NestedModel);
-        ok(create('Date', options) instanceof editors.Date);
-        ok(create('DateTime', options) instanceof editors.DateTime);
-        ok(create('List', options) instanceof editors.List);
     });
 
     test('Accepts editor constructors', function() {
         ok(create(editors.Text, options) instanceof editors.Text);
         ok(create(editors.Select, options) instanceof editors.Select);
-        ok(create(editors.List, options) instanceof editors.List);
-        ok(create(editors.Date, options) instanceof editors.Date);
-        ok(create(editors.DateTime, options) instanceof editors.DateTime);
     });
     
 })();
