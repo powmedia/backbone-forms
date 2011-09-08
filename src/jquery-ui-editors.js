@@ -197,10 +197,22 @@
          */
         itemToString: function(data) {
             if (!data) return data;
-
-            var transform = this.schema.itemToString;
-
-            return transform ? transform(data) : data;
+            
+            var schema = this.schema;
+            
+            //If there's a specified toString use that
+            if (schema.itemToString)
+                return schema.itemToString(data);
+            
+            //Otherwise check if it's a model with a toString method
+            if (schema.listType == 'NestedModel' && schema.model) {
+                var model = new schema.model(data);
+                if (model.toString)
+                    return model.toString();
+            }
+            
+            //Last resort, just return the data as is
+            return data;
         },
 
         /**
