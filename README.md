@@ -38,24 +38,30 @@ Optionally, you can include the extra editors, for example those that require jQ
 Usage
 =====
 
+![Example form](http://i56.tinypic.com/a3zfyt.png)
+
+You can create something like the form above with the following steps:
+
 Define a 'schema' attribute on your Backbone models. The schema keys should match the attributes that get set on the model. Note that `type` defaults to `Text`.
 
     var User = Backbone.Model.extend({
         schema: {
-            id:         { type: 'Number' },
-            name:       {},
+            start:      { type: 'DateTime' },
+            contact:    { type: 'Object', subSchema: {
+                            name: {},
+                            phone: {}
+                        }}
             address:    { type: 'NestedModel', model: Address },
-            email:      { title: 'Email address' },
-            password:   { type: 'Password' }
+            notes:      { type: 'List' }
         }
     });
 
 Create the form in your Views:
-
+    
     var formView = Backbone.View.extend({
         render: function() {
             var form = new Backbone.Form({
-                model: this.model
+                model: users.get(userId)
             }).render();
             
             $(this.el).append(form.el);
@@ -306,6 +312,7 @@ Known issues
 ============
 
 - List editor with listType NestedModel doesn't run validation
+- There may be CSS issues across browsers.  You can customise your CSS by editing the backbone-forms.css file.
 
 Contributors
 ============
