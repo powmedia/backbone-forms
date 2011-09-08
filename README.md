@@ -303,6 +303,12 @@ For validation, it will attempt to update the model and if there are validation 
 See the Backbone documentation for more details.
 
 
+Known issues
+============
+
+- List editor only displays Object and NestedModels properly in sub-editor
+- List editor with listType NestedModel doesn't update after edit/add and doesn't run validation
+
 Contributors
 ============
 
