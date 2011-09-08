@@ -200,16 +200,16 @@ Creates a sortable and editable list of items, which can be any of the above sch
 - Similar in use to the main 'type' schema attribute.
 - Defaults to 'Text'
 
-**`toString`**
+**`itemToString`**
 
 - Optional, but recommended when using listType 'Object'
 - A function that returns a string representing how the object should be displayed in a list item.
-- When listType is 'NestedModel', the model's toString() method will be used
+- When listType is 'NestedModel', the model's `toString()` method will be used, unless a specific `itemToString()` function is defined on the schema. 
 
 Examples:
     
     var schema = {
-        users: { type: 'List', listType: 'Object', toString: function(user) {
+        users: { type: 'List', listType: 'Object', itemToString: function(user) {
                 return user.firstName + ' ' + user.lastName;
             }
         }
