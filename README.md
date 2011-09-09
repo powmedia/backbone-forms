@@ -75,6 +75,8 @@ Once the user is done with the form, call commit() to apply the updated values t
 
     var errors = form.commit();
 
+To update a field after the form has been rendered, use `setValue(newValue)`. Depending on the situation, this can be useful for binding to model change events.
+
 
 Usage without models
 --------------------
@@ -280,20 +282,24 @@ Custom editors can be written. They must extend from Backbone.Form.editors.Base.
         },
         
         render: function() {
-            $(this.el).val(this.value);
+            this.setValue(this.value);
             
             return this;
         },
         
         getValue: function() {
             return $(this.el).val();
+        },
+        
+        setValue: function(value) {
+            $(this.el).val(this.value);
         }
         
     });
 
 **Notes:**
 
-- The editor must implement a getValue().
+- The editor must implement a getValue() and setValue().
 - The original value is available through this.value.
 - The field schema can be accessed via this.schema. This allows you to pass in custom parameters.
 
