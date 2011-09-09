@@ -66,10 +66,9 @@
     
 
     var Form = Backbone.View.extend({
-
+        
+        //Field views
         fields: null,
-
-        fieldViews: null,
 
         tagName: 'ul',
         
@@ -88,11 +87,11 @@
             this.schema = options.schema || (options.model ? options.model.schema : {}),
             this.model = options.model;
             this.data = options.data;
-            this.fields = options.fields || _.keys(this.schema);
+            this.fieldsToRender = options.fields || _.keys(this.schema);
             this.idPrefix = options.idPrefix || '';
 
             //Stores all Field views
-            this.fieldViews = [];
+            this.fields = {};
         },
 
         /**
@@ -102,13 +101,13 @@
             var schema = this.schema,
                 model = this.model,
                 data = this.data,
+                fieldsToRender = this.fieldsToRender,
                 fields = this.fields,
-                fieldViews = this.fieldViews,
                 el = $(this.el),
                 self = this;
 
             //Create form fields
-            _.each(fields, function(key) {
+            _.each(fieldsToRender, function(key) {
                 var itemSchema = schema[key];
 
                 if (!itemSchema) throw "Field '"+key+"' not found in schema";
@@ -131,7 +130,7 @@
 
                 el.append(field.render().el);
 
-                fieldViews.push(field);
+                fields[key] = field;
             });
 
             return this;
@@ -143,7 +142,7 @@
          * @return {Object}  Validation errors
          */
         commit: function() {
-            var fields = this.fieldViews,
+            var fields = this.fields,
                 errors = {};
 
             _.each(fields, function(field) {
@@ -160,7 +159,7 @@
          */
         getValue: function() {
             var schema = this.schema,
-                fields = this.fieldViews
+                fields = this.fields
                 obj = {};
 
             _.each(fields, function(field) {
@@ -174,9 +173,11 @@
          * Override default remove function in order to remove embedded views
          */
         remove: function() {
-            _.each(this.fieldViews, function(view) {            
-                view.remove();
-            });
+            var fields = this.fields;
+            
+            for (var key in fields) {
+                fields[key].remove();
+            }
 
             Backbone.View.prototype.remove.call(this);
         }

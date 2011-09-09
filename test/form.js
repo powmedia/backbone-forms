@@ -114,4 +114,35 @@ test("Form.getValue() - returns form value as an object", function() {
     equal(result.author, 'Lana Kang');
 });
 
+test("remove() - removes all child views and itself", function() {
+    var counter = 0;
+    
+    //Mock out the remove method so we can tell how many times it was called
+    var _remove = Backbone.View.prototype.remove;
+    Backbone.View.prototype.remove = function() {
+        counter++;
+    }
+    
+    var form = new Form({
+        model: new Post,
+        fields: ['author', 'title', 'content', 'slug']
+    }).render();
+    
+    form.remove();
+    
+    //remove() should have been called twice for each field (editor and field)
+    //and once for the form itself
+    equal(counter, 9);
+    
+    //Restore remove method
+    Backbone.View.prototype.remove = _remove;
+});
 
+test('Allows access to field views', function() {
+    var form = new Form({
+        model: new Post
+    }).render();
+    
+    ok(form.fields.title instanceof Form.Field);
+    ok(form.fields.author instanceof Form.Field);
+});

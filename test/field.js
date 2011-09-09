@@ -111,3 +111,26 @@ test("getValue() - Returns the new value", function() {
     
     equal(field.getValue(), 'New Title');
 });
+
+test("remove() - Removes the editor view", function() {
+    var counter = 0;
+    
+    //Mock out the remove method so we can tell how many times it was called
+    var _remove = Backbone.View.prototype.remove;
+    Backbone.View.prototype.remove = function() {
+        counter++;
+    }
+    
+    var field = new Field({
+        model: new Post,
+        key: 'title'
+    }).render();
+    
+    field.remove();
+    
+    //remove() should have been called twice (once for the editor and once for the field)
+    equal(counter, 2);
+    
+    //Restore remove method
+    Backbone.View.prototype.remove = _remove;
+});
