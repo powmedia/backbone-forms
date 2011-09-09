@@ -140,7 +140,7 @@
         /**
          * Update the model with all latest values.
          *
-         * @return {Array}  Validation errors
+         * @return {Object}  Validation errors
          */
         commit: function() {
             var fields = this.fieldViews,
