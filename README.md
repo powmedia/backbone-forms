@@ -75,7 +75,11 @@ Once the user is done with the form, call commit() to apply the updated values t
 
     var errors = form.commit();
 
-To update a field after the form has been rendered, use `setValue(newValue)`. Depending on the situation, this can be useful for binding to model change events.
+To update a field after the form has been rendered, use `setValue`:
+
+    model.bind('change:name', function(model, name) {
+        form.fields.name.setValue(name);
+    });
 
 
 Usage without models
