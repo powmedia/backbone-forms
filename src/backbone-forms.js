@@ -265,8 +265,19 @@
             return this.editor.commit();
         },
 
+        /**
+         * Get the value from the editor
+         * @return {Mixed}
+         */
         getValue: function() {
             return this.editor.getValue();
+        },
+        
+        /**
+         * Set/change the value of the editor
+         */
+        setValue: function(value) {
+            this.editor.setValue(value);
         },
 
         logValue: function() {
@@ -326,6 +337,10 @@
         getValue: function() {
             throw 'Not implemented. Extend and override this method.';
         },
+        
+        setValue: function() {
+            throw 'Not implemented. Extend and override this method.';
+        },
 
         /**
          * Update the model with the new value from the editor
@@ -365,17 +380,25 @@
          * Adds the editor to the DOM
          */
         render: function() {
-            $(this.el).val(this.value);
+            this.setValue(this.value);
 
             return this;
         },
 
         /**
          * Returns the current editor value
-         * @param {String}
+         * @return {String}
          */
         getValue: function() {
             return $(this.el).val();
+        },
+        
+        /**
+         * Sets the value of the form element
+         * @param {String}
+         */
+        setValue: function(value) {
+            $(this.el).val(value);
         }
 
     });
@@ -405,6 +428,12 @@
 
         getValue: function() {        
             return parseFloat($(this.el).val(), 10);
+        },
+        
+        setValue: function(value) {
+            value = parseFloat(value, 10);
+            
+            editors.Text.prototype.setValue.call(this, value);
         }
 
     });
@@ -510,11 +539,15 @@
             $select.html(html);
 
             //Select correct option
-            $select.val(this.value);
+            this.setValue(this.value);
         },
 
         getValue: function() {
             return $(this.el).val();
+        },
+        
+        setValue: function(value) {
+            $(this.el).val(value);
         },
 
         /**
@@ -606,6 +639,12 @@
 
         getValue: function() {
             return this.form.getValue();
+        },
+        
+        setValue: function(value) {
+            this.value = value;
+            
+            this.render();
         },
 
         remove: function() {

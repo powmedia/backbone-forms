@@ -24,7 +24,8 @@
                 showButtonPanel: true
             });
 
-            input.datepicker('setDate', this.value);
+            //Make sure setValue of this object is called, not of any objects extending it (e.g. DateTime)
+            exports.Date.prototype.setValue.call(this, this.value);
 
             return this;
         },
@@ -37,6 +38,10 @@
                 date = input.datepicker('getDate');
 
             return date;
+        },
+        
+        setValue: function(value) {
+            $('input', this.el).datepicker('setDate', value);
         }
 
     });
@@ -82,11 +87,9 @@
             //Store references to selects
             this.$hours = $('select:eq(0)', this.el);
             this.$mins = $('select:eq(1)', this.el);
-
+            
             //Set time
-            var time = this.value;
-            this.$hours.val(time.getHours());
-            this.$mins.val(time.getMinutes());
+            this.setValue(this.value);
 
             return this;
         },
@@ -103,6 +106,13 @@
             date.setMilliseconds(0);
 
             return date;
+        },
+        
+        setValue: function(date) {
+            exports.Date.prototype.setValue.call(this, date);
+            
+            this.$hours.val(date.getHours());
+            this.$mins.val(date.getMinutes());
         }
 
     });
@@ -326,6 +336,11 @@
             });
 
             return data;
+        },
+        
+        setValue: function(value) {
+            this.value = value;
+            this.render();
         }
 
     });

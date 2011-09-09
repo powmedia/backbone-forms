@@ -112,6 +112,17 @@ test("getValue() - Returns the new value", function() {
     equal(field.getValue(), 'New Title');
 });
 
+test("setValue() - Sets the new value", function() {
+    var field = new Field({
+        value: 'Initial Title',
+        key: 'title'
+    }).render();
+    
+    field.setValue('New Title');
+    
+    equal(field.getValue(), 'New Title');
+});
+
 test("remove() - Removes the editor view", function() {
     var counter = 0;
     

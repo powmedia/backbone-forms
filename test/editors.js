@@ -29,13 +29,13 @@ module('Text');
     
     var editor = editors.Text;
     
-    test('Default value', function() {
+    test('getValue() - Default value', function() {
         var field = new editor().render();
 
         equal(field.getValue(), '');
     });
 
-    test('Custom value', function() {
+    test('getValue() - Custom value', function() {
         var field = new editor({
             value: 'Test'
         }).render();
@@ -43,13 +43,25 @@ module('Text');
         equal(field.getValue(), 'Test');
     });
 
-    test('Value from model', function() {
+    test('getValue() - Value from model', function() {
         var field = new editor({
             model: new Post,
             key: 'title'
         }).render();
         
         equal(field.getValue(), 'Danger Zone!');
+    });
+    
+    test("setValue() - updates the input value", function() {
+        var field = new editor({
+            model: new Post,
+            key: 'title'
+        }).render();
+        
+        field.setValue('foobar');
+        
+        equal(field.getValue(), 'foobar');
+        equal($(field.el).val(), 'foobar');
     });
 
 })();
@@ -88,6 +100,18 @@ module('Number');
     
     test("TODO: Restricts non-numeric characters", function() {
         console.log('TODO')
+    });
+
+    test("setValue() - updates the input value", function() {
+        var field = new editor({
+            model: new Post,
+            key: 'title'
+        }).render();
+
+        field.setValue('2.4');
+
+        deepEqual(field.getValue(), 2.4);
+        equal($(field.el).val(), 2.4);
     });
 
 })();
@@ -129,6 +153,18 @@ module('Password');
         
         equal($(field.el).attr('type'), 'password');
     });
+    
+    test("setValue() - updates the input value", function() {
+        var field = new editor({
+            model: new Post,
+            key: 'title'
+        }).render();
+        
+        field.setValue('foobar');
+        
+        equal(field.getValue(), 'foobar');
+        equal($(field.el).val(), 'foobar');
+    });
 
 })();
 
@@ -168,6 +204,18 @@ module('TextArea');
         var field = new editor().render();
         
         equal($(field.el).get(0).tagName, 'TEXTAREA');
+    });
+    
+    test("setValue() - updates the input value", function() {
+        var field = new editor({
+            model: new Post,
+            key: 'title'
+        }).render();
+        
+        field.setValue('foobar');
+        
+        equal(field.getValue(), 'foobar');
+        equal($(field.el).val(), 'foobar');
     });
 
 })();
@@ -242,6 +290,18 @@ module('Select');
     test('TODO: Options as a new collection (needs to be fetched)', function() {
         console.log('TODO')
     });
+    
+    test("setValue() - updates the input value", function() {
+        var field = new editor({
+            value: 'Pam',
+            schema: schema
+        }).render();
+        
+        field.setValue('Lana');
+        
+        equal(field.getValue(), 'Lana');
+        equal($(field.el).val(), 'Lana');
+    });
 
 })();
 
@@ -299,6 +359,29 @@ module('Object');
     
     test("TODO: idPrefix is added to child form elements", function() {
         console.log('TODO')
+    });
+    
+    test("TODO: remove() - Removes embedded form", function() {
+        console.log('TODO')
+    });
+    
+    test("setValue() - updates the input value", function() {
+        var field = new editor({
+            schema: schema,
+            value: {
+                id: 42,
+                name: "Krieger"
+            }
+        }).render();
+        
+        var newValue = {
+            id: 89,
+            name: "Sterling"
+        };
+        
+        field.setValue(newValue);
+        
+        deepEqual(field.getValue(), newValue);
     });
 
 })();
@@ -366,6 +449,34 @@ module('NestedModel');
     
     test("TODO: Validation on nested model", function() {
         console.log('TODO')
-    })
+    });
+
+    test("TODO: remove() - Removes embedded form", function() {
+        console.log('TODO')
+    });
+    
+    test("setValue() - updates the input value", function() {
+        var agency = new Backbone.Model({
+            spy: {
+                id: 28,
+                name: 'Pam'
+            }
+        });
+        
+        var field = new editor({
+            schema: schema,
+            model: agency,
+            key: 'spy'
+        }).render();
+        
+        var newValue = {
+            id: 89,
+            name: "Sterling"
+        };
+        
+        field.setValue(newValue);
+        
+        deepEqual(field.getValue(), newValue);
+    });
 
 })();
