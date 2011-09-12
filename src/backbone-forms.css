@@ -1,5 +1,12 @@
+.bbf-form {
+    margin: 0;
+    padding: 0;
+}
+
+
 .bbf-field {
     margin: 1em 0;
+    list-style-type: none;
 }
 
     .bbf-field label {
@@ -21,61 +28,68 @@
     }
 
 
-    .bbf-date input, .bbf-datetime input {
-        width: 100px;
+
+.bbf-date input, .bbf-datetime input {
+    width: 100px;
+    text-align: center;
+}
+
+    .bbf-datetime input {
+        margin-right: 1em;
+    }
+
+    .bbf-datetime select {
+        width: 50px;
         text-align: center;
     }
     
-        .bbf-datetime input {
-            margin-right: 1em;
-        }
     
-        .bbf-datetime select {
-            width: 50px;
-            text-align: center;
-        }
+
+.bbf-list {
+    list-style-type: none;
+}
     
-    
-    .bbf-list {
+    .bbf-list ul {
+        border: 1px solid #ccc;
+        border-bottom: none;
+        max-height: 150px;
+        overflow: auto;
+        margin: 0;
+        padding: 0;
+    }
+
+    .bbf-list li {
+        border-top: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
+        height: 16px;
+        background: #fff;
+        padding: 4px;
+        cursor: move;
+        margin: 0;
         list-style-type: none;
+        margin-top: -1px;
+        position: relative;
+        
     }
         
-        .bbf-list ul {
-            border: 1px solid #ccc;
-            border-bottom: none;
-            max-height: 150px;
-            overflow: auto;
+        .bbf-list .bbf-list-actions {
+            position: absolute;
+            top: 2px;
+            right: 2px;
         }
     
-        .bbf-list li {
-            border-top: 1px solid #ccc;
-            border-bottom: 1px solid #ccc;
-            height: 16px;
-            background: #fff;
-            padding: 4px;
-            cursor: move;
-            margin-top: -1px;
-            position: relative;
+        .bbf-list .bbf-list-actions button {
+            width: 19px;
+            height: 19px;
         }
-            
-            .bbf-list .bbf-list-actions {
-                position: absolute;
-                top: 2px;
-                right: 2px;
-            }
-        
-            .bbf-list .bbf-list-actions button {
-                width: 19px;
-                height: 19px;
-            }
-        
-            .bbf-list .bbf-list-add {
-                width: 100%;
-                height: 20px;
-                margin-top: -2px;
-            }
-            
-        .bbf-list-editor {
-            width: 98%;
+    
+        .bbf-list .bbf-list-add {
+            width: 100%;
+            height: 20px;
+            margin-top: -2px;
         }
-            
+        
+    .bbf-list-editor {
+        width: 98%;
+    }
+        
