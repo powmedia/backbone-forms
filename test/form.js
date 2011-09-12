@@ -114,6 +114,32 @@ test("getValue() - returns form value as an object", function() {
     equal(result.author, 'Lana Kang');
 });
 
+test("getValue(key) - returns specific field value", function() {
+    var form = new Form({
+        model: new Post
+    }).render();
+    
+    equal(form.getValue('title'), 'Danger Zone!');
+});
+
+test("setValue() - updates form field values", function() {
+    var form = new Form({
+        model: new Post
+    }).render();
+    
+    form.setValue({
+        title: 'Danger Zone 2',
+        slug: 'danger-zone-2'
+    });
+    
+    //Check changed fields
+    equal(form.fields.title.getValue(), 'Danger Zone 2');
+    equal(form.fields.slug.getValue(), 'danger-zone-2');
+    
+    //Check fields that shouldn't have changed
+    equal(form.fields.author.getValue(), 'Sterling Archer');
+});
+
 test("remove() - removes all child views and itself", function() {
     var counter = 0;
     

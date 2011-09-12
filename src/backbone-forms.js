@@ -156,17 +156,35 @@
         /**
          * Get all the field values as an object.
          * Use this method when passing data instead of objects
+         * 
+         * @param {String}  To get a specific field value pass the key name
          */
-        getValue: function() {
-            var schema = this.schema,
-                fields = this.fields
-                obj = {};
+        getValue: function(key) {
+            if (key) {
+                //Return given key only
+                return this.fields[key].getValue();
+            } else {
+                //Return entire form data
+                var schema = this.schema,
+                    fields = this.fields
+                    obj = {};
 
-            _.each(fields, function(field) {
-                obj[field.key] = field.getValue();
-            });
+                _.each(fields, function(field) {
+                    obj[field.key] = field.getValue();
+                });
 
-            return obj;
+                return obj;
+            }
+        },
+        
+        /**
+         * Update field values, referenced by key
+         * @param {Object}  New values to set
+         */
+        setValue: function(data) {
+            for (var key in data) {
+                this.fields[key].setValue(data[key]);
+            }
         },
 
         /**
