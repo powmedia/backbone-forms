@@ -11,6 +11,18 @@
     exports.Date = Base.extend({
 
         className: 'bbf-date',
+        
+        initialize: function(options) {
+            Base.prototype.initialize.call(this, options);
+            
+            if (!this.value) {
+                var date = new Date();
+                date.setSeconds(0);
+                date.setMilliseconds(0);
+                
+                this.value = date;
+            }
+        },
 
         render: function() {
             var el = $(this.el);
