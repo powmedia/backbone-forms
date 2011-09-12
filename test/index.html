@@ -2,8 +2,11 @@
 <html>
 <head>
     <link rel="stylesheet" href="lib/qunit.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="lib/jquery-ui/flick/jquery-ui-1.8.14.custom.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="../src/backbone-forms.css" type="text/css" media="screen" />
     
     <script src="lib/jquery-1.6.2.min.js"></script>
+    <script src="lib/jquery-ui/jquery-ui-1.8.14.custom.min.js"></script>
     <script type="text/javascript" src="lib/qunit.js"></script>
 
     <script src="lib/underscore-1.1.7.min.js"></script>
@@ -25,5 +28,31 @@
     <script src="field.js"></script>
     <script src="editors.js"></script>
     <script src="jquery-ui-editors.js"></script>
+    
+    
+    
+    
+    <div id="uiTest"></div>
+    <script>
+        $(function() {
+            var Model = Backbone.Model.extend({
+                schema: {
+                    date:       { type: 'Date' },
+                    datetime:   { type: 'DateTime' },
+                    list:       { type: 'List' }
+                }
+            });
+            
+            var model = new Model({
+                list: ['item1', 'item2', 'item3']
+            });
+
+            var form = new Backbone.Form({
+                model: model
+            }).render();
+
+            $('#uiTest').html(form.el);
+        });
+    </script>
 </body>
 </html>

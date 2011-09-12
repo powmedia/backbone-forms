@@ -91,7 +91,7 @@ test("commit() - updates the model with form values", function() {
     equal(post.get('title'), 'New title');
 });
 
-test("Form.getValue() - returns form value as an object", function() {
+test("getValue() - returns form value as an object", function() {
     var data = {
         title: 'Yuuup', 
         author: 'Lana Kang'
