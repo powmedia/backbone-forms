@@ -379,9 +379,9 @@
             });
 
             if (error)
-                el.addClass('error');
+                el.addClass('bbf-error');
             else
-                el.removeClass('error');
+                el.removeClass('bbf-error');
 
             return error;
         }
