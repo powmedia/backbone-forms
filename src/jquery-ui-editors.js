@@ -249,7 +249,9 @@
         /**
          * Add a new item to the list if it is completed in the editor
          */
-        addNewItem: function(event) {            
+        addNewItem: function(event) {
+            event.preventDefault();
+                     
             var self = this;
 
             this.openEditor(null, function(value) {
@@ -279,7 +281,9 @@
         /**
          * Edit an existing item in the list
          */
-        editItem: function(event) {            
+        editItem: function(event) {
+            event.preventDefault();
+                   
             var self = this,
                 li = $(event.target).closest('li'),
                 originalValue = $.data(li[0], 'data');
@@ -294,6 +298,8 @@
         },
 
         deleteItem: function(event) {
+            event.preventDefault();
+            
             var li = $(event.target).closest('li');
 
             li.remove();
