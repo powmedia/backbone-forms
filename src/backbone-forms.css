@@ -64,13 +64,15 @@
         height: 16px;
         background: #fff;
         padding: 4px;
-        cursor: move;
         margin: 0;
         list-style-type: none;
         margin-top: -1px;
         position: relative;
         
-    }
+    }    
+        .bbf-list-sortable li {
+            cursor: move;
+        }
         
         .bbf-list .bbf-list-actions {
             position: absolute;

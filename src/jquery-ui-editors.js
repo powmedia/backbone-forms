@@ -174,17 +174,20 @@
         },
 
         render: function() {
+            var el = $(this.el);
+            
             //Main element
-            $(this.el).html(this.template());
-
+            el.html(this.template());
+            
             //Create list
             var self = this,
+                el = $(this.el),
                 data = this.value || [],
                 schema = this.schema,
                 itemToString = this.itemToString,
                 itemTemplate = this.itemTemplate,
-                listEl = $('ul', this.el);
-
+                listEl = $('ul', el);
+            
             _.each(data, function(itemData) {     
                 var text = itemToString.call(self, itemData);
 
@@ -198,22 +201,26 @@
             });
 
             //Make sortable
-            listEl.sortable({
-                axis: 'y',
-                cursor: 'move',
-                containment: 'parent'
-            });
+            if (schema.sortable !== false) {
+                listEl.sortable({
+                    axis: 'y',
+                    cursor: 'move',
+                    containment: 'parent'
+                });
+                
+                el.addClass('bbf-list-sortable');
+            }
 
             //jQuery UI buttonize
-            $('button.bbf-list-add', this.el).button({
+            $('button.bbf-list-add', el).button({
                 text: false,
                 icons: { primary: 'ui-icon-plus' }
             });
-            $('button.bbf-list-edit', this.el).button({
+            $('button.bbf-list-edit', el).button({
                 text: false,
                 icons: { primary: 'ui-icon-pencil' }
             });
-            $('button.bbf-list-del', this.el).button({
+            $('button.bbf-list-del', el).button({
                 text: false,
                 icons: { primary: 'ui-icon-trash' }
             });

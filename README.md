@@ -215,7 +215,12 @@ Creates a sortable and editable list of items, which can be any of the above sch
 
 - Optional, but recommended when using listType 'Object'
 - A function that returns a string representing how the object should be displayed in a list item.
-- When listType is 'NestedModel', the model's `toString()` method will be used, unless a specific `itemToString()` function is defined on the schema. 
+- When listType is 'NestedModel', the model's `toString()` method will be used, unless a specific `itemToString()` function is defined on the schema.
+
+**`sortable`**
+
+- Optional. Set to false to disable drag and drop sorting
+
 
 Examples:
     
