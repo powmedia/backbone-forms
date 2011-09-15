@@ -346,8 +346,8 @@
             }
             else if (options.value)
                 this.value = options.value;
-            else
-                this.value = this.defaultValue;
+            
+            if (this.value === undefined) this.value = this.defaultValue;
 
             this.schema = options.schema;
         },
