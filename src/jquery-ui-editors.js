@@ -83,7 +83,8 @@
             });
 
             //Setup minute options
-            var mins = _.range(0, 60, 15),
+            var minsInterval = this.schema.minsInterval || 15,
+                mins = _.range(0, 60, minsInterval),
                 minsOptions = [];
 
             _.each(mins, function(min) {

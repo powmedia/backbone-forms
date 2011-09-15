@@ -232,6 +232,21 @@ Examples:
     };
 
 
+Date
+----
+
+Creates a jQuery UI datepicker
+
+DateTime
+--------
+
+Creates a jQuery UI datepicker and time select field.
+
+**`minsInterval`**
+
+- Optional. Controls the numbers in the minutes dropdown. Defaults to 15, so it is populated with 0, 15, 30, and 45 minutes;
+
+
 
 Form options
 ============
