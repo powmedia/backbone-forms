@@ -263,7 +263,6 @@
             var self = this;
 
             this.openEditor(null, function(value) {
-                console.warn(value)
                 var text = self.itemToString(value);
 
                 //Create DOM element
