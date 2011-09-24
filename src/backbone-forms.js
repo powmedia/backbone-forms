@@ -393,6 +393,12 @@
         tagName: 'input',
 
         defaultValue: '',
+        
+        initialize: function(options) {
+            editors.Base.prototype.initialize.call(this, options);
+
+            $(this.el).attr('type', 'text');
+        },
 
         /**
          * Adds the editor to the DOM
@@ -460,7 +466,7 @@
     editors.Password = editors.Text.extend({
 
         initialize: function(options) {
-            editors.Text.prototype.initialize.call(this);
+            editors.Text.prototype.initialize.call(this, options);
 
             $(this.el).attr('type', 'password');
         }

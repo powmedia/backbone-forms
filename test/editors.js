@@ -64,6 +64,12 @@ module('Text');
         equal($(field.el).val(), 'foobar');
     });
 
+    test('Correct type', function() {
+        var field = new editor().render();
+
+        equal($(field.el).attr('type'), 'text');
+    });
+
 })();
 
 
@@ -136,7 +142,7 @@ module('Password');
             value: 'Test'
         }).render();
 
-        equal(field.getValue(), '');
+        equal(field.getValue(), 'Test');
     });
 
     test('Value from model', function() {
@@ -145,7 +151,7 @@ module('Password');
             key: 'title'
         }).render();
         
-        equal(field.getValue(), '');
+        equal(field.getValue(), 'Danger Zone!');
     });
     
     test('Correct type', function() {
