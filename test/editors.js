@@ -176,6 +176,57 @@ module('Password');
 
 
 
+module('Hidden');
+
+(function() {
+    
+    var editor = editors.Hidden;
+    
+    test('Default value', function() {
+        var field = new editor().render();
+
+        equal(field.getValue(), '');
+    });
+
+    test('Custom value', function() {
+        var field = new editor({
+            value: 'Test'
+        }).render();
+
+        equal(field.getValue(), 'Test');
+    });
+
+    test('Value from model', function() {
+        var field = new editor({
+            model: new Post,
+            key: 'title'
+        }).render();
+        
+        equal(field.getValue(), 'Danger Zone!');
+    });
+    
+    test('Correct type', function() {
+        var field = new editor().render();
+        
+        equal($(field.el).attr('type'), 'hidden');
+    });
+    
+    test("setValue() - updates the input value", function() {
+        var field = new editor({
+            model: new Post,
+            key: 'title'
+        }).render();
+        
+        field.setValue('foobar');
+        
+        equal(field.getValue(), 'foobar');
+        equal($(field.el).val(), 'foobar');
+    });
+
+})();
+
+
+
 
 module('TextArea');
 

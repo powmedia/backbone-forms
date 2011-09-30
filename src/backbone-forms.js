@@ -474,6 +474,17 @@
     });
 
 
+    editors.Hidden = editors.Text.extend({
+
+        initialize: function(options) {
+            editors.Text.prototype.initialize.call(this, options);
+
+            $(this.el).attr('type', 'hidden');
+        }
+
+    });
+
+
     editors.TextArea = editors.Text.extend({
 
        tagName: 'textarea',
