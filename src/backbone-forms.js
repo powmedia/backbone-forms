@@ -128,7 +128,12 @@
 
                 var field = new Field(options);
 
-                el.append(field.render().el);
+                //Render the fields with editors, apart from Hidden fields
+                if (itemSchema.type == 'Hidden') {
+                    field.editor = helpers.createEditor('Hidden', options);
+                } else {
+                    el.append(field.render().el);
+                }
 
                 fields[key] = field;
             });
@@ -474,20 +479,30 @@
     });
 
 
-    editors.Hidden = editors.Text.extend({
+    editors.TextArea = editors.Text.extend({
+
+       tagName: 'textarea',
+
+    });
+    
+    
+    editors.Hidden = editors.Base.extend({
+        
+        defaultValue: '',
 
         initialize: function(options) {
             editors.Text.prototype.initialize.call(this, options);
 
             $(this.el).attr('type', 'hidden');
+        },
+        
+        getValue: function() {
+            return this.value;
+        },
+        
+        setValue: function(value) {
+            this.value = value;
         }
-
-    });
-
-
-    editors.TextArea = editors.Text.extend({
-
-       tagName: 'textarea',
 
     });
 
