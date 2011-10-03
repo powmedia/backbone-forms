@@ -222,12 +222,21 @@ Creates a sortable and editable list of items, which can be any of the above sch
 
 - Optional. Set to false to disable drag and drop sorting
 
+**`confirmDelete`**
+
+- Optional. Whether to prompt the user before removing an item. Defaults to false.
+
+**`confirmDeleteMsg`**
+
+- Optional. Message to display to the user before deleting an item.
+
 
 **Events**
 
-- `addItem`: The callback receives the new item as an object
-- `editItem`: The callback receives the new values as an object
-- `deleteItem`: The callback receives the deleted item ID (if available)
+The following events are fired when the user actions an item. Each event callback receives the relevant item value as an object:
+- `addItem`
+- `editItem`
+- `deleteItem` 
 
 
 Examples:

@@ -318,15 +318,27 @@
 
         deleteItem: function(event) {
             event.preventDefault();
-            
-            var li = $(event.target).closest('li'),
-                id = li.attr('rel');
+        
+            var self = this,
+                li = $(event.target).closest('li'),
+                data = $.data(li[0], 'data');
 
-            li.remove();
+            var confirmDelete = (this.schema.confirmDelete) ? this.schema.confirmDelete : false,
+                confirmMsg = this.schema.confirmDeleteMsg || 'Are you sure?';
             
-            //Fire 'remove' event
-            //TODO: Add item ID
-            this.trigger('removeItem', id);
+            //Actually removes the item
+            function remove() {
+                li.remove();
+
+                //Fire 'remove' event
+                self.trigger('removeItem', data);
+            }
+            
+            if (this.schema.confirmDelete) {
+                if (confirm(confirmMsg)) remove();
+            } else {
+                remove();
+            }
         },
 
         /**
