@@ -223,6 +223,13 @@ Creates a sortable and editable list of items, which can be any of the above sch
 - Optional. Set to false to disable drag and drop sorting
 
 
+**Events**
+
+- `addItem`: The callback receives the new item as an object
+- `editItem`: The callback receives the new values as an object
+- `deleteItem`: The callback receives the deleted item ID (if available)
+
+
 Examples:
     
     var schema = {

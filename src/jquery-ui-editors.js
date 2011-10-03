@@ -142,7 +142,7 @@
         '),
 
         itemTemplate: createTemplate('\
-            <li>\
+            <li rel="{{id}}">\
                 <span class="bbf-list-text">{{text}}</span>\
                 <div class="bbf-list-actions">\
                     <button class="bbf-list-edit">Edit</button>\
@@ -193,7 +193,10 @@
                 var text = itemToString.call(self, itemData);
 
                 //Create DOM element
-                var li = $(itemTemplate({ text: text }));
+                var li = $(itemTemplate({
+                    id: itemData.id || '',
+                    text: text
+                }));
 
                 //Attach data
                 $.data(li[0], 'data', itemData);
@@ -266,7 +269,10 @@
                 var text = self.itemToString(value);
 
                 //Create DOM element
-                var li = $(self.itemTemplate({ text: text }));
+                var li = $(self.itemTemplate({
+                    id: value.id || '',
+                    text: text
+                }));
 
                 //Store data
                 $.data(li[0], 'data', value);
@@ -282,6 +288,9 @@
                     text: false,
                     icons: { primary: 'ui-icon-trash' }
                 });
+                
+                //Fire 'add' event
+                self.trigger('addItem', value);
             });
         },
 
@@ -301,15 +310,23 @@
 
                 //Store data
                 $.data(li[0], 'data', newValue);
+                
+                //Fire 'edit' event
+                self.trigger('editItem', newValue);
             });
         },
 
         deleteItem: function(event) {
             event.preventDefault();
             
-            var li = $(event.target).closest('li');
+            var li = $(event.target).closest('li'),
+                id = li.attr('rel');
 
             li.remove();
+            
+            //Fire 'remove' event
+            //TODO: Add item ID
+            this.trigger('removeItem', id);
         },
 
         /**
