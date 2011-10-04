@@ -236,7 +236,7 @@ Creates a sortable and editable list of items, which can be any of the above sch
 The following events are fired when the user actions an item. Each event callback receives the relevant item value as an object:
 - `addItem`
 - `editItem`
-- `deleteItem` 
+- `removeItem` 
 
 
 Examples:
