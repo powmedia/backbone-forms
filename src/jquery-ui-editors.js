@@ -2,7 +2,8 @@
     
     var Form = Backbone.Form,
         Base = Form.editors.Base,
-        createTemplate = Form.helpers.createTemplate
+        createTemplate = Form.helpers.createTemplate,
+        triggerCancellableEvent = Form.helpers.triggerCancellableEvent,
         exports = {};
     
     /**
@@ -325,32 +326,11 @@
 
             var confirmDelete = (this.schema.confirmDelete) ? this.schema.confirmDelete : false,
                 confirmMsg = this.schema.confirmDeleteMsg || 'Are you sure?';
-            
-            /**
-             * Actually removes the item
-             * Fires the 'removeItem' event using a custom method so we can check the return value.
-             * If a callback returns false, then we don't remove the item.
-             */
+                        
             function remove() {
-                var eventHandlers = self._callbacks.removeItem || [];
-                
-                //Run each event handler callback and track the return values
-                var doRemove = true;
-                for (var i = 0, len = eventHandlers.length; i < len; i++) {
-                    var fn = eventHandlers[i][0],
-                        context = eventHandlers[i][1];
-                    
-                    if (context) fn = _.bind(fn, context);
-                    
-                    var result = fn(data);
-                    
-                    if (result === false) {
-                        doRemove = false;
-                        break;
-                    }
-                }
-                
-                if (doRemove) li.remove();
+                triggerCancellableEvent(self, 'removeItem', [data], function(err) {
+                    li.remove();
+                });
             }
             
             if (this.schema.confirmDelete) {

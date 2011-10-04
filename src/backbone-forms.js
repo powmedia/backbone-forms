@@ -64,6 +64,34 @@
         return new constructorFn(options);
     }
     
+    /**
+     * Triggers an event that can be cancelled. Requires the user to invoke a callback. If false
+     * is passed to the callback, the action does not run.
+     * 
+     * @param {Mixed}       Instance of Backbone model, view, collection to trigger event on
+     * @param {String}      Event name
+     * @param {Array}       Arguments to pass to the event handlers
+     * @param {Function}    Callback to run after the event handler has run.
+     *                      If any of them passed false or error, this callback won't run
+     */ 
+    helpers.triggerCancellableEvent = function(subject, event, arguments, callback) {
+        var eventHandlers = subject._callbacks[event] || [];
+        
+        if (!eventHandlers.length) return callback();
+        
+        var fn = eventHandlers[0][0],
+            context = eventHandlers[0][1] || this;
+        
+        //Add the callback that will be used when done
+        arguments.push(function(runCallback) {
+            if (runCallback !== false) callback();
+        });
+        
+        fn.apply(context, arguments);
+    }
+    
+    
+    
 
     var Form = Backbone.View.extend({
         
