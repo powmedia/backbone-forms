@@ -244,19 +244,30 @@ Examples:
 **Events**
 
 The following events are fired when the user actions an item:
+
 - `addItem`
 - `editItem`
 - `removeItem` 
 
-Each event callback receives the relevant item value as an object, and a callback. To cancel the event and prevent the default action, do not run the 'next' callback:
+Each event callback receives the relevant item value as an object, and a 'next' callback. To cancel the event and prevent the default action, do not run the callback.
+
+This allows you to run asynchronous code, for example to check with the database that a username is available before adding a someone to the list:
 
     var form = new Backbone.Form({ model: this.model }),
         list = form.fields.list.editor;
     
-    list.bind('removeItem', function(item, next) {
-        var msg = 'Are you sure you want to delete ' = item.name + '?';
-        
-        if (confirm(msg)) next();
+    //Only add the item if the username is available
+    list.bind('addItem', function(item, next) {
+        database.getUser(item.username, function(user) {
+            if (user) {
+                //Item will not be added to the list because we don't call next();
+                alert('The username is already taken');
+            }
+            else {
+                //Username available; add the item to the list:
+                next();
+            }
+        });
     });
 
 
