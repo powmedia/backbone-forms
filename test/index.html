@@ -37,6 +37,7 @@
         $(function() {
             var Model = Backbone.Model.extend({
                 schema: {
+                    number:     { type: 'Number' },
                     date:       { type: 'Date' },
                     datetime:   { type: 'DateTime' },
                     list:       { type: 'List' }
@@ -44,6 +45,7 @@
             });
             
             var model = new Model({
+                number: null,
                 list: ['item1', 'item2', 'item3']
             });
 
