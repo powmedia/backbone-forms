@@ -231,14 +231,6 @@ Creates a sortable and editable list of items, which can be any of the above sch
 - Optional. Message to display to the user before deleting an item.
 
 
-**Events**
-
-The following events are fired when the user actions an item. Each event callback receives the relevant item value as an object:
-- `addItem`
-- `editItem`
-- `removeItem` 
-
-
 Examples:
     
     var schema = {
@@ -247,6 +239,25 @@ Examples:
             }
         }
     };
+
+
+**Events**
+
+The following events are fired when the user actions an item:
+- `addItem`
+- `editItem`
+- `removeItem` 
+
+Each event callback receives the relevant item value as an object, and a callback. To cancel the event and prevent the default action, do not run the 'next' callback:
+
+    var form = new Backbone.Form({ model: this.model }),
+        list = form.fields.list.editor;
+    
+    list.bind('removeItem', function(item, next) {
+        var msg = 'Are you sure you want to delete ' = item.name + '?';
+        
+        if (confirm(msg)) next();
+    });
 
 
 Date

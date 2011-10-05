@@ -83,9 +83,7 @@
             context = eventHandlers[0][1] || this;
         
         //Add the callback that will be used when done
-        arguments.push(function(runCallback) {
-            if (runCallback !== false) callback();
-        });
+        arguments.push(callback);
         
         fn.apply(context, arguments);
     }

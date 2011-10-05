@@ -267,31 +267,31 @@
             var self = this;
 
             this.openEditor(null, function(value) {
-                var text = self.itemToString(value);
+                //Fire 'addItem' cancellable event
+                triggerCancellableEvent(self, 'addItem', [value], function() {
+                    var text = self.itemToString(value);
 
-                //Create DOM element
-                var li = $(self.itemTemplate({
-                    id: value.id || '',
-                    text: text
-                }));
+                    //Create DOM element
+                    var li = $(self.itemTemplate({
+                        id: value.id || '',
+                        text: text
+                    }));
 
-                //Store data
-                $.data(li[0], 'data', value);
+                    //Store data
+                    $.data(li[0], 'data', value);
 
-                $('ul', self.el).append(li);
+                    $('ul', self.el).append(li);
 
-                //jQuery UI buttonize
-                $('button.bbf-list-edit', this.el).button({
-                    text: false,
-                    icons: { primary: 'ui-icon-pencil' }
+                    //jQuery UI buttonize
+                    $('button.bbf-list-edit', this.el).button({
+                        text: false,
+                        icons: { primary: 'ui-icon-pencil' }
+                    });
+                    $('button.bbf-list-del', this.el).button({
+                        text: false,
+                        icons: { primary: 'ui-icon-trash' }
+                    });
                 });
-                $('button.bbf-list-del', this.el).button({
-                    text: false,
-                    icons: { primary: 'ui-icon-trash' }
-                });
-                
-                //Fire 'add' event
-                self.trigger('addItem', value);
             });
         },
 
@@ -306,14 +306,14 @@
                 originalValue = $.data(li[0], 'data');
 
             this.openEditor(originalValue, function(newValue) {
-                //Update display
-                $('.bbf-list-text', li).html(self.itemToString(newValue));
+                //Fire 'editItem' cancellable event
+                triggerCancellableEvent(self, 'editItem', [newValue], function() {
+                    //Update display
+                    $('.bbf-list-text', li).html(self.itemToString(newValue));
 
-                //Store data
-                $.data(li[0], 'data', newValue);
-                
-                //Fire 'edit' event
-                self.trigger('editItem', newValue);
+                    //Store data
+                    $.data(li[0], 'data', newValue);
+                });
             });
         },
 
@@ -328,7 +328,7 @@
                 confirmMsg = this.schema.confirmDeleteMsg || 'Are you sure?';
                         
             function remove() {
-                triggerCancellableEvent(self, 'removeItem', [data], function(err) {
+                triggerCancellableEvent(self, 'removeItem', [data], function() {
                     li.remove();
                 });
             }
