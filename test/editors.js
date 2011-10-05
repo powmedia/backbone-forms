@@ -87,6 +87,13 @@ module('Number');
         deepEqual(field.getValue(), 0);
     });
 
+    test('Null value', function() {
+        var field = new editor().render();
+        field.setValue(null);
+
+        deepEqual(field.getValue(), null);
+    });
+
     test('Custom value', function() {
         var field = new editor({
             value: 100

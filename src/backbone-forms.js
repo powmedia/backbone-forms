@@ -482,11 +482,12 @@
         },
 
         getValue: function() {        
-            return parseFloat($(this.el).val(), 10);
+            var value = $(this.el).val();
+            return value == "" ? null : parseFloat(value, 10);
         },
         
         setValue: function(value) {
-            value = parseFloat(value, 10);
+            value = value == null ? null : parseFloat(value, 10);
             
             editors.Text.prototype.setValue.call(this, value);
         }
