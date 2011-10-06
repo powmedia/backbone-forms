@@ -514,6 +514,38 @@
     });
     
     
+    editors.Checkbox = editors.Base.extend({
+        
+        defaultValue: false,
+        
+        tagName: 'input',
+        
+        initialize: function(options) {
+            editors.Base.prototype.initialize.call(this, options);
+            
+            $(this.el).attr('type', 'checkbox');
+        },
+
+        /**
+         * Adds the editor to the DOM
+         */
+        render: function() {
+            this.setValue(this.value);
+
+            return this;
+        },
+        
+        getValue: function() {
+            return $(this.el).attr('checked') ? true : false;
+        },
+        
+        setValue: function(value) {
+            $(this.el).attr('checked', value);
+        }
+        
+    });
+    
+    
     editors.Hidden = editors.Base.extend({
         
         defaultValue: '',

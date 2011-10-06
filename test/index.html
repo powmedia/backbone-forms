@@ -38,6 +38,7 @@
             var Model = Backbone.Model.extend({
                 schema: {
                     number:     { type: 'Number' },
+                    checkbox:   { type: 'Checkbox' },
                     date:       { type: 'Date' },
                     datetime:   { type: 'DateTime' },
                     list:       { type: 'List' }
@@ -46,12 +47,15 @@
             
             var model = new Model({
                 number: null,
+                checkbox: true,
                 list: ['item1', 'item2', 'item3']
             });
 
             var form = new Backbone.Form({
                 model: model
             }).render();
+            
+            window.form = form;
 
             $('#uiTest').html(form.el);
         });

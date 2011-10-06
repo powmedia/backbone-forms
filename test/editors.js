@@ -235,6 +235,77 @@ module('TextArea');
 
 
 
+module('checkbox');
+
+(function() {
+    
+    var editor = editors.Checkbox;
+    
+    var Model = Backbone.Model.extend({
+        schema: {
+            enabled: { type: 'Checkbox' }
+        }
+    });
+    
+    test('Default value', function() {
+        var field = new editor().render();
+
+        deepEqual(field.getValue(), false);
+    });
+
+    test('Custom value', function() {
+        var field = new editor({
+            value: true
+        }).render();
+
+        deepEqual(field.getValue(), true);
+    });
+
+    test('Value from model', function() {
+        var field = new editor({
+            model: new Model({ enabled: true }),
+            key: 'enabled'
+        }).render();
+        
+        deepEqual(field.getValue(), true);
+    });
+    
+    test('Correct type', function() {
+        var field = new editor().render();
+        
+        deepEqual($(field.el).get(0).tagName, 'INPUT');
+        deepEqual($(field.el).attr('type'), 'checkbox');
+    });
+    
+    test("getValue() - returns boolean", function() {
+        var field1 = new editor({
+            value: true
+        }).render();
+        
+        var field2 = new editor({
+            value: false
+        }).render();
+        
+        deepEqual(field1.getValue(), true);
+        deepEqual(field2.getValue(), false);
+    });
+    
+    test("setValue() - updates the input value", function() {
+        var field = new editor({
+            model: new Model,
+            key: 'enabled'
+        }).render();
+        
+        field.setValue(true);
+        
+        deepEqual(field.getValue(), true);
+        deepEqual($(field.el).attr('checked'), 'checked');
+    });
+    
+})();
+
+
+
 module('Hidden');
 
 (function() {

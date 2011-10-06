@@ -8,8 +8,9 @@ The following default editors are included:
 - Text
 - Number
 - Password
-- Hidden
 - TextArea
+- Checkbox
+- Hidden
 - Select
 - Object
 - NestedModel
