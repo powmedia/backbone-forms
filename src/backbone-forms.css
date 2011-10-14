@@ -94,4 +94,17 @@
     .bbf-list-editor {
         width: 98%;
     }
-        
+
+
+.bbf-radio {
+    list-style-type: none;
+}
+
+    .bbf-radio input {
+        width: auto;
+    }
+
+    .bbf-radio label {
+        float: none;
+    }
+

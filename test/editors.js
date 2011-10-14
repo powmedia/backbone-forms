@@ -442,6 +442,59 @@ module('Select');
 
 
 
+module('Radio');
+
+(function() {
+    var editor = editors.Radio,
+        schema = {
+            options: ['Sterling', 'Lana', 'Cyril', 'Cheryl', 'Pam']
+        };
+
+    test('Default value', function() {
+        var field = new editor({
+            schema: schema
+        }).render();
+
+        equal(field.getValue(), undefined);
+    });
+
+    test('Custom value', function() {
+        var field = new editor({
+            value: 'Cyril',
+            schema: schema
+        }).render();
+
+        equal(field.getValue(), 'Cyril');
+    });
+
+    test('Throws errors if no options', function () {
+        raises(function () {
+            var field = new editor({schema: {}});
+        }, /^Missing required/, 'ERROR: Accepted a new Radio editor with no options.');
+    });
+
+    test('Value from model', function() {
+        var field = new editor({
+            model: new Backbone.Model({ name: 'Lana' }),
+            key: 'name',
+            schema: schema
+        }).render();
+        equal(field.getValue(), 'Lana');
+    });
+
+    test('Correct type', function() {
+        var field = new editor({
+            schema: schema
+        }).render();
+        equal($(field.el).get(0).tagName, 'UL');
+        notEqual($(field.el).find('input[type=radio]').length, 0);
+    });
+
+})();
+
+
+
+
 module('Object');
 
 (function() {

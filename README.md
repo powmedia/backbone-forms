@@ -12,6 +12,7 @@ The following default editors are included:
 - Checkbox
 - Hidden
 - Select
+- Radio
 - Object
 - NestedModel
 
@@ -164,6 +165,10 @@ If using a Backbone collection as the `option` attribute, models in the collecti
 
 If there are no models in the collection, it will be `fetch()`ed.
 
+Radio
+------
+
+Creates and populates a list of radio inputs. Behaves the same way and has the same options as a `Select`.
 
 Object
 ------
