@@ -719,11 +719,11 @@
         className: 'bbf-radio',
 
         getValue: function() {
-            return this.$('input[type=radio]').filter(function () { return this.checked }).val();
+            return this.$('input[type=radio]:checked').val();
         },
 
         setValue: function(value) {
-            return this.$('input[type=radio]').filter(function () { return value == $(this).val() }).attr({checked: 'checked'});
+            return this.$('input[type=radio][value='+value+']').attr({checked: 'checked'});
         },
 
         /**
