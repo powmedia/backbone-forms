@@ -64,10 +64,18 @@ module('Text');
         equal($(field.el).val(), 'foobar');
     });
 
-    test('Correct type', function() {
+    test('Default type is text', function() {
         var field = new editor().render();
 
         equal($(field.el).attr('type'), 'text');
+    });
+    
+    test('Type can be changed', function() {
+        var field = new editor({
+            schema: { dataType: 'tel' }
+        }).render();
+        
+        equal($(field.el).attr('type'), 'tel');
     });
 
 })();

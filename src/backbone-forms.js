@@ -425,10 +425,15 @@
 
         defaultValue: '',
         
-        initialize: function(options) {
+        initialize: function(options) {            
             editors.Base.prototype.initialize.call(this, options);
+            
+            //Allow customising text type (email, phone etc.) for HTML5 browsers
+            var type = 'text';
+            
+            if (this.schema && this.schema.dataType) type = this.schema.dataType;
 
-            $(this.el).attr('type', 'text');
+            $(this.el).attr('type', type);
         },
 
         /**

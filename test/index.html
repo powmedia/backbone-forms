@@ -37,6 +37,7 @@
         $(function() {
             var Model = Backbone.Model.extend({
                 schema: {
+                    tel:        { type: 'Text', dataType: 'tel' },
                     number:     { type: 'Number' },
                     checkbox:   { type: 'Checkbox' },
                     date:       { type: 'Date' },

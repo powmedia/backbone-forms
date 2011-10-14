@@ -130,6 +130,16 @@ Editor-specific attributes
 
 If the schema `type` is one of the following, some extra schema attributes are required:
 
+Text
+----
+
+Creates a normal text input.
+
+**`dataType`**
+
+- Changes the type="text" attribute. Used for HTML5 form inputs such as `url`, ``tel`, `email`.  When viewing on a mobile device e.g. iOS, this will change the type of keyboard that is opened. For example, `tel` opens a numeric keypad.
+
+
 Select
 ------
 
