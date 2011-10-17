@@ -246,7 +246,7 @@
         
         template: helpers.createTemplate('\
              <label for="{{id}}">{{title}}</label>\
-             <div class="bbf-editor"></div>\
+             <div class="bbf-editor bbf-editor{{type}}"></div>\
         '),
 
         /**
@@ -276,12 +276,14 @@
             var schema = this.schema,
                 el = $(this.el);
 
+            el.addClass('bbf-field' + schema.type);
+
             //Standard options that will go to all editors
             var options = {
                 key: this.key,
                 schema: schema,
                 idPrefix: this.idPrefix,
-                id: this.idPrefix + this.key
+                id: this.idPrefix + this.key,
             };
 
             //Decide on data delivery type to pass to editors
@@ -296,7 +298,8 @@
             el.html(this.template({
                 key: this.key,
                 title: schema.title,
-                id: editor.id
+                id: editor.id,
+                type: schema.type
             }));
 
             //Add the editor
