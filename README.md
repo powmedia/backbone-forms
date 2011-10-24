@@ -318,6 +318,12 @@ If not using the `model` option, pass a native object through the `data` option.
 
 The schema to use to create the form. Pass it in if you don't want to store the schema on the model, or to override the model schema.
 
+**`fieldsets`**
+
+An array of fieldsets descriptions. A fieldset is either a list of field names, or an object with `legend` and `fields` attributes. The `legend` will be inserted at the top of the fieldset inside a `<legend>` tag; the list of fields will be treated as `fields` is below.
+
+`fieldsets` takes priority over `fields`.
+
 **`fields`**
 
 An array of field names (keys). Only the fields defined here will be added to the form. You can also use this to re-order the fields.
