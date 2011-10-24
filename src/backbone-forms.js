@@ -313,7 +313,7 @@
                 key: this.key,
                 schema: schema,
                 idPrefix: this.idPrefix,
-                id: this.idPrefix + this.key,
+                id: this.idPrefix + this.key
             };
 
             //Decide on data delivery type to pass to editors
