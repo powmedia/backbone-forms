@@ -193,7 +193,9 @@
         getValue: function(key) {
             if (key) {
                 //Return given key only
-                return this.fields[key].getValue();
+                var obj = {};
+                obj[key] = this.fields[key].getValue();
+                return obj;
             } else {
                 //Return entire form data
                 var schema = this.schema,
