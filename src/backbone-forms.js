@@ -1,6 +1,7 @@
 ;(function() {
     
     var helpers = {};
+    var validators = {};
     
     /**
      * This function is used to transform the key from a schema into the title used in a label.
@@ -87,8 +88,37 @@
         
         fn.apply(context, arguments);
     }
-    
-    
+
+    helpers.getValidator = function(validator) {
+        var isRegExp = _(validator).isRegExp();
+        if (isRegExp || validator['RegExp']) {
+            if (!isRegExp) {
+                validator = new RegExp(validator['RegExp']);
+            }
+            return function (value) {
+                if (!validator.test(value)) {
+                    return 'Value '+value+' does not pass validation against regular expression '+validator;
+                }
+            };
+        } else if (_(validator).isString()) {
+            if (validators[validator]) {
+                return validators[validator];
+            } else {
+                throw 'Validator "'+validator+'" not found';
+            }
+        } else if (_(validator).isFunction()) {
+            return validator;
+        } else {
+            throw 'Could not process validator' + validator;
+        }
+    };
+
+    validators.required = function (value) {
+        var exists = (value === 0 || !!value);
+        if (!exists) {
+            return 'This field is required';
+        }
+    };
     
 
     var Form = Backbone.View.extend({
@@ -198,13 +228,42 @@
         },
 
         /**
+         * Validate the data
+         *
+         * @return {Object} Validation errors
+         */
+        validate: function() {
+            var fields = this.fields,
+                model = this.model,
+                errors = {};
+
+            _.each(fields, function(field) {
+                var error = field.validate();
+                if (error) {
+                    errors[field.key] = error;
+                }
+            });
+
+            if (model && model.validate) {
+                errors._nonFieldErrors = model.validate(form.getValue());
+            }
+
+            return _.isEmpty(errors) ? null : errors;
+        },
+
+        /**
          * Update the model with all latest values.
          *
          * @return {Object}  Validation errors
          */
         commit: function() {
-            var fields = this.fields,
-                errors = {};
+            var fields = this.fields;
+
+            var errors = this.validate();
+
+            if (errors) {
+                return errors;
+            }
 
             _.each(fields, function(field) {
                 var error = field.commit();
@@ -341,6 +400,13 @@
         },
 
         /**
+         * Validate the value from the editor
+         */
+        validate: function() {
+            return this.editor.validate();
+        },
+
+        /**
          * Update the model with the new value from the editor
          */
         commit: function() {
@@ -413,7 +479,8 @@
             
             if (this.value === undefined) this.value = this.defaultValue;
 
-            this.schema = options.schema;
+            this.schema = options.schema || {};
+            this.validators = options.validators || this.schema.validators;
         },
 
         getValue: function() {
@@ -425,27 +492,50 @@
         },
 
         /**
+         * Check the validity of a particular field
+         */
+        validate: function () {
+            var el = $(this.el),
+                error = null,
+                value = this.getValue();
+
+            if (this.validators) {
+                _(this.validators).each(function(validator) {
+                    if (!error) {
+                        error = helpers.getValidator(validator)(value);
+                    }
+                });
+            }
+
+            if (!error && this.model && this.model.validate) {
+                var change = {};
+                change[this.key] = value;
+                error = this.model.validate(change);
+            }
+
+            if (error) {
+                el.addClass('bbf-error');
+            } else {
+                el.removeClass('bbf-error');
+            }
+
+            return error;
+        },
+
+        /**
          * Update the model with the new value from the editor
          *
          * @return {Error|null} Validation error or null
          */
         commit: function() {
-            var el = $(this.el),
-                change = {};
-
+            var error = null;
+            var change = {};
             change[this.key] = this.getValue();
-
-            var error = null
             this.model.set(change, {
                 error: function(model, e) {
                     error = e;
                 }
             });
-
-            if (error)
-                el.addClass('bbf-error');
-            else
-                el.removeClass('bbf-error');
 
             return error;
         }
@@ -916,6 +1006,7 @@
     Form.helpers = helpers;
     Form.Field = Field;
     Form.editors = editors;
+    Form.validators = validators;
     Backbone.Form = Form;
 
 })();
