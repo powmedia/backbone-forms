@@ -96,7 +96,7 @@
         //Field views
         fields: null,
 
-        tagName: 'ul',
+        tagName: 'fieldset',
         
         className: 'bbf-form',
 
@@ -114,6 +114,7 @@
             this.model = options.model;
             this.data = options.data;
             this.fieldsToRender = options.fields || _.keys(this.schema);
+            this.fieldsets = options.fieldsets;
             this.idPrefix = options.idPrefix || '';
 
             //Stores all Field views
@@ -124,12 +125,43 @@
          * Renders the form and all fields
          */
         render: function() {
+            var fieldsToRender = this.fieldsToRender,
+                fieldsets = this.fieldsets,
+                el = $(this.el),
+                self = this;
+
+            if (fieldsets) {
+                _.each(fieldsets, function (fs) {
+                    if (_(fs).isArray()) {
+                        fs = {'fields': fs};
+                    }
+
+                    var fieldset = $('<fieldset><ul>');
+
+                    if (fs.legend) {
+                        fieldset.append($('<legend>').html(fs.legend));
+                    }
+                    self.renderFields(fs.fields, fieldset.find('ul'));
+                    el.append(fieldset);
+                });
+            } else {
+                var target = $('<ul>');
+                el.append(target)
+                this.renderFields(fieldsToRender, target);
+            }
+
+            return this;
+        },
+
+        /**
+         * Render a list of fields. Returns the rendered Field object.
+         */
+        renderFields: function (fieldsToRender, el) {
             var schema = this.schema,
                 model = this.model,
                 data = this.data,
-                fieldsToRender = this.fieldsToRender,
                 fields = this.fields,
-                el = $(this.el),
+                el = el || $(this.el),
                 self = this;
 
             //Create form fields
@@ -163,8 +195,6 @@
 
                 fields[key] = field;
             });
-
-            return this;
         },
 
         /**
@@ -246,7 +276,7 @@
         
         template: helpers.createTemplate('\
              <label for="{{id}}">{{title}}</label>\
-             <div class="bbf-editor"></div>\
+             <div class="bbf-editor bbf-editor{{type}}"></div>\
         '),
 
         /**
@@ -276,6 +306,8 @@
             var schema = this.schema,
                 el = $(this.el);
 
+            el.addClass('bbf-field' + schema.type);
+
             //Standard options that will go to all editors
             var options = {
                 key: this.key,
@@ -296,7 +328,8 @@
             el.html(this.template({
                 key: this.key,
                 title: schema.title,
-                id: editor.id
+                id: editor.id,
+                type: schema.type
             }));
 
             //Add the editor

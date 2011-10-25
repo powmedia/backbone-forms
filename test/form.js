@@ -68,6 +68,25 @@ test("'fields' option - Allows choosing and ordering fields from the schema", fu
     equal($('input:eq(1)', form.el).attr('id'), 'slug');
 });
 
+test("'fieldsets' option - Allows choosing and ordering of fields within fieldsets", function () {
+    var form = new Form({
+        model: new Post,
+        fieldsets: [
+            ['slug', 'author'],
+            {'legend': 'Content Section', 'fields': ['title', 'content']}
+        ]
+    }).render();
+
+    console.log(form.el);
+
+    ok(form.$(':nth-child(1)').is('fieldset'), 'First element of the form is not a fieldset');
+    equal(form.$('fieldset:nth-child(1) input:eq(0)').attr('id'), 'slug');
+    equal(form.$('fieldset:nth-child(1) input:eq(1)').attr('id'), 'author');
+    equal(form.$('fieldset:nth-child(2) legend').html(), 'Content Section');
+    equal(form.$('fieldset:nth-child(2) input:eq(0)').attr('id'), 'title');
+    equal(form.$('fieldset:nth-child(2) textarea').attr('id'), 'content');
+});
+
 test("'idPrefix' option - Adds prefix to all DOM element IDs", function() {
     var form = new Form({
         model: new Post,
