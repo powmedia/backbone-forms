@@ -54,7 +54,11 @@
             });
 
             var form = new Backbone.Form({
-                model: model
+                model: model,
+                fieldsets: [
+                    ['tel', 'number', 'checkbox', 'radio'],
+                    { legend: 'jQuery UI editors', fields: ['date', 'datetime', 'list'] }
+                ]
             }).render();
             
             window.form = form;
