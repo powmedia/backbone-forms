@@ -599,14 +599,39 @@ module('NestedModel');
         schema = { model: ChildModel };
     
     test('Default value', function() {
-        /*
         var field = new editor({
             schema: schema
         }).render();
         
         deepEqual(field.getValue(), { id: 0, name: '' });
-        */
-        console.log('TODO');
+    });
+
+    test('Nested Form with Object subScehme', function() {
+        var objectChild = Backbone.Model.extend({
+            schema: {
+                childElement: {
+                    type: 'Object',
+                    subSchema: {
+                        subChildElement: { type: 'Number' },
+                    },
+                },
+            },
+        });
+
+        var parentModel = Backbone.Model.extend({
+            schema: {
+                states: {
+                    type: 'NestedModel', 
+                    model: objectChild,
+                },
+            }
+        })
+
+        var field = new editor({
+            schema: {model : parentModel}
+        }).render();
+
+        deepEqual(field.getValue(), { states: { childElement: { subChildElement: 0 } } });
     });
 
     test('Custom value', function() {

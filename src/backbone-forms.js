@@ -75,6 +75,8 @@
      *                      If any of them passed false or error, this callback won't run
      */ 
     helpers.triggerCancellableEvent = function(subject, event, arguments, callback) {
+        if (!subject._callbacks) return callback();
+
         var eventHandlers = subject._callbacks[event] || [];
         
         if (!eventHandlers.length) return callback();
@@ -223,7 +225,9 @@
         getValue: function(key) {
             if (key) {
                 //Return given key only
-                return this.fields[key].getValue();
+                var obj = {};
+                obj[key] = this.fields[key].getValue();
+                return obj;
             } else {
                 //Return entire form data
                 var schema = this.schema,

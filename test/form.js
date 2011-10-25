@@ -138,7 +138,7 @@ test("getValue(key) - returns specific field value", function() {
         model: new Post
     }).render();
     
-    equal(form.getValue('title'), 'Danger Zone!');
+    deepEqual(form.getValue('title'), { title: 'Danger Zone!' });
 });
 
 test("setValue() - updates form field values", function() {
