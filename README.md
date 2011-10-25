@@ -124,6 +124,13 @@ For each field definition in the schema you can use the following optional attri
 - Defines the text that appears in a form field's &lt;label&gt;
 - If not defined, defaults to a formatted version of the camelCased field key. E.g. `firstName` becomes `First Name`. This behaviour can be changed by assigning your own function to Backbone.Form.helpers.keyToTitle.
 
+**`validators`**
+
+- A list of validators, where each validator is one of the following:
+    - **A string.** This should be the name of a function in `Backbone.forms.validators`. The only provided validator is `"required"`, but you can add any other validators you use regularly here.
+    - **A regular expression.** This should either be a compiled regular expression, or an object of the form `{'RegExp': 'string-to-make-into-regex'}`. The validator function generated will use `RegExp.test` on the value and return an error message if there is a problem.
+    - **A function.** This function will be passed the value of the form, and should return a truth-y value if there is an error. This would normally be a string describing the error.
+
 
 Editor-specific attributes
 --------------------------
@@ -389,14 +396,17 @@ Custom editors can be written. They must extend from Backbone.Form.editors.Base.
 - The field schema can be accessed via this.schema. This allows you to pass in custom parameters.
 
 
-Defaults & Validation
-=====================
+Initial Data
+============
 
-Formal uses the built in Backbone validation and defaults as defined on the model.
+If a form has a model attached to it, the initial values are taken from the model's defaults. Otherwise, you may pass default values using the `schema.data`.
 
-For validation, it will attempt to update the model and if there are validation failures, it will report them back.
+Validation
+==========
 
-See the Backbone documentation for more details.
+Forms provide a `validate` method, which returns a dictionary of errors, or `null`. Validation is determined using the `validators` attribute on the schema (see above).
+
+If you model provides a `validate` method, then this will be called when you call `Form.validate`. Forms are also validated when you call `commit`. See the Backbone documentation for more details on model validation.
 
 
 Known issues

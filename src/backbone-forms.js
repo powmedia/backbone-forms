@@ -1,6 +1,7 @@
 ;(function() {
     
     var helpers = {};
+    var validators = {};
     
     /**
      * This function is used to transform the key from a schema into the title used in a label.
@@ -87,8 +88,37 @@
         
         fn.apply(context, arguments);
     }
-    
-    
+
+    helpers.getValidator = function(validator) {
+        var isRegExp = _(validator).isRegExp();
+        if (isRegExp || validator['RegExp']) {
+            if (!isRegExp) {
+                validator = new RegExp(validator['RegExp']);
+            }
+            return function (value) {
+                if (!validator.test(value)) {
+                    return 'Value '+value+' does not pass validation against regular expression '+validator;
+                }
+            };
+        } else if (_(validator).isString()) {
+            if (validators[validator]) {
+                return validators[validator];
+            } else {
+                throw 'Validator "'+validator+'" not found';
+            }
+        } else if (_(validator).isFunction()) {
+            return validator;
+        } else {
+            throw 'Could not process validator' + validator;
+        }
+    };
+
+    validators.required = function (value) {
+        var exists = (value === 0 || !!value);
+        if (!exists) {
+            return 'This field is required';
+        }
+    };
     
 
     var Form = Backbone.View.extend({
@@ -449,7 +479,8 @@
             
             if (this.value === undefined) this.value = this.defaultValue;
 
-            this.schema = options.schema;
+            this.schema = options.schema || {};
+            this.validators = options.validators || this.schema.validators;
         },
 
         getValue: function() {
@@ -464,12 +495,21 @@
          * Check the validity of a particular field
          */
         validate: function () {
-            var el = $(this.el);
+            var el = $(this.el),
+                error = null,
+                value = this.getValue();
 
-            var change = {};
-            change[this.key] = this.getValue();
-            var error = null;
-            if (this.model && this.model.validate) {
+            if (this.validators) {
+                _(this.validators).each(function(validator) {
+                    if (!error) {
+                        error = helpers.getValidator(validator)(value);
+                    }
+                });
+            }
+
+            if (!error && this.model && this.model.validate) {
+                var change = {};
+                change[this.key] = value;
                 error = this.model.validate(change);
             }
 
@@ -966,6 +1006,7 @@
     Form.helpers = helpers;
     Form.Field = Field;
     Form.editors = editors;
+    Form.validators = validators;
     Backbone.Form = Form;
 
 })();
