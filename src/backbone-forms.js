@@ -198,13 +198,42 @@
         },
 
         /**
+         * Validate the data
+         *
+         * @return {Object} Validation errors
+         */
+        validate: function() {
+            var fields = this.fields,
+                model = this.model,
+                errors = {};
+
+            _.each(fields, function(field) {
+                var error = field.validate();
+                if (error) {
+                    errors[field.key] = error;
+                }
+            });
+
+            if (model && model.validate) {
+                errors._nonFieldErrors = model.validate(form.getValue());
+            }
+
+            return _.isEmpty(errors) ? null : errors;
+        },
+
+        /**
          * Update the model with all latest values.
          *
          * @return {Object}  Validation errors
          */
         commit: function() {
-            var fields = this.fields,
-                errors = {};
+            var fields = this.fields;
+
+            var errors = this.validate();
+
+            if (errors) {
+                return errors;
+            }
 
             _.each(fields, function(field) {
                 var error = field.commit();
@@ -341,6 +370,13 @@
         },
 
         /**
+         * Validate the value from the editor
+         */
+        validate: function() {
+            return this.editor.validate();
+        },
+
+        /**
          * Update the model with the new value from the editor
          */
         commit: function() {
@@ -425,27 +461,41 @@
         },
 
         /**
+         * Check the validity of a particular field
+         */
+        validate: function () {
+            var el = $(this.el);
+
+            var change = {};
+            change[this.key] = this.getValue();
+            var error = null;
+            if (this.model && this.model.validate) {
+                error = this.model.validate(change);
+            }
+
+            if (error) {
+                el.addClass('bbf-error');
+            } else {
+                el.removeClass('bbf-error');
+            }
+
+            return error;
+        },
+
+        /**
          * Update the model with the new value from the editor
          *
          * @return {Error|null} Validation error or null
          */
         commit: function() {
-            var el = $(this.el),
-                change = {};
-
+            var error = null;
+            var change = {};
             change[this.key] = this.getValue();
-
-            var error = null
             this.model.set(change, {
                 error: function(model, e) {
                     error = e;
                 }
             });
-
-            if (error)
-                el.addClass('bbf-error');
-            else
-                el.removeClass('bbf-error');
 
             return error;
         }
