@@ -14,7 +14,7 @@
      */
     helpers.keyToTitle = function(str) {
         //Add spaces
-        var str = str.replace(/([A-Z])/g, ' $1');
+        str = str.replace(/([A-Z])/g, ' $1');
 
         //Uppercase first character
         str = str.replace(/^./, function(str) { return str.toUpperCase(); });
@@ -33,7 +33,7 @@
         var _interpolateBackup = _.templateSettings.interpolate;
 
         //Set custom template settings
-        _.templateSettings.interpolate = /\{\{(.+?)\}\}/g
+        _.templateSettings.interpolate = /\{\{(.+?)\}\}/g;
 
         var template = _.template(str);
 
@@ -62,7 +62,7 @@
             constructorFn = schemaType;
 
         return new constructorFn(options);
-    }
+    };
     
     /**
      * Triggers an event that can be cancelled. Requires the user to invoke a callback. If false
@@ -74,7 +74,7 @@
      * @param {Function}    Callback to run after the event handler has run.
      *                      If any of them passed false or error, this callback won't run
      */ 
-    helpers.triggerCancellableEvent = function(subject, event, arguments, callback) {
+    helpers.triggerCancellableEvent = function(subject, event, args, callback) {
         var eventHandlers = subject._callbacks[event] || [];
         
         if (!eventHandlers.length) return callback();
@@ -83,10 +83,10 @@
             context = eventHandlers[0][1] || this;
         
         //Add the callback that will be used when done
-        arguments.push(callback);
+        args.push(callback);
         
-        fn.apply(context, arguments);
-    }
+        fn.apply(context, args);
+    };
     
     
     
