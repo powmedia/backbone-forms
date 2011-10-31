@@ -49,6 +49,7 @@ Define a 'schema' attribute on your Backbone models. The schema keys should matc
 
     var User = Backbone.Model.extend({
         schema: {
+            email:      { dataType: 'email', validators: ['required', validateEmail] },
             start:      { type: 'DateTime' },
             contact:    { type: 'Object', subSchema: {
                             name: {},

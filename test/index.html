@@ -35,8 +35,15 @@
     <div id="uiTest"></div>
     <script>
         $(function() {
+            function validateEmail(str) {
+                var regex = new RegExp("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
+                
+                return regex.test(str) ? null : 'Invalid email';
+            }
+            
             var Model = Backbone.Model.extend({
                 schema: {
+                    email:      { dataType: 'email', validators: ['required', validateEmail] },
                     tel:        { type: 'Text', dataType: 'tel', validators: ['required'] },
                     number:     { type: 'Number', validators: [/[0-9]+(?:\.[0-9]*)?/] },
                     checkbox:   { type: 'Checkbox' },
@@ -56,7 +63,7 @@
             var form = new Backbone.Form({
                 model: model,
                 fieldsets: [
-                    ['tel', 'number', 'checkbox', 'radio'],
+                    ['email', 'tel', 'number', 'checkbox', 'radio'],
                     { legend: 'jQuery UI editors', fields: ['date', 'datetime', 'list'] }
                 ]
             }).render();
