@@ -547,7 +547,7 @@
 
     editors.TextArea = editors.Text.extend({
 
-       tagName: 'textarea',
+       tagName: 'textarea'
 
     });
     
@@ -737,7 +737,7 @@
             });
 
             return html.join('');
-        },
+        }
 
     });
 
@@ -790,7 +790,7 @@
             });
 
             return html.join('');
-        },
+        }
 
     });
 
