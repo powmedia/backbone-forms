@@ -86,7 +86,7 @@
         //Add the callback that will be used when done
         args.push(callback);
         
-        fn.apply(context, arguments);
+        fn.apply(context, args);
     }
 
     helpers.getValidator = function(validator) {
