@@ -96,6 +96,19 @@ test("'idPrefix' option - Adds prefix to all DOM element IDs", function() {
     equal($('#form_title', form.el).length, 1);
 });
 
+test("validate() - validates the form and returns an errors object", function () {
+    var form = new Form({
+        schema: {
+            title: {validators: ['required']}
+        }
+    }).render();
+
+    ok(form.validate() && form.validate().title);
+
+    form.setValue({title: 'A valid title'});
+    equal(form.validate(), null);
+});
+
 test("commit() - updates the model with form values", function() {
     var post = new Post();
 

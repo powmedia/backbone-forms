@@ -100,3 +100,44 @@ module('triggerCancellableEvent');
     });
 
 })();
+
+module('getValidator');
+
+(function() {
+
+    test('Bundled validator', function() {
+        var validator = Form.helpers.getValidator('required');
+
+        equal(validator, Form.validators.required);
+    });
+
+    test('Regular Expressions', function() {
+        var validator = Form.helpers.getValidator(/hello/);
+        var validator2 = Form.helpers.getValidator({'RegExp': 'another'});
+
+        ok(_(validator('hellooooo')).isUndefined());
+        ok(validator('bye!'));
+
+        ok(validator2('this is a test'));
+        ok(_(validator2('this is another test')).isUndefined());
+    });
+
+    test('Function', function () {
+        var myValidator = function () { return; };
+
+        var validator = Form.helpers.getValidator(myValidator);
+
+        equal(validator, myValidator);
+    });
+
+    test('Unknown', function () {
+        raises(function() {
+            Form.helpers.getValidator('unknown validator');
+        }, /not found/i);
+        raises(function() {
+            Form.helpers.getValidator(['this is a list', 'not a validator']);
+        }, /could not process/i);
+    });
+
+})();
+

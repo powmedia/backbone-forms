@@ -15,10 +15,24 @@ module('Base');
     
         equal(post.get('title'), 'New Title');
     });
+
+    test('validate()', function() {
+        var editor = new editors.Text({
+            key: 'title',
+            validators: ['required']
+        });
+
+        ok(editor.validate());
+
+        editor.setValue('a value');
+
+        ok(_(editor.validate()).isUndefined());
+    });
     
     test('TODO: Test commit() validation failure', function() {
         
     });
+
 
 
 
