@@ -416,6 +416,11 @@ Known issues
 - List editor with listType NestedModel doesn't run validation
 - There may be CSS issues across browsers.  You can customise your CSS by editing the backbone-forms.css file.
 
+Help & discussion
+=================
+
+- [Google Groups](http://groups.google.com/group/backbone-forms)
+
 Contributors
 ============
 
