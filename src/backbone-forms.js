@@ -245,7 +245,8 @@
             });
 
             if (model && model.validate) {
-                errors._nonFieldErrors = model.validate(form.getValue());
+                var modelErrors = model.validate(this.getValue());
+                if (modelErrors) errors._nonFieldErrors = modelErrors;
             }
 
             return _.isEmpty(errors) ? null : errors;
