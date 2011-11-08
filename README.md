@@ -429,7 +429,7 @@ However, due to Backbone's lack of support for nested model attributes, getting 
         }
     });
     
-    var form = new Form({
+    var form = new Backbone.Form({
         model: new Model,
         fields: ['title', 'author.id', 'author.name.last']
     }).render();
