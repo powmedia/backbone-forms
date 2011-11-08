@@ -204,3 +204,29 @@ test('Allows access to field views', function() {
     ok(form.fields.title instanceof Form.Field);
     ok(form.fields.author instanceof Form.Field);
 });
+
+test("Supports picking nested fields from within Objects", function() {
+    var Model = Backbone.Model.extend({
+        schema: {
+            title: {},
+            author: { type: 'Object', subSchema: {
+                id: { type: 'Number' },
+                name: { type: 'Object', subSchema: {
+                    first: {},
+                    last: {}
+                }}
+            }}
+        }
+    });
+    
+    var form = new Form({
+        model: new Model,
+        fields: ['title', 'author.id', 'author.name.last']
+    }).render();
+    
+    deepEqual(_.keys(form.fields), ['title', 'author.id', 'author.name.last']);
+    
+    ok(form.fields['title'].editor instanceof Form.editors.Text);
+    ok(form.fields['author.id'].editor instanceof Form.editors.Number);
+    ok(form.fields['author.name.last'].editor instanceof Form.editors.Text);
+});

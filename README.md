@@ -409,6 +409,31 @@ Forms provide a `validate` method, which returns a dictionary of errors, or `nul
 
 If you model provides a `validate` method, then this will be called when you call `Form.validate`. Forms are also validated when you call `commit`. See the Backbone documentation for more details on model validation.
 
+Using nested attributes/fields
+==============================
+
+If you are using a schema with nested attributes (using the `Object` type), you may want to include only some of the nested fields in a form. This can be accomplished by using 'path' syntax as in the example below.
+
+However, due to Backbone's lack of support for nested model attributes, getting and setting values will not work out of the box.  For this to work as expected you must adapt your model's get() and set() methods to handle the path names, or simply use [DeepModel](http://github.com/powmedia/backbone-deep-model) which will handle paths for you automatically.
+
+    var Model = Backbone.DeepModel.extend({
+        schema: {
+            title: {},
+            author: { type: 'Object', subSchema: {
+                id: { type: 'Number' },
+                name: { type: 'Object', subSchema: {
+                    first: {},
+                    last: {}
+                }}
+            }}
+        }
+    });
+    
+    var form = new Form({
+        model: new Model,
+        fields: ['title', 'author.id', 'author.name.last']
+    }).render();
+
 
 Known issues
 ============

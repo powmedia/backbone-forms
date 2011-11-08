@@ -1,5 +1,20 @@
 ;(function() {
     
+    //Support paths for nested attributes e.g. 'user.name'
+    function getNested(obj, path) {
+        var fields = path.split(".");
+        var result = obj;
+        for (var i = 0, n = fields.length; i < n; i++) {
+            result = result[fields[i]];
+        }
+        return result;
+    }
+    
+    function getNestedSchema(obj, path) {
+        path = path.replace(/\./g, '.subSchema.');
+        return getNested(obj, path);
+    }
+    
     var helpers = {};
     var validators = {};
     
@@ -193,10 +208,10 @@
                 fields = this.fields,
                 el = el || $(this.el),
                 self = this;
-
+            
             //Create form fields
             _.each(fieldsToRender, function(key) {
-                var itemSchema = schema[key];
+                var itemSchema = getNestedSchema(schema, key);
 
                 if (!itemSchema) throw "Field '"+key+"' not found in schema";
 
