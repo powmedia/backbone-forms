@@ -348,11 +348,6 @@
         events: {
             'click label': 'logValue'
         },
-        
-        template: helpers.createTemplate('\
-             <label for="{{id}}">{{title}}</label>\
-             <div class="bbf-editor bbf-editor{{type}}"></div>\
-        '),
 
         /**
          * @param {Object}  Options
@@ -400,7 +395,7 @@
             //Decide on the editor to use
             var editor = helpers.createEditor(schema.type, options);
 
-            el.html(this.template({
+            el.html(Field.template({
                 key: this.key,
                 title: schema.title,
                 id: editor.id,
@@ -454,6 +449,14 @@
             Backbone.View.prototype.remove.call(this);
         }
 
+    },  {
+        
+        //Static
+        template: helpers.createTemplate('\
+             <label for="{{id}}">{{title}}</label>\
+             <div class="bbf-editor bbf-editor{{type}}"></div>\
+        ')
+        
     });
 
 
