@@ -1026,6 +1026,6 @@
     Form.Field = Field;
     Form.editors = editors;
     Form.validators = validators;
-    Backbone.Form = Form;
+    module.exports = Backbone.Form = Form;
 
 })();

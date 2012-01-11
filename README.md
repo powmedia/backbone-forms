@@ -36,6 +36,8 @@ Include backbone-forms.js and backbone-forms.css:
 Optionally, you can include the extra editors, for example those that require jQuery UI:
 
     <script src="backbone-forms/src/jquery-ui-editors.js"></script>
+
+If you use BackboneJS with node.js, you can just `require('backbone-forms');` in your index file.
     
     
 Usage
