@@ -687,7 +687,9 @@
         },
         
         setValue: function(value) {
-            $(this.el).attr('checked', value);
+            if (value) {
+                $(this.el).attr('checked', true);
+            }
         }
         
     });
@@ -866,11 +868,11 @@
         className: 'bbf-radio',
 
         getValue: function() {
-            return this.$('input[type=radio]:checked').val();
+            return $(this.el).find('input[type=radio]:checked').val();
         },
 
         setValue: function(value) {
-            return this.$('input[type=radio][value='+value+']').attr({checked: 'checked'});
+            $(this.el).find('input[type=radio][value='+value+']').attr('checked', true);
         },
 
         /**
