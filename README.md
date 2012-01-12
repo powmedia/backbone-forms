@@ -10,6 +10,7 @@ The following default editors are included:
 - Password
 - TextArea
 - Checkbox
+- Checkboxes
 - Hidden
 - Select
 - Radio
@@ -186,9 +187,14 @@ If using a Backbone collection as the `option` attribute, models in the collecti
 If there are no models in the collection, it will be `fetch()`ed.
 
 Radio
-------
+-----
 
 Creates and populates a list of radio inputs. Behaves the same way and has the same options as a `Select`.
+
+Checkboxes
+----------
+
+Creates and populates a list of checkbox inputs. Behaves the same way and has the same options as a `Select`. To set defaults for this editor, use an array of values.
 
 Object
 ------
