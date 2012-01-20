@@ -687,7 +687,9 @@
         },
         
         setValue: function(value) {
-            $(this.el).attr('checked', value);
+            if (value) {
+                $(this.el).attr('checked', true);
+            }
         }
         
     });
@@ -866,11 +868,11 @@
         className: 'bbf-radio',
 
         getValue: function() {
-            return this.$('input[type=radio]:checked').val();
+            return $(this.el).find('input[type=radio]:checked').val();
         },
 
         setValue: function(value) {
-            return this.$('input[type=radio][value='+value+']').attr({checked: 'checked'});
+            $(this.el).find('input[type=radio][value='+value+']').attr('checked', true);
         },
 
         /**
@@ -892,6 +894,66 @@
                 }
                 else {
                     itemHtml += ('<input type="radio" name="'+self.id+'" value="'+option+'" id="'+self.id+'-'+index+'" />')
+                    itemHtml += ('<label for="'+self.id+'-'+index+'">'+option+'</label>')
+                }
+                itemHtml += '</li>';
+                html.push(itemHtml);
+            });
+
+            return html.join('');
+        }
+
+    });
+
+
+
+
+    /**
+     * Renders a <ul> with given options represented as <li> objects containing checkboxes
+     *
+     * Requires an 'options' value on the schema.
+     *  Can be an array of options, a function that calls back with the array of options, a string of HTML
+     *  or a Backbone collection. If a collection, the models must implement a toString() method
+     */
+    editors.Checkboxes = editors.Select.extend({
+
+        tagName: 'ul',
+        className: 'bbf-checkboxes',
+
+        getValue: function() {
+            var values = [];
+            $(this.el).find('input[type=checkbox]:checked').each(function() {
+                values.push($(this).val());
+            });
+            return values;
+        },
+
+        setValue: function(value) {
+            var self = this;
+            _.each(value, function(val) {
+                $(self.el).find('input[type=checkbox][value='+val+']').attr('checked', true);
+            });
+        },
+
+        /**
+         * Create the checkbox list HTML
+         * @param {Array}   Options as a simple array e.g. ['option1', 'option2']
+         *                      or as an array of objects e.g. [{val: 543, label: 'Title for object 543'}]
+         * @return {String} HTML
+         */
+        _arrayToHtml: function (array) {
+            var html = [];
+            var self = this;
+
+            _.each(array, function(option, index) {
+                var itemHtml = '<li>';
+                if (_.isObject(option)) {
+                    var val = option.val ? option.val : '';
+                    itemHtml += ('<input type="checkbox" name="'+self.id+'" value="'+val+'" id="'+self.id+'-'+index+'" />')
+                    itemHtml += ('<label for="'+self.id+'-'+index+'">'+option.label+'</label>')
+                }
+                else {
+                    itemHtml += ('<input type="checkbox" name="'+self.id+'" value="'+option+'" id="'+self.id+'-'+index+'" />')
                     itemHtml += ('<label for="'+self.id+'-'+index+'">'+option+'</label>')
                 }
                 itemHtml += '</li>';
@@ -1026,6 +1088,6 @@
     Form.Field = Field;
     Form.editors = editors;
     Form.validators = validators;
-    Backbone.Form = Form;
+    module.exports = Backbone.Form = Form;
 
 })();

@@ -1,0 +1,12 @@
+{
+    "name": "backbone-forms",
+    "description": "Form framework for BackboneJS with nested forms, editable lists and validation",
+    "author": {
+        "name": "Charles Davison"
+    },
+    "version": "1.0.0",
+    "dependencies": {
+        "backbone": "0.5.x",
+        "jquery": "1.5.x"
+    }
+}

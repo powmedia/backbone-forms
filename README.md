@@ -10,6 +10,7 @@ The following default editors are included:
 - Password
 - TextArea
 - Checkbox
+- Checkboxes
 - Hidden
 - Select
 - Radio
@@ -36,6 +37,8 @@ Include backbone-forms.js and backbone-forms.css:
 Optionally, you can include the extra editors, for example those that require jQuery UI:
 
     <script src="backbone-forms/src/jquery-ui-editors.js"></script>
+
+If you use BackboneJS with node.js, you can just `require('backbone-forms');` in your index file.
     
     
 Usage
@@ -184,9 +187,14 @@ If using a Backbone collection as the `option` attribute, models in the collecti
 If there are no models in the collection, it will be `fetch()`ed.
 
 Radio
-------
+-----
 
 Creates and populates a list of radio inputs. Behaves the same way and has the same options as a `Select`.
+
+Checkboxes
+----------
+
+Creates and populates a list of checkbox inputs. Behaves the same way and has the same options as a `Select`. To set defaults for this editor, use an array of values.
 
 Object
 ------
