@@ -1,6 +1,6 @@
 {
     "name": "backbone-forms",
-    "description": "Form framework for BackboneJS with nested forms, editable lists and validation"
+    "description": "Form framework for BackboneJS with nested forms, editable lists and validation",
     "author": {
         "name": "Charles Davison"
     },
