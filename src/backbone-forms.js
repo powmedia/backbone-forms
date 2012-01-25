@@ -656,7 +656,15 @@
 
     editors.TextArea = editors.Text.extend({
 
-       tagName: 'textarea'
+        tagName: 'textarea',
+
+        setValue : function(value) {
+			$(this.el).html(value);
+		},
+
+		getValue : function() {
+			return $(this.el).html();
+		}
 
     });
     
