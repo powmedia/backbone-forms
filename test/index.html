@@ -50,7 +50,9 @@
                     date:       { type: 'Date' },
                     datetime:   { type: 'DateTime' },
                     list:       { type: 'List' },
-                    radio:      { type: 'Radio', options: ['Opt 1', 'Opt 2'] }
+                    radio:      { type: 'Radio', options: ['Opt 1', 'Opt 2'] },
+                    checkboxes: { type: 'Checkboxes', options: ['Sterling', 'Lana', 'Cyril', 'Cheryl', 'Pam']
+                    }
                 }
             });
             
@@ -63,7 +65,7 @@
             var form = new Backbone.Form({
                 model: model,
                 fieldsets: [
-                    ['email', 'tel', 'number', 'checkbox', 'radio'],
+                    ['email', 'tel', 'number', 'checkbox', 'radio', 'checkboxes'],
                     { legend: 'jQuery UI editors', fields: ['date', 'datetime', 'list'] }
                 ]
             }).render();

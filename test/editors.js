@@ -515,6 +515,53 @@ module('Radio');
 })();
 
 
+module('Checkboxes');
+
+(function() {
+    var editor = editors.Checkboxes,
+        schema = {
+            options: ['Sterling', 'Lana', 'Cyril', 'Cheryl', 'Pam']
+        };
+
+    test('Default value', function() {
+        var field = new editor({
+            schema: schema
+        }).render();
+
+        var value = field.getValue();
+        equal(_.isEqual(value, []), true);
+    });
+
+    test('Custom value', function() {
+        var field = new editor({
+            value: ['Cyril'],
+            schema: schema
+        }).render();
+
+        var value = field.getValue();
+        var expected = ['Cyril'];
+        equal(_.isEqual(expected, value), true);
+    });
+
+    test('Throws errors if no options', function () {
+        raises(function () {
+            var field = new editor({schema: {}});
+        }, /^Missing required/, 'ERROR: Accepted a new Radio editor with no options.');
+    });
+
+    // Value from model doesn't work here as the value must be an array.
+
+    test('Correct type', function() {
+        var field = new editor({
+            schema: schema
+        }).render();
+        equal($(field.el).get(0).tagName, 'UL');
+        notEqual($(field.el).find('input[type=checkbox]').length, 0);
+    });
+
+})();
+
+
 
 
 module('Object');
