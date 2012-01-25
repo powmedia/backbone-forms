@@ -109,3 +109,16 @@
         float: none;
     }
 
+
+
+.bbf-checkboxes {
+    list-style-type: none;
+}
+
+    .bbf-checkboxes input {
+        width: auto;
+    }
+
+    .bbf-checkboxes label {
+        float: none;
+    }
