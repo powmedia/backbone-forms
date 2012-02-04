@@ -1,4 +1,4 @@
-;(function() {
+;(function($) {
     
     //Support paths for nested attributes e.g. 'user.name'
     function getNested(obj, path) {
@@ -1090,4 +1090,4 @@
     Form.validators = validators;
     module.exports = Backbone.Form = Form;
 
-})();
+}(jQuery));
