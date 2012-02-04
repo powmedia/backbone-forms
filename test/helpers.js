@@ -98,8 +98,19 @@ module('triggerCancellableEvent');
             ok(false); //Shouldn't run
         });
     });
+    
+    test('Default action run without anything bound', function() {
+        expect(1);
+
+        var view = new Backbone.View();
+
+        trigger(view, 'remove', [], function() {
+            ok(true);
+        });
+    });
 
 })();
+
 
 module('getValidator');
 

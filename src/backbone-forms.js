@@ -91,6 +91,8 @@
      *                      If any of them passed false or error, this callback won't run
      */ 
     helpers.triggerCancellableEvent = function(subject, event, args, callback) {
+        if (!subject._callbacks) return callback();
+        
         var eventHandlers = subject._callbacks[event] || [];
         
         if (!eventHandlers.length) return callback();
