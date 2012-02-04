@@ -1088,6 +1088,9 @@
     Form.Field = Field;
     Form.editors = editors;
     Form.validators = validators;
-    module.exports = Backbone.Form = Form;
+    Backbone.Form = Form;
+    
+    //For use in NodeJS
+    if (typeof module != 'undefined') module.exports = Form
 
 })();
