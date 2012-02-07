@@ -520,7 +520,7 @@ module('Checkboxes');
 (function() {
     var editor = editors.Checkboxes,
         schema = {
-            options: ['Sterling', 'Lana', 'Cyril', 'Cheryl', 'Pam']
+            options: ['Sterling', 'Lana', 'Cyril', 'Cheryl', 'Pam', 'Doctor Krieger']
         };
 
     test('Default value', function() {
@@ -546,7 +546,7 @@ module('Checkboxes');
     test('Throws errors if no options', function () {
         raises(function () {
             var field = new editor({schema: {}});
-        }, /^Missing required/, 'ERROR: Accepted a new Radio editor with no options.');
+        }, /^Missing required/, 'ERROR: Accepted a new Checkboxes editor with no options.');
     });
 
     // Value from model doesn't work here as the value must be an array.
@@ -557,6 +557,28 @@ module('Checkboxes');
         }).render();
         equal($(field.el).get(0).tagName, 'UL');
         notEqual($(field.el).find('input[type=checkbox]').length, 0);
+    });
+
+    test('setting value with one item', function() {
+        var field = new editor({
+            schema: schema
+        }).render();
+
+        field.setValue(['Lana']);
+        
+        deepEqual(field.getValue(), ['Lana']);
+        equal($(field.el).find('input[type=checkbox]:checked').length, 1);
+    });
+
+    test('setting value with multiple items, including a value with a space', function() {
+        var field = new editor({
+            schema: schema
+        }).render();
+
+        field.setValue(['Lana', 'Doctor Krieger']);
+        
+        deepEqual(field.getValue(), ['Lana', 'Doctor Krieger']);
+        equal($(field.el).find('input[type=checkbox]:checked').length, 2);
     });
 
 })();
