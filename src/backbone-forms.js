@@ -933,7 +933,7 @@
         setValue: function(value) {
             var self = this;
             _.each(value, function(val) {
-                $(self.el).find('input[type=checkbox][value='+val+']').attr('checked', true);
+                $(self.el).find('input[type=checkbox][value="'+val+'"]').attr('checked', true);
             });
         },
 
