@@ -1,4 +1,4 @@
-;(function() {
+;(function($) {
     
     //Support paths for nested attributes e.g. 'user.name'
     function getNested(obj, path) {
@@ -1095,4 +1095,4 @@
     //For use in NodeJS
     if (typeof module != 'undefined') module.exports = Form
 
-})();
+}(jQuery));
