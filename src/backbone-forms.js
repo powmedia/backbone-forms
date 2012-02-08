@@ -136,16 +136,43 @@
             return 'This field is required';
         }
     };
+
+
+    
+    //==================================================================================================
+    //TEMPLATES
+    //==================================================================================================
+      
+    var templates = {};
+    
+    templates.form = helpers.createTemplate('\
+      <form class="bbf-form">{{fieldsets}}</form>\
+    ');
+
+    templates.fieldset = helpers.createTemplate('\
+      <fieldset>\
+        {{legend}}\
+        <ul>{{fields}}</ul>\
+      </fieldset>\
+    ');
+
+    templates.field = helpers.createTemplate('\
+    <li class="bbf-field bbf-field{{type}}">\
+      <label for="{{id}}" title="test">{{title}}</label>\
+      <div class="bbf-editor bbf-editor{{type}}">{{editor}}</div>\
+    </li>\
+    ');  
+
     
 
     var Form = Backbone.View.extend({
         
         //Field views
         fields: null,
-
-        tagName: 'fieldset',
         
-        className: 'bbf-form',
+        template: templates.form,
+        
+        fieldsetTemplate: templates.fieldset,
 
         /**
          * @param {Object}  Options
@@ -176,40 +203,53 @@
                 fieldsets = this.fieldsets,
                 el = $(this.el),
                 self = this;
+            
+            var fieldsetsHtml = [];
 
             if (fieldsets) {
+                //TODO: Update handling of fieldsets
                 _.each(fieldsets, function (fs) {
                     if (_(fs).isArray()) {
                         fs = {'fields': fs};
                     }
-
-                    var fieldset = $('<fieldset><ul>');
-
-                    if (fs.legend) {
-                        fieldset.append($('<legend>').html(fs.legend));
-                    }
-                    self.renderFields(fs.fields, fieldset.find('ul'));
-                    el.append(fieldset);
+                    
+                    var fsHtml = self.fieldsetTemplate({
+                      legend: '<legend>'+fs.legend+'</legend>',
+                      fields: self.renderFieldsHtml(fs.fields)
+                    });
+                    
+                    fieldsetsHtml.push(fsHtml);
                 });
-            } else {
-                var target = $('<ul>');
-                el.append(target)
-                this.renderFields(fieldsToRender, target);
+            } else {                
+                fieldsetsHtml.push(this.fieldsetTemplate({
+                  legend: '',
+                  fields: this.renderFieldsHtml(fieldsToRender)
+                }));
             }
+            
+            var formHtml = this.template({
+              fieldsets: fieldsetsHtml.join('')
+            });
+            
+            this.setElement($(formHtml));
 
             return this;
         },
 
         /**
          * Render a list of fields. Returns the rendered Field object.
+         * @param {Array}           Fields to render
+         * @return {String}         Rendered fields as HTML
          */
-        renderFields: function (fieldsToRender, el) {
+        renderFieldsHtml: function (fieldsToRender) {
             var schema = this.schema,
                 model = this.model,
                 data = this.data,
                 fields = this.fields,
                 el = el || $(this.el),
                 self = this;
+            
+            var html = [];
             
             //Create form fields
             _.each(fieldsToRender, function(key) {
@@ -237,11 +277,14 @@
                 if (itemSchema.type == 'Hidden') {
                     field.editor = helpers.createEditor('Hidden', options);
                 } else {
-                    el.append(field.render().el);
+                    //el.append(field.render().el);
+                    html.push($(field.render().el).wrap('<div>').parent().html());
                 }
 
                 fields[key] = field;
             });
+            
+            return html.join('');
         },
 
         /**
@@ -342,14 +385,8 @@
 
 
     var Field = Backbone.View.extend({
-
-        tagName: 'li',
-
-        className: 'bbf-field',
-
-        events: {
-            'click label': 'logValue'
-        },
+      
+        template: templates.field,
 
         /**
          * @param {Object}  Options
@@ -378,8 +415,6 @@
             var schema = this.schema,
                 el = $(this.el);
 
-            el.addClass('bbf-field' + schema.type);
-
             //Standard options that will go to all editors
             var options = {
                 key: this.key,
@@ -395,19 +430,23 @@
                 options.value = this.value;
 
             //Decide on the editor to use
-            var editor = helpers.createEditor(schema.type, options);
+            var editor = this.editor = helpers.createEditor(schema.type, options);
+            
+            //TODO: Instead of wrapping all elements before getting their HTML:
+            // - use native outerHTML where possible (see http://stackoverflow.com/a/5259788/491341)
+            // - OR, have editors use templates too; the templates get wrapped in a div on the editor level and we get inner HTML from there
+            var $editor = $(editor.render().el);
+            var editorHtml = $editor.wrap('<div>').parent().html();
 
-            el.html(Field.template({
+            var html = this.template({
                 key: this.key,
                 title: schema.title,
                 id: editor.id,
-                type: schema.type
-            }));
-
-            //Add the editor
-            $('.bbf-editor', el).html(editor.render().el);
-
-            this.editor = editor;
+                type: schema.type,
+                editor: editorHtml
+            });
+            
+            this.setElement($(html));
 
             return this;
         },
@@ -451,14 +490,6 @@
             Backbone.View.prototype.remove.call(this);
         }
 
-    },  {
-        
-        //Static
-        template: helpers.createTemplate('\
-             <label for="{{id}}">{{title}}</label>\
-             <div class="bbf-editor bbf-editor{{type}}"></div>\
-        ')
-        
     });
 
 
@@ -566,7 +597,7 @@
     editors.Text = editors.Base.extend({
 
         tagName: 'input',
-
+        
         defaultValue: '',
         
         initialize: function(options) {            
@@ -601,8 +632,8 @@
          * Sets the value of the form element
          * @param {String}
          */
-        setValue: function(value) {
-            $(this.el).val(value);
+        setValue: function(value) { 
+           $(this.el).val(value);
         }
 
     });
