@@ -90,15 +90,15 @@
      * @param {Function}    Callback to run after the event handler has run.
      *                      If any of them passed false or error, this callback won't run
      */ 
-    helpers.triggerCancellableEvent = function(subject, event, args, callback) {
-        if (!subject._callbacks) return callback();
+    helpers.triggerCancellableEvent = function(subject, event, args, callback) { 
+        //Return if there are no event listeners
+        if (!subject._callbacks || !subject._callbacks[event]) return callback();
         
-        var eventHandlers = subject._callbacks[event] || [];
+        var next = subject._callbacks[event].next;
+        if (!next) return callback();
         
-        if (!eventHandlers.length) return callback();
-        
-        var fn = eventHandlers[0][0],
-            context = eventHandlers[0][1] || this;
+        var fn = next.callback,
+            context = next.context || this;
         
         //Add the callback that will be used when done
         args.push(callback);
