@@ -83,6 +83,8 @@
     /**
      * Triggers an event that can be cancelled. Requires the user to invoke a callback. If false
      * is passed to the callback, the action does not run.
+     *
+     * NOTE: This helper uses private Backbone apis so can break when Backbone is upgraded
      * 
      * @param {Mixed}       Instance of Backbone model, view, collection to trigger event on
      * @param {String}      Event name
@@ -193,6 +195,8 @@
 
             //Stores all Field views
             this.fields = {};
+            
+            window.form = this;
         },
 
         /**
@@ -204,7 +208,14 @@
                 el = $(this.el),
                 self = this;
             
-            var fieldsetsHtml = [];
+            //Create el from template
+            var $form = $(this.template({
+              fieldsets: '<div class="bbf-placeholder"></div>'
+            }));
+            
+            //Get a reference to where fieldsets should go and remove the placeholder
+            var $fieldsetContainer = $('.bbf-placeholder', $form).parent();
+            $fieldsetContainer.html('');
 
             if (fieldsets) {
                 //TODO: Update handling of fieldsets
@@ -215,23 +226,27 @@
                     
                     var fsHtml = self.fieldsetTemplate({
                       legend: '<legend>'+fs.legend+'</legend>',
-                      fields: self.renderFieldsHtml(fs.fields)
+                      fields: self.renderFields(fs.fields)
                     });
                     
-                    fieldsetsHtml.push(fsHtml);
+                    $fieldsetContainer.append(fsHtml);
                 });
-            } else {                
-                fieldsetsHtml.push(this.fieldsetTemplate({
+            } else {
+                //Concatenating HTML as strings won't work so we need to insert field elements into a placeholder
+                var $fieldset = $(this.fieldsetTemplate({
                   legend: '',
-                  fields: this.renderFieldsHtml(fieldsToRender)
+                  fields: '<div class="bbf-placeholder"></div>'
                 }));
+                
+                var $fieldsContainer = $('.bbf-placeholder', $fieldset).parent();
+                $fieldsContainer.html('');
+                
+                this.renderFields(fieldsToRender, $fieldsContainer);
+                
+                $fieldsetContainer.append($fieldset);
             }
-            
-            var formHtml = this.template({
-              fieldsets: fieldsetsHtml.join('')
-            });
-            
-            this.setElement($(formHtml));
+
+            this.setElement($form);
 
             return this;
         },
@@ -239,17 +254,15 @@
         /**
          * Render a list of fields. Returns the rendered Field object.
          * @param {Array}           Fields to render
-         * @return {String}         Rendered fields as HTML
+         * @param {jQuery}          Wrapped DOM element where field elemends will go
          */
-        renderFieldsHtml: function (fieldsToRender) {
+        renderFields: function (fieldsToRender, $container) {
             var schema = this.schema,
                 model = this.model,
                 data = this.data,
                 fields = this.fields,
                 el = el || $(this.el),
                 self = this;
-            
-            var html = [];
             
             //Create form fields
             _.each(fieldsToRender, function(key) {
@@ -277,14 +290,11 @@
                 if (itemSchema.type == 'Hidden') {
                     field.editor = helpers.createEditor('Hidden', options);
                 } else {
-                    //el.append(field.render().el);
-                    html.push($(field.render().el).wrap('<div>').parent().html());
+                    $container.append(field.render().el);
                 }
 
                 fields[key] = field;
             });
-            
-            return html.join('');
         },
 
         /**
@@ -432,21 +442,21 @@
             //Decide on the editor to use
             var editor = this.editor = helpers.createEditor(schema.type, options);
             
-            //TODO: Instead of wrapping all elements before getting their HTML:
-            // - use native outerHTML where possible (see http://stackoverflow.com/a/5259788/491341)
-            // - OR, have editors use templates too; the templates get wrapped in a div on the editor level and we get inner HTML from there
-            var $editor = $(editor.render().el);
-            var editorHtml = $editor.wrap('<div>').parent().html();
-
-            var html = this.template({
+            //Create the element
+            var $field = $(this.template({
                 key: this.key,
                 title: schema.title,
                 id: editor.id,
                 type: schema.type,
-                editor: editorHtml
-            });
+                editor: '<div class="bbf-placeholder"></div>'
+            }));
             
-            this.setElement($(html));
+            var $editorContainer = $('.bbf-placeholder', $field).parent();
+            $editorContainer.html('');
+            
+            $editorContainer.append(editor.render().el);
+            
+            this.setElement($field);
 
             return this;
         },
