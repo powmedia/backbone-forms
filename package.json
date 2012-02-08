@@ -4,9 +4,10 @@
     "author": {
         "name": "Charles Davison"
     },
-    "version": "1.0.0",
+    "version": "0.5",
     "dependencies": {
-        "backbone": "0.5.x",
-        "jquery": "1.5.x"
+        "backbone": ">=0.9.1",
+        "underscore": ">=1.3.1",
+        "jquery": ">=1.6.2"
     }
 }
