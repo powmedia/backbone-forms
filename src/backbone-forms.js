@@ -205,7 +205,6 @@
         render: function() {
             var fieldsToRender = this.fieldsToRender,
                 fieldsets = this.fieldsets,
-                el = $(this.el),
                 self = this;
             
             //Create el from template
@@ -267,7 +266,6 @@
                 model = this.model,
                 data = this.data,
                 fields = this.fields,
-                el = el || $(this.el),
                 self = this;
             
             //Create form fields
@@ -428,8 +426,7 @@
         },
 
         render: function() {
-            var schema = this.schema,
-                el = $(this.el);
+            var schema = this.schema;
 
             //Standard options that will go to all editors
             var options = {
@@ -563,7 +560,7 @@
          * Check the validity of a particular field
          */
         validate: function () {
-            var el = $(this.el),
+            var $el = this.$el,
                 error = null,
                 value = this.getValue();
 
@@ -582,9 +579,9 @@
             }
 
             if (error) {
-                el.addClass('bbf-error');
+                $el.addClass('bbf-error');
             } else {
-                el.removeClass('bbf-error');
+                $el.removeClass('bbf-error');
             }
 
             return error;
@@ -624,7 +621,7 @@
             
             if (this.schema && this.schema.dataType) type = this.schema.dataType;
 
-            $(this.el).attr('type', type);
+            this.$el.attr('type', type);
         },
 
         /**
@@ -641,7 +638,7 @@
          * @return {String}
          */
         getValue: function() {
-            return $(this.el).val();
+            return this.$el.val();
         },
         
         /**
@@ -649,7 +646,7 @@
          * @param {String}
          */
         setValue: function(value) { 
-           $(this.el).val(value);
+           this.$el.val(value);
         }
 
     });
@@ -670,7 +667,7 @@
          * Check value is numeric
          */
         onKeyPress: function(event) {        
-            var newVal = $(this.el).val() + String.fromCharCode(event.keyCode);
+            var newVal = this.$el.val() + String.fromCharCode(event.keyCode);
 
             var numeric = /^[0-9]*\.?[0-9]*?$/.test(newVal);
 
@@ -678,7 +675,7 @@
         },
 
         getValue: function() {        
-            var value = $(this.el).val();
+            var value = this.$el.val();
             
             return value === "" ? null : parseFloat(value, 10);
         },
@@ -697,7 +694,7 @@
         initialize: function(options) {
             editors.Text.prototype.initialize.call(this, options);
 
-            $(this.el).attr('type', 'password');
+            this.$el.attr('type', 'password');
         }
 
     });
@@ -719,7 +716,7 @@
         initialize: function(options) {
             editors.Base.prototype.initialize.call(this, options);
             
-            $(this.el).attr('type', 'checkbox');
+            this.$el.attr('type', 'checkbox');
         },
 
         /**
@@ -732,12 +729,12 @@
         },
         
         getValue: function() {
-            return $(this.el).attr('checked') ? true : false;
+            return this.$el.attr('checked') ? true : false;
         },
         
         setValue: function(value) {
             if (value) {
-                $(this.el).attr('checked', true);
+                this.$el.attr('checked', true);
             }
         }
         
@@ -751,7 +748,7 @@
         initialize: function(options) {
             editors.Text.prototype.initialize.call(this, options);
 
-            $(this.el).attr('type', 'hidden');
+            this.$el.attr('type', 'hidden');
         },
         
         getValue: function() {
@@ -825,7 +822,7 @@
          *                      or as a string of <option> HTML to insert into the <select>
          */
         renderOptions: function(options) {
-            var $select = $(this.el),
+            var $select = this.$el,
                 html;
 
             //Accept string of HTML
@@ -851,11 +848,11 @@
         },
 
         getValue: function() {
-            return $(this.el).val();
+            return this.$el.val();
         },
         
         setValue: function(value) {
-            $(this.el).val(value);
+            this.$el.val(value);
         },
 
         /**
@@ -917,11 +914,11 @@
         className: 'bbf-radio',
 
         getValue: function() {
-            return $(this.el).find('input[type=radio]:checked').val();
+            return this.$el.find('input[type=radio]:checked').val();
         },
 
         setValue: function(value) {
-            $(this.el).find('input[type=radio][value='+value+']').attr('checked', true);
+            this.$el.find('input[type=radio][value='+value+']').attr('checked', true);
         },
 
         /**
@@ -971,7 +968,7 @@
 
         getValue: function() {
             var values = [];
-            $(this.el).find('input[type=checkbox]:checked').each(function() {
+            this.$el.find('input[type=checkbox]:checked').each(function() {
                 values.push($(this).val());
             });
             return values;
@@ -980,7 +977,7 @@
         setValue: function(value) {
             var self = this;
             _.each(value, function(val) {
-                $(self.el).find('input[type=checkbox][value="'+val+'"]').attr('checked', true);
+                self.$el.find('input[type=checkbox][value="'+val+'"]').attr('checked', true);
             });
         },
 
@@ -1040,7 +1037,7 @@
         },
 
         render: function() {
-            var el = $(this.el),
+            var $el = this.$el,
                 data = this.value || {},
                 key = this.key,
                 schema = this.schema,
@@ -1053,7 +1050,7 @@
             });
 
             //Render form
-            el.html(this.form.render().el);
+            $el.html(this.form.render().el);
 
             return this;
         },
@@ -1095,8 +1092,7 @@
         },
 
         render: function() {
-            var el = $(this.el),
-                data = this.value || {},
+            var data = this.value || {},
                 key = this.key,
                 nestedModel = this.schema.model,
                 nestedModelSchema = (nestedModel).prototype.schema;
@@ -1108,7 +1104,7 @@
             });
 
             //Render form
-            el.html(this.form.render().el);
+            this.$el.html(this.form.render().el);
 
             return this;
         },
@@ -1122,7 +1118,7 @@
         commit: function() {
             var error = this.form.commit();
             if (error) {
-                $(this.el).addClass('error');
+                this.$el.addClass('error');
                 return error;
             }
 

@@ -26,11 +26,11 @@
         },
 
         render: function() {
-            var el = $(this.el);
+            var $el = this.$el;
 
-            el.html('<input>');
+            $el.html('<input>');
 
-            var input = $('input', el);
+            var input = $('input', $el);
 
             input.datepicker({
                 dateFormat: 'dd/mm/yy',
@@ -93,7 +93,7 @@
             });
 
             //Render time selects
-            $(this.el).append(this.template({
+            this.$el.append(this.template({
                 hours: hoursOptions.join(),
                 mins: minsOptions.join()
             }));
@@ -176,19 +176,18 @@
         },
 
         render: function() {
-            var el = $(this.el);
+            var $el = this.$el;
             
             //Main element
-            el.html(this.template());
+            $el.html(this.template());
             
             //Create list
             var self = this,
-                el = $(this.el),
                 data = this.value || [],
                 schema = this.schema,
                 itemToString = this.itemToString,
                 itemTemplate = this.itemTemplate,
-                listEl = $('ul', el);
+                listEl = $('ul', $el);
             
             _.each(data, function(itemData) {     
                 var text = itemToString.call(self, itemData);
@@ -213,19 +212,19 @@
                     containment: 'parent'
                 });
                 
-                el.addClass('bbf-list-sortable');
+                $el.addClass('bbf-list-sortable');
             }
 
             //jQuery UI buttonize
-            $('button.bbf-list-add', el).button({
+            $('button.bbf-list-add', $el).button({
                 text: false,
                 icons: { primary: 'ui-icon-plus' }
             });
-            $('button.bbf-list-edit', el).button({
+            $('button.bbf-list-edit', $el).button({
                 text: false,
                 icons: { primary: 'ui-icon-pencil' }
             });
-            $('button.bbf-list-del', el).button({
+            $('button.bbf-list-del', $el).button({
                 text: false,
                 icons: { primary: 'ui-icon-trash' }
             });
