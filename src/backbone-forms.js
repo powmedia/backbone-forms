@@ -224,16 +224,22 @@
                         fs = {'fields': fs};
                     }
                     
-                    var fsHtml = self.fieldsetTemplate({
-                      legend: '<legend>'+fs.legend+'</legend>',
-                      fields: self.renderFields(fs.fields)
-                    });
+                    //Concatenating HTML as strings won't work so we need to insert field elements into a placeholder
+                    var $fieldset = $(self.fieldsetTemplate({
+                      legend: (fs.legend) ? '<legend>' + fs.legend + '</legend>' : '',
+                      fields: '<div class="bbf-placeholder"></div>'
+                    }));
                     
-                    $fieldsetContainer.append(fsHtml);
+                    var $fieldsContainer = $('.bbf-placeholder', $fieldset).parent();
+                    $fieldsContainer.html('');
+                    
+                    self.renderFields(fs.fields, $fieldsContainer);
+                    
+                    $fieldsetContainer.append($fieldset);
                 });
             } else {
                 //Concatenating HTML as strings won't work so we need to insert field elements into a placeholder
-                var $fieldset = $(this.fieldsetTemplate({
+                var $fieldset = $(self.fieldsetTemplate({
                   legend: '',
                   fields: '<div class="bbf-placeholder"></div>'
                 }));
