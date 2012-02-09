@@ -1,4 +1,29 @@
 ;(function($) {
+  
+    //TEMPLATES
+    var templates = {
+      form: '\
+        <form class="bbf-form">{{fieldsets}}</form>\
+      ',
+      
+      fieldset: '\
+        <fieldset>\
+          {{legend}}\
+          <ul>{{fields}}</ul>\
+        </fieldset>\
+      ',
+      
+      field: '\
+      <li class="bbf-field bbf-field{{type}}">\
+        <label for="{{id}}" title="test">{{title}}</label>\
+        <div class="bbf-editor bbf-editor{{type}}">{{editor}}</div>\
+      </li>\
+      '
+    };
+    
+    
+    
+    //HELPERS
     
     //Support paths for nested attributes e.g. 'user.name'
     function getNested(obj, path) {
@@ -57,6 +82,31 @@
         _.templateSettings.interpolate = _interpolateBackup;
 
         return template;
+    };
+    
+    
+    /**
+     * Sets the templates to be used.
+     * 
+     * If the templates passed in are strings, they will be compiled, expecting Mustache style tags,
+     * i.e. <div>{{varName}}</div>
+     *
+     * You can also pass in previously compiled Underscore templates, in which case you can use any style
+     * tags.
+     * 
+     * @param {Object} templates
+     */
+    helpers.setTemplates = function(templates) {
+      var createTemplate = helpers.createTemplate;
+
+      _.each(templates, function(template, key, list) {
+        if (_.isString(template)) template = createTemplate(template);
+        
+        list[key] = template;
+      });
+
+      //Make active
+      Form.templates = templates;
     };
     
     
@@ -145,36 +195,10 @@
     //TEMPLATES
     //==================================================================================================
       
-    var templates = {};
-    
-    templates.form = helpers.createTemplate('\
-      <form class="bbf-form">{{fieldsets}}</form>\
-    ');
-
-    templates.fieldset = helpers.createTemplate('\
-      <fieldset>\
-        {{legend}}\
-        <ul>{{fields}}</ul>\
-      </fieldset>\
-    ');
-
-    templates.field = helpers.createTemplate('\
-    <li class="bbf-field bbf-field{{type}}">\
-      <label for="{{id}}" title="test">{{title}}</label>\
-      <div class="bbf-editor bbf-editor{{type}}">{{editor}}</div>\
-    </li>\
-    ');  
-
-    
-
     var Form = Backbone.View.extend({
         
         //Field views
         fields: null,
-        
-        template: templates.form,
-        
-        fieldsetTemplate: templates.fieldset,
 
         /**
          * @param {Object}  Options
@@ -203,12 +227,13 @@
          * Renders the form and all fields
          */
         render: function() {
-            var fieldsToRender = this.fieldsToRender,
+            var self = this,
+                fieldsToRender = this.fieldsToRender,
                 fieldsets = this.fieldsets,
-                self = this;
+                templates = Form.templates;
             
             //Create el from template
-            var $form = $(this.template({
+            var $form = $(templates.form({
               fieldsets: '<div class="bbf-placeholder"></div>'
             }));
             
@@ -224,7 +249,7 @@
                     }
                     
                     //Concatenating HTML as strings won't work so we need to insert field elements into a placeholder
-                    var $fieldset = $(self.fieldsetTemplate({
+                    var $fieldset = $(templates.fieldset({
                       legend: (fs.legend) ? '<legend>' + fs.legend + '</legend>' : '',
                       fields: '<div class="bbf-placeholder"></div>'
                     }));
@@ -238,7 +263,7 @@
                 });
             } else {
                 //Concatenating HTML as strings won't work so we need to insert field elements into a placeholder
-                var $fieldset = $(self.fieldsetTemplate({
+                var $fieldset = $(templates.fieldset({
                   legend: '',
                   fields: '<div class="bbf-placeholder"></div>'
                 }));
@@ -399,8 +424,6 @@
 
 
     var Field = Backbone.View.extend({
-      
-        template: templates.field,
 
         /**
          * @param {Object}  Options
@@ -426,7 +449,8 @@
         },
 
         render: function() {
-            var schema = this.schema;
+            var schema = this.schema,
+                templates = Form.templates;
 
             //Standard options that will go to all editors
             var options = {
@@ -446,7 +470,7 @@
             var editor = this.editor = helpers.createEditor(schema.type, options);
             
             //Create the element
-            var $field = $(this.template({
+            var $field = $(templates.field({
                 key: this.key,
                 title: schema.title,
                 id: editor.id,
@@ -1134,6 +1158,9 @@
     Form.editors = editors;
     Form.validators = validators;
     Backbone.Form = Form;
+    
+    //Make default templates active
+    helpers.setTemplates(templates);
     
     //For use in NodeJS
     if (typeof module != 'undefined') module.exports = Form
