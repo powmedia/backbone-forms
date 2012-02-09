@@ -27,7 +27,9 @@ In addition there is a separate file with editors that depend on jQuery UI:
 Installation
 ============
 
-Requires BackboneJS and jQuery.
+Dependencies:
+- [Backbone 0.9.1](http://documentcloud.github.com/backbone/)
+
 
 Include backbone-forms.js and backbone-forms.css:
 
@@ -37,6 +39,10 @@ Include backbone-forms.js and backbone-forms.css:
 Optionally, you can include the extra editors, for example those that require jQuery UI:
 
     <script src="backbone-forms/src/jquery-ui-editors.js"></script>
+    
+To use a custom template pack, e.g. Bootstrap, include the relevant file after backbone-forms.js:
+
+    <script src="backbone-forms/src/templates/bootstrap.js"></script>
 
 If you use BackboneJS with node.js, you can just `require('backbone-forms');` in your index file.
     
@@ -347,6 +353,15 @@ An array of field names (keys). Only the fields defined here will be added to th
 **`idPrefix`**
 
 A string that will be prefixed to the form DOM element IDs. Useful if you will have multiple forms on the same page. E.g. `idPrefix: 'user-'` will result in IDs like 'user-name', 'user-email', etc.
+
+
+
+Customising templates
+=====================
+
+Backbone-Forms comes with a few options for rendering HTML. To use another template pack, such as for [Bootstrap](http://twitter.github.com/bootstrap/), just include the .js file from the `templates` folder, after including `backbone-forms.js`.
+
+You can use your own custom templates by passing your templates (in Mustache syntax) into `Backbone.helpers.setTemplates()`. See the included templates files for examples.
 
 
 
