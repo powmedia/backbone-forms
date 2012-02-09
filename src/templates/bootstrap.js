@@ -13,14 +13,13 @@
 
     field: '\
       <div class="control-group">\
-          <label for="{{id}}" class="control-label">{{title}}</label>\
-          <div class="controls">\
-            <div class="input-xlarge">{{editor}}</div>\
-          </div>\
+        <label for="{{id}}" class="control-label">{{title}}</label>\
+        <div class="controls">\
+          <div class="input-xlarge">{{editor}}</div>\
+        </div>\
       </div>\
     '
   };
-  
-  //Make active
+
   Backbone.Form.helpers.setTemplates(templates);
 })();
