@@ -359,13 +359,26 @@
       
       var container = $(this.editorTemplate());
       $('.bbf-list-editor', container).html(editor.el);
-
+      
       var close = function() {
+        $(document).unbind('keydown', handleEnterPressed);
+        
         container.dialog('close');
 
         editor.remove();
         container.remove();
       };
+      
+      var saveAndClose = function() {
+        callback(editor.getValue());
+        close();
+      }
+      
+      var handleEnterPressed = function(event) {
+        if (event.keyCode != 13) return;
+        
+        saveAndClose();
+      }
 
       $(container).dialog({
         resizable:  false,
@@ -373,13 +386,13 @@
         width:      500,
         title:      data ? 'Edit item' : 'New item',
         buttons: {
-          'OK': function() {
-            callback(editor.getValue());
-            close();
-          }, 
+          'OK': saveAndClose, 
           'Cancel': close
         }
       });
+
+      //Save and close dialog on Enter keypress
+      $(document).bind('keydown', handleEnterPressed);
     },
 
     getValue: function() {
