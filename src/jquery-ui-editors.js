@@ -18,6 +18,12 @@
     initialize: function(options) {
       Base.prototype.initialize.call(this, options);
       
+      //Cast to Date
+      if (this.value && !_.isDate(this.value)) {
+        this.value = new Date(this.value);
+      }
+      
+      //Set default date
       if (!this.value) {
         var date = new Date();
         date.setSeconds(0);
