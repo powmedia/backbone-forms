@@ -1,11 +1,10 @@
-backbone-forms
-==============
+#backbone-forms
 
 A form framework for Backbone.JS applications.
 
 The following default editors are included:
 
-- Text
+- [Text](#text-editor)
 - Number
 - Password
 - TextArea
@@ -24,8 +23,7 @@ In addition there is a separate file with editors that depend on jQuery UI:
 - List (Editable and sortable. Can use any of the other editors for each item)
 
 
-Installation
-============
+#Installation
 
 Requires BackboneJS and jQuery.
 
@@ -41,8 +39,7 @@ Optionally, you can include the extra editors, for example those that require jQ
 If you use BackboneJS with node.js, you can just `require('backbone-forms');` in your index file.
     
     
-Usage
-=====
+#Usage
 
 ![Example form](http://i56.tinypic.com/a3zfyt.png)
 
@@ -89,8 +86,7 @@ To update a field after the form has been rendered, use `setValue`:
     });
 
 
-Usage without models
---------------------
+##Usage without models
 
 You can create a form without tying it to a model. For example, to create a form for a simple object of data:
 
@@ -108,11 +104,9 @@ Then instead of form.commit(), do:
     var data = form.getValue(); //Returns object with new form values
 
 
-Schema definition
-=================
+#Schema definition
 
-Main attributes
----------------
+##Main attributes
 
 For each field definition in the schema you can use the following optional attributes:
 
@@ -136,13 +130,8 @@ For each field definition in the schema you can use the following optional attri
     - **A function.** This function will be passed the value of the form, and should return a truth-y value if there is an error. This would normally be a string describing the error.
 
 
-Editor-specific attributes
---------------------------
 
-If the schema `type` is one of the following, some extra schema attributes are required:
-
-Text
-----
+##Text <a name="editor-text"/>
 
 Creates a normal text input.
 
@@ -151,8 +140,7 @@ Creates a normal text input.
 - Changes the type="text" attribute. Used for HTML5 form inputs such as `url`, ``tel`, `email`.  When viewing on a mobile device e.g. iOS, this will change the type of keyboard that is opened. For example, `tel` opens a numeric keypad.
 
 
-Select
-------
+##Select
 
 Creates and populates a &lt;select&gt; element.
 
@@ -186,18 +174,15 @@ If using a Backbone collection as the `option` attribute, models in the collecti
 
 If there are no models in the collection, it will be `fetch()`ed.
 
-Radio
------
+##Radio
 
 Creates and populates a list of radio inputs. Behaves the same way and has the same options as a `Select`.
 
-Checkboxes
-----------
+##Checkboxes
 
 Creates and populates a list of checkbox inputs. Behaves the same way and has the same options as a `Select`. To set defaults for this editor, use an array of values.
 
-Object
-------
+##Object
 
 The Object editor creates an embedded child form representing a Javascript object.
 
@@ -216,8 +201,7 @@ Examples:
     };
 
 
-NestedModel
------------
+##NestedModel
 
 Used to embed models within models.  Similar to the Object editor, but adds validation of the child form (if it is defined on the model), and keeps your schema cleaner.
 
@@ -233,8 +217,7 @@ Examples:
     };
     
 
-List
-----
+##List
 
 Creates a sortable and editable list of items, which can be any of the above schema types, e.g. Object, Number, Text etc. Currently requires jQuery UI for creating dialogs etc.
 
@@ -303,13 +286,11 @@ This allows you to run asynchronous code, for example to check with the database
     });
 
 
-Date
-----
+##Date
 
 Creates a jQuery UI datepicker
 
-DateTime
---------
+##DateTime
 
 Creates a jQuery UI datepicker and time select field.
 
@@ -319,8 +300,7 @@ Creates a jQuery UI datepicker and time select field.
 
 
 
-Form options
-============
+#Form options
 
 **`model`**
 
@@ -350,8 +330,7 @@ A string that will be prefixed to the form DOM element IDs. Useful if you will h
 
 
 
-Editors without forms
-=====================
+#Editors without forms
 
 You can add editors by themselves, without being part of a form. For example: 
 
@@ -365,8 +344,7 @@ You can add editors by themselves, without being part of a form. For example:
     select.commit();
 
 
-Custom Editors
-==============
+#Custom Editors
 
 Custom editors can be written. They must extend from Backbone.Form.editors.Base.
     
@@ -405,20 +383,19 @@ Custom editors can be written. They must extend from Backbone.Form.editors.Base.
 - The field schema can be accessed via this.schema. This allows you to pass in custom parameters.
 
 
-Initial Data
-============
+#Initial Data
 
 If a form has a model attached to it, the initial values are taken from the model's defaults. Otherwise, you may pass default values using the `schema.data`.
 
-Validation
-==========
+
+#Validation
 
 Forms provide a `validate` method, which returns a dictionary of errors, or `null`. Validation is determined using the `validators` attribute on the schema (see above).
 
 If you model provides a `validate` method, then this will be called when you call `Form.validate`. Forms are also validated when you call `commit`. See the Backbone documentation for more details on model validation.
 
-Using nested attributes/fields
-==============================
+
+#Using nested attributes/fields
 
 If you are using a schema with nested attributes (using the `Object` type), you may want to include only some of the nested fields in a form. This can be accomplished by using 'path' syntax as in the example below.
 
@@ -443,18 +420,17 @@ However, due to Backbone's lack of support for nested model attributes, getting 
     }).render();
 
 
-Known issues
-============
+#Known issues
 
 - List editor with listType NestedModel doesn't run validation
 - There may be CSS issues across browsers.  You can customise your CSS by editing the backbone-forms.css file.
 
-Help & discussion
-=================
+
+#Help & discussion
 
 - [Google Groups](http://groups.google.com/group/backbone-forms)
 
-Contributors
-============
+
+#Contributors
 
 - Charles Davison - [powmedia](http://github.com/powmedia)
