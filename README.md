@@ -4,23 +4,23 @@ A form framework for Backbone.JS applications.
 
 The following default editors are included:
 
-- [Text](#text-editor)
-- Number
-- Password
-- TextArea
-- Checkbox
-- Checkboxes
-- Hidden
-- Select
-- Radio
-- Object
-- NestedModel
+- [Text](#editor-text)
+- [Number](#editor-number)
+- [Password](#editor-password)
+- [TextArea](#editor-textarea)
+- [Checkbox](#editor-checkbox)
+- [Checkboxes](#editor-checkboxes)
+- [Hidden](#editor-hidden)
+- [Select](#editor-select)
+- [Radio](#editor-radio)
+- [Object](#editor-object)
+- [NestedModel](#editor-nestedmodel)
 
 In addition there is a separate file with editors that depend on jQuery UI:
 
-- Date
-- DateTime
-- List (Editable and sortable. Can use any of the other editors for each item)
+- [Date](#editor-date)
+- [DateTime](#editor-datetime)
+- [List](#editor-text) (Editable and sortable. Can use any of the other editors for each item)
 
 
 #Installation
@@ -130,8 +130,8 @@ For each field definition in the schema you can use the following optional attri
     - **A function.** This function will be passed the value of the form, and should return a truth-y value if there is an error. This would normally be a string describing the error.
 
 
-
-##Text <a name="editor-text"/>
+<a name="editor-text"/>
+##Text
 
 Creates a normal text input.
 
@@ -140,6 +140,7 @@ Creates a normal text input.
 - Changes the type="text" attribute. Used for HTML5 form inputs such as `url`, ``tel`, `email`.  When viewing on a mobile device e.g. iOS, this will change the type of keyboard that is opened. For example, `tel` opens a numeric keypad.
 
 
+<a name="editor-select"/>
 ##Select
 
 Creates and populates a &lt;select&gt; element.
@@ -201,6 +202,7 @@ Examples:
     };
 
 
+<a name="editor-nestedmodel"/>
 ##NestedModel
 
 Used to embed models within models.  Similar to the Object editor, but adds validation of the child form (if it is defined on the model), and keeps your schema cleaner.
@@ -217,6 +219,7 @@ Examples:
     };
     
 
+<a name="editor-list"/>
 ##List
 
 Creates a sortable and editable list of items, which can be any of the above schema types, e.g. Object, Number, Text etc. Currently requires jQuery UI for creating dialogs etc.
@@ -286,10 +289,12 @@ This allows you to run asynchronous code, for example to check with the database
     });
 
 
+<a name="editor-date"/>
 ##Date
 
 Creates a jQuery UI datepicker
 
+<a name="editor-datetime"/>
 ##DateTime
 
 Creates a jQuery UI datepicker and time select field.
