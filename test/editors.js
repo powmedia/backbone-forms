@@ -1,40 +1,5 @@
 module('Base');
 
-    test('commit()', function() {
-        var post = new Post;
-    
-        var field = new editors.Text({
-            model: post,
-            key: 'title'
-        }).render();
-    
-        //Change value
-        $(field.el).val('New Title');
-    
-        field.commit();
-    
-        equal(post.get('title'), 'New Title');
-    });
-
-    test('validate()', function() {
-        var editor = new editors.Text({
-            key: 'title',
-            validators: ['required']
-        });
-
-        ok(editor.validate());
-
-        editor.setValue('a value');
-
-        ok(_(editor.validate()).isUndefined());
-    });
-    
-    test('TODO: Test commit() validation failure', function() {
-        
-    });
-
-
-
 
 
 module('Text');

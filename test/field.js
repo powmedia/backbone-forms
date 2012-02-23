@@ -145,3 +145,36 @@ test("remove() - Removes the editor view", function() {
     //Restore remove method
     Backbone.View.prototype.remove = _remove;
 });
+
+test('commit()', function() {
+    var post = new Post;
+
+    var field = new Field({
+        model: post,
+        key: 'title'
+    }).render();
+
+    //Change value
+    field.setValue('New Title');
+
+    field.commit();
+
+    equal(post.get('title'), 'New Title');
+});
+
+test('TODO: Test commit() validation failure', function() {
+    
+});
+
+test('validate()', function() {
+    var field = new Field({
+        key: 'title',
+        validators: ['required']
+    }).render();
+
+    equal(field.validate(), 'This field is required');
+
+    field.setValue('a value');
+
+    ok(_.isUndefined(field.validate()));
+});

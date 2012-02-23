@@ -24,7 +24,7 @@
             width: 100%;
         }
 
-    .bbf-field .bbf-error {
+    .bbf-field.bbf-error .bbf-editor {
         outline: 1px solid red;
     }
 
