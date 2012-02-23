@@ -1,5 +1,39 @@
-module('Base');
+(function() {
+  module('Base');
 
+  test('commit() - sets value to model', function() {
+    var post = new Post;
+
+    var editor = new editors.Text({
+      model: post,
+      key: 'title'
+    }).render();
+
+    //Change value
+    editor.setValue('New Title');
+
+    editor.commit();
+
+    equal(post.get('title'), 'New Title');
+  });
+  
+  test('validate() - returns validation errors', function() {
+    var editor = new editors.Text({
+      key: 'title',
+      validators: ['required']
+    });
+
+    ok(editor.validate());
+
+    editor.setValue('a value');
+
+    ok(_(editor.validate()).isUndefined());
+  });
+  
+  test('TODO: Test commit() validation failure', function() {
+      
+  });
+})();
 
 
 module('Text');

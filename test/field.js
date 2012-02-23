@@ -146,35 +146,41 @@ test("remove() - Removes the editor view", function() {
     Backbone.View.prototype.remove = _remove;
 });
 
-test('commit()', function() {
-    var post = new Post;
+test('commit() - sets value to model', function() {
+  var post = new Post;
 
-    var field = new Field({
-        model: post,
-        key: 'title'
-    }).render();
+  var field = new Field({
+    model: post,
+    key: 'title'
+  }).render();
 
-    //Change value
-    field.setValue('New Title');
+  //Change value
+  field.setValue('New Title');
 
-    field.commit();
+  field.commit();
 
-    equal(post.get('title'), 'New Title');
+  equal(post.get('title'), 'New Title');
 });
 
 test('TODO: Test commit() validation failure', function() {
     
 });
 
-test('validate()', function() {
-    var field = new Field({
-        key: 'title',
-        validators: ['required']
-    }).render();
+test('validate() - sets field error class name', function() {
+  var errorClass = Form.classNames.error;
 
-    equal(field.validate(), 'required');
-
-    field.setValue('a value');
-
-    ok(_.isUndefined(field.validate()));
+  var field = new Field({
+    key: 'title',
+    schema: { validators: ['required'] }
+  }).render();
+  
+  //Has error class when invalid
+  field.setValue(null);
+  equal(field.validate(), 'required');
+  ok($(field.el).hasClass(errorClass));
+  
+  //Doesn't have error class when valid
+  field.setValue('Title');
+  equal(field.validate(), undefined);
+  equal($(field.el).hasClass(errorClass), false);
 });

@@ -462,7 +462,6 @@
       this.value = options.value;
       this.model = options.model;
       this.idPrefix = options.idPrefix || '';
-      this.validators = options.validators || this.schema.validators;
 
       //Set schema defaults
       var schema = this.schema;
@@ -514,26 +513,11 @@
      * Check the validity of the field
      * @return {String}
      */
-    validate: function() {    
+    validate: function() {
       var $el = this.$el,
-          error = null,
-          value = this.getValue(),
-          validators = this.validators,
           errClass = Form.classNames.error;
-
-      if (validators) {
-        _(validators).each(function(validator) {
-          if (!error) {
-            error = helpers.getValidator(validator)(value);
-          }
-        });
-      }
-
-      if (!error && this.model && this.model.validate) {
-        var change = {};
-        change[this.key] = value;
-        error = this.model.validate(change);
-      }
+      
+      var error = this.editor.validate();
 
       if (error) {
         $el.addClass(errClass);
@@ -548,16 +532,7 @@
      * Update the model with the new value from the editor
      */
     commit: function() {
-      var error = null;
-      var change = {};
-      change[this.key] = this.editor.getValue();
-      this.model.set(change, {
-        error: function(model, e) {
-          error = e;
-        }
-      });
-
-      return error;
+      return this.editor.commit();
     },
 
     /**
@@ -629,6 +604,7 @@
       if (this.value === undefined) this.value = this.defaultValue;
 
       this.schema = options.schema || {};
+      this.validators = options.validators || this.schema.validators;
     },
 
     getValue: function() {
@@ -637,6 +613,54 @@
     
     setValue: function() {
       throw 'Not implemented. Extend and override this method.';
+    },
+    
+    /**
+     * Update the model with the current value
+     * NOTE: The method is defined on the editors so that they can be used independently of fields
+     *
+     * @return {Mixed} error
+     */
+    commit: function() {
+      var error = null;
+      var change = {};
+      change[this.key] = this.getValue();
+      this.model.set(change, {
+        error: function(model, e) {
+          error = e;
+        }
+      });
+
+      return error;
+    },
+    
+    /**
+     * Check validity
+     * NOTE: The method is defined on the editors so that they can be used independently of fields
+     * 
+     * @return {String}
+     */
+    validate: function() {    
+      var $el = this.$el,
+          error = null,
+          value = this.getValue(),
+          validators = this.validators;
+
+      if (validators) {
+        _(validators).each(function(validator) {
+          if (!error) {
+            error = helpers.getValidator(validator)(value);
+          }
+        });
+      }
+
+      if (!error && this.model && this.model.validate) {
+        var change = {};
+        change[this.key] = value;
+        error = this.model.validate(change);
+      }
+
+      return error;
     }
 
   });
