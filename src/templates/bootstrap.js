@@ -20,6 +20,10 @@
       </div>\
     '
   };
+  
+  var classNames = {
+    error: 'error'
+  };
 
-  Backbone.Form.helpers.setTemplates(templates);
+  Backbone.Form.helpers.setTemplates(templates, classNames);
 })();
