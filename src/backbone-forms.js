@@ -46,7 +46,6 @@
   }
   
   var helpers = {};
-  var validators = {};
   
   /**
    * This function is used to transform the key from a schema into the title used in a label.
@@ -187,11 +186,17 @@
     }
   };
 
+
+  
+  //==================================================================================================
+  //VALIDATORS
+  //==================================================================================================
+  
+  var validators = {};
+  
   validators.required = function (value) {
-    var exists = (value === 0 || !!value);
-    if (!exists) {
-      return 'This field is required';
-    }
+    if (value === null || value === undefined) return 'required';
+    if (value === '') return 'required';
   };
 
 
