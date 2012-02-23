@@ -24,6 +24,10 @@
     '
   };
   
+  var classNames = {
+    error: 'bbf-error'
+  };
+  
   
   
   //==================================================================================================
@@ -99,10 +103,12 @@
    * tags.
    * 
    * @param {Object} templates
+   * @param {Object} classNames
    */
-  helpers.setTemplates = function(templates) {
+  helpers.setTemplates = function(templates, classNames) {
     var createTemplate = helpers.createTemplate;
-
+    
+    //Compile templates if necessary
     _.each(templates, function(template, key, list) {
       if (_.isString(template)) template = createTemplate(template);
       
@@ -111,6 +117,7 @@
 
     //Make active
     Form.templates = templates;
+    Form.classNames = classNames;
   };
   
   
@@ -455,6 +462,7 @@
       this.value = options.value;
       this.model = options.model;
       this.idPrefix = options.idPrefix || '';
+      this.validators = options.validators || this.schema.validators;
 
       //Set schema defaults
       var schema = this.schema;
@@ -501,19 +509,55 @@
 
       return this;
     },
-
+    
     /**
-     * Validate the value from the editor
+     * Check the validity of the field
+     * @return {String}
      */
-    validate: function() {
-      return this.editor.validate();
+    validate: function() {    
+      var $el = this.$el,
+          error = null,
+          value = this.getValue(),
+          validators = this.validators,
+          errClass = Form.classNames.error;
+
+      if (validators) {
+        _(validators).each(function(validator) {
+          if (!error) {
+            error = helpers.getValidator(validator)(value);
+          }
+        });
+      }
+
+      if (!error && this.model && this.model.validate) {
+        var change = {};
+        change[this.key] = value;
+        error = this.model.validate(change);
+      }
+
+      if (error) {
+        $el.addClass(errClass);
+      } else {
+        $el.removeClass(errClass);
+      }
+
+      return error;
     },
 
     /**
      * Update the model with the new value from the editor
      */
     commit: function() {
-      return this.editor.commit();
+      var error = null;
+      var change = {};
+      change[this.key] = this.editor.getValue();
+      this.model.set(change, {
+        error: function(model, e) {
+          error = e;
+        }
+      });
+
+      return error;
     },
 
     /**
@@ -532,6 +576,8 @@
     },
 
     logValue: function() {
+      if (!console || !console.log) return;
+      
       console.log(this.getValue());
     },
 
@@ -583,7 +629,6 @@
       if (this.value === undefined) this.value = this.defaultValue;
 
       this.schema = options.schema || {};
-      this.validators = options.validators || this.schema.validators;
     },
 
     getValue: function() {
@@ -592,55 +637,6 @@
     
     setValue: function() {
       throw 'Not implemented. Extend and override this method.';
-    },
-
-    /**
-     * Check the validity of a particular field
-     */
-    validate: function () {
-      var $el = this.$el,
-          error = null,
-          value = this.getValue();
-
-      if (this.validators) {
-        _(this.validators).each(function(validator) {
-          if (!error) {
-            error = helpers.getValidator(validator)(value);
-          }
-        });
-      }
-
-      if (!error && this.model && this.model.validate) {
-        var change = {};
-        change[this.key] = value;
-        error = this.model.validate(change);
-      }
-
-      if (error) {
-        $el.addClass('bbf-error');
-      } else {
-        $el.removeClass('bbf-error');
-      }
-
-      return error;
-    },
-
-    /**
-     * Update the model with the new value from the editor
-     *
-     * @return {Error|null} Validation error or null
-     */
-    commit: function() {
-      var error = null;
-      var change = {};
-      change[this.key] = this.getValue();
-      this.model.set(change, {
-        error: function(model, e) {
-          error = e;
-        }
-      });
-
-      return error;
     }
 
   });
@@ -1187,7 +1183,7 @@
   Backbone.Form = Form;
   
   //Make default templates active
-  helpers.setTemplates(templates);
+  helpers.setTemplates(templates, classNames);
   
   //For use in NodeJS
   if (typeof module != 'undefined') module.exports = Form
