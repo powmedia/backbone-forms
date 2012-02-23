@@ -195,8 +195,10 @@
   var validators = {};
   
   validators.required = function (value) {
-    if (value === null || value === undefined) return 'required';
-    if (value === '') return 'required';
+    var err = 'required';
+    
+    if (value === null || value === undefined) return err;
+    if (value === '') return err;
   };
 
 
