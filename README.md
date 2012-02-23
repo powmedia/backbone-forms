@@ -1,6 +1,7 @@
 #backbone-forms
 
 A form framework for Backbone.JS applications.
+Requires Backbone v0.5.1
 
 The following default editors are included:
 
