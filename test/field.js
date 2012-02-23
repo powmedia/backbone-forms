@@ -172,7 +172,7 @@ test('validate()', function() {
         validators: ['required']
     }).render();
 
-    equal(field.validate(), 'This field is required');
+    equal(field.validate(), 'required');
 
     field.setValue('a value');
 
