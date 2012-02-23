@@ -361,7 +361,7 @@ Customising templates
 
 Backbone-Forms comes with a few options for rendering HTML. To use another template pack, such as for [Bootstrap](http://twitter.github.com/bootstrap/), just include the .js file from the `templates` folder, after including `backbone-forms.js`.
 
-You can use your own custom templates by passing your templates (in Mustache syntax) into `Backbone.helpers.setTemplates()`. See the included templates files for examples.
+You can use your own custom templates by passing your templates (in Mustache syntax) and class names into `Backbone.helpers.setTemplates()`. See the included templates files for examples.
 
 
 
