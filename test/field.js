@@ -94,21 +94,22 @@ test("'idPrefix' option - Specifies editor's DOM element ID prefix", function() 
 });
 
 
+test("commit() - Calls editor commit", function() {
+  expect(1);
+  
+  var field = new Field({
+    key: 'title'
+  }).render();
+  
+  //Mock
+  var called = false;
+  field.editor.commit = function() {
+    called = true;
+  };
 
-test("commit() - Updates the given model with the new value", function() {
-    var post = new Post({ title: 'Initial Title' });
-    
-    var field = new Field({
-        model: post,
-        key: 'title'
-    }).render();
-    
-    //Change field value
-    $('#title', field.el).val('New Title');
-    
-    field.commit();
-    
-    equal(post.get('title'), 'New Title');
+  field.commit();
+  
+  ok(called, 'Called editor.commit');
 });
 
 test("getValue() - Returns the new value", function() {
@@ -173,7 +174,63 @@ test('commit() - sets value to model', function() {
   equal(post.get('title'), 'New Title');
 });
 
-test('validate() - sets field error class name', function() {
+test('validate() - calls setError if validation fails', function() {
+  expect(3);
+
+  var field = new Field({
+    key: 'title',
+    schema: { validators: ['required'] }
+  }).render();
+  
+  //Mocks
+  var calledSetError = false,
+      errMsg = null;
+      
+  field.setError = function(msg) {
+    calledSetError = true;
+    errMsg = msg;
+  }
+  
+  //Make validation fail
+  field.setValue(null);
+  var err = field.validate();
+  
+  //Test
+  ok(calledSetError, 'calledSetError');
+  deepEqual(err, {
+    type: 'required',
+    message: 'Required'
+  });
+  equal(errMsg, err.message);
+});
+
+test('validate() - calls clearError if validation passes', function() {
+  expect(1);
+
+  var field = new Field({
+    key: 'title',
+    schema: { validators: ['required'] }
+  }).render();
+  
+  //Trigger error to appear
+  field.setValue(null);
+  field.validate();
+  
+  //Mocks
+  var calledClearError = false;
+  field.clearError = function(msg) {
+    calledClearError = true;
+  }
+  
+  //Trigger validation to pass
+  field.setValue('ok');
+  field.validate();
+  
+  //Test
+  ok(calledClearError, 'calledClearError');
+});
+
+test('setError() - sets field error class name and error message', function() {
   var errorClass = Form.classNames.error;
 
   var field = new Field({
@@ -181,45 +238,26 @@ test('validate() - sets field error class name', function() {
     schema: { validators: ['required'] }
   }).render();
   
-  //Has error class when invalid
-  field.setValue(null);
-  ok(field.validate());
+  field.setError('foo');
   ok($(field.el).hasClass(errorClass));
-  
-  //Doesn't have error class when valid
-  field.setValue('Title');
-  equal(field.validate(), undefined);
-  equal($(field.el).hasClass(errorClass), false);
+  equal(field.$help.html(), 'foo');
 });
 
-test('validate() - sets error message on help field', function() {
-  var field = new Field({
-    key: 'title',
-    schema: { validators: ['required'] }
-  }).render();
+test('clearError() - clears error class and resets help message', function() {
+  var errorClass = Form.classNames.error;
   
-  //Trigger error message
-  field.setValue(null);
-  field.validate();
-  
-  //Test
-  equal(field.$help.html(), 'Required');
-});
-
-test('validate() - resets help message when error has been fixed', function() {
   var field = new Field({
     key: 'email',
     schema: { validators: ['email'], help: 'Help message' }
   }).render();
   
   //Trigger error message
-  field.setValue('invalid');
-  field.validate();
+  field.setError('foo')
   
   //Clear error message
-  field.setValue('email@example.com');
-  field.validate();
+  field.clearError();
   
   //Test
+  equal($(field.el).hasClass(errorClass), false);
   equal(field.$help.html(), 'Help message');
 });

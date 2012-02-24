@@ -1,5 +1,20 @@
 (function() {
   module('Base');
+  
+  test('commit() - returns validation errors', function() {
+    var editor = new editors.Text({
+      model: new Post,
+      key: 'title',
+      validators: ['required']
+    }).render();
+    
+    editor.setValue(null);
+    
+    var err = editor.commit();
+    
+    equal(err.type, 'required');
+    equal(err.message, 'Required');
+  });
 
   test('commit() - sets value to model', function() {
     var post = new Post;
@@ -17,6 +32,23 @@
     equal(post.get('title'), 'New Title');
   });
   
+  test('commit() - returns model validation errors', function() {
+    var post = new Post;
+    
+    post.validate = function() {
+      return 'ERROR';
+    };
+
+    var editor = new editors.Text({
+      model: post,
+      key: 'title'
+    }).render();
+    
+    var err = editor.commit();
+    
+    equal(err, 'ERROR');
+  });
+  
   test('validate() - returns validation errors', function() {
     var editor = new editors.Text({
       key: 'title',
@@ -28,10 +60,6 @@
     editor.setValue('a value');
 
     ok(_(editor.validate()).isUndefined());
-  });
-  
-  test('TODO: Test commit() validation failure', function() {
-      
   });
 })();
 

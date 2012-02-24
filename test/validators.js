@@ -30,12 +30,14 @@
 
   module('regexp')
   
-  var fn = Form.validators.regexp()
+  var fn = Form.validators.regexp({
+    regexp: /foo/
+  });
 
   test('passes empty values', function() {
-    equal(fn('', { regexp: /foo/ }), undefined)
-    equal(fn(null, { regexp: /foo/ }), undefined)
-    equal(fn(undefined, { regexp: /foo/ }), undefined)
+    equal(fn(''), undefined)
+    equal(fn(null), undefined)
+    equal(fn(undefined), undefined)
   })
 
 })();
