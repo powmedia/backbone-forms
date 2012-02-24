@@ -112,43 +112,54 @@ module('triggerCancellableEvent');
 })();
 
 
-module('getValidator');
 
 (function() {
+  
+  module('getValidator');
+  
+  var getValidator = Form.helpers.getValidator;
 
-    test('Bundled validator', function() {
-        var validator = Form.helpers.getValidator('required');
+  test('Given a string, a bundled validator is returned', function() {
+    var required = getValidator('required'),
+        email = getValidator('email');
+    
+    equal(required(null).type, 'required');
+    equal(email('invalid').type, 'email');
+  });
+  
+  test('Given a string, throws if the bundled validator is not found', function() {
+    expect(1);
+    
+    try {
+      getValidator('unknown validator');
+    } catch (e) {
+      equal(e.message, 'Validator "unknown validator" not found');
+    }
+  });
 
-        equal(validator, Form.validators.required);
-    });
+  test('Given a regular expression, returns a regexp validator', function() {
+    var regexp = getValidator(/hello/);
+    
+    equal(regexp('invalid').type, 'regexp');
+  });
 
-    test('Regular Expressions', function() {
-        var validator = Form.helpers.getValidator(/hello/);
-        var validator2 = Form.helpers.getValidator({'RegExp': 'another'});
+  test('Given a function, it is returned', function () {
+    var myValidator = function () { return; };
 
-        ok(_(validator('hellooooo')).isUndefined());
-        ok(validator('bye!'));
+    var validator = getValidator(myValidator);
 
-        ok(validator2('this is a test'));
-        ok(_(validator2('this is another test')).isUndefined());
-    });
+    equal(validator, myValidator);
+  });
 
-    test('Function', function () {
-        var myValidator = function () { return; };
-
-        var validator = Form.helpers.getValidator(myValidator);
-
-        equal(validator, myValidator);
-    });
-
-    test('Unknown', function () {
-        raises(function() {
-            Form.helpers.getValidator('unknown validator');
-        }, /not found/i);
-        raises(function() {
-            Form.helpers.getValidator(['this is a list', 'not a validator']);
-        }, /could not process/i);
-    });
+  test('Given an unknown type, an error is thrown', function () {
+    expect(1);
+    
+    try {
+      getValidator(['array']);
+    } catch (e) {
+      equal(e.message, 'Invalid validator: array');
+    }
+  });
 
 })();
 

@@ -168,29 +168,31 @@
     
     fn.apply(context, args);
   }
-
+  
+  /**
+   * Returns a validation function based on the type defined in the schema
+   *
+   * @param {RegExp|String|Function} validator
+   * @return {Function}
+   */
   helpers.getValidator = function(validator) {
-    var isRegExp = _(validator).isRegExp();
-    if (isRegExp || validator['RegExp']) {
-      if (!isRegExp) {
-        validator = new RegExp(validator['RegExp']);
-      }
-      return function (value) {
-        if (!validator.test(value)) {
-          return 'Value '+value+' does not pass validation against regular expression '+validator;
-        }
-      };
-    } else if (_(validator).isString()) {
-      if (validators[validator]) {
-        return validators[validator];
-      } else {
-        throw 'Validator "'+validator+'" not found';
-      }
-    } else if (_(validator).isFunction()) {
-      return validator;
-    } else {
-      throw 'Could not process validator' + validator;
+    //Convert regular expressions to validators
+    if (_.isRegExp(validator)) {
+      return validators.regexp({ regexp: validator });
     }
+    
+    //Use a built-in validator if given a string
+    if (_.isString(validator)) {
+      if (!validators[validator]) throw new Error('Validator "'+validator+'" not found');
+      
+      return validators[validator]();
+    }
+    
+    //Functions can be used directly
+    if (_.isFunction(validator)) return validator;
+    
+    //Unkown validator type
+    throw new Error('Invalid validator: ' + validator);
   };
 
 
@@ -201,42 +203,130 @@
   
   var validators = {};
   
-  validators.required = function (value) {
-    var errMsg = 'required';
+  validators.required = function(options) {   
+    options = _.extend({
+      type: 'required',
+      message: 'Required'
+    }, options);
     
-    if (value === null || value === undefined || value === '') return errMsg;
+    var err = {
+      type: options.type,
+      message: options.message
+    };
+     
+    return function required(value) {
+      if (value === null || value === undefined || value === '') return err;
+    };
   };
   
-  validators.regexp = function(value, options) {
-    var options = options || {},
-        errMsg = options.message || 'regexp',
-        regexp = options.regexp;
-        
-    if (!regexp) throw new Error('Missing required "regexp" option for "regexp" validator');
+  validators.regexp = function(options) {
+    options = _.extend({
+      type: 'regexp',
+      message: 'Invalid'
+    }, options);
     
-    //Don't check empty values (add a 'required' validator for this)
-    if (value === null || value === undefined || value === '') return;
+    if (!options.regexp) throw new Error('Missing required "regexp" option for "regexp" validator');
     
-    if (!regexp.test(value)) return errMsg;
+    var err = {
+      type: options.type,
+      message: options.message
+    };
+    
+    return function regexp(value) {
+      //Don't check empty values (add a 'required' validator for this)
+      if (value === null || value === undefined || value === '') return;
+
+      if (!options.regexp.test(value)) return err;
+    };
   };
   
-  validators.email = function(value, options) {
-    var config = _.extend({
-      message: 'email',
+  validators.email = function(options) {
+    options = _.extend({
+      type: 'email',
+      message: 'Invalid email address',
       regexp: /^[\w\-]{1,}([\w\-.]{1,1}[\w\-]{1,}){0,}[@][\w\-]{1,}([.]([\w\-]{1,})){1,3}$/
     }, options);
     
-    return validators.regexp(value, config);
+    return validators.regexp(options);
   };
   
-  validators.url = function(value, options) {
-    var config = _.extend({
-      message: 'url',
+  validators.url = function(options) {
+    options = _.extend({
+      type: 'url',
+      message: 'Invalid URL',
       regexp: /^(http|https):\/\/(([A-Z0-9][A-Z0-9_-]*)(\.[A-Z0-9][A-Z0-9_-]*)+)(:(\d+))?\/?/i
     }, options);
     
-    return validators.regexp(value, config);
+    return validators.regexp(options);
   };
+  
+  /*
+
+    validators.required = {
+      message: 'Required',
+      
+      fn: function required(value, options) {
+        options = options || {};
+
+        var err = {
+          type: 'required',
+          message: options.message || this.message
+        };
+
+        if (value === null || value === undefined || value === '') return err;
+      }
+    }
+    
+    validators.regexp = {
+      message: 'Invalid',
+      
+      fn: function regexp(value, options) {
+        options = options || {};
+
+        var err = {
+          type: options.type || 'regexp',
+          message: options.message || this.message
+        };
+
+        var regexp = options.regexp;
+
+        if (!regexp) throw new Error('Missing required "regexp" option for "regexp" validator');
+
+        //Don't check empty values (add a 'required' validator for this)
+        if (value === null || value === undefined || value === '') return;
+
+        if (!regexp.test(value)) return err;
+      }
+    }
+    
+    validators.email = {
+      message: 'Invalid email address',
+      
+      fn: function email(value, options) {
+        var config = _.extend({
+          type: 'email', 
+          message: options.message || this.message,
+          regexp: /^[\w\-]{1,}([\w\-.]{1,1}[\w\-]{1,}){0,}[@][\w\-]{1,}([.]([\w\-]{1,})){1,3}$/
+        }, options);
+
+        return validators.regexp(value, config);
+      }
+    }
+    
+    validators.url = {
+      message: 'Invalid URL',
+      
+      fn: function url(value, options) {
+        var config = _.extend({
+          type: 'url',
+          message: 'Invalid URL',
+          regexp: /^(http|https):\/\/(([A-Z0-9][A-Z0-9_-]*)(\.[A-Z0-9][A-Z0-9_-]*)+)(:(\d+))?\/?/i
+        }, options);
+
+        return validators.regexp(value, config);
+      }
+    }
+    */
   
 
 

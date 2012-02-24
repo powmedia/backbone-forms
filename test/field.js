@@ -176,7 +176,7 @@ test('validate() - sets field error class name', function() {
   
   //Has error class when invalid
   field.setValue(null);
-  equal(field.validate(), 'required');
+  ok(field.validate());
   ok($(field.el).hasClass(errorClass));
   
   //Doesn't have error class when valid

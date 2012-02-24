@@ -2,16 +2,15 @@
 
   module('required')
   
-  var required = Form.validators.required,
-      errMsg = 'required'
+  var required = Form.validators.required()
 
   test('error if field is null or undefined', function() {
-    equal(required(null), errMsg)
-    equal(required(), errMsg)
+    ok(required(null))
+    ok(required())
   })
   
   test('error if field is empty string', function() {
-    equal(required(''), errMsg)
+    ok(required(''))
     equal(required('test', undefined))
   })
   
@@ -31,8 +30,7 @@
 
   module('regexp')
   
-  var fn = Form.validators.regexp,
-      errMsg = 'regexp'
+  var fn = Form.validators.regexp()
 
   test('passes empty values', function() {
     equal(fn('', { regexp: /foo/ }), undefined)
@@ -46,8 +44,7 @@
 ;(function() {
   module('email')
   
-  var fn = Form.validators.email,
-      errMsg = 'email'
+  var fn = Form.validators.email()
   
   test('passes empty values', function() {
     equal(fn('', { regexp: /foo/ }), undefined)
@@ -56,12 +53,12 @@
   })
   
   test('accepts valid emails', function() {
-    equal(fn('invalid'), errMsg)
-    equal(fn('email@example'), errMsg)
-    equal(fn('foo/bar@example.com'), errMsg)
-    equal(fn('foo?bar@example.com'), errMsg)
-    equal(fn('foo@exa#mple.com'), errMsg)
-    equal(fn(234), errMsg)
+    ok(fn('invalid'))
+    ok(fn('email@example'))
+    ok(fn('foo/bar@example.com'))
+    ok(fn('foo?bar@example.com'))
+    ok(fn('foo@exa#mple.com'))
+    ok(fn(234))
   })
   
   test('fails invalid emails', function() {
@@ -77,8 +74,7 @@
 ;(function() {
   module('url')
   
-  var fn = Form.validators.url,
-      errMsg = 'url'
+  var fn = Form.validators.url()
   
   test('passes empty values', function() {
     equal(fn('', { regexp: /foo/ }), undefined)
@@ -87,12 +83,12 @@
   })
   
   test('accepts valid urls', function() {
-    equal(fn('invalid'), errMsg)
-    equal(fn('example.com'), errMsg)
-    equal(fn('www.example.com'), errMsg)
-    equal(fn('htp://example.com'), errMsg)
-    equal(fn('http://example'), errMsg)
-    equal(fn(234), errMsg)
+    ok(fn('invalid'))
+    ok(fn('example.com'))
+    ok(fn('www.example.com'))
+    ok(fn('htp://example.com'))
+    ok(fn('http://example'))
+    ok(fn(234))
   })
   
   test('fails invalid url', function() {
