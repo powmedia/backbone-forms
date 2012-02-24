@@ -202,11 +202,34 @@
   var validators = {};
   
   validators.required = function (value) {
-    var err = 'required';
+    var errMsg = 'required';
     
-    if (value === null || value === undefined) return err;
-    if (value === '') return err;
+    if (value === null || value === undefined) return errMsg;
+    if (value === '') return errMsg;
   };
+  
+  validators.email = function(value) {
+    var errMsg = 'email',
+        regexp = /^[\w\-]{1,}([\w\-.]{1,1}[\w\-]{1,}){0,}[@][\w\-]{1,}([.]([\w\-]{1,})){1,3}$/;
+    
+    if (value === '') return;
+    
+    if (!_.isString(value)) return errMsg;
+        
+    if (!value.match(regexp)) return errMsg;
+  };
+  
+  validators.url = function(value) {
+    var errMsg = 'url',
+        regexp = /^(http|https):\/\/(([A-Z0-9][A-Z0-9_-]*)(\.[A-Z0-9][A-Z0-9_-]*)+)(:(\d+))?\/?/i;
+    
+    if (value === '') return;
+    
+    if (!_.isString(value)) return errMsg;
+        
+    if (!value.match(regexp)) return errMsg;
+  };
+  
 
 
 
