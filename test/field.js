@@ -56,6 +56,15 @@ test("'schema.title' option - Defaults to formatted version of 'key' option", fu
     equal($('label', field.el).html(), 'Camel Cased Title');
 });
 
+test("'schema.help' option - Specifies help text", function() {
+  var field = new Field({
+    key: 'title',
+    schema: { help: 'Some new help text' }
+  }).render();
+  
+  equal($('.bbf-help', field.el).html(), 'Some new help text');
+});
+
 test("'model' option - Populates the field with the given 'key' option from the model", function() {
     var field = new Field({
         model: new Post,
@@ -83,6 +92,8 @@ test("'idPrefix' option - Specifies editor's DOM element ID prefix", function() 
     
     equal($('#prefix_title', field.el).length, 1);
 });
+
+
 
 test("commit() - Updates the given model with the new value", function() {
     var post = new Post({ title: 'Initial Title' });

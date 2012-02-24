@@ -20,6 +20,7 @@
     <li class="bbf-field bbf-field{{type}}">\
       <label for="{{id}}" title="test">{{title}}</label>\
       <div class="bbf-editor bbf-editor{{type}}">{{editor}}</div>\
+      <div class="bbf-help">{{help}}</div>\
     </li>\
     '
   };
@@ -266,74 +267,6 @@
     
     return validators.regexp(options);
   };
-  
-  /*
-
-    validators.required = {
-      message: 'Required',
-      
-      fn: function required(value, options) {
-        options = options || {};
-
-        var err = {
-          type: 'required',
-          message: options.message || this.message
-        };
-
-        if (value === null || value === undefined || value === '') return err;
-      }
-    }
-    
-    validators.regexp = {
-      message: 'Invalid',
-      
-      fn: function regexp(value, options) {
-        options = options || {};
-
-        var err = {
-          type: options.type || 'regexp',
-          message: options.message || this.message
-        };
-
-        var regexp = options.regexp;
-
-        if (!regexp) throw new Error('Missing required "regexp" option for "regexp" validator');
-
-        //Don't check empty values (add a 'required' validator for this)
-        if (value === null || value === undefined || value === '') return;
-
-        if (!regexp.test(value)) return err;
-      }
-    }
-    
-    validators.email = {
-      message: 'Invalid email address',
-      
-      fn: function email(value, options) {
-        var config = _.extend({
-          type: 'email', 
-          message: options.message || this.message,
-          regexp: /^[\w\-]{1,}([\w\-.]{1,1}[\w\-]{1,}){0,}[@][\w\-]{1,}([.]([\w\-]{1,})){1,3}$/
-        }, options);
-
-        return validators.regexp(value, config);
-      }
-    }
-    
-    validators.url = {
-      message: 'Invalid URL',
-      
-      fn: function url(value, options) {
-        var config = _.extend({
-          type: 'url',
-          message: 'Invalid URL',
-          regexp: /^(http|https):\/\/(([A-Z0-9][A-Z0-9_-]*)(\.[A-Z0-9][A-Z0-9_-]*)+)(:(\d+))?\/?/i
-        }, options);
-
-        return validators.regexp(value, config);
-      }
-    }
-    */
   
 
 
@@ -624,13 +557,19 @@
         title: schema.title,
         id: editor.id,
         type: schema.type,
-        editor: '<div class="bbf-placeholder"></div>'
+        editor: '<span class="bbf-placeholder-editor"></span>',
+        help: '<span class="bbf-placeholder-help"></span>'
       }));
       
-      var $editorContainer = $('.bbf-placeholder', $field).parent();
-      $editorContainer.html('');
-      
+      //Render editor
+      var $editorContainer = $('.bbf-placeholder-editor', $field).parent();
+      $editorContainer.empty();
       $editorContainer.append(editor.render().el);
+      
+      //Set help text
+      var $help = $('.bbf-placeholder-help', $field).parent();
+      $help.empty();
+      if (this.schema.help) $help.html(this.schema.help);
       
       this.setElement($field);
 

@@ -13,9 +13,10 @@
 
     field: '\
       <div class="control-group">\
-        <label for="{{id}}" class="control-label">{{title}}</label>\
+        <label class="control-label" for="{{id}}">{{title}}</label>\
         <div class="controls">\
           <div class="input-xlarge">{{editor}}</div>\
+          <div class="help-block">{{help}}</div>\
         </div>\
       </div>\
     '

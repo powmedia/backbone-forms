@@ -15,6 +15,7 @@
       <div>\
         <label for="{{id}}">{{title}}</label>\
         <div>{{editor}}</div>\
+        <div>{{help}}</div>\
       </div>\
     '
   };
