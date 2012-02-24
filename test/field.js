@@ -173,10 +173,6 @@ test('commit() - sets value to model', function() {
   equal(post.get('title'), 'New Title');
 });
 
-test('TODO: Test commit() validation failure', function() {
-    
-});
-
 test('validate() - sets field error class name', function() {
   var errorClass = Form.classNames.error;
 
@@ -194,4 +190,36 @@ test('validate() - sets field error class name', function() {
   field.setValue('Title');
   equal(field.validate(), undefined);
   equal($(field.el).hasClass(errorClass), false);
+});
+
+test('validate() - sets error message on help field', function() {
+  var field = new Field({
+    key: 'title',
+    schema: { validators: ['required'] }
+  }).render();
+  
+  //Trigger error message
+  field.setValue(null);
+  field.validate();
+  
+  //Test
+  equal(field.$help.html(), 'Required');
+});
+
+test('validate() - resets help message when error has been fixed', function() {
+  var field = new Field({
+    key: 'email',
+    schema: { validators: ['email'], help: 'Help message' }
+  }).render();
+  
+  //Trigger error message
+  field.setValue('invalid');
+  field.validate();
+  
+  //Clear error message
+  field.setValue('email@example.com');
+  field.validate();
+  
+  //Test
+  equal(field.$help.html(), 'Help message');
 });

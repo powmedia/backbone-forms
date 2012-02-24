@@ -567,9 +567,9 @@
       $editorContainer.append(editor.render().el);
       
       //Set help text
-      var $help = $('.bbf-placeholder-help', $field).parent();
-      $help.empty();
-      if (this.schema.help) $help.html(this.schema.help);
+      this.$help = $('.bbf-placeholder-help', $field).parent();
+      this.$help.empty();
+      if (this.schema.help) this.$help.html(this.schema.help);
       
       this.setElement($field);
 
@@ -582,14 +582,22 @@
      */
     validate: function() {
       var $el = this.$el,
+          $help = this.$help,
           errClass = Form.classNames.error;
       
       var error = this.editor.validate();
 
       if (error) {
         $el.addClass(errClass);
+        $help.html(error.message);
       } else {
         $el.removeClass(errClass);
+        
+        $help.empty();
+        
+        //Reset help text if available
+        var helpMsg = this.schema.help;
+        if (helpMsg) $help.html(helpMsg);
       }
 
       return error;
