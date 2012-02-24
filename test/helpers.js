@@ -136,6 +136,22 @@ module('triggerCancellableEvent');
       equal(e.message, 'Validator "unknown validator" not found');
     }
   });
+  
+  test('Given an object, a customised bundled validator is returned', function() {
+    //Can customise error message
+    var required = getValidator({ type: 'required', message: 'Custom message' });
+    
+    var err = required('');
+    equal(err.type, 'required');
+    equal(err.message, 'Custom message');
+    
+    //Can customise options on certain validators
+    var regexp = getValidator({ type: 'regexp', regexp: /foobar/, message: 'Must include "foobar"' });
+    
+    var err = regexp('invalid');
+    equal(err.type, 'regexp');
+    equal(err.message, 'Must include "foobar"');
+  });
 
   test('Given a regular expression, returns a regexp validator', function() {
     var regexp = getValidator(/hello/);

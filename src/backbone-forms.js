@@ -187,9 +187,16 @@
       
       return validators[validator]();
     }
-    
+
     //Functions can be used directly
     if (_.isFunction(validator)) return validator;
+
+    //Use a customised built-in validator if given an object
+    if (_.isObject(validator) && validator.type) {
+      var config = validator;
+      
+      return validators[config.type](config);
+    }
     
     //Unkown validator type
     throw new Error('Invalid validator: ' + validator);
