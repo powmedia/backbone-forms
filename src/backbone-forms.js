@@ -412,7 +412,8 @@
      * @return {Object} Validation errors
      */
     validate: function() {
-      var fields = this.fields,
+      var self = this,
+          fields = this.fields,
           model = this.model,
           errors = {};
 
@@ -426,7 +427,35 @@
 
       //Get errors from default Backbone model validator
       if (model && model.validate) {
-        //TODO
+        var modelErrors = model.validate(this.getValue());
+        
+        if (modelErrors) {
+          var isDictionary = _.isObject(modelErrors) && !_.isArray(modelErrors);
+          
+          //If errors are not in object form then just store on the error object
+          if (!isDictionary) {
+            errors._others = errors._others || [];
+            errors._others.push(modelErrors);
+          }
+          
+          //Merge programmatic errors (requires model.validate() to return an object e.g. { fieldKey: 'error' })
+          if (isDictionary) {
+            _.each(modelErrors, function(val, key) {
+              //Set error on field if there isn't one already
+              if (self.fields[key] && !errors[key]) {
+                self.fields[key].setError(val);
+              }
+              
+              else {
+                //Otherwise add to '_others' key
+                errors._others = errors._others || [];
+                var tmpErr = {};
+                tmpErr[key] = val;
+                errors._others.push(tmpErr);
+              }
+            });
+          }
+        }
       }
 
       return _.isEmpty(errors) ? null : errors;
@@ -578,26 +607,42 @@
      * @return {String}
      */
     validate: function() {
-      var $el = this.$el,
-          $help = this.$help,
-          errClass = Form.classNames.error;
-      
       var error = this.editor.validate();
 
       if (error) {
-        $el.addClass(errClass);
-        $help.html(error.message);
+        this.setError(error.message);
       } else {
-        $el.removeClass(errClass);
-        
-        $help.empty();
-        
-        //Reset help text if available
-        var helpMsg = this.schema.help;
-        if (helpMsg) $help.html(helpMsg);
+        this.clearError();
       }
 
       return error;
+    },
+    
+    /**
+     * Set the field into an error state, adding the error class and setting the error message
+     *
+     * @param {String} errMsg
+     */
+    setError: function(errMsg) {
+      var errClass = Form.classNames.error;
+
+      this.$el.addClass(errClass);
+      this.$help.html(errMsg);
+    },
+    
+    /**
+     * Clear the error state and reset the help message
+     */
+    clearError: function() {
+      var errClass = Form.classNames.error;
+       
+      this.$el.removeClass(errClass);
+      
+      this.$help.empty();
+      
+      //Reset help text if available
+      var helpMsg = this.schema.help;
+      if (helpMsg) this.$help.html(helpMsg);
     },
 
     /**
