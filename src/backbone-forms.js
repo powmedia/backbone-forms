@@ -416,16 +416,17 @@
           model = this.model,
           errors = {};
 
+      //Collect errors from schema validation
       _.each(fields, function(field) {
         var error = field.validate();
         if (error) {
-            errors[field.key] = error;
+          errors[field.key] = error;
         }
       });
 
+      //Get errors from default Backbone model validator
       if (model && model.validate) {
-        var modelErrors = model.validate(this.getValue());
-        if (modelErrors) errors._nonFieldErrors = modelErrors;
+        //TODO
       }
 
       return _.isEmpty(errors) ? null : errors;
@@ -437,18 +438,19 @@
      * @return {Object}  Validation errors
      */
     commit: function() {
-      var fields = this.fields;
-
+      //Validate
       var errors = this.validate();
-
       if (errors) return errors;
 
-      _.each(fields, function(field) {
-        var error = field.commit();
-        if (error) errors[field.key] = error;
+      //Commit
+      var modelError;
+      this.model.set(this.getValue(), {
+        error: function(model, e) {
+          modelError = e;
+        }
       });
-
-      return _.isEmpty(errors) ? null : errors;
+      
+      if (modelError) return modelError;
     },
 
     /**
@@ -458,21 +460,16 @@
      * @param {String}  To get a specific field value pass the key name
      */
     getValue: function(key) {
-      if (key) {
-        //Return given key only
-        return this.fields[key].getValue();
-      } else {
-        //Return entire form data
-        var schema = this.schema,
-            fields = this.fields
-            obj = {};
+      //Return only given key if specified
+      if (key) return this.fields[key].getValue();
+      
+      //Otherwise return entire form      
+      var values = {};
+      _.each(this.fields, function(field) {
+        values[field.key] = field.getValue();
+      });
 
-        _.each(fields, function(field) {
-          obj[field.key] = field.getValue();
-        });
-
-        return obj;
-      }
+      return values;
     },
     
     /**
@@ -697,16 +694,16 @@
      * @return {Mixed} error
      */
     commit: function() {
-      var error = null;
-      var change = {};
-      change[this.key] = this.getValue();
-      this.model.set(change, {
+      var error = this.validate();
+      if (error) return error;
+      
+      this.model.set(this.key, this.getValue(), {
         error: function(model, e) {
           error = e;
         }
       });
-
-      return error;
+      
+      if (error) return error;
     },
     
     /**
@@ -727,12 +724,6 @@
             error = helpers.getValidator(validator)(value);
           }
         });
-      }
-
-      if (!error && this.model && this.model.validate) {
-        var change = {};
-        change[this.key] = value;
-        error = this.model.validate(change);
       }
 
       return error;
