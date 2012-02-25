@@ -1248,6 +1248,10 @@
       this.form.remove();
 
       Backbone.View.prototype.remove.call(this);
+    },
+    
+    validate: function() {
+      return this.form.validate();
     }
 
   });

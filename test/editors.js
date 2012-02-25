@@ -688,6 +688,28 @@ module('Object');
         
         deepEqual(field.getValue(), newValue);
     });
+    
+    test('validate() - returns validation errors', function() {
+      var schema = {};
+      schema.subSchema = {
+        id:     { validators: ['required'] },
+        name:   {},
+        email:  { validators: ['email'] }
+      }
+      
+      var field = new editor({
+        schema: schema,
+        value: {
+          id: null,
+          email: 'invalid'
+        }
+      }).render();
+      
+      var errs = field.validate();
+      
+      equal(errs.id.type, 'required');
+      equal(errs.email.type, 'email');
+    });
 
 })();
 
