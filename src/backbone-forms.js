@@ -624,6 +624,8 @@
      * @param {String} errMsg
      */
     setError: function(errMsg) {
+      if (this.schema.type == 'Object' || this.schema.type == 'NestedModel') return;
+      
       var errClass = Form.classNames.error;
 
       this.$el.addClass(errClass);
