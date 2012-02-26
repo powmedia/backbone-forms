@@ -112,15 +112,23 @@ test("validate() - validates the form and returns an errors object", function ()
 test("commit() - updates the model with form values", function() {
     var post = new Post();
 
+    // Used to test the number of times the change event is fired
+    var callCount = 0;
+    post.on('change', function() {
+      callCount++;
+    }, this);
+
     var form = new Form({
         model: post
     }).render();
 
-    //Change the title in the form and save
+    // Change the title and author and then save
     $('#title', form.el).val('New title');        
+    $('#author', form.el).val('New Author');
     form.commit();
 
     equal(post.get('title'), 'New title');
+    equal(callCount, 1);
 });
 
 test("getValue() - returns form value as an object", function() {
