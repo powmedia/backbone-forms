@@ -624,7 +624,8 @@
      * @param {String} errMsg
      */
     setError: function(errMsg) {
-      if (this.schema.type == 'Object' || this.schema.type == 'NestedModel') return;
+      //Object and NestedModel types set their own errors internally
+      if (this.editor.hasNestedForm) return;
       
       var errClass = Form.classNames.error;
 
@@ -1203,6 +1204,8 @@
    *   idPrefix, 
    */
   editors.Object = editors.Base.extend({
+    //Prevent error classes being set on the main control; they are internally on the individual fields
+    hasNestedForm: true,
 
     className: 'bbf-object',
 
@@ -1269,7 +1272,6 @@
    *   schema.model:   Embedded model constructor
    */
   editors.NestedModel = editors.Object.extend({
-
     initialize: function(options) {
       editors.Base.prototype.initialize.call(this, options);
 

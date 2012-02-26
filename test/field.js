@@ -243,6 +243,19 @@ test('setError() - sets field error class name and error message', function() {
   equal(field.$help.html(), 'foo');
 });
 
+test('setError() - returns if the editor is a "nested" type', function() {
+  var errorClass = Form.classNames.error;
+
+  var field = new Field({
+    key: 'nested',
+    schema: { type: 'Object', subSchema: { title: {} } }
+  }).render();
+  
+  field.setError('foo');
+  
+  equal($(field.el).hasClass(errorClass), false);
+});
+
 test('clearError() - clears error class and resets help message', function() {
   var errorClass = Form.classNames.error;
   
