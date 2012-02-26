@@ -376,9 +376,10 @@
       if (errors) return errors;
 
       _.each(fields, function(field) {
-        var error = field.commit();
+        var error = field.commit({silent: true});
         if (error) errors[field.key] = error;
       });
+      this.model.change();
 
       return _.isEmpty(errors) ? null : errors;
     },
@@ -540,15 +541,17 @@
     /**
      * Update the model with the new value from the editor
      */
-    commit: function() {
+    commit: function(options) {
       var error = null;
       var change = {};
       change[this.key] = this.editor.getValue();
-      this.model.set(change, {
-        error: function(model, e) {
-          error = e;
-        }
-      });
+      this.model.set(change,
+        _.extend({
+          error: function(model, e) {
+            error = e;
+          }
+        }, options ? options : {})
+      );
 
       return error;
     },
