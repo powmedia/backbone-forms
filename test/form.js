@@ -178,6 +178,26 @@ test("commit() - updates the model with form values", function() {
     equal(post.get('title'), 'New title');
 });
 
+test('commit() - triggers model change once', function() {
+  var post = new Post;
+
+  var form = new Form({
+      model: post
+  }).render();
+  
+  //Count change events
+  var timesCalled = 0;
+  post.on('change', function() {
+    timesCalled ++;
+  });
+  
+  form.fields.title.setValue('New title');
+  form.fields.author.setValue('New author');
+  form.commit();
+  
+  equal(timesCalled, 1);
+});
+
 test("getValue() - returns form value as an object", function() {
     var data = {
         title: 'Yuuup', 
