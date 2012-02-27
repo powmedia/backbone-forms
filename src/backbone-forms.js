@@ -1,4 +1,4 @@
-;(function($) {
+;(function($) {  
   
   //==================================================================================================
   //TEMPLATES
@@ -211,10 +211,18 @@
   
   var validators = {};
   
+  validators.errMessages = {
+    required: 'Required',
+    regexp: 'Invalid',
+    email: 'Invalid email address',
+    url: 'Invalid URL',
+    match: 'Must match field "{{field}}"'
+  }
+  
   validators.required = function(options) {   
     options = _.extend({
       type: 'required',
-      message: 'Required'
+      message: this.errMessages.required
     }, options);
     
     var err = {
@@ -232,7 +240,7 @@
   
     options = _.extend({
       type: 'regexp',
-      message: 'Invalid'
+      message: this.errMessages.regexp
     }, options);
     
     var err = {
@@ -251,7 +259,7 @@
   validators.email = function(options) {
     options = _.extend({
       type: 'email',
-      message: 'Invalid email address',
+      message: this.errMessages.email,
       regexp: /^[\w\-]{1,}([\w\-.]{1,1}[\w\-]{1,}){0,}[@][\w\-]{1,}([.]([\w\-]{1,})){1,3}$/
     }, options);
     
@@ -261,7 +269,7 @@
   validators.url = function(options) {
     options = _.extend({
       type: 'url',
-      message: 'Invalid URL',
+      message: this.errMessages.url,
       regexp: /^(http|https):\/\/(([A-Z0-9][A-Z0-9_-]*)(\.[A-Z0-9][A-Z0-9_-]*)+)(:(\d+))?\/?/i
     }, options);
     
@@ -273,7 +281,7 @@
     
     options = _.extend({
       type: 'match',
-      message: 'Must match field "' + options.field + '"'
+      message: this.errMessages.match.replace('{{field}}', options.field)
     }, options);
 
     var err = {

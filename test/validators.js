@@ -1,5 +1,24 @@
 ;(function() {
 
+  module('general')
+  
+  test('can overwrite default error messages', function() {
+    var originalMessage = Form.validators.errMessages.required;
+    
+    Form.validators.errMessages.required = 'Foo'
+    
+    var required = Form.validators.required()
+    equal(required('').message, 'Foo')
+    
+    //Restore original messages
+    Form.validators.errMessages.required = originalMessage;
+  })
+  
+})();
+
+
+;(function() {
+
   module('required')
   
   var required = Form.validators.required()
