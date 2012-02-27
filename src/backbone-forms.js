@@ -228,12 +228,12 @@
   };
   
   validators.regexp = function(options) {
+    if (!options.regexp) throw new Error('Missing required "regexp" option for "regexp" validator');
+  
     options = _.extend({
       type: 'regexp',
       message: 'Invalid'
     }, options);
-    
-    if (!options.regexp) throw new Error('Missing required "regexp" option for "regexp" validator');
     
     var err = {
       type: options.type,
@@ -266,6 +266,27 @@
     }, options);
     
     return validators.regexp(options);
+  };
+  
+  validators.match = function(options) {
+    if (!options.field) throw new Error('Missing required "field" options for "match" validator');
+    
+    options = _.extend({
+      type: 'match',
+      message: 'Must match field "' + options.field + '"'
+    }, options);
+
+    var err = {
+      type: options.type,
+      message: options.message
+    };
+    
+    return function match(value, attrs) {
+      //Don't check empty values (add a 'required' validator for this)
+      if (value === null || value === undefined || value === '') return;
+      
+      if (value != attrs[options.field]) return err;
+    }
   };
   
 
@@ -367,11 +388,11 @@
      * @param {jQuery}          Wrapped DOM element where field elemends will go
      */
     renderFields: function (fieldsToRender, $container) {
-      var schema = this.schema,
+      var self = this,
+          schema = this.schema,
           model = this.model,
           data = this.data,
-          fields = this.fields,
-          self = this;
+          fields = this.fields;
       
       //Create form fields
       _.each(fieldsToRender, function(key) {
@@ -380,6 +401,7 @@
         if (!itemSchema) throw "Field '"+key+"' not found in schema";
 
         var options = {
+          form: self,
           key: key,
           schema: itemSchema,
           idPrefix: self.idPrefix
@@ -544,6 +566,7 @@
      *          idPrefix    {String} : Prefix to add to the editor DOM element's ID
      */
     initialize: function(options) {
+      this.form = options.form;
       this.key = options.key;
       this.schema = options.schema || {};
       this.value = options.value;
@@ -562,6 +585,7 @@
 
       //Standard options that will go to all editors
       var options = {
+        form: this.form,
         key: this.key,
         schema: schema,
         idPrefix: this.idPrefix,
@@ -723,6 +747,7 @@
       
       if (this.value === undefined) this.value = this.defaultValue;
 
+      this.form = options.form;
       this.schema = options.schema || {};
       this.validators = options.validators || this.schema.validators;
     },
@@ -760,16 +785,17 @@
      * 
      * @return {String}
      */
-    validate: function() {    
+    validate: function() {
       var $el = this.$el,
           error = null,
           value = this.getValue(),
+          formValues = this.form ? this.form.getValue() : {},
           validators = this.validators;
 
       if (validators) {
-        _(validators).each(function(validator) {
+        _.each(validators, function(validator) {
           if (!error) {
-            error = helpers.getValidator(validator)(value);
+            error = helpers.getValidator(validator)(value, formValues);
           }
         });
       }

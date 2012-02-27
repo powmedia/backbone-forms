@@ -104,3 +104,39 @@
   })
   
 })();
+
+
+;(function() {
+  module('match')
+  
+  var fn = Form.validators.match({
+    field: 'confirm'
+  });
+  
+  test('passes empty values', function() {
+    equal(fn('', { regexp: /foo/ }), undefined)
+    equal(fn(null, { regexp: /foo/ }), undefined)
+    equal(fn(undefined, { regexp: /foo/ }), undefined)
+  })
+  
+  test('accepts when fields match', function() {
+    var attrs = {
+      password: 'foo',
+      confirm: 'foo'
+    };
+    
+    equal(fn('foo', attrs), undefined)
+  })
+  
+  test('fails when fields dont match', function() {
+    var attrs = {
+      password: 'foo',
+      confirm: 'bar'
+    };
+    
+    var err = fn('foo', attrs)
+    
+    equal(err.type, 'match')
+    equal(err.message, 'Must match field "confirm"')
+  })
+})();
