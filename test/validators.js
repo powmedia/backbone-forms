@@ -2,7 +2,7 @@
 
   module('general')
   
-  test('can overwrite default error messages', function() {
+  test('can change default error messages', function() {
     var originalMessage = Form.validators.errMessages.required;
     
     Form.validators.errMessages.required = 'Foo'
@@ -10,7 +10,7 @@
     var required = Form.validators.required()
     equal(required('').message, 'Foo')
     
-    //Restore original messages
+    //Restore original message
     Form.validators.errMessages.required = originalMessage;
   })
   
@@ -58,6 +58,16 @@
     equal(fn(null), undefined)
     equal(fn(undefined), undefined)
   })
+  
+  test('fails invalid strings', function() {
+    equal(fn('gsurkbfsr').type, 'regexp')
+    equal(fn('guerbayf').message, 'Invalid')
+  })
+  
+  test('passes valid strings', function() {
+    equal(fn('foo'), undefined)
+    equal(fn('_foo_'), undefined)
+  })
 
 })();
 
@@ -68,9 +78,9 @@
   var fn = Form.validators.email()
   
   test('passes empty values', function() {
-    equal(fn('', { regexp: /foo/ }), undefined)
-    equal(fn(null, { regexp: /foo/ }), undefined)
-    equal(fn(undefined, { regexp: /foo/ }), undefined)
+    equal(fn(''), undefined)
+    equal(fn(null), undefined)
+    equal(fn(undefined), undefined)
   })
   
   test('accepts valid emails', function() {
@@ -98,9 +108,9 @@
   var fn = Form.validators.url()
   
   test('passes empty values', function() {
-    equal(fn('', { regexp: /foo/ }), undefined)
-    equal(fn(null, { regexp: /foo/ }), undefined)
-    equal(fn(undefined, { regexp: /foo/ }), undefined)
+    equal(fn(''), undefined)
+    equal(fn(null), undefined)
+    equal(fn(undefined), undefined)
   })
   
   test('accepts valid urls', function() {
@@ -133,9 +143,9 @@
   });
   
   test('passes empty values', function() {
-    equal(fn('', { regexp: /foo/ }), undefined)
-    equal(fn(null, { regexp: /foo/ }), undefined)
-    equal(fn(undefined, { regexp: /foo/ }), undefined)
+    equal(fn(''), undefined)
+    equal(fn(null), undefined)
+    equal(fn(undefined), undefined)
   })
   
   test('accepts when fields match', function() {
