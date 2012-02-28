@@ -75,6 +75,7 @@ If you use BackboneJS with node.js, you can just `require('backbone-forms');` in
 #Usage
 
 Define a 'schema' attribute on your Backbone models. The schema keys should match the attributes that get set on the model. Note that `type` defaults to `Text`.
+See [schema definition](#schema-definition) for more information.
 
     var User = Backbone.Model.extend({
         schema: {
@@ -104,7 +105,7 @@ Create the form in your Views:
     });
 
 
-Once the user is done with the form, call commit() to apply the updated values to the model. If there are validation errors they will be returned:
+Once the user is done with the form, call commit() to apply the updated values to the model. If there are validation errors they will be returned. See [validation](#validation) for more information.
 
     var errors = form.commit();
 
@@ -194,7 +195,7 @@ Creates a normal text input.
 
 **`dataType`**
 
-- Changes the type="text" attribute. Used for HTML5 form inputs such as `url`, ``tel`, `email`.  When viewing on a mobile device e.g. iOS, this will change the type of keyboard that is opened. For example, `tel` opens a numeric keypad.
+- Changes the type="text" attribute. Used for HTML5 form inputs such as `url`, `tel`, `email`.  When viewing on a mobile device e.g. iOS, this will change the type of keyboard that is opened. For example, `tel` opens a numeric keypad.
 
 
 <a name="editor-select"/>
