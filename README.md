@@ -23,6 +23,7 @@ The schema above will automatically create a form similar to this:
 
 
 
+<a name="top"/>
 ##Table of Contents:
 - [Installation](#installation)
 - [Usage](#usage)
@@ -37,6 +38,10 @@ The schema above will automatically create a form similar to this:
   - [DateTime](#editor-datetime)
   - [List](#editor-list)
 - [Validation](#validation)
+- [More](#more)
+  - [Editors without forms](#editors-without-forms)
+  - [Using nested fields](#nested-fields)
+  - [Custom editors](#custom-editors)
 
 
 
@@ -61,7 +66,9 @@ To use a custom template pack, e.g. Bootstrap, include the relevant file after b
     <script src="backbone-forms/src/templates/bootstrap.js"></script>
 
 If you use BackboneJS with node.js, you can just `require('backbone-forms');` in your index file.
-    
+
+[Back to top](#top)
+
 
 
 <a name="usage"/>
@@ -128,6 +135,9 @@ Then instead of form.commit(), do:
 
 ##Initial data
 If a form has a model attached to it, the initial values are taken from the model's defaults. Otherwise, you may pass default values using the `schema.data`.
+
+[Back to top](#top)
+
 
 
 <a name="schema-definition"/>
@@ -388,6 +398,19 @@ An array of field names (keys). Only the fields defined here will be added to th
 
 A string that will be prefixed to the form DOM element IDs. Useful if you will have multiple forms on the same page. E.g. `idPrefix: 'user-'` will result in IDs like 'user-name', 'user-email', etc.
 
+[Back to top](#top)
+
+
+
+<a name="validation"/>
+#Validation
+
+Forms provide a `validate` method, which returns a dictionary of errors, or `null`. Validation is determined using the `validators` attribute on the schema (see above).
+
+If you model provides a `validate` method, then this will be called when you call `Form.validate`. Forms are also validated when you call `commit`. See the Backbone documentation for more details on model validation.
+
+[Back to top](#top)
+
 
 
 <a name="customising-templates"/>
@@ -397,9 +420,14 @@ Backbone-Forms comes with a few options for rendering HTML. To use another templ
 
 You can use your own custom templates by passing your templates (in Mustache syntax) and class names into `Backbone.helpers.setTemplates()`. See the included templates files for examples.
 
+[Back to top](#top)
 
 
-<a name="other"/>
+
+<a name="more"/>
+#More
+
+<a name="editors-without-forms"/>
 ##Editors without forms
 
 You can add editors by themselves, without being part of a form. For example: 
@@ -414,6 +442,33 @@ You can add editors by themselves, without being part of a form. For example:
     select.commit();
 
 
+<a name="nested-fields"/>
+##Using nested fields
+
+If you are using a schema with nested attributes (using the `Object` type), you may want to include only some of the nested fields in a form. This can be accomplished by using 'path' syntax as in the example below.
+
+However, due to Backbone's lack of support for nested model attributes, getting and setting values will not work out of the box.  For this to work as expected you must adapt your model's get() and set() methods to handle the path names, or simply use [DeepModel](http://github.com/powmedia/backbone-deep-model) which will handle paths for you automatically.
+
+    var Model = Backbone.DeepModel.extend({
+        schema: {
+            title: {},
+            author: { type: 'Object', subSchema: {
+                id: { type: 'Number' },
+                name: { type: 'Object', subSchema: {
+                    first: {},
+                    last: {}
+                }}
+            }}
+        }
+    });
+    
+    var form = new Backbone.Form({
+        model: new Model,
+        fields: ['title', 'author.id', 'author.name.last']
+    }).render();
+
+
+<a name="custom-editors"/>
 ##Custom Editors
 
 Writing a custom editor is simple. They must extend from Backbone.Form.editors.Base.
@@ -452,42 +507,11 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 - The original value is available through this.value.
 - The field schema can be accessed via this.schema. This allows you to pass in custom parameters.
 
-
-
-<a name="validation"/>
-#Validation
-
-Forms provide a `validate` method, which returns a dictionary of errors, or `null`. Validation is determined using the `validators` attribute on the schema (see above).
-
-If you model provides a `validate` method, then this will be called when you call `Form.validate`. Forms are also validated when you call `commit`. See the Backbone documentation for more details on model validation.
-
-
-#Using nested attributes/fields
-
-If you are using a schema with nested attributes (using the `Object` type), you may want to include only some of the nested fields in a form. This can be accomplished by using 'path' syntax as in the example below.
-
-However, due to Backbone's lack of support for nested model attributes, getting and setting values will not work out of the box.  For this to work as expected you must adapt your model's get() and set() methods to handle the path names, or simply use [DeepModel](http://github.com/powmedia/backbone-deep-model) which will handle paths for you automatically.
-
-    var Model = Backbone.DeepModel.extend({
-        schema: {
-            title: {},
-            author: { type: 'Object', subSchema: {
-                id: { type: 'Number' },
-                name: { type: 'Object', subSchema: {
-                    first: {},
-                    last: {}
-                }}
-            }}
-        }
-    });
-    
-    var form = new Backbone.Form({
-        model: new Model,
-        fields: ['title', 'author.id', 'author.name.last']
-    }).render();
+[Back to top](#top)
 
 
 
+<a name="help/>
 #Help & discussion
 
 - [Google Groups](http://groups.google.com/group/backbone-forms)
