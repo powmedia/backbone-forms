@@ -8,7 +8,7 @@ The following default editors are included:
 - Number
 - Password
 - TextArea
-- [Checkbox](#editor-checkbox)
+- Checkbox
 - [Checkboxes](#editor-checkboxes)
 - [Hidden](#editor-hidden)
 - [Select](#editor-select)
