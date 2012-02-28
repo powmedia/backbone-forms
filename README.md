@@ -10,7 +10,7 @@ The following default editors are included:
 - TextArea
 - Checkbox
 - [Checkboxes](#editor-checkboxes)
-- [Hidden](#editor-hidden)
+- Hidden
 - [Select](#editor-select)
 - [Radio](#editor-radio)
 - [Object](#editor-object)
