@@ -5,9 +5,9 @@ A form framework for Backbone.JS applications.
 The following default editors are included:
 
 - [Text](#editor-text)
-- [Number](#editor-number)
-- [Password](#editor-password)
-- [TextArea](#editor-textarea)
+- Number
+- Password
+- TextArea
 - [Checkbox](#editor-checkbox)
 - [Checkboxes](#editor-checkboxes)
 - [Hidden](#editor-hidden)
