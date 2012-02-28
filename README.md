@@ -1,28 +1,46 @@
 #backbone-forms
 
-A form framework for Backbone.JS applications.
+A flexible, customisable form framework for Backbone.JS applications. Includes validation, nested models and custom editors.
 
-The following default editors are included:
+Simply define a schema on your models and the forms will be auto-generated for you:
 
-- [Text](#editor-text)
-- Number
-- Password
-- TextArea
-- Checkbox
-- [Checkboxes](#editor-checkboxes)
-- Hidden
-- [Select](#editor-select)
-- [Radio](#editor-radio)
-- [Object](#editor-object)
-- [NestedModel](#editor-nestedmodel)
+    var User = Backbone.Model.extend({
+        schema: {
+            email:      { dataType: 'email', validators: ['required', validateEmail] },
+            start:      { type: 'DateTime' },
+            contact:    { type: 'Object', subSchema: {
+                            name: {},
+                            phone: {}
+                        }}
+            address:    { type: 'NestedModel', model: Address },
+            notes:      { type: 'List' }
+        }
+    });
+    
+The schema above will automatically create a form similar to this:
 
-In addition there is a separate file with editors that depend on jQuery UI:
-
-- [Date](#editor-date)
-- [DateTime](#editor-datetime)
-- [List](#editor-list) (Editable and sortable. Can use any of the other editors for each item)
+![Example form](http://i56.tinypic.com/a3zfyt.png)
 
 
+
+##Table of Contents:
+- [Installation](#installation)
+- [Usage](#usage)
+- [Schema Definition](#schema-definition)
+  - [Text](#editor-text)
+  - [Checkboxes](#editor-checkboxes)
+  - [Select](#editor-select)
+  - [Radio](#editor-radio)
+  - [Object](#editor-object)
+  - [NestedModel](#editor-nestedmodel)
+  - [Date](#editor-date)
+  - [DateTime](#editor-datetime)
+  - [List](#editor-list)
+- [Validation](#validation)
+
+
+
+<a name="installation"/>
 #Installation
 
 Dependencies:
@@ -44,12 +62,10 @@ To use a custom template pack, e.g. Bootstrap, include the relevant file after b
 
 If you use BackboneJS with node.js, you can just `require('backbone-forms');` in your index file.
     
-    
+
+
+<a name="usage"/>
 #Usage
-
-![Example form](http://i56.tinypic.com/a3zfyt.png)
-
-You can create something like the form above with the following steps:
 
 Define a 'schema' attribute on your Backbone models. The schema keys should match the attributes that get set on the model. Note that `type` defaults to `Text`.
 
@@ -110,7 +126,34 @@ Then instead of form.commit(), do:
     var data = form.getValue(); //Returns object with new form values
 
 
+##Initial data
+If a form has a model attached to it, the initial values are taken from the model's defaults. Otherwise, you may pass default values using the `schema.data`.
+
+
+<a name="schema-definition"/>
 #Schema definition
+
+The following default editors are included:
+
+- [Text](#editor-text)
+- Number
+- Password
+- TextArea
+- Checkbox
+- [Checkboxes](#editor-checkboxes)
+- Hidden
+- [Select](#editor-select)
+- [Radio](#editor-radio)
+- [Object](#editor-object)
+- [NestedModel](#editor-nestedmodel)
+
+In addition there is a separate file with editors that depend on jQuery UI:
+
+- [Date](#editor-date)
+- [DateTime](#editor-datetime)
+- [List](#editor-list) (Editable and sortable. Can use any of the other editors for each item)
+
+
 
 ##Main attributes
 
@@ -130,10 +173,7 @@ For each field definition in the schema you can use the following optional attri
 
 **`validators`**
 
-- A list of validators, where each validator is one of the following:
-    - **A string.** This should be the name of a function in `Backbone.forms.validators`. The only provided validator is `"required"`, but you can add any other validators you use regularly here.
-    - **A regular expression.** This should either be a compiled regular expression, or an object of the form `{'RegExp': 'string-to-make-into-regex'}`. The validator function generated will use `RegExp.test` on the value and return an error message if there is a problem.
-    - **A function.** This function will be passed the value of the form, and should return a truth-y value if there is an error. This would normally be a string describing the error.
+- A list of validators. See [Validation](#validation) for more information
 
 
 
@@ -319,6 +359,7 @@ Creates a jQuery UI datepicker and time select field.
 
 
 
+<a name="form-options"/>
 #Form options
 
 **`model`**
@@ -349,6 +390,7 @@ A string that will be prefixed to the form DOM element IDs. Useful if you will h
 
 
 
+<a name="customising-templates"/>
 #Customising templates
 
 Backbone-Forms comes with a few options for rendering HTML. To use another template pack, such as for [Bootstrap](http://twitter.github.com/bootstrap/), just include the .js file from the `templates` folder, after including `backbone-forms.js`.
@@ -357,7 +399,8 @@ You can use your own custom templates by passing your templates (in Mustache syn
 
 
 
-#Editors without forms
+<a name="other"/>
+##Editors without forms
 
 You can add editors by themselves, without being part of a form. For example: 
 
@@ -371,7 +414,7 @@ You can add editors by themselves, without being part of a form. For example:
     select.commit();
 
 
-#Custom Editors
+##Custom Editors
 
 Writing a custom editor is simple. They must extend from Backbone.Form.editors.Base.
     
@@ -410,11 +453,8 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 - The field schema can be accessed via this.schema. This allows you to pass in custom parameters.
 
 
-#Initial Data
 
-If a form has a model attached to it, the initial values are taken from the model's defaults. Otherwise, you may pass default values using the `schema.data`.
-
-
+<a name="validation"/>
 #Validation
 
 Forms provide a `validate` method, which returns a dictionary of errors, or `null`. Validation is determined using the `validators` attribute on the schema (see above).
@@ -446,11 +486,6 @@ However, due to Backbone's lack of support for nested model attributes, getting 
         fields: ['title', 'author.id', 'author.name.last']
     }).render();
 
-
-#Known issues
-
-- List editor with listType NestedModel doesn't run validation
-- There may be CSS issues across browsers.  You can customise your CSS by editing the backbone-forms.css file.
 
 
 #Help & discussion
