@@ -6,14 +6,14 @@ Simply define a schema on your models and the forms will be auto-generated for y
 
     var User = Backbone.Model.extend({
         schema: {
-            email:      { dataType: 'email', validators: ['required', validateEmail] },
+            email:      { dataType: 'email', validators: ['required', 'email'] },
             start:      { type: 'DateTime' },
             contact:    { type: 'Object', subSchema: {
-                            name: {},
+                            name: { validators: ['required'] },
                             phone: {}
                         }}
             address:    { type: 'NestedModel', model: Address },
-            notes:      { type: 'List' }
+            notes:      { type: 'List', help: 'Helpful notes' }
         }
     });
     
@@ -186,6 +186,10 @@ For each field definition in the schema you can use the following optional attri
 **`validators`**
 
 - A list of validators. See [Validation](#validation) for more information
+
+**`help`**
+
+- Help text to add next to the editor.
 
 
 
