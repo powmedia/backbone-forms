@@ -2,16 +2,16 @@
 
   module('general')
   
-  test('can change default error messages', function() {
-    var originalMessage = Form.validators.errMessages.required;
+  test('can change default error messages with mustache tags', function() {
+    var originalMessage = Form.validators.errMessages.email;
     
-    Form.validators.errMessages.required = 'Foo'
+    Form.validators.errMessages.email = '{{value}} is an invalid email address. {{customTag}}.'
     
-    var required = Form.validators.required()
-    equal(required('').message, 'Foo')
+    var email = Form.validators.email({ customTag: 'Cool beans' })
+    equal(email('foo').message, 'foo is an invalid email address. Cool beans.')
     
     //Restore original message
-    Form.validators.errMessages.required = originalMessage;
+    Form.validators.errMessages.email = originalMessage;
   })
   
 })();

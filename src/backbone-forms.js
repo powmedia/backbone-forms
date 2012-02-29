@@ -76,9 +76,10 @@
    * Helper to create a template with the {{mustache}} style tags. Template settings are reset
    * to user's settings when done to avoid conflicts.
    * @param {String}      Template string
+   * @param {Object}      Optional; values to replace in template
    * @return {Template}   Compiled template
    */
-  helpers.createTemplate = function(str) {
+  helpers.createTemplate = function(str, context) {
     //Store user's template options 
     var _interpolateBackup = _.templateSettings.interpolate;
 
@@ -89,8 +90,12 @@
 
     //Reset to users' template settings
     _.templateSettings.interpolate = _interpolateBackup;
-
-    return template;
+    
+    if (!context) {
+      return template;
+    } else {
+      return template(context);
+    }
   };
   
   
@@ -224,13 +229,15 @@
       type: 'required',
       message: this.errMessages.required
     }, options);
-    
-    var err = {
-      type: options.type,
-      message: options.message
-    };
      
     return function required(value) {
+      options.value = value;
+      
+      var err = {
+        type: options.type,
+        message: helpers.createTemplate(options.message, options)
+      };
+      
       if (value === null || value === undefined || value === '') return err;
     };
   };
@@ -243,12 +250,14 @@
       message: this.errMessages.regexp
     }, options);
     
-    var err = {
-      type: options.type,
-      message: options.message
-    };
-    
     return function regexp(value) {
+      options.value = value;
+      
+      var err = {
+        type: options.type,
+        message: helpers.createTemplate(options.message, options)
+      };
+      
       //Don't check empty values (add a 'required' validator for this)
       if (value === null || value === undefined || value === '') return;
 
@@ -281,15 +290,17 @@
     
     options = _.extend({
       type: 'match',
-      message: this.errMessages.match.replace('{{field}}', options.field)
+      message: this.errMessages.match
     }, options);
-
-    var err = {
-      type: options.type,
-      message: options.message
-    };
     
     return function match(value, attrs) {
+      options.value = value;
+      
+      var err = {
+        type: options.type,
+        message: helpers.createTemplate(options.message, options)
+      };
+      
       //Don't check empty values (add a 'required' validator for this)
       if (value === null || value === undefined || value === '') return;
       

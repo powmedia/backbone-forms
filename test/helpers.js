@@ -9,11 +9,44 @@ test('Transforms camelCased string to words', function() {
 
 
 
-module('createTemplate');
+;(function() {
+  
+  module('createTemplate');
+  
+  var createTemplate = Form.helpers.createTemplate;
 
-test('todo', function() {
-    console.log('TODO')
-});
+  test('returns a compiled template if just passed a string', function() {
+    var template = createTemplate('Hello {{firstName}} {{lastName}}.');
+    
+    var result = template({ firstName: 'John', lastName: 'Smith' })
+    
+    equal(result, 'Hello John Smith.')
+  })
+
+  test('works when underscore template settings are different and restores them when done', function() {
+    var originalSetting = /\[\[(.+?)\]\]/g;
+    _.templateSettings.interpolate = originalSetting;
+    
+    var template = createTemplate('Bye {{firstName}} {{lastName}}!');
+    
+    var result = template({ firstName: 'John', lastName: 'Smith' })
+    
+    equal(result, 'Bye John Smith!')
+    
+    equal(_.templateSettings.interpolate, originalSetting)
+  })
+
+  test('returns the supplanted string if a context is passed', function() {
+    var result = createTemplate('Hello {{firstName}} {{lastName}}.', {
+      firstName: 'John',
+      lastName: 'Smith'
+    });
+    
+    equal(result, 'Hello John Smith.')
+  })
+  
+})();
+
 
 
 
