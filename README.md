@@ -407,9 +407,113 @@ A string that will be prefixed to the form DOM element IDs. Useful if you will h
 <a name="validation"/>
 #Validation
 
+There are 2 levels of validation: schema validators and the regular built-in Backbone model validation. Backbone Forms will run both when either `form.commit()` or `form.validate()` are called.
+
+
+##Schema validation
+
+Validators can be defined in several ways:
+
+- **As a string** - Shorthand for adding a built-in validator. You can add custom validators to this list by adding them to `Backbone.Form.validators`. See the source for more information.
+- **As an object** - For adding a built-in validator with options, e.g. overriding the default error message.
+- **As a function** - Runs a custom validation function. Each validator the following arguments: `value` and `formValues`
+- **As a regular expression** - Runs the built-in `regexp` validator with a custom regular expresssion.
+
+###Examples
+
+    var schema = {
+        //Built-in validator
+        name: { validators: ['required'] },
+        
+        //Multiple built-in validators
+        email: { validators: ['required', 'email'] },
+        
+        //Built-in editors with options:
+        password: { validators: [
+            { type: 'match', field: 'passwordConfirm', message: 'Passwords must match!' }
+        ] },
+        
+        //Regular expression
+        foo: { validators: [/foo/] },
+        
+        //Custom function
+        username: { validators: [
+            function checkUsername(value, formValues) {
+                var err = {
+                    type: 'username',
+                    message: 'Usernames must be at least 3 characters long'
+                };
+                
+                if (value.length < 3) return err;
+            }
+        ] }
+    }
+
+
+###Handling errors
+
+Error messages will be added to the field's help text area, and a customisable `bbf-error` class will be added to the field element so it can be styled with CSS.
+
+Validation runs when `form.commit()` or `form.validate()` are called.  If validation fails, an error object is returned with the `type` (validator that failed) and customisable `message`:
+
+    //Example returned errors from form validation:
+    {
+        name:   { type: 'required', message: 'Required' },              //Error on the name field
+        email:  { type: 'email', message: 'Invalid email address' },    //Error on the email field
+        _others: ['Custom model.validate() error']                      //Error from model.validate()
+    }
+
+
+###Built-in validators
+
+- **required**: Checks the field has been filled in
+- **email**: Checks it is a valid email address
+- **url**: Checks it is a valid URL
+- **match**: Checks that the field matches another. The other field name must be set in the `field` option.
+- **regexp**: Runs a regular expression. Requires the `regexp` option, which takes a compiled regular expression.
+
+
+##Customising error messages
+
+After including the Backbone Forms file, you can override the default error messages:
+
+    Backbone.Form.validators.errMessages.email = 'Please enter a valid email address';
+    
+    Backbone.Form.validators.errMessages.match = 'This value must match {{fieldName}}'; //{{fieldName}} will be replaced with the `fieldName` option passed into the validator config;
+
+You can also override the error message on a field by field basis by passing the `message` option in the validator config.
+
+
+##Model validation
+
+If your models have a `validate()` method the errors will be added to the error object.  To make the most of the validation system, the method should return an error object, keyed by the field object. If an unrecognised field is added, or just a string is returned, it will be added to the `_others` array of errors:
+
+    var User = Backbone.Model.extend({
+        validate: function(attrs) {
+            var errs = {};
+            
+            if (usernameTaken(attrs.username)) errs.username = 'The username is taken'
+            
+            if !_.isEmpty(errs) return errs;
+        }
+    })
+
+
+
+
+##Schema validators
 Forms provide a `validate` method, which returns a dictionary of errors, or `null`. Validation is determined using the `validators` attribute on the schema (see above).
 
 If you model provides a `validate` method, then this will be called when you call `Form.validate`. Forms are also validated when you call `commit`. See the Backbone documentation for more details on model validation.
+
+Example:
+
+    //Schema definition:
+    var schema = {
+        name: { validators: ['required']
+    }
+    
+    var errors = form.commit();
 
 [Back to top](#top)
 
