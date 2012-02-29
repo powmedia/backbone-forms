@@ -481,7 +481,7 @@ After including the Backbone Forms file, you can override the default error mess
 
     Backbone.Form.validators.errMessages.required = 'Please enter a value for this field.';
     
-    Backbone.Form.validators.errMessages.match = 'This value must match {{field}}';
+    Backbone.Form.validators.errMessages.match = 'This value must match the value of {{field}}';
     
     Backbone.Form.validators.errMessages.email = '{{value}} is an invalid email address.';
 
