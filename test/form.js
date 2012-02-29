@@ -77,8 +77,6 @@ test("'fieldsets' option - Allows choosing and ordering of fields within fieldse
         ]
     }).render();
 
-    console.log(form.el);
-
     ok(form.$(':nth-child(1)').is('fieldset'), 'First element of the form is not a fieldset');
     equal(form.$('fieldset:nth-child(1) input:eq(0)').attr('id'), 'slug');
     equal(form.$('fieldset:nth-child(1) input:eq(1)').attr('id'), 'author');
@@ -97,16 +95,73 @@ test("'idPrefix' option - Adds prefix to all DOM element IDs", function() {
 });
 
 test("validate() - validates the form and returns an errors object", function () {
-    var form = new Form({
-        schema: {
-            title: {validators: ['required']}
-        }
-    }).render();
+  var form = new Form({
+    schema: {
+      title: {validators: ['required']}
+    }
+  }).render();
+  
+  var err = form.validate();
 
-    ok(form.validate() && form.validate().title);
+  equal(err.title.type, 'required');
+  equal(err.title.message, 'Required');
 
-    form.setValue({title: 'A valid title'});
-    equal(form.validate(), null);
+  form.setValue({title: 'A valid title'});
+  equal(form.validate(), null);
+});
+
+test('validate() - returns model validation errors', function() {
+  var post = new Post;
+  
+  post.validate = function() {
+    return 'FOO';
+  };
+  
+  var form = new Form({
+    model: post,
+    schema: {
+      title: {validators: ['required']}
+    }
+  }).render();
+  
+  var err = form.validate();
+  
+  deepEqual(err, {
+    _others: ['FOO']
+  });
+});
+
+test('commit() - returns validation errors', function() {
+  var form = new Form({
+      model: new Post
+  }).render();
+  
+  //Mock
+  form.validate = function() {
+    return { foo: 'bar' }
+  };
+  
+  var err = form.commit();
+  
+  equal(err.foo, 'bar');
+});
+
+test('commit() - returns model validation errors', function() {
+  var post = new Post;
+  
+  post.validate = function() {
+    return 'ERROR';
+  };
+  
+  var form = new Form({
+      model: post
+  }).render();
+  
+  var err = form.commit();
+  
+  deepEqual(err, {
+    _others: ['ERROR']
+  });
 });
 
 test("commit() - updates the model with form values", function() {
@@ -121,6 +176,26 @@ test("commit() - updates the model with form values", function() {
     form.commit();
 
     equal(post.get('title'), 'New title');
+});
+
+test('commit() - triggers model change once', function() {
+  var post = new Post;
+
+  var form = new Form({
+      model: post
+  }).render();
+  
+  //Count change events
+  var timesCalled = 0;
+  post.on('change', function() {
+    timesCalled ++;
+  });
+  
+  form.fields.title.setValue('New title');
+  form.fields.author.setValue('New author');
+  form.commit();
+  
+  equal(timesCalled, 1);
 });
 
 test("getValue() - returns form value as an object", function() {

@@ -153,11 +153,11 @@
 
     itemTemplate: createTemplate('\
       <li rel="{{id}}">\
-          <span class="bbf-list-text">{{text}}</span>\
-          <div class="bbf-list-actions">\
-              <button class="bbf-list-edit">Edit</button>\
-              <button class="bbf-list-del">Delete</button>\
-          </div>\
+        <span class="bbf-list-text">{{text}}</span>\
+        <div class="bbf-list-actions">\
+          <button class="bbf-list-edit">Edit</button>\
+          <button class="bbf-list-del">Delete</button>\
+        </div>\
       </li>\
     '),
     
@@ -375,7 +375,10 @@
         container.remove();
       };
       
-      var saveAndClose = function() {
+      var saveAndClose = function() {        
+        var errs = editor.validate();
+        if (errs) return;
+        
         callback(editor.getValue());
         close();
       }

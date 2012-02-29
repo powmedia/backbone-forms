@@ -1,5 +1,67 @@
-module('Base');
+(function() {
+  module('Base');
+  
+  test('commit() - returns validation errors', function() {
+    var editor = new editors.Text({
+      model: new Post,
+      key: 'title',
+      validators: ['required']
+    }).render();
+    
+    editor.setValue(null);
+    
+    var err = editor.commit();
+    
+    equal(err.type, 'required');
+    equal(err.message, 'Required');
+  });
 
+  test('commit() - sets value to model', function() {
+    var post = new Post;
+
+    var editor = new editors.Text({
+      model: post,
+      key: 'title'
+    }).render();
+
+    //Change value
+    editor.setValue('New Title');
+
+    editor.commit();
+
+    equal(post.get('title'), 'New Title');
+  });
+  
+  test('commit() - returns model validation errors', function() {
+    var post = new Post;
+    
+    post.validate = function() {
+      return 'ERROR';
+    };
+
+    var editor = new editors.Text({
+      model: post,
+      key: 'title'
+    }).render();
+    
+    var err = editor.commit();
+    
+    equal(err, 'ERROR');
+  });
+  
+  test('validate() - returns validation errors', function() {
+    var editor = new editors.Text({
+      key: 'title',
+      validators: ['required']
+    });
+
+    ok(editor.validate());
+
+    editor.setValue('a value');
+
+    ok(_(editor.validate()).isUndefined());
+  });
+})();
 
 
 module('Text');
@@ -625,6 +687,28 @@ module('Object');
         field.setValue(newValue);
         
         deepEqual(field.getValue(), newValue);
+    });
+    
+    test('validate() - returns validation errors', function() {
+      var schema = {};
+      schema.subSchema = {
+        id:     { validators: ['required'] },
+        name:   {},
+        email:  { validators: ['email'] }
+      }
+      
+      var field = new editor({
+        schema: schema,
+        value: {
+          id: null,
+          email: 'invalid'
+        }
+      }).render();
+      
+      var errs = field.validate();
+      
+      equal(errs.id.type, 'required');
+      equal(errs.email.type, 'email');
     });
 
 })();

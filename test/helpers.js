@@ -9,11 +9,44 @@ test('Transforms camelCased string to words', function() {
 
 
 
-module('createTemplate');
+;(function() {
+  
+  module('createTemplate');
+  
+  var createTemplate = Form.helpers.createTemplate;
 
-test('todo', function() {
-    console.log('TODO')
-});
+  test('returns a compiled template if just passed a string', function() {
+    var template = createTemplate('Hello {{firstName}} {{lastName}}.');
+    
+    var result = template({ firstName: 'John', lastName: 'Smith' })
+    
+    equal(result, 'Hello John Smith.')
+  })
+
+  test('works when underscore template settings are different and restores them when done', function() {
+    var originalSetting = /\[\[(.+?)\]\]/g;
+    _.templateSettings.interpolate = originalSetting;
+    
+    var template = createTemplate('Bye {{firstName}} {{lastName}}!');
+    
+    var result = template({ firstName: 'John', lastName: 'Smith' })
+    
+    equal(result, 'Bye John Smith!')
+    
+    equal(_.templateSettings.interpolate, originalSetting)
+  })
+
+  test('returns the supplanted string if a context is passed', function() {
+    var result = createTemplate('Hello {{firstName}} {{lastName}}.', {
+      firstName: 'John',
+      lastName: 'Smith'
+    });
+    
+    equal(result, 'Hello John Smith.')
+  })
+  
+})();
+
 
 
 
@@ -112,43 +145,70 @@ module('triggerCancellableEvent');
 })();
 
 
-module('getValidator');
 
 (function() {
+  
+  module('getValidator');
+  
+  var getValidator = Form.helpers.getValidator;
 
-    test('Bundled validator', function() {
-        var validator = Form.helpers.getValidator('required');
+  test('Given a string, a bundled validator is returned', function() {
+    var required = getValidator('required'),
+        email = getValidator('email');
+    
+    equal(required(null).type, 'required');
+    equal(email('invalid').type, 'email');
+  });
+  
+  test('Given a string, throws if the bundled validator is not found', function() {
+    expect(1);
+    
+    try {
+      getValidator('unknown validator');
+    } catch (e) {
+      equal(e.message, 'Validator "unknown validator" not found');
+    }
+  });
+  
+  test('Given an object, a customised bundled validator is returned', function() {
+    //Can customise error message
+    var required = getValidator({ type: 'required', message: 'Custom message' });
+    
+    var err = required('');
+    equal(err.type, 'required');
+    equal(err.message, 'Custom message');
+    
+    //Can customise options on certain validators
+    var regexp = getValidator({ type: 'regexp', regexp: /foobar/, message: 'Must include "foobar"' });
+    
+    var err = regexp('invalid');
+    equal(err.type, 'regexp');
+    equal(err.message, 'Must include "foobar"');
+  });
 
-        equal(validator, Form.validators.required);
-    });
+  test('Given a regular expression, returns a regexp validator', function() {
+    var regexp = getValidator(/hello/);
+    
+    equal(regexp('invalid').type, 'regexp');
+  });
 
-    test('Regular Expressions', function() {
-        var validator = Form.helpers.getValidator(/hello/);
-        var validator2 = Form.helpers.getValidator({'RegExp': 'another'});
+  test('Given a function, it is returned', function () {
+    var myValidator = function () { return; };
 
-        ok(_(validator('hellooooo')).isUndefined());
-        ok(validator('bye!'));
+    var validator = getValidator(myValidator);
 
-        ok(validator2('this is a test'));
-        ok(_(validator2('this is another test')).isUndefined());
-    });
+    equal(validator, myValidator);
+  });
 
-    test('Function', function () {
-        var myValidator = function () { return; };
-
-        var validator = Form.helpers.getValidator(myValidator);
-
-        equal(validator, myValidator);
-    });
-
-    test('Unknown', function () {
-        raises(function() {
-            Form.helpers.getValidator('unknown validator');
-        }, /not found/i);
-        raises(function() {
-            Form.helpers.getValidator(['this is a list', 'not a validator']);
-        }, /could not process/i);
-    });
+  test('Given an unknown type, an error is thrown', function () {
+    expect(1);
+    
+    try {
+      getValidator(['array']);
+    } catch (e) {
+      equal(e.message, 'Invalid validator: array');
+    }
+  });
 
 })();
 

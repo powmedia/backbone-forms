@@ -1,4 +1,4 @@
-;(function($) {
+;(function($) {  
   
   //==================================================================================================
   //TEMPLATES
@@ -20,6 +20,7 @@
     <li class="bbf-field bbf-field{{type}}">\
       <label for="{{id}}" title="test">{{title}}</label>\
       <div class="bbf-editor bbf-editor{{type}}">{{editor}}</div>\
+      <div class="bbf-help">{{help}}</div>\
     </li>\
     '
   };
@@ -50,7 +51,6 @@
   }
   
   var helpers = {};
-  var validators = {};
   
   /**
    * This function is used to transform the key from a schema into the title used in a label.
@@ -76,9 +76,10 @@
    * Helper to create a template with the {{mustache}} style tags. Template settings are reset
    * to user's settings when done to avoid conflicts.
    * @param {String}      Template string
+   * @param {Object}      Optional; values to replace in template
    * @return {Template}   Compiled template
    */
-  helpers.createTemplate = function(str) {
+  helpers.createTemplate = function(str, context) {
     //Store user's template options 
     var _interpolateBackup = _.templateSettings.interpolate;
 
@@ -89,8 +90,12 @@
 
     //Reset to users' template settings
     _.templateSettings.interpolate = _interpolateBackup;
-
-    return template;
+    
+    if (!context) {
+      return template;
+    } else {
+      return template(context);
+    }
   };
   
   
@@ -169,37 +174,140 @@
     
     fn.apply(context, args);
   }
-
+  
+  /**
+   * Returns a validation function based on the type defined in the schema
+   *
+   * @param {RegExp|String|Function} validator
+   * @return {Function}
+   */
   helpers.getValidator = function(validator) {
-    var isRegExp = _(validator).isRegExp();
-    if (isRegExp || validator['RegExp']) {
-      if (!isRegExp) {
-        validator = new RegExp(validator['RegExp']);
-      }
-      return function (value) {
-        if (!validator.test(value)) {
-          return 'Value '+value+' does not pass validation against regular expression '+validator;
-        }
-      };
-    } else if (_(validator).isString()) {
-      if (validators[validator]) {
-        return validators[validator];
-      } else {
-        throw 'Validator "'+validator+'" not found';
-      }
-    } else if (_(validator).isFunction()) {
-      return validator;
-    } else {
-      throw 'Could not process validator' + validator;
+    //Convert regular expressions to validators
+    if (_.isRegExp(validator)) {
+      return validators.regexp({ regexp: validator });
     }
+    
+    //Use a built-in validator if given a string
+    if (_.isString(validator)) {
+      if (!validators[validator]) throw new Error('Validator "'+validator+'" not found');
+      
+      return validators[validator]();
+    }
+
+    //Functions can be used directly
+    if (_.isFunction(validator)) return validator;
+
+    //Use a customised built-in validator if given an object
+    if (_.isObject(validator) && validator.type) {
+      var config = validator;
+      
+      return validators[config.type](config);
+    }
+    
+    //Unkown validator type
+    throw new Error('Invalid validator: ' + validator);
   };
 
-  validators.required = function (value) {
-    var exists = (value === 0 || !!value);
-    if (!exists) {
-      return 'This field is required';
+
+  
+  //==================================================================================================
+  //VALIDATORS
+  //==================================================================================================
+  
+  var validators = {};
+  
+  validators.errMessages = {
+    required: 'Required',
+    regexp: 'Invalid',
+    email: 'Invalid email address',
+    url: 'Invalid URL',
+    match: 'Must match field "{{field}}"'
+  }
+  
+  validators.required = function(options) {   
+    options = _.extend({
+      type: 'required',
+      message: this.errMessages.required
+    }, options);
+     
+    return function required(value) {
+      options.value = value;
+      
+      var err = {
+        type: options.type,
+        message: helpers.createTemplate(options.message, options)
+      };
+      
+      if (value === null || value === undefined || value === '') return err;
+    };
+  };
+  
+  validators.regexp = function(options) {
+    if (!options.regexp) throw new Error('Missing required "regexp" option for "regexp" validator');
+  
+    options = _.extend({
+      type: 'regexp',
+      message: this.errMessages.regexp
+    }, options);
+    
+    return function regexp(value) {
+      options.value = value;
+      
+      var err = {
+        type: options.type,
+        message: helpers.createTemplate(options.message, options)
+      };
+      
+      //Don't check empty values (add a 'required' validator for this)
+      if (value === null || value === undefined || value === '') return;
+
+      if (!options.regexp.test(value)) return err;
+    };
+  };
+  
+  validators.email = function(options) {
+    options = _.extend({
+      type: 'email',
+      message: this.errMessages.email,
+      regexp: /^[\w\-]{1,}([\w\-.]{1,1}[\w\-]{1,}){0,}[@][\w\-]{1,}([.]([\w\-]{1,})){1,3}$/
+    }, options);
+    
+    return validators.regexp(options);
+  };
+  
+  validators.url = function(options) {
+    options = _.extend({
+      type: 'url',
+      message: this.errMessages.url,
+      regexp: /^(http|https):\/\/(([A-Z0-9][A-Z0-9_-]*)(\.[A-Z0-9][A-Z0-9_-]*)+)(:(\d+))?\/?/i
+    }, options);
+    
+    return validators.regexp(options);
+  };
+  
+  validators.match = function(options) {
+    if (!options.field) throw new Error('Missing required "field" options for "match" validator');
+    
+    options = _.extend({
+      type: 'match',
+      message: this.errMessages.match
+    }, options);
+    
+    return function match(value, attrs) {
+      options.value = value;
+      
+      var err = {
+        type: options.type,
+        message: helpers.createTemplate(options.message, options)
+      };
+      
+      //Don't check empty values (add a 'required' validator for this)
+      if (value === null || value === undefined || value === '') return;
+      
+      if (value != attrs[options.field]) return err;
     }
   };
+  
 
 
 
@@ -299,11 +407,11 @@
      * @param {jQuery}          Wrapped DOM element where field elemends will go
      */
     renderFields: function (fieldsToRender, $container) {
-      var schema = this.schema,
+      var self = this,
+          schema = this.schema,
           model = this.model,
           data = this.data,
-          fields = this.fields,
-          self = this;
+          fields = this.fields;
       
       //Create form fields
       _.each(fieldsToRender, function(key) {
@@ -312,6 +420,7 @@
         if (!itemSchema) throw "Field '"+key+"' not found in schema";
 
         var options = {
+          form: self,
           key: key,
           schema: itemSchema,
           idPrefix: self.idPrefix
@@ -344,20 +453,50 @@
      * @return {Object} Validation errors
      */
     validate: function() {
-      var fields = this.fields,
+      var self = this,
+          fields = this.fields,
           model = this.model,
           errors = {};
 
+      //Collect errors from schema validation
       _.each(fields, function(field) {
         var error = field.validate();
         if (error) {
-            errors[field.key] = error;
+          errors[field.key] = error;
         }
       });
 
+      //Get errors from default Backbone model validator
       if (model && model.validate) {
         var modelErrors = model.validate(this.getValue());
-        if (modelErrors) errors._nonFieldErrors = modelErrors;
+        
+        if (modelErrors) {
+          var isDictionary = _.isObject(modelErrors) && !_.isArray(modelErrors);
+          
+          //If errors are not in object form then just store on the error object
+          if (!isDictionary) {
+            errors._others = errors._others || [];
+            errors._others.push(modelErrors);
+          }
+          
+          //Merge programmatic errors (requires model.validate() to return an object e.g. { fieldKey: 'error' })
+          if (isDictionary) {
+            _.each(modelErrors, function(val, key) {
+              //Set error on field if there isn't one already
+              if (self.fields[key] && !errors[key]) {
+                self.fields[key].setError(val);
+              }
+              
+              else {
+                //Otherwise add to '_others' key
+                errors._others = errors._others || [];
+                var tmpErr = {};
+                tmpErr[key] = val;
+                errors._others.push(tmpErr);
+              }
+            });
+          }
+        }
       }
 
       return _.isEmpty(errors) ? null : errors;
@@ -369,18 +508,19 @@
      * @return {Object}  Validation errors
      */
     commit: function() {
-      var fields = this.fields;
-
+      //Validate
       var errors = this.validate();
-
       if (errors) return errors;
 
-      _.each(fields, function(field) {
-        var error = field.commit();
-        if (error) errors[field.key] = error;
+      //Commit
+      var modelError;
+      this.model.set(this.getValue(), {
+        error: function(model, e) {
+          modelError = e;
+        }
       });
-
-      return _.isEmpty(errors) ? null : errors;
+      
+      if (modelError) return modelError;
     },
 
     /**
@@ -390,21 +530,16 @@
      * @param {String}  To get a specific field value pass the key name
      */
     getValue: function(key) {
-      if (key) {
-        //Return given key only
-        return this.fields[key].getValue();
-      } else {
-        //Return entire form data
-        var schema = this.schema,
-            fields = this.fields
-            obj = {};
+      //Return only given key if specified
+      if (key) return this.fields[key].getValue();
+      
+      //Otherwise return entire form      
+      var values = {};
+      _.each(this.fields, function(field) {
+        values[field.key] = field.getValue();
+      });
 
-        _.each(fields, function(field) {
-          obj[field.key] = field.getValue();
-        });
-
-        return obj;
-      }
+      return values;
     },
     
     /**
@@ -450,12 +585,12 @@
      *          idPrefix    {String} : Prefix to add to the editor DOM element's ID
      */
     initialize: function(options) {
+      this.form = options.form;
       this.key = options.key;
       this.schema = options.schema || {};
       this.value = options.value;
       this.model = options.model;
       this.idPrefix = options.idPrefix || '';
-      this.validators = options.validators || this.schema.validators;
 
       //Set schema defaults
       var schema = this.schema;
@@ -469,6 +604,7 @@
 
       //Standard options that will go to all editors
       var options = {
+        form: this.form,
         key: this.key,
         schema: schema,
         idPrefix: this.idPrefix,
@@ -490,13 +626,19 @@
         title: schema.title,
         id: editor.id,
         type: schema.type,
-        editor: '<div class="bbf-placeholder"></div>'
+        editor: '<span class="bbf-placeholder-editor"></span>',
+        help: '<span class="bbf-placeholder-help"></span>'
       }));
       
-      var $editorContainer = $('.bbf-placeholder', $field).parent();
-      $editorContainer.html('');
-      
+      //Render editor
+      var $editorContainer = $('.bbf-placeholder-editor', $field).parent();
+      $editorContainer.empty();
       $editorContainer.append(editor.render().el);
+      
+      //Set help text
+      this.$help = $('.bbf-placeholder-help', $field).parent();
+      this.$help.empty();
+      if (this.schema.help) this.$help.html(this.schema.help);
       
       this.setElement($field);
 
@@ -507,50 +649,53 @@
      * Check the validity of the field
      * @return {String}
      */
-    validate: function() {    
-      var $el = this.$el,
-          error = null,
-          value = this.getValue(),
-          validators = this.validators,
-          errClass = Form.classNames.error;
-
-      if (validators) {
-        _(validators).each(function(validator) {
-          if (!error) {
-            error = helpers.getValidator(validator)(value);
-          }
-        });
-      }
-
-      if (!error && this.model && this.model.validate) {
-        var change = {};
-        change[this.key] = value;
-        error = this.model.validate(change);
-      }
+    validate: function() {
+      var error = this.editor.validate();
 
       if (error) {
-        $el.addClass(errClass);
+        this.setError(error.message);
       } else {
-        $el.removeClass(errClass);
+        this.clearError();
       }
 
       return error;
+    },
+    
+    /**
+     * Set the field into an error state, adding the error class and setting the error message
+     *
+     * @param {String} errMsg
+     */
+    setError: function(errMsg) {
+      //Object and NestedModel types set their own errors internally
+      if (this.editor.hasNestedForm) return;
+      
+      var errClass = Form.classNames.error;
+
+      this.$el.addClass(errClass);
+      this.$help.html(errMsg);
+    },
+    
+    /**
+     * Clear the error state and reset the help message
+     */
+    clearError: function() {
+      var errClass = Form.classNames.error;
+       
+      this.$el.removeClass(errClass);
+      
+      this.$help.empty();
+      
+      //Reset help text if available
+      var helpMsg = this.schema.help;
+      if (helpMsg) this.$help.html(helpMsg);
     },
 
     /**
      * Update the model with the new value from the editor
      */
     commit: function() {
-      var error = null;
-      var change = {};
-      change[this.key] = this.editor.getValue();
-      this.model.set(change, {
-        error: function(model, e) {
-          error = e;
-        }
-      });
-
-      return error;
+      return this.editor.commit();
     },
 
     /**
@@ -621,7 +766,9 @@
       
       if (this.value === undefined) this.value = this.defaultValue;
 
+      this.form = options.form;
       this.schema = options.schema || {};
+      this.validators = options.validators || this.schema.validators;
     },
 
     getValue: function() {
@@ -630,6 +777,49 @@
     
     setValue: function() {
       throw 'Not implemented. Extend and override this method.';
+    },
+    
+    /**
+     * Update the model with the current value
+     * NOTE: The method is defined on the editors so that they can be used independently of fields
+     *
+     * @return {Mixed} error
+     */
+    commit: function() {
+      var error = this.validate();
+      if (error) return error;
+      
+      this.model.set(this.key, this.getValue(), {
+        error: function(model, e) {
+          error = e;
+        }
+      });
+      
+      if (error) return error;
+    },
+    
+    /**
+     * Check validity
+     * NOTE: The method is defined on the editors so that they can be used independently of fields
+     * 
+     * @return {String}
+     */
+    validate: function() {
+      var $el = this.$el,
+          error = null,
+          value = this.getValue(),
+          formValues = this.form ? this.form.getValue() : {},
+          validators = this.validators;
+
+      if (validators) {
+        _.each(validators, function(validator) {
+          if (!error) {
+            error = helpers.getValidator(validator)(value, formValues);
+          }
+        });
+      }
+
+      return error;
     }
 
   });
@@ -1059,6 +1249,8 @@
    *   idPrefix, 
    */
   editors.Object = editors.Base.extend({
+    //Prevent error classes being set on the main control; they are internally on the individual fields
+    hasNestedForm: true,
 
     className: 'bbf-object',
 
@@ -1106,6 +1298,10 @@
       this.form.remove();
 
       Backbone.View.prototype.remove.call(this);
+    },
+    
+    validate: function() {
+      return this.form.validate();
     }
 
   });
@@ -1121,7 +1317,6 @@
    *   schema.model:   Embedded model constructor
    */
   editors.NestedModel = editors.Object.extend({
-
     initialize: function(options) {
       editors.Base.prototype.initialize.call(this, options);
 

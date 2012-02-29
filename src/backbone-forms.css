@@ -8,6 +8,8 @@
 .bbf-field {
     margin: 1em 0;
     list-style-type: none;
+    position: relative;
+    clear: both;
 }
 
     .bbf-field label {
@@ -23,6 +25,12 @@
         .bbf-field input, .bbf-field textarea, .bbf-field select {
             width: 100%;
         }
+    
+    .bbf-field .bbf-help {
+        margin-left: 25%;
+        width: 74%;
+        color: #999;
+    }
 
     .bbf-field.bbf-error .bbf-editor {
         outline: 1px solid red;
