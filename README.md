@@ -42,6 +42,7 @@ The schema above will automatically create a form similar to this:
   - [Editors without forms](#editors-without-forms)
   - [Using nested fields](#nested-fields)
   - [Custom editors](#custom-editors)
+  - [Help](#help)
 
 
 
@@ -470,7 +471,7 @@ However, due to Backbone's lack of support for nested model attributes, getting 
 
 
 <a name="custom-editors"/>
-##Custom Editors
+##Custom editors
 
 Writing a custom editor is simple. They must extend from Backbone.Form.editors.Base.
     
@@ -508,16 +509,14 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 - The original value is available through this.value.
 - The field schema can be accessed via this.schema. This allows you to pass in custom parameters.
 
-[Back to top](#top)
 
 
-
-<a name="help/>
-#Help & discussion
+<a name="help"/>
+##Help & discussion
 
 - [Google Groups](http://groups.google.com/group/backbone-forms)
 
 
-#Contributors
+##Contributors
 
 - Charles Davison - [powmedia](http://github.com/powmedia)
