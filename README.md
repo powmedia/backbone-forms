@@ -475,11 +475,15 @@ Validation runs when `form.commit()` or `form.validate()` are called.  If valida
 
 ##Customising error messages
 
-After including the Backbone Forms file, you can override the default error messages:
+After including the Backbone Forms file, you can override the default error messages.
 
-    Backbone.Form.validators.errMessages.email = 'Please enter a valid email address';
+{{mustache}} tags are supported; they will be replaced with the options passed into the validator configuration object. `{{value}}` is a special tag which is passed the current field value.
+
+    Backbone.Form.validators.errMessages.required = 'Please enter a value for this field.';
     
-    Backbone.Form.validators.errMessages.match = 'This value must match {{fieldName}}'; //{{fieldName}} will be replaced with the `fieldName` option passed into the validator config;
+    Backbone.Form.validators.errMessages.match = 'This value must match {{field}}';
+    
+    Backbone.Form.validators.errMessages.email = '{{value}} is an invalid email address.';
 
 You can also override the error message on a field by field basis by passing the `message` option in the validator config.
 
