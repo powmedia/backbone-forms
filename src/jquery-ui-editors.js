@@ -1,157 +1,165 @@
-;(function() {
-  
-  var Form = Backbone.Form,
-      Base = Form.editors.Base,
-      createTemplate = Form.helpers.createTemplate,
-      triggerCancellableEvent = Form.helpers.triggerCancellableEvent,
-      exports = {};
-  
-  /**
-   * Additional editors that depend on jQuery UI
-   */
-  
-  //DATE
-  exports.Date = Base.extend({
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD. Register as an anonymous module.
+        define( ['Backbone', 'jquery', 'jquery-ui'], factory);
+    } else {
+        // RequireJS isn't being used. Assume backbone is loaded in <script> tags
+        factory(Backbone, jQuery);
+    }
+}(function (Backbone, $) {
 
-    className: 'bbf-date',
-    
-    initialize: function(options) {
-      Base.prototype.initialize.call(this, options);
-      
-      //Cast to Date
-      if (this.value && !_.isDate(this.value)) {
-        this.value = new Date(this.value);
-      }
-      
-      //Set default date
-      if (!this.value) {
-        var date = new Date();
-        date.setSeconds(0);
-        date.setMilliseconds(0);
-        
-        this.value = date;
-      }
-    },
-
-    render: function() {
-      var $el = this.$el;
-
-      $el.html('<input>');
-
-      var input = $('input', $el);
-
-      input.datepicker({
-        dateFormat: 'dd/mm/yy',
-        showButtonPanel: true
-      });
-
-      //Make sure setValue of this object is called, not of any objects extending it (e.g. DateTime)
-      exports.Date.prototype.setValue.call(this, this.value);
-
-      return this;
-    },
+    var Form = Backbone.Form,
+        Base = Form.editors.Base,
+        createTemplate = Form.helpers.createTemplate,
+        triggerCancellableEvent = Form.helpers.triggerCancellableEvent,
+        exports = {};
 
     /**
-    * @return {Date}   Selected date
-    */
-    getValue: function() {
-      var input = $('input', this.el),
-          date = input.datepicker('getDate');
+     * Additional editors that depend on jQuery UI
+     */
 
-      return date;
-    },
-    
-    setValue: function(value) {
-      $('input', this.el).datepicker('setDate', value);
-    }
+        //DATE
+    exports.Date = Base.extend({
 
-  });
+        className:'bbf-date',
 
+        initialize:function (options) {
+            Base.prototype.initialize.call(this, options);
 
-  //DATETIME
-  exports.DateTime = exports.Date.extend({
+            //Cast to Date
+            if (this.value && !_.isDate(this.value)) {
+                this.value = new Date(this.value);
+            }
 
-    className: 'bbf-datetime',
+            //Set default date
+            if (!this.value) {
+                var date = new Date();
+                date.setSeconds(0);
+                date.setMilliseconds(0);
 
-    template: createTemplate('<select>{{hours}}</select> : <select>{{mins}}</select>'),
+                this.value = date;
+            }
+        },
 
-    render: function() {
-      function pad(n) {
-        return n < 10 ? '0' + n : n
-      }
+        render:function () {
+            var $el = this.$el;
 
-      //Render the date element first
-      exports.Date.prototype.render.call(this);
+            $el.html('<input>');
 
-      //Setup hour options
-      var hours = _.range(0, 24),
-          hoursOptions = [];
+            var input = $('input', $el);
 
-      _.each(hours, function(hour) {
-        hoursOptions.push('<option value="'+hour+'">' + pad(hour) + '</option>');
-      });
+            input.datepicker({
+                dateFormat:     'dd/mm/yy',
+                showButtonPanel:true
+            });
 
-      //Setup minute options
-      var minsInterval = this.schema.minsInterval || 15,
-          mins = _.range(0, 60, minsInterval),
-          minsOptions = [];
+            //Make sure setValue of this object is called, not of any objects extending it (e.g. DateTime)
+            exports.Date.prototype.setValue.call(this, this.value);
 
-      _.each(mins, function(min) {
-        minsOptions.push('<option value="'+min+'">' + pad(min) + '</option>');
-      });
+            return this;
+        },
 
-      //Render time selects
-      this.$el.append(this.template({
-        hours: hoursOptions.join(),
-        mins: minsOptions.join()
-      }));
+                 /**
+                  * @return {Date}   Selected date
+                  */
+                 getValue:function () {
+                     var input = $('input', this.el),
+                         date = input.datepicker('getDate');
 
-      //Store references to selects
-      this.$hours = $('select:eq(0)', this.el);
-      this.$mins = $('select:eq(1)', this.el);
-      
-      //Set time
-      this.setValue(this.value);
+                     return date;
+                 },
 
-      return this;
-    },
+        setValue:function (value) {
+            $('input', this.el).datepicker('setDate', value);
+        }
 
-    /**
-    * @return {Date}   Selected datetime
-    */
-    getValue: function() {
-      var input = $('input', this.el),
-          date = input.datepicker('getDate');
-
-      date.setHours(this.$hours.val());
-      date.setMinutes(this.$mins.val());
-      date.setMilliseconds(0);
-
-      return date;
-    },
-    
-    setValue: function(date) {
-      exports.Date.prototype.setValue.call(this, date);
-      
-      this.$hours.val(date.getHours());
-      this.$mins.val(date.getMinutes());
-    }
-
-  });
+    });
 
 
-  //LIST
-  exports.List = Base.extend({
+    //DATETIME
+    exports.DateTime = exports.Date.extend({
 
-    className: 'bbf-list',
+        className:'bbf-datetime',
 
-    //Note: The extra div around the <ul> is used to limit the drag area
-    template: createTemplate('\
+        template:createTemplate('<select>{{hours}}</select> : <select>{{mins}}</select>'),
+
+        render:function () {
+            function pad(n) {
+                return n < 10 ? '0' + n : n
+            }
+
+            //Render the date element first
+            exports.Date.prototype.render.call(this);
+
+            //Setup hour options
+            var hours = _.range(0, 24),
+                hoursOptions = [];
+
+            _.each(hours, function (hour) {
+                hoursOptions.push('<option value="' + hour + '">' + pad(hour) + '</option>');
+            });
+
+            //Setup minute options
+            var minsInterval = this.schema.minsInterval || 15,
+                mins = _.range(0, 60, minsInterval),
+                minsOptions = [];
+
+            _.each(mins, function (min) {
+                minsOptions.push('<option value="' + min + '">' + pad(min) + '</option>');
+            });
+
+            //Render time selects
+            this.$el.append(this.template({
+                hours:hoursOptions.join(),
+                mins: minsOptions.join()
+            }));
+
+            //Store references to selects
+            this.$hours = $('select:eq(0)', this.el);
+            this.$mins = $('select:eq(1)', this.el);
+
+            //Set time
+            this.setValue(this.value);
+
+            return this;
+        },
+
+                 /**
+                  * @return {Date}   Selected datetime
+                  */
+                 getValue:function () {
+                     var input = $('input', this.el),
+                         date = input.datepicker('getDate');
+
+                     date.setHours(this.$hours.val());
+                     date.setMinutes(this.$mins.val());
+                     date.setMilliseconds(0);
+
+                     return date;
+                 },
+
+        setValue:function (date) {
+            exports.Date.prototype.setValue.call(this, date);
+
+            this.$hours.val(date.getHours());
+            this.$mins.val(date.getMinutes());
+        }
+
+    });
+
+
+    //LIST
+    exports.List = Base.extend({
+
+        className:'bbf-list',
+
+        //Note: The extra div around the <ul> is used to limit the drag area
+        template: createTemplate('\
       <ul></ul>\
       <div><button class="bbf-list-add">Add</div>\
     '),
 
-    itemTemplate: createTemplate('\
+        itemTemplate:createTemplate('\
       <li rel="{{id}}">\
         <span class="bbf-list-text">{{text}}</span>\
         <div class="bbf-list-actions">\
@@ -160,269 +168,269 @@
         </div>\
       </li>\
     '),
-    
-    editorTemplate: createTemplate('\
+
+        editorTemplate:createTemplate('\
       <div class="bbf-field">\
           <div class="bbf-list-editor"></div>\
       </div>\
     '),
 
-    events: {
-      'click .bbf-list-add':   'addNewItem',
-      'click .bbf-list-edit':  'editItem',
-      'click .bbf-list-del':   'deleteItem'
-    },
+        events:{
+            'click .bbf-list-add': 'addNewItem',
+            'click .bbf-list-edit':'editItem',
+            'click .bbf-list-del': 'deleteItem'
+        },
 
-    initialize: function(options) {
-      Base.prototype.initialize.call(this, options);
+        initialize:function (options) {
+            Base.prototype.initialize.call(this, options);
 
-      if (!this.schema) throw "Missing required option 'schema'";
-      
-      this.schema.listType = this.schema.listType || 'Text';
-      
-      if (this.schema.listType == 'NestedModel' && !this.schema.model)
-          throw "Missing required option 'schema.model'";
-    },
+            if (!this.schema) throw "Missing required option 'schema'";
 
-    render: function() {
-      var $el = this.$el;
-      
-      //Main element
-      $el.html(this.template());
-      
-      //Create list
-      var self = this,
-          data = this.value || [],
-          schema = this.schema,
-          itemToString = this.itemToString,
-          itemTemplate = this.itemTemplate,
-          listEl = $('ul', $el);
-      
-      _.each(data, function(itemData) {     
-        var text = itemToString.call(self, itemData);
+            this.schema.listType = this.schema.listType || 'Text';
 
-        //Create DOM element
-        var li = $(itemTemplate({
-          id: itemData.id || '',
-          text: text
-        }));
+            if (this.schema.listType == 'NestedModel' && !this.schema.model)
+                throw "Missing required option 'schema.model'";
+        },
 
-        //Attach data
-        $.data(li[0], 'data', itemData);
+        render:function () {
+            var $el = this.$el;
 
-        listEl.append(li);
-      });
+            //Main element
+            $el.html(this.template());
 
-      //Make sortable
-      if (schema.sortable !== false) {
-        listEl.sortable({
-          axis: 'y',
-          cursor: 'move',
-          containment: 'parent'
-        });
-        
-        $el.addClass('bbf-list-sortable');
-      }
+            //Create list
+            var self = this,
+                data = this.value || [],
+                schema = this.schema,
+                itemToString = this.itemToString,
+                itemTemplate = this.itemTemplate,
+                listEl = $('ul', $el);
 
-      //jQuery UI buttonize
-      $('button.bbf-list-add', $el).button({
-        text: false,
-        icons: { primary: 'ui-icon-plus' }
-      });
-      $('button.bbf-list-edit', $el).button({
-        text: false,
-        icons: { primary: 'ui-icon-pencil' }
-      });
-      $('button.bbf-list-del', $el).button({
-        text: false,
-        icons: { primary: 'ui-icon-trash' }
-      });
+            _.each(data, function (itemData) {
+                var text = itemToString.call(self, itemData);
 
-      return this;
-    },
+                //Create DOM element
+                var li = $(itemTemplate({
+                    id:  itemData.id || '',
+                    text:text
+                }));
 
-    /**
-     * Formats an item for display in the list
-     * For example objects, dates etc. can have a custom
-     * itemToString method which says how it should be formatted.
-     */
-    itemToString: function(data) {
-      if (!data) return data;
-      
-      var schema = this.schema;
-      
-      //If there's a specified toString use that
-      if (schema.itemToString) return schema.itemToString(data);
-      
-      //Otherwise check if it's NestedModel with it's own toString() method
-      if (this.schema.listType == 'NestedModel') {
-        var model = new (this.schema.model)(data);
-      
-        return model.toString();
-      }
-      
-      //Last resort, just return the data as is
-      return data;
-    },
+                //Attach data
+                $.data(li[0], 'data', itemData);
 
-    /**
-     * Add a new item to the list if it is completed in the editor
-     */
-    addNewItem: function(event) {
-      event.preventDefault();
-               
-      var self = this;
+                listEl.append(li);
+            });
 
-      this.openEditor(null, function(value) {
-        //Fire 'addItem' cancellable event
-        triggerCancellableEvent(self, 'addItem', [value], function() {
-          var text = self.itemToString(value);
+            //Make sortable
+            if (schema.sortable !== false) {
+                listEl.sortable({
+                    axis:       'y',
+                    cursor:     'move',
+                    containment:'parent'
+                });
 
-          //Create DOM element
-          var li = $(self.itemTemplate({
-            id: value.id || '',
-            text: text
-          }));
+                $el.addClass('bbf-list-sortable');
+            }
 
-          //Store data
-          $.data(li[0], 'data', value);
+            //jQuery UI buttonize
+            $('button.bbf-list-add', $el).button({
+                text: false,
+                icons:{ primary:'ui-icon-plus' }
+            });
+            $('button.bbf-list-edit', $el).button({
+                text: false,
+                icons:{ primary:'ui-icon-pencil' }
+            });
+            $('button.bbf-list-del', $el).button({
+                text: false,
+                icons:{ primary:'ui-icon-trash' }
+            });
 
-          $('ul', self.el).append(li);
+            return this;
+        },
 
-          //jQuery UI buttonize
-          $('button.bbf-list-edit', this.el).button({
-            text: false,
-            icons: { primary: 'ui-icon-pencil' }
-          });
-          $('button.bbf-list-del', this.el).button({
-            text: false,
-            icons: { primary: 'ui-icon-trash' }
-          });
-        });
-      });
-    },
+                     /**
+                      * Formats an item for display in the list
+                      * For example objects, dates etc. can have a custom
+                      * itemToString method which says how it should be formatted.
+                      */
+                     itemToString:function (data) {
+                         if (!data) return data;
 
-    /**
-     * Edit an existing item in the list
-     */
-    editItem: function(event) {
-      event.preventDefault();
-             
-      var self = this,
-          li = $(event.target).closest('li'),
-          originalValue = $.data(li[0], 'data');
+                         var schema = this.schema;
 
-      this.openEditor(originalValue, function(newValue) {
-        //Fire 'editItem' cancellable event
-        triggerCancellableEvent(self, 'editItem', [newValue], function() {
-          //Update display
-          $('.bbf-list-text', li).html(self.itemToString(newValue));
+                         //If there's a specified toString use that
+                         if (schema.itemToString) return schema.itemToString(data);
 
-          //Store data
-          $.data(li[0], 'data', newValue);
-        });
-      });
-    },
+                         //Otherwise check if it's NestedModel with it's own toString() method
+                         if (this.schema.listType == 'NestedModel') {
+                             var model = new (this.schema.model)(data);
 
-    deleteItem: function(event) {
-      event.preventDefault();
-  
-      var self = this,
-          li = $(event.target).closest('li'),
-          data = $.data(li[0], 'data');
+                             return model.toString();
+                         }
 
-      var confirmDelete = (this.schema.confirmDelete) ? this.schema.confirmDelete : false,
-          confirmMsg = this.schema.confirmDeleteMsg || 'Are you sure?';
-                  
-      function remove() {
-        triggerCancellableEvent(self, 'removeItem', [data], function() {
-          li.remove();
-        });
-      }
-      
-      if (this.schema.confirmDelete) {
-        if (confirm(confirmMsg)) remove();
-      } else {
-        remove();
-      }
-    },
+                         //Last resort, just return the data as is
+                         return data;
+                     },
 
-    /**
-     * Opens the sub editor dialog
-     * @param {Mixed}       Data (if editing existing list item, null otherwise)
-     * @param {Function}    Save callback. receives: value
-     */
-    openEditor: function(data, callback) {
-      var self = this,
-          schema = this.schema,
-          listType = schema.listType || 'Text';
+                   /**
+                    * Add a new item to the list if it is completed in the editor
+                    */
+                   addNewItem:function (event) {
+                       event.preventDefault();
 
-      var editor = Form.helpers.createEditor(listType, {
-        key: '',
-        schema: schema,
-        value: data
-      }).render();
-      
-      var container = $(this.editorTemplate());
-      $('.bbf-list-editor', container).html(editor.el);
-      
-      var close = function() {
-        $(document).unbind('keydown', handleEnterPressed);
-        
-        container.dialog('close');
+                       var self = this;
 
-        editor.remove();
-        container.remove();
-      };
-      
-      var saveAndClose = function() {        
-        var errs = editor.validate();
-        if (errs) return;
-        
-        callback(editor.getValue());
-        close();
-      }
-      
-      var handleEnterPressed = function(event) {
-        if (event.keyCode != 13) return;
-        
-        saveAndClose();
-      }
+                       this.openEditor(null, function (value) {
+                           //Fire 'addItem' cancellable event
+                           triggerCancellableEvent(self, 'addItem', [value], function () {
+                               var text = self.itemToString(value);
 
-      $(container).dialog({
-        resizable:  false,
-        modal:      true,
-        width:      500,
-        title:      data ? 'Edit item' : 'New item',
-        buttons: {
-          'OK': saveAndClose, 
-          'Cancel': close
+                               //Create DOM element
+                               var li = $(self.itemTemplate({
+                                   id:  value.id || '',
+                                   text:text
+                               }));
+
+                               //Store data
+                               $.data(li[0], 'data', value);
+
+                               $('ul', self.el).append(li);
+
+                               //jQuery UI buttonize
+                               $('button.bbf-list-edit', this.el).button({
+                                   text: false,
+                                   icons:{ primary:'ui-icon-pencil' }
+                               });
+                               $('button.bbf-list-del', this.el).button({
+                                   text: false,
+                                   icons:{ primary:'ui-icon-trash' }
+                               });
+                           });
+                       });
+                   },
+
+                 /**
+                  * Edit an existing item in the list
+                  */
+                 editItem:function (event) {
+                     event.preventDefault();
+
+                     var self = this,
+                         li = $(event.target).closest('li'),
+                         originalValue = $.data(li[0], 'data');
+
+                     this.openEditor(originalValue, function (newValue) {
+                         //Fire 'editItem' cancellable event
+                         triggerCancellableEvent(self, 'editItem', [newValue], function () {
+                             //Update display
+                             $('.bbf-list-text', li).html(self.itemToString(newValue));
+
+                             //Store data
+                             $.data(li[0], 'data', newValue);
+                         });
+                     });
+                 },
+
+        deleteItem:function (event) {
+            event.preventDefault();
+
+            var self = this,
+                li = $(event.target).closest('li'),
+                data = $.data(li[0], 'data');
+
+            var confirmDelete = (this.schema.confirmDelete) ? this.schema.confirmDelete : false,
+                confirmMsg = this.schema.confirmDeleteMsg || 'Are you sure?';
+
+            function remove() {
+                triggerCancellableEvent(self, 'removeItem', [data], function () {
+                    li.remove();
+                });
+            }
+
+            if (this.schema.confirmDelete) {
+                if (confirm(confirmMsg)) remove();
+            } else {
+                remove();
+            }
+        },
+
+                   /**
+                    * Opens the sub editor dialog
+                    * @param {Mixed}       Data (if editing existing list item, null otherwise)
+                    * @param {Function}    Save callback. receives: value
+                    */
+                   openEditor:function (data, callback) {
+                       var self = this,
+                           schema = this.schema,
+                           listType = schema.listType || 'Text';
+
+                       var editor = Form.helpers.createEditor(listType, {
+                           key:   '',
+                           schema:schema,
+                           value: data
+                       }).render();
+
+                       var container = $(this.editorTemplate());
+                       $('.bbf-list-editor', container).html(editor.el);
+
+                       var close = function () {
+                           $(document).unbind('keydown', handleEnterPressed);
+
+                           container.dialog('close');
+
+                           editor.remove();
+                           container.remove();
+                       };
+
+                       var saveAndClose = function () {
+                           var errs = editor.validate();
+                           if (errs) return;
+
+                           callback(editor.getValue());
+                           close();
+                       }
+
+                       var handleEnterPressed = function (event) {
+                           if (event.keyCode != 13) return;
+
+                           saveAndClose();
+                       }
+
+                       $(container).dialog({
+                           resizable:false,
+                           modal:    true,
+                           width:    500,
+                           title:    data ? 'Edit item' : 'New item',
+                           buttons:  {
+                               'OK':    saveAndClose,
+                               'Cancel':close
+                           }
+                       });
+
+                       //Save and close dialog on Enter keypress
+                       $(document).bind('keydown', handleEnterPressed);
+                   },
+
+        getValue:function () {
+            var data = [];
+
+            $('li', this.el).each(function (index, li) {
+                data.push($.data(li, 'data'));
+            });
+
+            return data;
+        },
+
+        setValue:function (value) {
+            this.value = value;
+            this.render();
         }
-      });
 
-      //Save and close dialog on Enter keypress
-      $(document).bind('keydown', handleEnterPressed);
-    },
-
-    getValue: function() {
-      var data = [];
-
-      $('li', this.el).each(function(index, li) {
-        data.push($.data(li, 'data'));
-      });
-
-      return data;
-    },
-    
-    setValue: function(value) {
-      this.value = value;
-      this.render();
-    }
-
-  });
+    });
 
 
-  //Exports
-  _.extend(Form.editors, exports);
-  
-})();
+    //Exports
+    _.extend(Form.editors, exports);
+
+}));
