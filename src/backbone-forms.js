@@ -608,7 +608,8 @@
         key: this.key,
         schema: schema,
         idPrefix: this.idPrefix,
-        id: this.idPrefix + this.key
+        id: this.idPrefix + this.key,
+        name: this.key
       };
 
       //Decide on data delivery type to pass to editors
@@ -758,6 +759,7 @@
         this.model = options.model;
         this.key = options.key;
 
+        this.name = options.name;
         this.value = this.model.get(this.key);
       }
       else if (options.value) {
@@ -769,6 +771,8 @@
       this.form = options.form;
       this.schema = options.schema || {};
       this.validators = options.validators || this.schema.validators;
+
+      this.$el.attr('name', this.name);
     },
 
     getValue: function() {
