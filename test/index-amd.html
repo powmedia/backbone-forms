@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <link rel="stylesheet" href="lib/qunit.css" type="text/css" media="screen"/>
+    <link rel="stylesheet" href="lib/jquery-ui/flick/jquery-ui-1.8.14.custom.css" type="text/css" media="screen"/>
+    <link rel="stylesheet" href="../src/backbone-forms.css" type="text/css" media="screen"/>
+    <script src="lib/qunit.js"></script>
+    <script type="text/javascript">
+    QUnit.config.autostart = false;
+    </script>
+    <script src="lib/require-jquery.js"></script>
+    <script type="text/javascript">
+        require.config({
+            paths:{
+                Backbone:'lib/backbone-0.9.1-amd',
+                underscore:'lib/underscore-1.3.1-amd',
+                'jquery-ui':'lib/jquery-ui/jquery-ui-1.8.14.custom.min',
+                'Backbone.Form':'../src/backbone-forms',
+                'jquery-editors':'../src/jquery-ui-editors'
+            }
+        });
+    </script>
+    <!--<script type="text/javascript" src="lib/qunit.js"></script>-->
+
+    <!--<script src="lib/underscore-1.3.1.min.js"></script>-->
+    <!--<script src="lib/backbone-0.9.1.min.js"></script>-->
+    <!--<script src="../src/backbone-forms.js"></script>-->
+    <!--<script src="../src/jquery-ui-editors.js"></script>-->
+</head>
+<body>
+<h1 id="qunit-header">backbone-forms tests</h1>
+
+<h2 id="qunit-banner"></h2>
+
+<div id="qunit-testrunner-toolbar"></div>
+<h2 id="qunit-userAgent"></h2>
+<ol id="qunit-tests"></ol>
+<div id="qunit-fixture">test markup, will be hidden</div>
+
+<!--<script src="_setup.js"></script>-->
+<!--<script src="helpers.js"></script>-->
+<!--<script src="form.js"></script>-->
+<!--<script src="field.js"></script>-->
+<!--<script src="editors.js"></script>-->
+<!--<script src="validators.js"></script>-->
+<!--<script src="jquery-ui-editors.js"></script>-->
+
+
+<div id="uiTest"></div>
+<script>
+    require(['jquery', 'Backbone.Form', 'jquery-editors', '_setup.js', 'helpers.js', 'form.js', 'field.js', 'editors.js', 'validators.js', 'jquery-ui-editors.js'], function ($, Backbone) {
+        console.log('here')
+        function validateEmail(str) {
+            var regex = new RegExp("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
+
+            return regex.test(str) ? null : 'Invalid email';
+        }
+
+        var Model = Backbone.Model.extend({
+            schema:{
+                email:{ dataType:'email', validators:['required', validateEmail] },
+                tel:{ type:'Text', dataType:'tel', validators:['required'] },
+                number:{ type:'Number', validators:[/[0-9]+(?:\.[0-9]*)?/] },
+                checkbox:{ type:'Checkbox' },
+                date:{ type:'Date', help:'Some help text' },
+                datetime:{ type:'DateTime' },
+                list:{ type:'List' },
+                radio:{ type:'Radio', options:['Opt 1', 'Opt 2'] },
+                checkboxes:{ type:'Checkboxes', options:['Sterling', 'Lana', 'Cyril', 'Cheryl', 'Pam']
+                }
+            }
+        });
+
+        var model = new Model({
+            number:null,
+            checkbox:true,
+            list:['item1', 'item2', 'item3']
+        });
+
+        var form = new Backbone.Form({
+            model:model,
+            fieldsets:[
+                ['email', 'tel', 'number', 'checkbox', 'radio', 'checkboxes'],
+                { legend:'jQuery UI editors', fields:['date', 'datetime', 'list'] }
+            ]
+        }).render();
+
+        // window.form = form;
+
+        $('#uiTest').html(form.el);
+        QUnit.start();
+    });
+
+</script>
+</body>
+</html>
