@@ -26,6 +26,7 @@ The schema above will automatically create a form similar to this:
 <a name="top"/>
 ##Table of Contents:
 - [Installation](#installation)
+- [AMD](#amd)
 - [Usage](#usage)
 - [Schema Definition](#schema-definition)
   - [Text](#editor-text)
@@ -68,8 +69,8 @@ To use a custom template pack, e.g. Bootstrap, include the relevant file after b
 
 If you use BackboneJS with node.js, you can just `require('backbone-forms');` in your index file.
 
-
-#AMD support [RequireJS(http://requirejs.org)
+<a name="amd">
+#AMD support [RequireJS](http://requirejs.org)
 If you use BackboneForms with require.js you can set up as follows
 ```javascript
  require.config({
