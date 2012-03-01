@@ -68,10 +68,13 @@ To use a custom template pack, e.g. Bootstrap, include the relevant file after b
     <script src="backbone-forms/src/templates/bootstrap.js"></script>
 
 If you use BackboneJS with node.js, you can just `require('backbone-forms');` in your index file.
+[Back to top](#top)
+
 
 <a name="amd">
 #AMD support [RequireJS](http://requirejs.org)
-If you use BackboneForms with require.js you can set up as follows
+If you use Backbone Forms with require.js you can set up as follows
+
 ```javascript
  require.config({
             paths:{
@@ -88,6 +91,7 @@ If you use BackboneForms with require.js you can set up as follows
 
   });
 ```
+
 Note the .js is missing.  This is on purpose.
 Also note:
  Special versions of [underscore](https://github.com/amdjs/underscore) and [backbone](https://github.com/amdjs/backbone) to support AMD
