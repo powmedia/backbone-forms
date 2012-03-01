@@ -1,6 +1,15 @@
 (function() {
   module('Base');
   
+  test('initialize() - sets the "name" attribute on the element, if key is available', function() {
+    var editor = new editors.Text({
+      model: new Post,
+      key: 'title'
+    }).render();
+    
+    equal($(editor.el).attr('name'), 'title')
+  })
+  
   test('commit() - returns validation errors', function() {
     var editor = new editors.Text({
       model: new Post,
