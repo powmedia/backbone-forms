@@ -362,6 +362,10 @@
         schema: schema,
         value: data
       }).render();
+
+      // prevent brower default form submission due to Enter key
+      var frm = editor.$('form');
+      frm.submit(function(e) { e.preventDefault(); });
       
       var container = $(this.editorTemplate());
       $('.bbf-list-editor', container).html(editor.el);
