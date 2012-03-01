@@ -1,7 +1,7 @@
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD. Register as an anonymous module.
-        define('Forms', ['Backbone', 'jquery'], factory);
+        define('Backbone.Form', ['Backbone', 'jquery'], factory);
     } else {
         // RequireJS isn't being used. Assume backbone is loaded in <script> tags
         factory(Backbone, jQuery);
