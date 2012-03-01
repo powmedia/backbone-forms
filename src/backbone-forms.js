@@ -673,7 +673,8 @@
       var errClass = Form.classNames.error;
 
       this.$el.addClass(errClass);
-      this.$help.html(errMsg);
+      
+      if (this.$help) this.$help.html(errMsg);
     },
     
     /**
