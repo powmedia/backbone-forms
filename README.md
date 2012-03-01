@@ -202,6 +202,10 @@ Creates a normal text input.
 
 - Changes the type="text" attribute. Used for HTML5 form inputs such as `url`, `tel`, `email`.  When viewing on a mobile device e.g. iOS, this will change the type of keyboard that is opened. For example, `tel` opens a numeric keypad.
 
+**`maxLength`**
+
+- Changes the "maxlength" attribute. Used for limiting the number of characters allowed in the form input.
+
 
 <a name="editor-select"/>
 ##Select
