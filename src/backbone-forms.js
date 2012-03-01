@@ -842,9 +842,15 @@
       editors.Base.prototype.initialize.call(this, options);
       
       //Allow customising text type (email, phone etc.) for HTML5 browsers
-      var type = 'text';
+      var type = 'text',
+          maxLength = 0;
       
       if (this.schema && this.schema.dataType) type = this.schema.dataType;
+      if (this.schema && this.schema.maxLength) maxLength = this.schema.maxLength;
+
+      if (maxLength > 0) {
+        this.$el.attr('maxlength', maxLength);
+      }
 
       this.$el.attr('type', type);
     },
