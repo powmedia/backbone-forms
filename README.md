@@ -68,6 +68,31 @@ To use a custom template pack, e.g. Bootstrap, include the relevant file after b
 
 If you use BackboneJS with node.js, you can just `require('backbone-forms');` in your index file.
 
+
+#AMD support [RequireJS(http://requirejs.org)
+If you use BackboneForms with require.js you can set up as follows
+```javascript
+ require.config({
+            paths:{
+                Backbone:'path/to/backbone-0.9.1-amd',
+                underscore:'path/to/underscore-1.3.1-amd',
+                'jquery-ui':'path/to/jquery-ui/jquery-ui-1.8.14.custom.min',
+                'Backbone.Form':'path/to/backbone-forms',
+                'jquery-editors':'path/to/jquery-ui-editors'
+            }
+        });
+
+  require(['Backbone.Form'], function(Backbone){
+        //your app here.
+
+  });
+```
+Note the .js is missing.  This is on purpose.
+Also note:
+ Special versions of [underscore](https://github.com/amdjs/underscore) and [backbone](https://github.com/amdjs/backbone) to support AMD
+
+ and this assumes your using the require-jquery.js [see](http://requirejs.org/docs/download.html#samplejquery)
+
 [Back to top](#top)
 
 
