@@ -684,11 +684,14 @@
        
       this.$el.removeClass(errClass);
       
-      this.$help.empty();
+      // some fields (e.g., Hidden), may not have a help el
+      if (this.$help) {
+        this.$help.empty();
       
-      //Reset help text if available
-      var helpMsg = this.schema.help;
-      if (helpMsg) this.$help.html(helpMsg);
+        //Reset help text if available
+        var helpMsg = this.schema.help;
+        if (helpMsg) this.$help.html(helpMsg);
+      }
     },
 
     /**
