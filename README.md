@@ -191,6 +191,14 @@ For each field definition in the schema you can use the following optional attri
 
 - Help text to add next to the editor.
 
+**`className`**
+
+- String of CSS class name(s) to add to the field
+
+**`attrs`**
+
+- A map of attributes to add to the field, e.g. `{ style: 'background: red', title: 'Tooltip help' }`
+
 
 
 <a name="editor-text"/>

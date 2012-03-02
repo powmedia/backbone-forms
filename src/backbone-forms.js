@@ -640,6 +640,12 @@
       this.$help.empty();
       if (this.schema.help) this.$help.html(this.schema.help);
       
+      //Add custom CSS class names
+      if (this.schema.className) $field.addClass(this.schema.className);
+      
+      //Add custom attributes
+      if (this.schema.attrs) $field.attr(this.schema.attrs);
+      
       this.setElement($field);
 
       return this;
