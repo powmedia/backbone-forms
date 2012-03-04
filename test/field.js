@@ -65,6 +65,36 @@ test("'schema.help' option - Specifies help text", function() {
   equal($('.bbf-help', field.el).html(), 'Some new help text');
 });
 
+test("'schema.fieldClass' option - Adds class names to field", function() {
+  var field = new Field({
+    key: 'title',
+    schema: { fieldClass: 'foo bar' }
+  }).render();
+  
+  ok(field.$el.hasClass('bbf-field'), 'Doesnt overwrite default classes');
+  ok(field.$el.hasClass('foo'), 'Adds first defined class');
+  ok(field.$el.hasClass('bar'), 'Adds other defined class');
+})
+
+test("'schema.fieldAttrs' option - Adds custom attributes", function() {
+  var field = new Field({
+    key: 'title',
+    schema: {
+      fieldAttrs: {
+        maxlength: 30,
+        type: 'foo',
+        custom: 'hello'
+      }
+    }
+  }).render();
+  
+  var $el = field.$el;
+  
+  equal($el.attr('maxlength'), 30);
+  equal($el.attr('type'), 'foo');
+  equal($el.attr('custom'), 'hello');
+})
+
 test("'model' option - Populates the field with the given 'key' option from the model", function() {
     var field = new Field({
         model: new Post,

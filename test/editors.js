@@ -10,6 +10,37 @@
     equal($(editor.el).attr('name'), 'title')
   })
   
+  test("'schema.editorClass' option - Adds class names to editor", function() {
+    var editor = new editors.Text({
+      key: 'title',
+      schema: { editorClass: 'foo bar' }
+    }).render();
+
+    var $el = editor.$el;
+    
+    ok($el.hasClass('foo'), 'Adds first defined class');
+    ok($el.hasClass('bar'), 'Adds other defined class');
+  })
+  
+  test("'schema.editorAttrs' option - Adds custom attributes", function() {
+    var editor = new editors.Text({
+      key: 'title',
+      schema: {
+        editorAttrs: {
+          maxlength: 30,
+          type: 'foo',
+          custom: 'hello'
+        }
+      }
+    }).render();
+
+    var $el = editor.$el;
+
+    equal($el.attr('maxlength'), 30);
+    equal($el.attr('type'), 'foo');
+    equal($el.attr('custom'), 'hello');
+  })
+  
   test('commit() - returns validation errors', function() {
     var editor = new editors.Text({
       model: new Post,
