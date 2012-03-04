@@ -65,10 +65,10 @@ test("'schema.help' option - Specifies help text", function() {
   equal($('.bbf-help', field.el).html(), 'Some new help text');
 });
 
-test("'schema.className' option - Adds class names to field", function() {
+test("'schema.fieldClass' option - Adds class names to field", function() {
   var field = new Field({
     key: 'title',
-    schema: { className: 'foo bar' }
+    schema: { fieldClass: 'foo bar' }
   }).render();
   
   ok(field.$el.hasClass('bbf-field'), 'Doesnt overwrite default classes');
@@ -76,11 +76,11 @@ test("'schema.className' option - Adds class names to field", function() {
   ok(field.$el.hasClass('bar'), 'Adds other defined class');
 })
 
-test("'schema.attrs' option - Adds custom attributes", function() {
+test("'schema.fieldAttrs' option - Adds custom attributes", function() {
   var field = new Field({
     key: 'title',
     schema: {
-      attrs: {
+      fieldAttrs: {
         maxlength: 30,
         type: 'foo',
         custom: 'hello'

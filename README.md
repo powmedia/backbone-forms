@@ -191,11 +191,19 @@ For each field definition in the schema you can use the following optional attri
 
 - Help text to add next to the editor.
 
-**`className`**
+**`editorClass`**
+
+- String of CSS class name(s) to add to the editor
+
+**`editorAttrs`**
+
+- A map of attributes to add to the editor, e.g. `{ maxlength: 30, title: 'Tooltip help' }`
+
+**`fieldClass`**
 
 - String of CSS class name(s) to add to the field
 
-**`attrs`**
+**`fieldAttrs`**
 
 - A map of attributes to add to the field, e.g. `{ style: 'background: red', title: 'Tooltip help' }`
 
@@ -229,11 +237,11 @@ Creates and populates a &lt;select&gt; element.
 Examples:
     
     var schema = {
-        country: { 'Select', options: new CountryCollection() }
+        country: { type: 'Select', options: new CountryCollection() }
     };
     
     var schema = {
-        users: { 'Select', options: function(callback) {
+        users: { type: 'Select', options: function(callback) {
             users = db.getUsers();
             
             callback(users);

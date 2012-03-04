@@ -641,10 +641,10 @@
       if (this.schema.help) this.$help.html(this.schema.help);
       
       //Add custom CSS class names
-      if (this.schema.className) $field.addClass(this.schema.className);
+      if (this.schema.fieldClass) $field.addClass(this.schema.fieldClass);
       
       //Add custom attributes
-      if (this.schema.attrs) $field.attr(this.schema.attrs);
+      if (this.schema.fieldAttrs) $field.attr(this.schema.fieldAttrs);
       
       this.setElement($field);
 
@@ -779,8 +779,14 @@
       this.form = options.form;
       this.schema = options.schema || {};
       this.validators = options.validators || this.schema.validators;
-
+      
       if (this.key) this.$el.attr('name', this.key);
+      
+      //Add custom CSS class names
+      if (this.schema.editorClass) this.$el.addClass(this.schema.editorClass);
+      
+      //Add custom attributes
+      if (this.schema.editorAttrs) this.$el.attr(this.schema.editorAttrs);
     },
 
     getValue: function() {
@@ -833,7 +839,6 @@
 
       return error;
     }
-
   });
 
 
@@ -844,13 +849,16 @@
     
     defaultValue: '',
     
-    initialize: function(options) {            
+    initialize: function(options) {
       editors.Base.prototype.initialize.call(this, options);
+      
+      var schema = this.schema;
       
       //Allow customising text type (email, phone etc.) for HTML5 browsers
       var type = 'text';
       
-      if (this.schema && this.schema.dataType) type = this.schema.dataType;
+      if (schema && schema.editorAttrs && schema.editorAttrs.type) type = schema.editorAttrs.type;
+      if (schema && schema.dataType) type = schema.dataType;
 
       this.$el.attr('type', type);
     },
