@@ -6,6 +6,6 @@
   },
   "version": "0.6.0",
   "dependencies": {
-    "backbone": ">=0.9.1",
+    "backbone": ">=0.9.1"
   }
 }
