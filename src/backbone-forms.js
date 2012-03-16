@@ -329,13 +329,25 @@
      *          data    {Array} : Pass this when not using a model. Use getValue() to get out value
      *          fields  {Array} : Keys of fields to include in the form, in display order (default: all fields)
      */
-    initialize: function(options) {
-      this.schema = options.schema || (options.model ? options.model.schema : {}),
+    initialize: function(options) { 
+      //Get the schema
+      this.schema = (function() {
+        if (options.schema) return options.schema;
+      
+        var model = options.model;
+        if (!model) throw new Error('Could not find schema');
+      
+        if (_.isFunction(model.schema)) return model.schema();
+      
+        return model.schema;
+      })();
+      
+      //Handle other options
       this.model = options.model;
       this.data = options.data;
       this.fieldsToRender = options.fields || _.keys(this.schema);
       this.fieldsets = options.fieldsets;
-
+      
       //Stores all Field views
       this.fields = {};
     },

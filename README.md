@@ -145,6 +145,8 @@ If a form has a model attached to it, the initial values are taken from the mode
 <a name="schema-definition"/>
 #Schema definition
 
+The schema defined on your model can be the schema object itself, or a function that returns a schema object. This can be useful if you're referencing variables that haven't been initialized yet.
+
 The following default editors are included:
 
 - [Text](#editor-text)

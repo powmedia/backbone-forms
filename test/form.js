@@ -30,6 +30,24 @@ test("'schema' option - If not present, the 'schema' attribute on the model is u
     equal($('textarea', form.el).length, 1);
 });
 
+test('The schema on the model can be a function', function() {
+  var post = new Post,
+      _schema = post.schema;
+  
+  post.schema = function() {
+    return _schema;
+  }
+  
+  var form = new Form({
+    model: post
+  }).render();
+  
+  
+
+  //Stored correct schema object
+  equal(form.schema, _schema);
+});
+
 test("'model' option - Populates the form", function() {
     var post = new Post();
 
