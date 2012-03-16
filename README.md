@@ -420,6 +420,8 @@ An array of field names (keys). Only the fields defined here will be added to th
 
 A string that will be prefixed to the form DOM element IDs. Useful if you will have multiple forms on the same page. E.g. `idPrefix: 'user-'` will result in IDs like 'user-name', 'user-email', etc.
 
+If not defined, the model's CID will be used as a prefix to avoid conflicts when there are multiple instances of the form on the page. To override this behaviour, pass a null value to `idPrefix`.
+
 [Back to top](#top)
 
 
