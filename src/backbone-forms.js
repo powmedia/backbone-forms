@@ -907,7 +907,7 @@
      * Check value is numeric
      */
     onKeyPress: function(event) {        
-      var newVal = this.$el.val() + String.fromCharCode(event.keyCode);
+      var newVal = this.$el.val() + String.fromCharCode(event.charCode);
 
       var numeric = /^[0-9]*\.?[0-9]*?$/.test(newVal);
 
