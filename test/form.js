@@ -1,6 +1,21 @@
 module("Form");
 
 test("'schema' option - Schema object is used to create the form", function() {
+    var post = new Post(),
+        customSchema = { name: {} };
+
+    var form = new Form({
+        model: post,
+        schema: customSchema,
+        idPrefix: null
+    }).render();
+
+    //Check correct fields have been added
+    equal($('input', form.el).length, 1);
+    equal($('input:eq(0)', form.el).attr('id'), 'name');
+});
+
+test("'schema' option - If not present, the 'schema' attribute on the model is used", function() {
     var post = new Post();
 
     var form = new Form({
@@ -15,25 +30,12 @@ test("'schema' option - Schema object is used to create the form", function() {
     equal($('textarea', form.el).length, 1);
 });
 
-test("'schema' option - If not present, the 'schema' attribute on the model is used", function() {
-    var post = new Post(),
-        customSchema = { name: {} };
-
-    var form = new Form({
-        model: post,
-        schema: customSchema
-    }).render();
-
-    //Check correct fields have been added
-    equal($('input', form.el).length, 1);
-    equal($('input:eq(0)', form.el).attr('id'), 'name');
-});
-
 test("'model' option - Populates the form", function() {
     var post = new Post();
 
     var form = new Form({
-        model: post
+        model: post,
+        idPrefix: null
     }).render();
 
     equal($('#title', form.el).val(), 'Danger Zone!');
@@ -61,7 +63,8 @@ test("'data' option - Used if no model provided. Populates the form.", function(
 test("'fields' option - Allows choosing and ordering fields from the schema", function() {
     var form = new Form({
         model: new Post,
-        fields: ['author', 'slug']
+        fields: ['author', 'slug'],
+        idPrefix: null
     }).render();
 
     equal($('input:eq(0)', form.el).attr('id'), 'author');
@@ -74,7 +77,8 @@ test("'fieldsets' option - Allows choosing and ordering of fields within fieldse
         fieldsets: [
             ['slug', 'author'],
             {'legend': 'Content Section', 'fields': ['title', 'content']}
-        ]
+        ],
+        idPrefix: null
     }).render();
 
     ok(form.$(':nth-child(1)').is('fieldset'), 'First element of the form is not a fieldset');
@@ -168,7 +172,8 @@ test("commit() - updates the model with form values", function() {
     var post = new Post();
 
     var form = new Form({
-        model: post
+        model: post,
+        idPrefix: null
     }).render();
 
     //Change the title in the form and save

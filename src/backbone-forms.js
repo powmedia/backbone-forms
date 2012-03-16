@@ -335,12 +335,9 @@
       this.data = options.data;
       this.fieldsToRender = options.fields || _.keys(this.schema);
       this.fieldsets = options.fieldsets;
-      this.idPrefix = options.idPrefix || '';
 
       //Stores all Field views
       this.fields = {};
-      
-      window.form = this;
     },
 
     /**
@@ -423,7 +420,7 @@
           form: self,
           key: key,
           schema: itemSchema,
-          idPrefix: self.idPrefix
+          idPrefix: self.options.idPrefix
         };
 
         if (model) {
@@ -590,7 +587,6 @@
       this.schema = options.schema || {};
       this.value = options.value;
       this.model = options.model;
-      this.idPrefix = options.idPrefix || '';
 
       //Set schema defaults
       var schema = this.schema;
@@ -607,8 +603,8 @@
         form: this.form,
         key: this.key,
         schema: schema,
-        idPrefix: this.idPrefix,
-        id: this.idPrefix + this.key
+        idPrefix: this.options.idPrefix,
+        id: this.generateId()
       };
 
       //Decide on data delivery type to pass to editors
@@ -649,6 +645,24 @@
       this.setElement($field);
 
       return this;
+    },
+
+    /**
+     * Creates the ID that will be assigned to the editor
+     * @return {String}
+     */
+    generateId: function() {
+      var prefix = this.options.idPrefix,
+          id = this.key;
+
+      //If a specific ID prefix is set, use it
+      if (_.isString(prefix) || _.isNumber(prefix)) return prefix + id;
+      if (_.isNull(prefix)) return id;
+
+      //Otherwise, if there is a model use it's CID to avoid conflicts when multiple forms are on the page
+      if (this.model) return this.model.cid + '_' + id;
+
+      return id;
     },
     
     /**

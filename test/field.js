@@ -98,7 +98,8 @@ test("'schema.fieldAttrs' option - Adds custom attributes", function() {
 test("'model' option - Populates the field with the given 'key' option from the model", function() {
     var field = new Field({
         model: new Post,
-        key: 'title'
+        key: 'title',
+        idPrefix: null
     }).render();
     
     equal($('#title', field.el).val(), 'Danger Zone!');
@@ -303,4 +304,44 @@ test('clearError() - clears error class and resets help message', function() {
   //Test
   equal($(field.el).hasClass(errorClass), false);
   equal(field.$help.html(), 'Help message');
+});
+
+test('generateId() - uses idPrefix if defined', function() {
+  var stringPrefixField = new Field({
+    idPrefix: 'foo_',
+    key: 'name'
+  });
+  
+  var numberPrefixField = new Field({
+    idPrefix: 123,
+    key: 'name'
+  });
+  
+  equal(numberPrefixField.generateId(), '123name');
+});
+
+test('generateId() - adds no prefix if idPrefix is null', function() {
+  var field = new Field({
+    idPrefix: null,
+    key: 'name'
+  });
+  
+  equal(field.generateId(), 'name');
+});
+
+test('generateId() - uses model cid if no idPrefix is set', function() {
+  var field = new Field({
+    key: 'name',
+    model: { cid: 'foo' }
+  });
+  
+  equal(field.generateId(), 'foo_name');
+});
+
+test('generateId() - adds no prefix if idPrefix is null and there is no model', function() {
+  var field = new Field({
+    key: 'name'
+  });
+  
+  equal(field.generateId(), 'name');
 });
