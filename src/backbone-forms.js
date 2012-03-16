@@ -604,6 +604,7 @@
       var schema = this.schema;
       if (!schema.type) schema.type = 'Text';
       if (!schema.title) schema.title = helpers.keyToTitle(this.key);
+      if (!schema.template) schema.template = 'field';
     },
 
     render: function() {
@@ -629,7 +630,7 @@
       var editor = this.editor = helpers.createEditor(schema.type, options);
       
       //Create the element
-      var $field = $(templates.field({
+      var $field = $(templates[schema.template]({
         key: this.key,
         title: schema.title,
         id: editor.id,
