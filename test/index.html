@@ -33,18 +33,22 @@
     
     
     
-    <div id="uiTest"></div>
+    <div id="uiTest">
+      <div id="formContainer"></div>
+      <button class="validate">Validate</button>
+    </div>
     <script>
         $(function() {
-            function validateEmail(str) {
-                var regex = new RegExp("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?");
-                
-                return regex.test(str) ? null : 'Invalid email';
-            }
+            var NestedModel = Backbone.Model.extend({
+              schema: {
+                name: { validators: ['required']},
+                email: { validators: ['required', 'email'] }
+              }
+            });
             
             var Model = Backbone.Model.extend({
                 schema: {
-                    email:      { dataType: 'email', validators: ['required', validateEmail] },
+                    email:      { dataType: 'email', validators: ['required', 'email'] },
                     tel:        { type: 'Text', dataType: 'tel', validators: ['required'] },
                     number:     { type: 'Number', validators: [/[0-9]+(?:\.[0-9]*)?/] },
                     checkbox:   { type: 'Checkbox' },
@@ -52,8 +56,12 @@
                     datetime:   { type: 'DateTime' },
                     list:       { type: 'List' },
                     radio:      { type: 'Radio', options: ['Opt 1', 'Opt 2'] },
-                    checkboxes: { type: 'Checkboxes', options: ['Sterling', 'Lana', 'Cyril', 'Cheryl', 'Pam']
-                    }
+                    checkboxes: { type: 'Checkboxes', options: ['Sterling', 'Lana', 'Cyril', 'Cheryl', 'Pam'] },
+                    object:     { type: 'Object', subSchema: {
+                      name: {},
+                      age:  { type: 'Number' }
+                    }},
+                    nestedModel: { type: 'NestedModel', model: NestedModel }
                 }
             });
             
@@ -67,13 +75,16 @@
                 model: model,
                 fieldsets: [
                     ['email', 'tel', 'number', 'checkbox', 'radio', 'checkboxes'],
-                    { legend: 'jQuery UI editors', fields: ['date', 'datetime', 'list'] }
+                    { legend: 'jQuery UI editors', fields: ['date', 'datetime', 'list'] },
+                    ['object', 'nestedModel']
                 ]
             }).render();
             
             window.form = form;
 
-            $('#uiTest').html(form.el);
+            $('#uiTest #formContainer').html(form.el);
+            
+            $('#uiTest button.validate').click(function() { form.validate() });
         });
     </script>
 </body>

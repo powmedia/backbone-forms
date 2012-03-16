@@ -1295,8 +1295,6 @@
 
       if (!this.schema.subSchema)
         throw "Missing required 'schema.subSchema' option for Object editor";
-
-      this.idPrefix = options.idPrefix || '';
     },
 
     render: function() {
@@ -1309,7 +1307,7 @@
       this.form = new Form({
         schema: objSchema,
         data: data,
-        idPrefix: this.idPrefix + this.key + '_'
+        idPrefix: this.id + '_'
       });
 
       //Render form
@@ -1356,8 +1354,6 @@
 
       if (!options.schema.model)
         throw 'Missing required "schema.model" option for NestedModel editor';
-
-      this.idPrefix = options.idPrefix || '';
     },
 
     render: function() {
@@ -1369,7 +1365,7 @@
       this.form = new Form({
         schema: nestedModelSchema,
         model: new nestedModel(data),
-        idPrefix: this.idPrefix + this.key + '_'
+        idPrefix: this.id + '_'
       });
 
       //Render form
