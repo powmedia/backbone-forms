@@ -114,16 +114,18 @@
   helpers.setTemplates = function(templates, classNames) {
     var createTemplate = helpers.createTemplate;
     
-    //Compile templates if necessary
-    _.each(templates, function(template, key, list) {
+    Form.templates = Form.templates || {};
+    Form.classNames = Form.classNames || {};
+    
+    //Set templates, compiling them if necessary
+    _.each(templates, function(template, key, index) {
       if (_.isString(template)) template = createTemplate(template);
       
-      list[key] = template;
+      Form.templates[key] = template;
     });
-
-    //Make active
-    Form.templates = templates;
-    Form.classNames = classNames;
+    
+    //Set class names
+    _.extend(Form.classNames, classNames);
   };
   
   
@@ -1415,10 +1417,11 @@
   Form.Field = Field;
   Form.editors = editors;
   Form.validators = validators;
+  Form.setTemplates = helpers.setTemplates;
   Backbone.Form = Form;
   
   //Make default templates active
-  helpers.setTemplates(templates, classNames);
+  Form.setTemplates(templates, classNames);
   
   //For use in NodeJS
   if (typeof module != 'undefined') module.exports = Form
