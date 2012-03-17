@@ -39,6 +39,16 @@
     </div>
     <script>
         $(function() {
+            Backbone.Form.setTemplates({
+              customField: '\
+                <div style="border: 1px solid blue">\
+                  <label for="{{id}}">{{title}}</label>\
+                  <div>{{editor}}</div>\
+                  <div>{{help}}</div>\
+                </div>\
+              '
+            });
+          
             var NestedModel = Backbone.Model.extend({
               schema: {
                 name: { validators: ['required']},
@@ -61,7 +71,8 @@
                       name: {},
                       age:  { type: 'Number' }
                     }},
-                    nestedModel: { type: 'NestedModel', model: NestedModel }
+                    nestedModel: { type: 'NestedModel', model: NestedModel },
+                    customTemplate: { template: 'customField' }
                 }
             });
             
@@ -74,9 +85,9 @@
             var form = new Backbone.Form({
                 model: model,
                 fieldsets: [
-                    ['email', 'tel', 'number', 'checkbox', 'radio', 'checkboxes'],
+                    ['email', 'tel', 'number', 'checkbox', 'radio', 'checkboxes', 'customTemplate'],
                     { legend: 'jQuery UI editors', fields: ['date', 'datetime', 'list'] },
-                    ['object', 'nestedModel']
+                    { legend: 'Nested editors', fields: ['object', 'nestedModel'] }
                 ]
             }).render();
             
