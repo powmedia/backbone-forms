@@ -37,7 +37,8 @@ The schema above will automatically create a form similar to this:
   - [Date](#editor-date)
   - [DateTime](#editor-datetime)
   - [List](#editor-list)
-- [Validation](#validation)
+- [Validation](#validation)  
+- [Customising templates](#customising-templates)
 - [More](#more)
   - [Editors without forms](#editors-without-forms)
   - [Using nested fields](#nested-fields)
@@ -552,7 +553,32 @@ Example:
 
 Backbone-Forms comes with a few options for rendering HTML. To use another template pack, such as for [Bootstrap](http://twitter.github.com/bootstrap/), just include the .js file from the `templates` folder, after including `backbone-forms.js`.
 
-You can use your own custom templates by passing your templates (in Mustache syntax) and class names into `Backbone.helpers.setTemplates()`. See the included templates files for examples.
+You can use your own custom templates by passing your templates (in Mustache syntax) and class names into `Backbone.Form.setTemplates()`. See the included templates files for examples.
+
+You can include different field templates and then use them on a field-by-field basis by passing the `template` option in the field schema.
+
+Example: 
+
+    var templates = {
+      //field is the default template used
+      field: '\
+        <div>\
+          <label for="{{id}}">{{title}}</label>\
+          <div>{{editor}}</div> <div>{{help}}</div>\
+        </div>\
+      ',
+    
+      //Specify an alternate field template
+      altField: '<div class="altField">{{editor}}</div>'
+    };
+    
+    //Set the templates
+    Backbone.Form.setTemplates(templates, classNames);
+    
+    var schema = {
+      age: { type: 'Number' }, //Uses the default 'field' template
+      name: { template: 'altField' } //Uses the 'altField' template
+    };
 
 [Back to top](#top)
 
