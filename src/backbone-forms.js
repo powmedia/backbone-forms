@@ -932,7 +932,11 @@
     /**
      * Check value is numeric
      */
-    onKeyPress: function(event) {        
+    onKeyPress: function(event) {
+      //Allow backspace
+      if (event.charCode == 0) return;
+      
+      //Get the whole new value so that we can prevent things like double decimals points etc.
       var newVal = this.$el.val() + String.fromCharCode(event.charCode);
 
       var numeric = /^[0-9]*\.?[0-9]*?$/.test(newVal);
