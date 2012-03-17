@@ -210,6 +210,10 @@ For each field definition in the schema you can use the following optional attri
 
 - A map of attributes to add to the field, e.g. `{ style: 'background: red', title: 'Tooltip help' }`
 
+**`template`**
+
+- Name of the template to use for this field. See [Customising templates](#customising-templates) for more information.
+
 
 
 <a name="editor-text"/>
