@@ -116,6 +116,18 @@ test("'idPrefix' option - Adds prefix to all DOM element IDs", function() {
     equal($('#form_title', form.el).length, 1);
 });
 
+test("'template' option - Specifies template", function() {
+  Form.templates.customForm = Form.helpers.createTemplate('<div class="custom-form"><form>{{fieldsets}}</form></div>');
+  
+  var form = new Form({
+    model: new Post,
+    template: 'customForm'
+  }).render();
+  
+  ok(form.$el.hasClass('custom-form'));
+})
+
+
 test("validate() - validates the form and returns an errors object", function () {
   var form = new Form({
     schema: {

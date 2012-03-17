@@ -429,6 +429,19 @@ A string that will be prefixed to the form DOM element IDs. Useful if you will h
 
 If not defined, the model's CID will be used as a prefix to avoid conflicts when there are multiple instances of the form on the page. To override this behaviour, pass a null value to `idPrefix`.
 
+**`template`**
+
+The template name to use for generating the form. E.g.:
+
+    Backbone.Form.setTemplates({
+      customForm: '<form class="custom-form">{{fieldsets}}</form>'
+    });
+    
+    var form = new Backbone.Form({
+      model: user,
+      template: 'customForm'
+    });
+
 [Back to top](#top)
 
 

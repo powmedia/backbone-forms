@@ -330,6 +330,9 @@
      *          model   {Backbone.Model} : Use instead of data, and use commit().
      *          data    {Array} : Pass this when not using a model. Use getValue() to get out value
      *          fields  {Array} : Keys of fields to include in the form, in display order (default: all fields)
+     *          fieldsets {Array} : Allows choosing and ordering fields within fieldsets.
+     *          idPrefix {String} : Prefix for editor IDs. If undefined, the model's CID is used.
+     *          template {String} : Template to use. Default to 'form'.
      */
     initialize: function(options) { 
       //Get the schema
@@ -349,6 +352,7 @@
       this.data = options.data;
       this.fieldsToRender = options.fields || _.keys(this.schema);
       this.fieldsets = options.fieldsets;
+      this.templateName = options.template || 'form';
       
       //Stores all Field views
       this.fields = {};
@@ -364,7 +368,7 @@
           templates = Form.templates;
       
       //Create el from template
-      var $form = $(templates.form({
+      var $form = $(templates[this.templateName]({
         fieldsets: '<div class="bbf-placeholder"></div>'
       }));
       
