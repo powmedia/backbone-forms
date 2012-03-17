@@ -95,6 +95,17 @@ test("'schema.fieldAttrs' option - Adds custom attributes", function() {
   equal($el.attr('custom'), 'hello');
 })
 
+test("'schema.template' option - Specifies template", function() {
+  Form.templates.custom = Form.helpers.createTemplate('<div class="custom-field"></div>');
+  
+  var field = new Field({
+    key: 'title',
+    schema: { template: 'custom' }
+  }).render();
+  
+  ok(field.$el.hasClass('custom-field'));
+})
+
 test("'model' option - Populates the field with the given 'key' option from the model", function() {
     var field = new Field({
         model: new Post,
