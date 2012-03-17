@@ -49,6 +49,83 @@ test('Transforms camelCased string to words', function() {
 
 
 
+;(function() {
+
+  module('setTemplates', {
+    setup: function() {
+      this._templates = Form.templates;
+      this._classNames = Form.classNames;
+      this._createTemplate = Form.helpers.createTemplate;
+    },
+    
+    teardown: function() {
+      Form.templates = this._templates;
+      Form.classNames = this._classNames;
+      Form.helpers.createTemplate = this._createTemplate;
+    }
+  });
+  
+  var setTemplates = Form.helpers.setTemplates;
+  
+  test('Compiles strings into templates', function() {
+    var self = this;
+    
+    var templates = {
+      form: '<form class="customForm">{{fieldsets}}</form>'
+    }
+    
+    var calledCreateTemplate = false,
+        calledWith = null;
+    Form.helpers.createTemplate = function(str) {
+      calledCreateTemplate = true;
+      calledWith = arguments;
+      
+      return self._createTemplate(str);
+    }
+    
+    setTemplates(templates);
+    
+    ok(calledCreateTemplate, 'Should call createTemplate');
+    equal(calledWith[0], templates.form);
+  });
+  
+  test('Takes already compiled templates', function() {
+    var templates = {
+      customField: Form.helpers.createTemplate('<div class="customField">{{label}} {{editor}} {{help}}</div>')
+    }
+    
+    setTemplates(templates);
+    
+    equal(Form.templates.customField, templates.customField);
+  });
+  
+  test('Sets custom templates', function() {
+    var templates = {
+      customField: Form.helpers.createTemplate('<field class="customField">{{editor}}</div>')
+    }
+
+    setTemplates(templates);
+
+    equal(Form.templates.customField, templates.customField);
+  });
+  
+  test('Sets class names', function() {
+    var classNames = {
+      error: 'customError'
+    };
+    
+    setTemplates(null, classNames);
+    
+    equal(Form.classNames.error, 'customError');
+  });
+  
+  test('Can be called via Form.setTemplates shortcut', function() {
+    same(Form.setTemplates, Form.helpers.setTemplates);
+  });
+  
+})();
+
+
 
 module('createEditor');
 
