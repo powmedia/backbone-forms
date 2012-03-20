@@ -6,6 +6,7 @@ Simply define a schema on your models and the forms will be auto-generated for y
 
     var User = Backbone.Model.extend({
         schema: {
+            name:       'Text',
             email:      { dataType: 'email', validators: ['required', 'email'] },
             start:      { type: 'DateTime' },
             contact:    { type: 'Object', subSchema: {
@@ -76,11 +77,12 @@ If you use BackboneJS with node.js, you can just `require('backbone-forms');` in
 <a name="usage"/>
 #Usage
 
-Define a 'schema' attribute on your Backbone models. The schema keys should match the attributes that get set on the model. Note that `type` defaults to `Text`.
+Define a 'schema' attribute on your Backbone models. The schema keys should match the attributes that get set on the model. `type` defaults to `Text`.  When you don't need to specify any options you can use the shorthand by passing the editor name as a string.
 See [schema definition](#schema-definition) for more information.
 
     var User = Backbone.Model.extend({
         schema: {
+            name:       'Text',
             email:      { dataType: 'email', validators: ['required', validateEmail] },
             start:      { type: 'DateTime' },
             contact:    { type: 'Object', subSchema: {

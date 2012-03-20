@@ -1,5 +1,15 @@
 module('Field');
 
+test("'schema' option - can be a string representing the type", function() {
+  var field = new Field({
+    key: 'age',
+    value: 30,
+    schema: 'Number'
+  }).render();
+
+  ok(field.editor instanceof editors.Number);
+});
+
 test("'schema.type' option - Specifies editor to use", function() {
     var field = new Field({
         value: 'test',

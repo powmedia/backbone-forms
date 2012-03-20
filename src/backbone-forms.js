@@ -431,8 +431,6 @@
           return getNested(schema, path);
         })();
 
-        console.log(itemSchema)
-
         if (!itemSchema) throw "Field '"+key+"' not found in schema";
 
         var options = {
@@ -603,11 +601,18 @@
     initialize: function(options) {
       this.form = options.form;
       this.key = options.key;
-      this.schema = options.schema || {};
       this.value = options.value;
       this.model = options.model;
 
-      var schema = this.schema;
+      //Get schema
+      var schema = this.schema = (function() {
+        //Handle schema type shorthand where the editor name is passed instead of a schema config object
+        if (_.isString(options.schema)) return { type: options.schema };
+
+        return options.schema || {};
+      })();
+      
+      //Set schema defaults
       if (!schema.type) schema.type = 'Text';
       if (!schema.title) schema.title = helpers.keyToTitle(this.key);
       if (!schema.template) schema.template = 'field';

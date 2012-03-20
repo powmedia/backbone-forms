@@ -72,7 +72,8 @@
                       age:  { type: 'Number' }
                     }},
                     nestedModel: { type: 'NestedModel', model: NestedModel },
-                    customTemplate: { template: 'customField' }
+                    customTemplate: { template: 'customField' },
+                    shorthand: 'Password'
                 }
             });
             
@@ -85,7 +86,7 @@
             var form = new Backbone.Form({
                 model: model,
                 fieldsets: [
-                    ['email', 'tel', 'number', 'checkbox', 'radio', 'checkboxes', 'customTemplate'],
+                    ['email', 'tel', 'number', 'checkbox', 'radio', 'checkboxes', 'customTemplate', 'shorthand'],
                     { legend: 'jQuery UI editors', fields: ['date', 'datetime', 'list'] },
                     { legend: 'Nested editors', fields: ['object', 'nestedModel'] }
                 ]
