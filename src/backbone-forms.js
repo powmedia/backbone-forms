@@ -45,11 +45,6 @@
     return result;
   }
   
-  function getNestedSchema(obj, path) {
-    path = path.replace(/\./g, '.subSchema.');
-    return getNested(obj, path);
-  }
-  
   var helpers = {};
   
   /**
@@ -430,7 +425,13 @@
       
       //Create form fields
       _.each(fieldsToRender, function(key) {
-        var itemSchema = getNestedSchema(schema, key);
+        //Get nested schema
+        var itemSchema = (function() {
+          var path = key.replace(/\./g, '.subSchema.');
+          return getNested(schema, path);
+        })();
+
+        console.log(itemSchema)
 
         if (!itemSchema) throw "Field '"+key+"' not found in schema";
 
@@ -606,7 +607,6 @@
       this.value = options.value;
       this.model = options.model;
 
-      //Set schema defaults
       var schema = this.schema;
       if (!schema.type) schema.type = 'Text';
       if (!schema.title) schema.title = helpers.keyToTitle(this.key);
