@@ -1395,7 +1395,10 @@
           key = this.key,
           nestedModel = this.schema.model,
           nestedModelSchema = (nestedModel).prototype.schema;
-
+          
+      if(_(data.toJSON).isFunction()) {
+        data = data.toJSON();
+      }
       this.form = new Form({
         schema: nestedModelSchema,
         model: new nestedModel(data),
