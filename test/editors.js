@@ -199,6 +199,14 @@ module('Number');
         
         deepEqual(field.getValue(), 99);
     });
+
+    test('Sets input type to "number"', function() {
+        var field = new editor({
+            value: 123
+        }).render();
+
+        deepEqual(field.$el.attr('type'), 'number');
+    });
     
     test("TODO: Restricts non-numeric characters", function() {
         console.log('TODO')

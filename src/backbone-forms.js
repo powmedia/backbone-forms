@@ -941,6 +941,12 @@
       'keypress': 'onKeyPress'
     },
 
+    initialize: function(options) {
+      editors.Text.prototype.initialize.call(this, options);
+
+      this.$el.attr('type', 'number');
+    },
+
     /**
      * Check value is numeric
      */
