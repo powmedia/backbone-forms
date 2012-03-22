@@ -83,23 +83,23 @@ See [schema definition](#schema-definition) for more information.
     var User = Backbone.Model.extend({
         schema: {
             name:       'Text',
-            email:      { dataType: 'email', validators: ['required', validateEmail] },
+            email:      { dataType: 'email', validators: ['required', 'email'] },
             start:      { type: 'DateTime' },
             contact:    { type: 'Object', subSchema: {
-                            name: {},
+                            name: 'Text',
                             phone: {}
                         }}
             address:    { type: 'NestedModel', model: Address },
             notes:      { type: 'List' }
         }
     });
-
-Create the form in your Views:
+    
+    var user = new User();
     
     var formView = Backbone.View.extend({
         render: function() {
             var form = new Backbone.Form({
-                model: users.get(userId)
+                model: user
             }).render();
             
             $(this.el).append(form.el);
@@ -107,6 +107,8 @@ Create the form in your Views:
             return this;
         }
     });
+    
+    $('body').append(formView.el);
 
 
 Once the user is done with the form, call commit() to apply the updated values to the model. If there are validation errors they will be returned. See [validation](#validation) for more information.
