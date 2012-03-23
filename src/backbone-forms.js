@@ -347,7 +347,7 @@
       
         if (_.isFunction(model.schema)) return model.schema();
       
-        return model.schema;
+        return (model.schema) ? model.schema : {};
       })();
       
       //Handle other options
