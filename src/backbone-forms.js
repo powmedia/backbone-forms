@@ -1396,6 +1396,9 @@
           nestedModel = this.schema.model,
           nestedModelSchema = (nestedModel).prototype.schema;
 
+      //Handle schema functions
+      if (_.isFunction(nestedModelSchema)) nestedModelSchema = nestedModelSchema();
+
       this.form = new Form({
         schema: nestedModelSchema,
         model: new nestedModel(data),
