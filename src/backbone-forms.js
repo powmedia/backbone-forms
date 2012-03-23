@@ -1226,7 +1226,7 @@
     /**
      * Create the radio list HTML
      * @param {Array}   Options as a simple array e.g. ['option1', 'option2']
-     *                      or as an array of objects e.g. [{val: 543, label: 'Title for object 543'}]
+     *                      or as an array of objects e.g. [{val: 543, label: 'Label for object 543', title: 'Title hint shown on mouse hover'}]
      * @return {String} HTML
      */
     _arrayToHtml: function (array) {
@@ -1236,8 +1236,9 @@
       _.each(array, function(option, index) {
         var itemHtml = '<li>';
         if (_.isObject(option)) {
-          var val = option.val ? option.val : '';
-          itemHtml += ('<input type="radio" name="'+self.id+'" value="'+val+'" id="'+self.id+'-'+index+'" />')
+          var val = option.val ? option.val : '',
+              title = option.title ? ' title="'+option.title+'"' : '';
+          itemHtml += ('<input type="radio" name="'+self.id+'" value="'+val+'" id="'+self.id+'-'+index+'"'+title+' />')
           itemHtml += ('<label for="'+self.id+'-'+index+'">'+option.label+'</label>')
         }
         else {
