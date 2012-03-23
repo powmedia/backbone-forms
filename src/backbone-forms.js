@@ -1,3 +1,11 @@
+/**
+ * Backbone Forms v0.7.3
+ *
+ * Copyright (c) 2012 Charles Davison, Pow Media Ltd
+ *
+ * License and more information at:
+ * http://github.com/powmedia/backbone-forms
+ */
 ;(function($) {  
   
   //==================================================================================================
