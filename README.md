@@ -632,12 +632,12 @@ However, due to Backbone's lack of support for nested model attributes, getting 
 
     var Model = Backbone.DeepModel.extend({
         schema: {
-            title: {},
+            title: 'Text',
             author: { type: 'Object', subSchema: {
-                id: { type: 'Number' },
+                id: 'Number',
                 name: { type: 'Object', subSchema: {
-                    first: {},
-                    last: {}
+                    first: 'Text',
+                    last: 'Text'
                 }}
             }}
         }
@@ -647,6 +647,20 @@ However, due to Backbone's lack of support for nested model attributes, getting 
         model: new Model,
         fields: ['title', 'author.id', 'author.name.last']
     }).render();
+
+The following shorthand is also valid:
+
+    var Model = Backbone.DeepModel.extend({
+        schema: {
+            title: 'Text',
+            'author.id': 'Number',
+            'author.name.first': 'Text'
+        }
+    });
+
+    var form = new Backbone.Form({
+        model: new Model
+    })
 
 
 <a name="custom-editors"/>

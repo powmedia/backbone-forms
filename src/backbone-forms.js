@@ -43,7 +43,14 @@
   //HELPERS
   //==================================================================================================
   
-  //Support paths for nested attributes e.g. 'user.name'
+  /**
+   * Gets a nested attribute using a path e.g. 'user.name'
+   *
+   * @param {Object} obj    Object to fetch attribute from
+   * @param {String} path   Attribute path e.g. 'user.name'
+   * @return {Mixed}
+   * @api private
+   */
   function getNested(obj, path) {
     var fields = path.split(".");
     var result = obj;
@@ -435,6 +442,10 @@
       _.each(fieldsToRender, function(key) {
         //Get nested schema
         var itemSchema = (function() {
+          //Return a normal key or path key
+          if (schema[key]) return schema[key];
+
+          //Return a nested schema, i.e. Object
           var path = key.replace(/\./g, '.subSchema.');
           return getNested(schema, path);
         })();
@@ -636,7 +647,7 @@
         key: this.key,
         schema: schema,
         idPrefix: this.options.idPrefix,
-        id: this.generateId()
+        id: this.getId()
       };
 
       //Decide on data delivery type to pass to editors
@@ -681,11 +692,18 @@
 
     /**
      * Creates the ID that will be assigned to the editor
+     *
      * @return {String}
+     *
+     * @api private
      */
-    generateId: function() {
+    getId: function() {
       var prefix = this.options.idPrefix,
           id = this.key;
+
+      //Replace periods with underscores (e.g. for when using paths)
+      //id = id.replace(new RegExp('\\.', 'g'), '_');
+      id = id.replace(/\./g, '_');
 
       //If a specific ID prefix is set, use it
       if (_.isString(prefix) || _.isNumber(prefix)) return prefix + id;
@@ -826,7 +844,8 @@
       this.schema = options.schema || {};
       this.validators = options.validators || this.schema.validators;
       
-      if (this.key) this.$el.attr('name', this.key);
+      //Main attributes
+      this.$el.attr('name', this.getName());
       
       //Add custom CSS class names
       if (this.schema.editorClass) this.$el.addClass(this.schema.editorClass);
@@ -841,6 +860,20 @@
     
     setValue: function() {
       throw 'Not implemented. Extend and override this method.';
+    },
+
+    /**
+     * Get the value for the form input 'name' attribute
+     *
+     * @return {String}
+     * 
+     * @api private
+     */
+    getName: function() {
+      var key = this.key || '';
+
+      //Replace periods with underscores (e.g. for when using paths)
+      return key.replace(/\./g, '_')
     },
     
     /**

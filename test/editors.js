@@ -101,6 +101,13 @@
 
     ok(_(editor.validate()).isUndefined());
   });
+
+  test('getName() - replaces periods with underscores', function() {
+    var editor = new editors.Base();
+    editor.key = 'user.name.first';
+
+    equal(editor.getName(), 'user_name_first');
+  });
 })();
 
 

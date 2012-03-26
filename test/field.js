@@ -327,7 +327,7 @@ test('clearError() - clears error class and resets help message', function() {
   equal(field.$help.html(), 'Help message');
 });
 
-test('generateId() - uses idPrefix if defined', function() {
+test('getId() - uses idPrefix if defined', function() {
   var stringPrefixField = new Field({
     idPrefix: 'foo_',
     key: 'name'
@@ -338,31 +338,68 @@ test('generateId() - uses idPrefix if defined', function() {
     key: 'name'
   });
   
-  equal(numberPrefixField.generateId(), '123name');
+  equal(numberPrefixField.getId(), '123name');
 });
 
-test('generateId() - adds no prefix if idPrefix is null', function() {
+test('getId() - adds no prefix if idPrefix is null', function() {
   var field = new Field({
     idPrefix: null,
     key: 'name'
   });
   
-  equal(field.generateId(), 'name');
+  equal(field.getId(), 'name');
 });
 
-test('generateId() - uses model cid if no idPrefix is set', function() {
+test('getId() - uses model cid if no idPrefix is set', function() {
   var field = new Field({
     key: 'name',
     model: { cid: 'foo' }
   });
   
-  equal(field.generateId(), 'foo_name');
+  equal(field.getId(), 'foo_name');
 });
 
-test('generateId() - adds no prefix if idPrefix is null and there is no model', function() {
+test('getId() - adds no prefix if idPrefix is null and there is no model', function() {
   var field = new Field({
     key: 'name'
   });
   
-  equal(field.generateId(), 'name');
+  equal(field.getId(), 'name');
+});
+
+test('getId() - replaces periods with underscores', function() {
+  var field = new Field({
+    key: 'user.name.first'
+  });
+
+  equal(field.getId(), 'user_name_first');
+});
+
+test("keys can be paths to nested objects if using DeepModel", function() {
+  var model = new Backbone.DeepModel({
+    user: {
+      name: {
+        first: 'Stan',
+        last: 'Marsh'
+      }
+    }
+  });
+
+  var field = new Field({
+    key: 'user.name.first',
+    model: model,
+    idPrefix: null
+  }).render();
+
+  field.setValue('foo');
+
+  var $input = field.$el.find('#user_name_first');
+
+  equal(field.getValue(), 'foo');
+  equal($input.val(), 'foo');
+  equal($input.attr('name'), 'user_name_first');
+
+  //TODO: Test with DeepModel
+  field.commit();
+  equal(model.attributes.user.name.first, 'foo');
 });
