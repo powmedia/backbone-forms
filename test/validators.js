@@ -83,7 +83,7 @@
     equal(fn(undefined), undefined)
   })
   
-  test('accepts valid emails', function() {
+  test('fails invalid emails', function() {
     ok(fn('invalid'))
     ok(fn('email@example'))
     ok(fn('foo/bar@example.com'))
@@ -92,7 +92,7 @@
     ok(fn(234))
   })
   
-  test('fails invalid emails', function() {
+  test('accepts valid emails', function() {
     equal(fn('test@example.com'), undefined)
     equal(fn('john.smith@example.com'), undefined)
     equal(fn('john.smith@example.co.uk'), undefined)
@@ -113,7 +113,7 @@
     equal(fn(undefined), undefined)
   })
   
-  test('accepts valid urls', function() {
+  test('fails invalid url', function() {
     ok(fn('invalid'))
     ok(fn('example.com'))
     ok(fn('www.example.com'))
@@ -122,7 +122,7 @@
     ok(fn(234))
   })
   
-  test('fails invalid url', function() {
+  test('accepts valid urls', function() {
     equal(fn('http://example.com'), undefined)
     equal(fn('http://example.co.uk'), undefined)
     equal(fn('http://www.example.com'), undefined)
