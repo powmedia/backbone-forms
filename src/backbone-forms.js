@@ -384,42 +384,30 @@
       
       //Get a reference to where fieldsets should go and remove the placeholder
       var $fieldsetContainer = $('.bbf-placeholder', $form).parent();
-      $fieldsetContainer.html('');
+      $('.bbf-placeholder', $fieldsetContainer).remove();
 
-      if (fieldsets) {
-        //TODO: Update handling of fieldsets
-        _.each(fieldsets, function (fs) {
-          if (_(fs).isArray()) {
-            fs = {'fields': fs};
-          }
-          
-          //Concatenating HTML as strings won't work so we need to insert field elements into a placeholder
-          var $fieldset = $(templates.fieldset({
-            legend: (fs.legend) ? '<legend>' + fs.legend + '</legend>' : '',
-            fields: '<div class="bbf-placeholder"></div>'
-          }));
-          
-          var $fieldsContainer = $('.bbf-placeholder', $fieldset).parent();
-          $fieldsContainer.html('');
-          
-          self.renderFields(fs.fields, $fieldsContainer);
-          
-          $fieldsetContainer.append($fieldset);
-        });
-      } else {
+      if(!fieldsets)
+        fieldsets = [{fields: '<div class="bbf-placeholder"></div>'}]
+
+      //TODO: Update handling of fieldsets
+      _.each(fieldsets, function(fs) {
+        if (_(fs).isArray()) {
+          fs = {'fields': fs};
+        }
+
         //Concatenating HTML as strings won't work so we need to insert field elements into a placeholder
         var $fieldset = $(templates.fieldset({
-          legend: '',
+          legend: (fs.legend) ? '<legend>' + fs.legend + '</legend>' : '',
           fields: '<div class="bbf-placeholder"></div>'
         }));
         
         var $fieldsContainer = $('.bbf-placeholder', $fieldset).parent();
-        $fieldsContainer.html('');
-        
-        this.renderFields(fieldsToRender, $fieldsContainer);
-        
+        $('.bbf-placeholder', $fieldsContainer).remove();
+
+        self.renderFields(fs.fields, $fieldsContainer);
+
         $fieldsetContainer.append($fieldset);
-      }
+      })
 
       this.setElement($form);
 
