@@ -112,8 +112,15 @@
       return template(context);
     }
   };
-  
-  
+
+  /**
+   * Sets the template compiler to the given function
+   * @param {Function} Template compiler function
+   */
+  helpers.setTemplateCompiler = function(compiler) {
+    helpers.compileTemplate = compiler;
+  }
+
   /**
    * Sets the templates to be used.
    * 
@@ -1456,6 +1463,7 @@
   Form.editors = editors;
   Form.validators = validators;
   Form.setTemplates = helpers.setTemplates;
+  Form.setTemplateCompiler = helpers.setTemplateCompiler;
   Backbone.Form = Form;
   
   //Make default templates active

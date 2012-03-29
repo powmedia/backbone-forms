@@ -17,7 +17,7 @@ test('Transforms camelCased string to words', function() {
       },
 
       teardown: function() {
-          Form.helpers.compileTemplate = this._compileTemplate;
+          Form.setTemplateCompiler(this._compileTemplate);
       }
   });
   
@@ -32,7 +32,7 @@ test('Transforms camelCased string to words', function() {
   });
 
   test('returns a template compiled with Handlebars when just passed a string', function() {
-    Form.helpers.compileTemplate = Handlebars.compile;
+    Form.setTemplateCompiler(Handlebars.compile);
 
     var template = createTemplate('Hello {{#with person}}{{firstName}} {{lastName}}{{/with}}.');
 
