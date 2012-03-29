@@ -76,23 +76,35 @@
   };
 
   /**
-   * Helper to create a template with the {{mustache}} style tags. Template settings are reset
+   * Helper to compile a template with the {{mustache}} style tags. Template settings are reset
    * to user's settings when done to avoid conflicts.
-   * @param {String}      Template string
-   * @param {Object}      Optional; values to replace in template
-   * @return {Template}   Compiled template
+   * @param {String}    Template string
+   * @return {Template} Compiled template
+   */
+  helpers.compileTemplate = function(str) {
+      //Store user's template options
+      var _interpolateBackup = _.templateSettings.interpolate;
+
+      //Set custom template settings
+      _.templateSettings.interpolate = /\{\{(.+?)\}\}/g;
+
+      var template = _.template(str);
+
+      //Reset to users' template settings
+      _.templateSettings.interpolate = _interpolateBackup;
+
+      return template;
+  }
+
+  /**
+   * Helper to create a template with the {{mustache}} style tags.
+   * If context is passed in, the template will be evaluated.
+   * @param {String}             Template string
+   * @param {Object}             Optional; values to replace in template
+   * @return {Template|String}   Compiled template or the evaluated string
    */
   helpers.createTemplate = function(str, context) {
-    //Store user's template options 
-    var _interpolateBackup = _.templateSettings.interpolate;
-
-    //Set custom template settings
-    _.templateSettings.interpolate = /\{\{(.+?)\}\}/g;
-
-    var template = _.template(str);
-
-    //Reset to users' template settings
-    _.templateSettings.interpolate = _interpolateBackup;
+    var template = helpers.compileTemplate(str);
     
     if (!context) {
       return template;
