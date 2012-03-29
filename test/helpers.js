@@ -11,17 +11,35 @@ test('Transforms camelCased string to words', function() {
 
 ;(function() {
   
-  module('createTemplate');
+  module('createTemplate', {
+      setup: function() {
+          this._compileTemplate = Form.helpers.compileTemplate;
+      },
+
+      teardown: function() {
+          Form.helpers.compileTemplate = this._compileTemplate;
+      }
+  });
   
   var createTemplate = Form.helpers.createTemplate;
 
   test('returns a compiled template if just passed a string', function() {
     var template = createTemplate('Hello {{firstName}} {{lastName}}.');
     
-    var result = template({ firstName: 'John', lastName: 'Smith' })
+    var result = template({ firstName: 'John', lastName: 'Smith' });
     
-    equal(result, 'Hello John Smith.')
-  })
+    equal(result, 'Hello John Smith.');
+  });
+
+  test('returns a template compiled with Handlebars when just passed a string', function() {
+    Form.helpers.compileTemplate = Handlebars.compile;
+
+    var template = createTemplate('Hello {{#with person}}{{firstName}} {{lastName}}{{/with}}.');
+
+    var result = template({ person: { firstName: 'John', lastName: 'Smith' } });
+
+    equal(result, 'Hello John Smith.');
+  });
 
   test('works when underscore template settings are different and restores them when done', function() {
     var originalSetting = /\[\[(.+?)\]\]/g;
@@ -29,12 +47,12 @@ test('Transforms camelCased string to words', function() {
     
     var template = createTemplate('Bye {{firstName}} {{lastName}}!');
     
-    var result = template({ firstName: 'John', lastName: 'Smith' })
+    var result = template({ firstName: 'John', lastName: 'Smith' });
     
-    equal(result, 'Bye John Smith!')
+    equal(result, 'Bye John Smith!');
     
-    equal(_.templateSettings.interpolate, originalSetting)
-  })
+    equal(_.templateSettings.interpolate, originalSetting);
+  });
 
   test('returns the supplanted string if a context is passed', function() {
     var result = createTemplate('Hello {{firstName}} {{lastName}}.', {
@@ -42,8 +60,8 @@ test('Transforms camelCased string to words', function() {
       lastName: 'Smith'
     });
     
-    equal(result, 'Hello John Smith.')
-  })
+    equal(result, 'Hello John Smith.');
+  });
   
 })();
 
