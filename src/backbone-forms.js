@@ -6,7 +6,7 @@
  * License and more information at:
  * http://github.com/powmedia/backbone-forms
  */
-;(function($) {  
+;(function($, _, Backbone) {  
   
   //==================================================================================================
   //TEMPLATES
@@ -1471,18 +1471,31 @@
   });
   
   
-  //Exports
+  //Combine objects on the main namespace
   Form.helpers = helpers;
   Form.Field = Field;
   Form.editors = editors;
   Form.validators = validators;
   Form.setTemplates = helpers.setTemplates;
-  Backbone.Form = Form;
   
   //Make default templates active
   Form.setTemplates(templates, classNames);
-  
-  //For use in NodeJS
-  if (typeof module != 'undefined') module.exports = Form
 
-}(jQuery));
+  //EXPORTS
+  //Add to the Backbone namespace if available, for regular use
+  Backbone.Form = Backbone.Form || Form;
+
+  //AMD (RequireJS)
+  if (typeof define === 'function' && define.amd) {
+    return define(function() {
+      return Form;
+    });
+  }
+
+  //CommonJS (NodeJS)
+  if (typeof module === 'object' && typeof module.exports === 'object') {
+    module.exports = Form;
+    return;
+  }
+
+}(jQuery, _, Backbone));
