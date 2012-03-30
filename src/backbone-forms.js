@@ -6,24 +6,24 @@
  * License and more information at:
  * http://github.com/powmedia/backbone-forms
  */
-;(function($) {  
-  
+;(function($) {
+
   //==================================================================================================
   //TEMPLATES
   //==================================================================================================
-  
+
   var templates = {
     form: '\
       <form class="bbf-form">{{fieldsets}}</form>\
     ',
-    
+
     fieldset: '\
       <fieldset>\
         {{legend}}\
         <ul>{{fields}}</ul>\
       </fieldset>\
     ',
-    
+
     field: '\
     <li class="bbf-field bbf-field{{type}}">\
       <label for="{{id}}">{{title}}</label>\
@@ -32,17 +32,17 @@
     </li>\
     '
   };
-  
+
   var classNames = {
     error: 'bbf-error'
   };
-  
-  
-  
+
+
+
   //==================================================================================================
   //HELPERS
   //==================================================================================================
-  
+
   /**
    * Gets a nested attribute using a path e.g. 'user.name'
    *
@@ -59,16 +59,16 @@
     }
     return result;
   }
-  
+
   var helpers = {};
-  
+
   /**
    * This function is used to transform the key from a schema into the title used in a label.
    * (If a specific title is provided it will be used instead).
-   * 
+   *
    * By default this converts a camelCase string into words, i.e. Camel Case
    * If you have a different naming convention for schema keys, replace this function.
-   * 
+   *
    * @param {String}  Key
    * @return {String} Title
    */
@@ -90,7 +90,7 @@
    * @return {Template}   Compiled template
    */
   helpers.createTemplate = function(str, context) {
-    //Store user's template options 
+    //Store user's template options
     var _interpolateBackup = _.templateSettings.interpolate;
 
     //Set custom template settings
@@ -100,50 +100,50 @@
 
     //Reset to users' template settings
     _.templateSettings.interpolate = _interpolateBackup;
-    
+
     if (!context) {
       return template;
     } else {
       return template(context);
     }
   };
-  
-  
+
+
   /**
    * Sets the templates to be used.
-   * 
+   *
    * If the templates passed in are strings, they will be compiled, expecting Mustache style tags,
    * i.e. <div>{{varName}}</div>
    *
    * You can also pass in previously compiled Underscore templates, in which case you can use any style
    * tags.
-   * 
+   *
    * @param {Object} templates
    * @param {Object} classNames
    */
   helpers.setTemplates = function(templates, classNames) {
     var createTemplate = helpers.createTemplate;
-    
+
     Form.templates = Form.templates || {};
     Form.classNames = Form.classNames || {};
-    
+
     //Set templates, compiling them if necessary
     _.each(templates, function(template, key, index) {
       if (_.isString(template)) template = createTemplate(template);
-      
+
       Form.templates[key] = template;
     });
-    
+
     //Set class names
     _.extend(Form.classNames, classNames);
   };
-  
-  
+
+
   /**
    * Return the editor constructor for a given schema 'type'.
    * Accepts strings for the default editors, or the reference to the constructor function
    * for custom editors
-   * 
+   *
    * @param {String|Function} The schema type e.g. 'Text', 'Select', or the editor constructor e.g. editors.Date
    * @param {Object}          Options to pass to editor, including required 'key', 'schema'
    * @return {Mixed}          An instance of the mapped editor
@@ -158,35 +158,35 @@
 
     return new constructorFn(options);
   };
-  
+
   /**
    * Triggers an event that can be cancelled. Requires the user to invoke a callback. If false
    * is passed to the callback, the action does not run.
    *
    * NOTE: This helper uses private Backbone apis so can break when Backbone is upgraded
-   * 
+   *
    * @param {Mixed}       Instance of Backbone model, view, collection to trigger event on
    * @param {String}      Event name
    * @param {Array}       Arguments to pass to the event handlers
    * @param {Function}    Callback to run after the event handler has run.
    *                      If any of them passed false or error, this callback won't run
-   */ 
-  helpers.triggerCancellableEvent = function(subject, event, args, callback) { 
+   */
+  helpers.triggerCancellableEvent = function(subject, event, args, callback) {
     //Return if there are no event listeners
     if (!subject._callbacks || !subject._callbacks[event]) return callback();
-    
+
     var next = subject._callbacks[event].next;
     if (!next) return callback();
-    
+
     var fn = next.callback,
         context = next.context || this;
-    
+
     //Add the callback that will be used when done
     args.push(callback);
-    
+
     fn.apply(context, args);
   }
-  
+
   /**
    * Returns a validation function based on the type defined in the schema
    *
@@ -198,11 +198,11 @@
     if (_.isRegExp(validator)) {
       return validators.regexp({ regexp: validator });
     }
-    
+
     //Use a built-in validator if given a string
     if (_.isString(validator)) {
       if (!validators[validator]) throw new Error('Validator "'+validator+'" not found');
-      
+
       return validators[validator]();
     }
 
@@ -212,22 +212,22 @@
     //Use a customised built-in validator if given an object
     if (_.isObject(validator) && validator.type) {
       var config = validator;
-      
+
       return validators[config.type](config);
     }
-    
+
     //Unkown validator type
     throw new Error('Invalid validator: ' + validator);
   };
 
 
-  
+
   //==================================================================================================
   //VALIDATORS
   //==================================================================================================
-  
+
   var validators = {};
-  
+
   validators.errMessages = {
     required: 'Required',
     regexp: 'Invalid',
@@ -235,100 +235,100 @@
     url: 'Invalid URL',
     match: 'Must match field "{{field}}"'
   }
-  
-  validators.required = function(options) {   
+
+  validators.required = function(options) {
     options = _.extend({
       type: 'required',
       message: this.errMessages.required
     }, options);
-     
+
     return function required(value) {
       options.value = value;
-      
+
       var err = {
         type: options.type,
         message: helpers.createTemplate(options.message, options)
       };
-      
+
       if (value === null || value === undefined || value === '') return err;
     };
   };
-  
+
   validators.regexp = function(options) {
     if (!options.regexp) throw new Error('Missing required "regexp" option for "regexp" validator');
-  
+
     options = _.extend({
       type: 'regexp',
       message: this.errMessages.regexp
     }, options);
-    
+
     return function regexp(value) {
       options.value = value;
-      
+
       var err = {
         type: options.type,
         message: helpers.createTemplate(options.message, options)
       };
-      
+
       //Don't check empty values (add a 'required' validator for this)
       if (value === null || value === undefined || value === '') return;
 
       if (!options.regexp.test(value)) return err;
     };
   };
-  
+
   validators.email = function(options) {
     options = _.extend({
       type: 'email',
       message: this.errMessages.email,
       regexp: /^[\w\-]{1,}([\w\-.]{1,1}[\w\-]{1,}){0,}[@][\w\-]{1,}([.]([\w\-]{1,})){1,3}$/
     }, options);
-    
+
     return validators.regexp(options);
   };
-  
+
   validators.url = function(options) {
     options = _.extend({
       type: 'url',
       message: this.errMessages.url,
       regexp: /^(http|https):\/\/(([A-Z0-9][A-Z0-9_-]*)(\.[A-Z0-9][A-Z0-9_-]*)+)(:(\d+))?\/?/i
     }, options);
-    
+
     return validators.regexp(options);
   };
-  
+
   validators.match = function(options) {
     if (!options.field) throw new Error('Missing required "field" options for "match" validator');
-    
+
     options = _.extend({
       type: 'match',
       message: this.errMessages.match
     }, options);
-    
+
     return function match(value, attrs) {
       options.value = value;
-      
+
       var err = {
         type: options.type,
         message: helpers.createTemplate(options.message, options)
       };
-      
+
       //Don't check empty values (add a 'required' validator for this)
       if (value === null || value === undefined || value === '') return;
-      
+
       if (value != attrs[options.field]) return err;
     }
   };
-  
+
 
 
 
   //==================================================================================================
   //FORM
   //==================================================================================================
-    
+
   var Form = Backbone.View.extend({
-    
+
     //Field views
     fields: null,
 
@@ -344,26 +344,26 @@
      *          idPrefix {String} : Prefix for editor IDs. If undefined, the model's CID is used.
      *          template {String} : Template to use. Default to 'form'.
      */
-    initialize: function(options) { 
+    initialize: function(options) {
       //Get the schema
       this.schema = (function() {
         if (options.schema) return options.schema;
-      
+
         var model = options.model;
         if (!model) throw new Error('Could not find schema');
-      
+
         if (_.isFunction(model.schema)) return model.schema();
-      
+
         return model.schema;
       })();
-      
+
       //Handle other options
       this.model = options.model;
       this.data = options.data;
       this.fieldsToRender = options.fields || _.keys(this.schema);
       this.fieldsets = options.fieldsets;
       this.templateName = options.template || 'form';
-      
+
       //Stores all Field views
       this.fields = {};
     },
@@ -376,50 +376,41 @@
           fieldsToRender = this.fieldsToRender,
           fieldsets = this.fieldsets,
           templates = Form.templates;
-      
+
       //Create el from template
       var $form = $(templates[this.templateName]({
         fieldsets: '<div class="bbf-placeholder"></div>'
       }));
-      
-      //Get a reference to where fieldsets should go and remove the placeholder
-      var $fieldsetContainer = $('.bbf-placeholder', $form).parent();
-      $fieldsetContainer.html('');
 
-      if (fieldsets) {
-        //TODO: Update handling of fieldsets
-        _.each(fieldsets, function (fs) {
-          if (_(fs).isArray()) {
-            fs = {'fields': fs};
-          }
-          
-          //Concatenating HTML as strings won't work so we need to insert field elements into a placeholder
-          var $fieldset = $(templates.fieldset({
-            legend: (fs.legend) ? '<legend>' + fs.legend + '</legend>' : '',
-            fields: '<div class="bbf-placeholder"></div>'
-          }));
-          
-          var $fieldsContainer = $('.bbf-placeholder', $fieldset).parent();
-          $fieldsContainer.html('');
-          
-          self.renderFields(fs.fields, $fieldsContainer);
-          
-          $fieldsetContainer.append($fieldset);
-        });
-      } else {
-        //Concatenating HTML as strings won't work so we need to insert field elements into a placeholder
-        var $fieldset = $(templates.fieldset({
-          legend: '',
-          fields: '<div class="bbf-placeholder"></div>'
-        }));
-        
-        var $fieldsContainer = $('.bbf-placeholder', $fieldset).parent();
-        $fieldsContainer.html('');
-        
-        this.renderFields(fieldsToRender, $fieldsContainer);
-        
-        $fieldsetContainer.append($fieldset);
+      //Get a reference to where fieldsets should go
+      var $fieldsetContainer = $('.bbf-placeholder', $form);
+
+      if(!fieldsets) {
+        fieldsets = [{}]
       }
+
+      //TODO: Update handling of fieldsets
+      _.each(fieldsets, function(fs) {
+        if (_(fs).isArray()) {
+          fs = {'fields': fs};
+        }
+
+        //Concatenating HTML as strings won't work so we need to insert field elements into a placeholder
+        var $fieldset = $(templates.fieldset(_.extend({}, fs, {
+          legend: (fs.legend) ? '<legend>' + fs.legend + '</legend>' : '',
+          fields: '<div class="bbf-placeholder"></div>'
+        })));
+
+        var $fieldsContainer = $('.bbf-placeholder', $fieldset);
+
+        self.renderFields(fs.fields, $fieldsContainer);
+
+        $fieldsContainer = $fieldsContainer.children().unwrap()
+
+        $fieldsetContainer.append($fieldset);
+      });
+
+      $fieldsetContainer.children().unwrap()
 
       this.setElement($form);
 
@@ -437,7 +428,7 @@
           model = this.model,
           data = this.data,
           fields = this.fields;
-      
+
       //Create form fields
       _.each(fieldsToRender, function(key) {
         //Get nested schema
@@ -502,16 +493,16 @@
       //Get errors from default Backbone model validator
       if (model && model.validate) {
         var modelErrors = model.validate(this.getValue());
-        
+
         if (modelErrors) {
           var isDictionary = _.isObject(modelErrors) && !_.isArray(modelErrors);
-          
+
           //If errors are not in object form then just store on the error object
           if (!isDictionary) {
             errors._others = errors._others || [];
             errors._others.push(modelErrors);
           }
-          
+
           //Merge programmatic errors (requires model.validate() to return an object e.g. { fieldKey: 'error' })
           if (isDictionary) {
             _.each(modelErrors, function(val, key) {
@@ -519,7 +510,7 @@
               if (self.fields[key] && !errors[key]) {
                 self.fields[key].setError(val);
               }
-              
+
               else {
                 //Otherwise add to '_others' key
                 errors._others = errors._others || [];
@@ -552,21 +543,21 @@
           modelError = e;
         }
       });
-      
+
       if (modelError) return modelError;
     },
 
     /**
      * Get all the field values as an object.
      * Use this method when passing data instead of objects
-     * 
+     *
      * @param {String}  To get a specific field value pass the key name
      */
     getValue: function(key) {
       //Return only given key if specified
       if (key) return this.fields[key].getValue();
-      
-      //Otherwise return entire form      
+
+      //Otherwise return entire form
       var values = {};
       _.each(this.fields, function(field) {
         values[field.key] = field.getValue();
@@ -574,7 +565,7 @@
 
       return values;
     },
-    
+
     /**
      * Update field values, referenced by key
      * @param {Object}  New values to set
@@ -590,7 +581,7 @@
      */
     remove: function() {
       var fields = this.fields;
-      
+
       for (var key in fields) {
         fields[key].remove();
       }
@@ -604,7 +595,7 @@
   //==================================================================================================
   //FIELD
   //==================================================================================================
-  
+
   var Field = Backbone.View.extend({
 
     /**
@@ -630,7 +621,7 @@
 
         return options.schema || {};
       })();
-      
+
       //Set schema defaults
       if (!schema.type) schema.type = 'Text';
       if (!schema.title) schema.title = helpers.keyToTitle(this.key);
@@ -658,7 +649,7 @@
 
       //Decide on the editor to use
       var editor = this.editor = helpers.createEditor(schema.type, options);
-      
+
       //Create the element
       var $field = $(templates[schema.template]({
         key: this.key,
@@ -668,23 +659,23 @@
         editor: '<span class="bbf-placeholder-editor"></span>',
         help: '<span class="bbf-placeholder-help"></span>'
       }));
-      
+
       //Render editor
-      var $editorContainer = $('.bbf-placeholder-editor', $field).parent();
-      $editorContainer.empty();
+      var $editorContainer = $('.bbf-placeholder-editor', $field)
       $editorContainer.append(editor.render().el);
-      
+      $editorContainer.children().unwrap();
+
       //Set help text
       this.$help = $('.bbf-placeholder-help', $field).parent();
       this.$help.empty();
       if (this.schema.help) this.$help.html(this.schema.help);
-      
+
       //Add custom CSS class names
       if (this.schema.fieldClass) $field.addClass(this.schema.fieldClass);
-      
+
       //Add custom attributes
       if (this.schema.fieldAttrs) $field.attr(this.schema.fieldAttrs);
-      
+
       this.setElement($field);
 
       return this;
@@ -714,7 +705,7 @@
 
       return id;
     },
-    
+
     /**
      * Check the validity of the field
      * @return {String}
@@ -730,7 +721,7 @@
 
       return error;
     },
-    
+
     /**
      * Set the field into an error state, adding the error class and setting the error message
      *
@@ -739,26 +730,26 @@
     setError: function(errMsg) {
       //Object and NestedModel types set their own errors internally
       if (this.editor.hasNestedForm) return;
-      
+
       var errClass = Form.classNames.error;
 
       this.$el.addClass(errClass);
-      
+
       if (this.$help) this.$help.html(errMsg);
     },
-    
+
     /**
      * Clear the error state and reset the help message
      */
     clearError: function() {
       var errClass = Form.classNames.error;
-       
+
       this.$el.removeClass(errClass);
-      
+
       // some fields (e.g., Hidden), may not have a help el
       if (this.$help) {
         this.$help.empty();
-      
+
         //Reset help text if available
         var helpMsg = this.schema.help;
         if (helpMsg) this.$help.html(helpMsg);
@@ -779,7 +770,7 @@
     getValue: function() {
       return this.editor.getValue();
     },
-    
+
     /**
      * Set/change the value of the editor
      */
@@ -789,7 +780,7 @@
 
     logValue: function() {
       if (!console || !console.log) return;
-      
+
       console.log(this.getValue());
     },
 
@@ -837,19 +828,19 @@
       else if (options.value) {
         this.value = options.value;
       }
-      
+
       if (this.value === undefined) this.value = this.defaultValue;
 
       this.form = options.form;
       this.schema = options.schema || {};
       this.validators = options.validators || this.schema.validators;
-      
+
       //Main attributes
       this.$el.attr('name', this.getName());
-      
+
       //Add custom CSS class names
       if (this.schema.editorClass) this.$el.addClass(this.schema.editorClass);
-      
+
       //Add custom attributes
       if (this.schema.editorAttrs) this.$el.attr(this.schema.editorAttrs);
     },
@@ -857,7 +848,7 @@
     getValue: function() {
       throw 'Not implemented. Extend and override this method.';
     },
-    
+
     setValue: function() {
       throw 'Not implemented. Extend and override this method.';
     },
@@ -866,7 +857,7 @@
      * Get the value for the form input 'name' attribute
      *
      * @return {String}
-     * 
+     *
      * @api private
      */
     getName: function() {
@@ -875,7 +866,7 @@
       //Replace periods with underscores (e.g. for when using paths)
       return key.replace(/\./g, '_')
     },
-    
+
     /**
      * Update the model with the current value
      * NOTE: The method is defined on the editors so that they can be used independently of fields
@@ -885,20 +876,20 @@
     commit: function() {
       var error = this.validate();
       if (error) return error;
-      
+
       this.model.set(this.key, this.getValue(), {
         error: function(model, e) {
           error = e;
         }
       });
-      
+
       if (error) return error;
     },
-    
+
     /**
      * Check validity
      * NOTE: The method is defined on the editors so that they can be used independently of fields
-     * 
+     *
      * @return {String}
      */
     validate: function() {
@@ -925,17 +916,17 @@
   editors.Text = editors.Base.extend({
 
     tagName: 'input',
-    
+
     defaultValue: '',
-    
+
     initialize: function(options) {
       editors.Base.prototype.initialize.call(this, options);
-      
+
       var schema = this.schema;
-      
+
       //Allow customising text type (email, phone etc.) for HTML5 browsers
       var type = 'text';
-      
+
       if (schema && schema.editorAttrs && schema.editorAttrs.type) type = schema.editorAttrs.type;
       if (schema && schema.dataType) type = schema.dataType;
 
@@ -958,12 +949,12 @@
     getValue: function() {
       return this.$el.val();
     },
-    
+
     /**
      * Sets the value of the form element
      * @param {String}
      */
-    setValue: function(value) { 
+    setValue: function(value) {
       this.$el.val(value);
     }
 
@@ -994,7 +985,7 @@
     onKeyPress: function(event) {
       //Allow backspace
       if (event.charCode == 0) return;
-      
+
       //Get the whole new value so that we can prevent things like double decimals points etc.
       var newVal = this.$el.val() + String.fromCharCode(event.charCode);
 
@@ -1003,15 +994,15 @@
       if (!numeric) event.preventDefault();
     },
 
-    getValue: function() {        
+    getValue: function() {
       var value = this.$el.val();
-      
+
       return value === "" ? null : parseFloat(value, 10);
     },
-    
+
     setValue: function(value) {
       value = value === null ? null : parseFloat(value, 10);
-      
+
       editors.Text.prototype.setValue.call(this, value);
     }
 
@@ -1036,18 +1027,18 @@
     tagName: 'textarea'
 
   });
-  
-  
+
+
   //CHECKBOX
   editors.Checkbox = editors.Base.extend({
-      
+
     defaultValue: false,
-    
+
     tagName: 'input',
-    
+
     initialize: function(options) {
       editors.Base.prototype.initialize.call(this, options);
-      
+
       this.$el.attr('type', 'checkbox');
     },
 
@@ -1059,23 +1050,23 @@
 
       return this;
     },
-    
+
     getValue: function() {
       return this.$el.attr('checked') ? true : false;
     },
-    
+
     setValue: function(value) {
       if (value) {
         this.$el.attr('checked', true);
       }
     }
-    
+
   });
-  
-  
+
+
   //HIDDEN
   editors.Hidden = editors.Base.extend({
-    
+
     defaultValue: '',
 
     initialize: function(options) {
@@ -1083,11 +1074,11 @@
 
       this.$el.attr('type', 'hidden');
     },
-    
+
     getValue: function() {
       return this.value;
     },
-    
+
     setValue: function(value) {
       this.value = value;
     }
@@ -1097,7 +1088,7 @@
 
   /**
    * SELECT
-   * 
+   *
    * Renders a <select> with given options
    *
    * Requires an 'options' value on the schema.
@@ -1184,14 +1175,14 @@
     getValue: function() {
       return this.$el.val();
     },
-    
+
     setValue: function(value) {
       this.$el.val(value);
     },
 
     /**
      * Transforms a collection into HTML ready to use in the renderOptions method
-     * @param {Backbone.Collection} 
+     * @param {Backbone.Collection}
      * @return {String}
      */
     _collectionToHtml: function(collection) {
@@ -1236,7 +1227,7 @@
 
   /**
    * RADIO
-   * 
+   *
    * Renders a <ul> with given options represented as <li> objects containing radio buttons
    *
    * Requires an 'options' value on the schema.
@@ -1350,12 +1341,12 @@
 
   /**
    * OBJECT
-   * 
+   *
    * Creates a child form. For editing Javascript objects
-   * 
+   *
    * Special options:
    *   schema.subSchema:    Subschema for object.
-   *   idPrefix, 
+   *   idPrefix,
    */
   editors.Object = editors.Base.extend({
     //Prevent error classes being set on the main control; they are internally on the individual fields
@@ -1394,10 +1385,10 @@
     getValue: function() {
       return this.form.getValue();
     },
-    
+
     setValue: function(value) {
       this.value = value;
-      
+
       this.render();
     },
 
@@ -1406,7 +1397,7 @@
 
       Backbone.View.prototype.remove.call(this);
     },
-    
+
     validate: function() {
       return this.form.validate();
     }
@@ -1417,9 +1408,9 @@
 
   /**
    * NESTED MODEL
-   * 
+   *
    * Creates a child form. For editing nested Backbone models
-   * 
+   *
    * Special options:
    *   schema.model:   Embedded model constructor
    */
@@ -1469,8 +1460,8 @@
     }
 
   });
-  
-  
+
+
   //Exports
   Form.helpers = helpers;
   Form.Field = Field;
@@ -1478,10 +1469,10 @@
   Form.validators = validators;
   Form.setTemplates = helpers.setTemplates;
   Backbone.Form = Form;
-  
+
   //Make default templates active
   Form.setTemplates(templates, classNames);
-  
+
   //For use in NodeJS
   if (typeof module != 'undefined') module.exports = Form
 
