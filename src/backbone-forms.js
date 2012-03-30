@@ -381,45 +381,36 @@
       var $form = $(templates[this.templateName]({
         fieldsets: '<div class="bbf-placeholder"></div>'
       }));
-      
-      //Get a reference to where fieldsets should go and remove the placeholder
-      var $fieldsetContainer = $('.bbf-placeholder', $form).parent();
-      $fieldsetContainer.html('');
 
-      if (fieldsets) {
-        //TODO: Update handling of fieldsets
-        _.each(fieldsets, function (fs) {
-          if (_(fs).isArray()) {
-            fs = {'fields': fs};
-          }
-          
-          //Concatenating HTML as strings won't work so we need to insert field elements into a placeholder
-          var $fieldset = $(templates.fieldset({
-            legend: (fs.legend) ? '<legend>' + fs.legend + '</legend>' : '',
-            fields: '<div class="bbf-placeholder"></div>'
-          }));
-          
-          var $fieldsContainer = $('.bbf-placeholder', $fieldset).parent();
-          $fieldsContainer.html('');
-          
-          self.renderFields(fs.fields, $fieldsContainer);
-          
-          $fieldsetContainer.append($fieldset);
-        });
-      } else {
-        //Concatenating HTML as strings won't work so we need to insert field elements into a placeholder
-        var $fieldset = $(templates.fieldset({
-          legend: '',
-          fields: '<div class="bbf-placeholder"></div>'
-        }));
-        
-        var $fieldsContainer = $('.bbf-placeholder', $fieldset).parent();
-        $fieldsContainer.html('');
-        
-        this.renderFields(fieldsToRender, $fieldsContainer);
-        
-        $fieldsetContainer.append($fieldset);
+      //Get a reference to where fieldsets should go
+      var $fieldsetContainer = $('.bbf-placeholder', $form);
+
+      if(!fieldsets) {
+        fieldsets = [{}]
       }
+
+      //TODO: Update handling of fieldsets
+      _.each(fieldsets, function(fs) {
+        if (_(fs).isArray()) {
+          fs = {'fields': fs};
+        }
+
+        //Concatenating HTML as strings won't work so we need to insert field elements into a placeholder
+        var $fieldset = $(templates.fieldset(_.extend({}, fs, {
+          legend: (fs.legend) ? '<legend>' + fs.legend + '</legend>' : '',
+          fields: '<div class="bbf-placeholder"></div>'
+        })));
+
+        var $fieldsContainer = $('.bbf-placeholder', $fieldset);
+
+        self.renderFields(fs.fields, $fieldsContainer);
+
+        $fieldsContainer = $fieldsContainer.children().unwrap()
+
+        $fieldsetContainer.append($fieldset);
+      });
+
+      $fieldsetContainer.children().unwrap()
 
       this.setElement($form);
 
@@ -670,10 +661,10 @@
       }));
       
       //Render editor
-      var $editorContainer = $('.bbf-placeholder-editor', $field).parent();
-      $editorContainer.empty();
+      var $editorContainer = $('.bbf-placeholder-editor', $field)
       $editorContainer.append(editor.render().el);
-      
+      $editorContainer.children().unwrap();
+
       //Set help text
       this.$help = $('.bbf-placeholder-help', $field).parent();
       this.$help.empty();
