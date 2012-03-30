@@ -1,12 +1,13 @@
 /**
- * Backbone Forms v0.7.3
+ * Backbone Forms v0.8.0
  *
  * Copyright (c) 2012 Charles Davison, Pow Media Ltd
  *
  * License and more information at:
  * http://github.com/powmedia/backbone-forms
  */
-;(function($, _, Backbone) {  
+;(function($, _, Backbone) {
+
   
   //==================================================================================================
   //TEMPLATES
@@ -36,8 +37,7 @@
   var classNames = {
     error: 'bbf-error'
   };
-  
-  
+
   
   //==================================================================================================
   //HELPERS
@@ -220,7 +220,6 @@
     throw new Error('Invalid validator: ' + validator);
   };
 
-
   
   //==================================================================================================
   //VALIDATORS
@@ -319,8 +318,6 @@
       if (value != attrs[options.field]) return err;
     }
   };
-  
-
 
 
   //==================================================================================================
@@ -590,7 +587,6 @@
   });
 
 
-
   //==================================================================================================
   //FIELD
   //==================================================================================================
@@ -790,7 +786,6 @@
     }
 
   });
-
 
 
   //========================================================================
@@ -1459,7 +1454,7 @@
     }
 
   });
-  
+
   
   //Combine objects on the main namespace
   Form.helpers = helpers;
@@ -1471,11 +1466,13 @@
   //Make default templates active
   Form.setTemplates(templates, classNames);
 
+
   //EXPORTS
   //Add to the Backbone namespace if available, for use via <script> tags
   Backbone.Form = Backbone.Form || Form;
 
-  //AMD (RequireJS)
+  //AMD (RequireJS) - For exporting as a module when Backbone and jQuery are on the page
+  //If using RequireJS to load Backbone, Underscore and jQuery, use the AMD-specific file
   if (typeof define === 'function' && define.amd) {
     return define(function() {
       return Form;
