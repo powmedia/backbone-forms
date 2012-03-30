@@ -7,5 +7,6 @@
   "version": "0.7.3",
   "dependencies": {
     "backbone": ">=0.9.1"
-  }
+  },
+  "main": "src/backbone-forms.js"
 }
