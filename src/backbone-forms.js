@@ -402,7 +402,6 @@
         })));
 
         var $fieldsContainer = $('.bbf-placeholder', $fieldset);
-        $('.bbf-placeholder', $fieldsContainer).remove();
 
         self.renderFields(fs.fields, $fieldsContainer);
 
@@ -662,9 +661,9 @@
       }));
 
       //Render editor
-      var $editorContainer = $('.bbf-placeholder-editor', $field).parent();
-      $editorContainer.empty();
+      var $editorContainer = $('.bbf-placeholder-editor', $field)
       $editorContainer.append(editor.render().el);
+      $editorContainer.children().unwrap();
 
       //Set help text
       this.$help = $('.bbf-placeholder-help', $field).parent();
