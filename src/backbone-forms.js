@@ -396,10 +396,10 @@
         }
 
         //Concatenating HTML as strings won't work so we need to insert field elements into a placeholder
-        var $fieldset = $(templates.fieldset(_.extend({}, fs, {
+        var $fieldset = $(templates.fieldset({
           legend: (fs.legend) ? '<legend>' + fs.legend + '</legend>' : '',
           fields: '<div class="bbf-placeholder"></div>'
-        })));
+        }));
 
         var $fieldsContainer = $('.bbf-placeholder', $fieldset);
 
