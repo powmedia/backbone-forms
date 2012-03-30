@@ -1482,7 +1482,7 @@
   Form.setTemplates(templates, classNames);
 
   //EXPORTS
-  //Add to the Backbone namespace if available, for regular use
+  //Add to the Backbone namespace if available, for use via <script> tags
   Backbone.Form = Backbone.Form || Form;
 
   //AMD (RequireJS)
