@@ -373,7 +373,6 @@
      */
     render: function() {
       var self = this,
-          fieldsToRender = this.fieldsToRender,
           fieldsets = this.fieldsets,
           templates = Form.templates;
       
@@ -386,7 +385,7 @@
       var $fieldsetContainer = $('.bbf-placeholder', $form);
 
       if(!fieldsets) {
-        fieldsets = [{}]
+        fieldsets = [{fields: this.fieldsToRender}]
       }
 
       //TODO: Update handling of fieldsets
