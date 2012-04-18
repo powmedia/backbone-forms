@@ -88,7 +88,7 @@ See [schema definition](#schema-definition) for more information.
             contact:    { type: 'Object', subSchema: {
                             name: 'Text',
                             phone: {}
-                        }}
+                        }},
             address:    { type: 'NestedModel', model: Address },
             notes:      { type: 'List' }
         }
