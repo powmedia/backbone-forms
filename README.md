@@ -12,7 +12,7 @@ Simply define a schema on your models and the forms will be auto-generated for y
             contact:    { type: 'Object', subSchema: {
                             name: { validators: ['required'] },
                             phone: {}
-                        }}
+                        }},
             address:    { type: 'NestedModel', model: Address },
             notes:      { type: 'List', help: 'Helpful notes' }
         }
