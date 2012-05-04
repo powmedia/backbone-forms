@@ -136,7 +136,7 @@ var Form = (function() {
           options.value = null;
         }
 
-        var field = new Field(options);
+        var field = new Form.Field(options);
 
         //Render the fields with editors, apart from Hidden fields
         if (itemSchema.type == 'Hidden') {
