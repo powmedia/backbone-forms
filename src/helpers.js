@@ -1,8 +1,12 @@
-  
-  //==================================================================================================
-  //HELPERS
-  //==================================================================================================
-  
+
+//==================================================================================================
+//HELPERS
+//==================================================================================================
+
+Form.helpers = (function() {
+
+  var helpers = {};
+
   /**
    * Gets a nested attribute using a path e.g. 'user.name'
    *
@@ -11,7 +15,7 @@
    * @return {Mixed}
    * @api private
    */
-  function getNested(obj, path) {
+  helpers.getNested = function(obj, path) {
     var fields = path.split(".");
     var result = obj;
     for (var i = 0, n = fields.length; i < n; i++) {
@@ -19,8 +23,6 @@
     }
     return result;
   }
-  
-  var helpers = {};
   
   /**
    * This function is used to transform the key from a schema into the title used in a label.
@@ -111,10 +113,11 @@
   helpers.createEditor = function(schemaType, options) {
     var constructorFn;
 
-    if (_.isString(schemaType))
-      constructorFn = editors[schemaType];
-    else
+    if (_.isString(schemaType)) {
+      constructorFn = Form.editors[schemaType];
+    } else {
       constructorFn = schemaType;
+    }
 
     return new constructorFn(options);
   };
@@ -154,6 +157,8 @@
    * @return {Function}
    */
   helpers.getValidator = function(validator) {
+    var validators = Form.validators;
+
     //Convert regular expressions to validators
     if (_.isRegExp(validator)) {
       return validators.regexp({ regexp: validator });
@@ -179,3 +184,8 @@
     //Unkown validator type
     throw new Error('Invalid validator: ' + validator);
   };
+
+
+  return helpers;
+
+})();

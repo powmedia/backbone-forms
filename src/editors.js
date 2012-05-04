@@ -1,7 +1,9 @@
 
-  //========================================================================
-  //EDITORS
-  //========================================================================
+//========================================================================
+//EDITORS
+//========================================================================
+
+Form.editors = (function() {
 
   var editors = {};
 
@@ -102,12 +104,13 @@
           error = null,
           value = this.getValue(),
           formValues = this.form ? this.form.getValue() : {},
-          validators = this.validators;
+          validators = this.validators,
+          getValidator = Form.helpers.getValidator;
 
       if (validators) {
         _.each(validators, function(validator) {
           if (!error) {
-            error = helpers.getValidator(validator)(value, formValues);
+            error = getValidator(validator)(value, formValues);
           }
         });
       }
@@ -665,3 +668,8 @@
     }
 
   });
+
+
+  return editors;
+
+})();

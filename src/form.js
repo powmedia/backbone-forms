@@ -1,9 +1,11 @@
 
-  //==================================================================================================
-  //FORM
-  //==================================================================================================
-    
-  var Form = Backbone.View.extend({
+//==================================================================================================
+//FORM
+//==================================================================================================
+  
+var Form = (function() {
+
+  return Backbone.View.extend({
     
     //Field views
     fields: null,
@@ -102,7 +104,8 @@
           schema = this.schema,
           model = this.model,
           data = this.data,
-          fields = this.fields;
+          fields = this.fields,
+          getNested = Form.helpers.getNested;
       
       //Create form fields
       _.each(fieldsToRender, function(key) {
@@ -264,3 +267,5 @@
       Backbone.View.prototype.remove.call(this);
     }
   });
+
+})();

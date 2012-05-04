@@ -1,10 +1,6 @@
-  
-  //Combine objects on the main namespace
-  Form.helpers = helpers;
-  Form.Field = Field;
-  Form.editors = editors;
-  Form.validators = validators;
-  Form.setTemplates = helpers.setTemplates;
+
+  //Add function shortcuts
+  Form.setTemplates = Form.helpers.setTemplates;
   
   //Make default templates active
-  Form.setTemplates(templates, classNames);
+  Form.setTemplates(Form._templates, Form._classNames);

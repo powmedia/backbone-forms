@@ -1,10 +1,12 @@
   
-  //==================================================================================================
-  //VALIDATORS
-  //==================================================================================================
-  
+//==================================================================================================
+//VALIDATORS
+//==================================================================================================
+
+Form.validators = (function() {
+
   var validators = {};
-  
+
   validators.errMessages = {
     required: 'Required',
     regexp: 'Invalid',
@@ -13,7 +15,7 @@
     match: 'Must match field "{{field}}"'
   }
   
-  validators.required = function(options) {   
+  validators.required = function(options) {
     options = _.extend({
       type: 'required',
       message: this.errMessages.required
@@ -24,7 +26,7 @@
       
       var err = {
         type: options.type,
-        message: helpers.createTemplate(options.message, options)
+        message: Form.helpers.createTemplate(options.message, options)
       };
       
       if (value === null || value === undefined || value === '') return err;
@@ -44,7 +46,7 @@
       
       var err = {
         type: options.type,
-        message: helpers.createTemplate(options.message, options)
+        message: Form.helpers.createTemplate(options.message, options)
       };
       
       //Don't check empty values (add a 'required' validator for this)
@@ -87,7 +89,7 @@
       
       var err = {
         type: options.type,
-        message: helpers.createTemplate(options.message, options)
+        message: Form.helpers.createTemplate(options.message, options)
       };
       
       //Don't check empty values (add a 'required' validator for this)
@@ -96,3 +98,8 @@
       if (value != attrs[options.field]) return err;
     }
   };
+
+
+  return validators;
+
+})();
