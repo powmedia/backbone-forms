@@ -605,6 +605,19 @@ Example:
 
 
 
+<a name="changing-template-compiler"/>
+#Changing template compiler
+
+You can use your own custom template compiler, like [Handlebars](http://handlebarsjs.com/) by passing a reference to the function into `Backbone.Form.setTemplateCompiler()`.
+
+Example:
+
+    Backbone.Form.setTemplateCompiler(Handlebars.compile);
+
+[Back to top](#top)
+
+
+
 <a name="more"/>
 #More
 
