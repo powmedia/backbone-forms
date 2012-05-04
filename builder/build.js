@@ -97,10 +97,10 @@ function copy(srcPath, outputPath) {
 
 // RUN
 var fileList = [
+  srcDir + '/form.js',
   srcDir + '/templates.js',
   srcDir + '/helpers.js',
   srcDir + '/validators.js',
-  srcDir + '/form.js',
   srcDir + '/field.js',
   srcDir + '/editors.js',
   srcDir + '/setup.js'
