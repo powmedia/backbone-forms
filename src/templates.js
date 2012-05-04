@@ -3,7 +3,7 @@
 //TEMPLATES
 //==================================================================================================
 
-  Form._templates = {
+  var defaultTemplates = {
     form: '\
       <form class="bbf-form">{{fieldsets}}</form>\
     ',
@@ -24,7 +24,7 @@
     '
   };
 
-  Form._classNames = {
+  var defaultClassNames = {
     error: 'bbf-error'
   };
   
