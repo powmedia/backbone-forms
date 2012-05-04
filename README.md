@@ -57,18 +57,20 @@ Dependencies:
 
 Include backbone-forms.js and backbone-forms.css:
 
-    <link href="backbone-forms/backbone-forms.css" rel="stylesheet" type="text/css"/> 
-    <script src="backbone-forms/src/backbone-forms.js"></script>
+    <link href="backbone-forms/distribution/backbone-forms.css" rel="stylesheet" type="text/css"/> 
+    <script src="backbone-forms/distribution/backbone-forms.min.js"></script>
 
 Optionally, you can include the extra editors, for example those that require jQuery UI:
 
-    <script src="backbone-forms/src/jquery-ui-editors.js"></script>
+    <script src="backbone-forms/distribution/editors/jquery-ui.min.js"></script>
     
 To use a custom template pack, e.g. Bootstrap, include the relevant file after backbone-forms.js:
 
-    <script src="backbone-forms/src/templates/bootstrap.js"></script>
+    <script src="backbone-forms/distribution/templates/bootstrap.js"></script>
 
 If you use BackboneJS with node.js, you can just `require('backbone-forms');` in your index file.
+
+Note there is also a distribution file for RequireJS / AMD.
 
 [Back to top](#top)
 
@@ -605,6 +607,19 @@ Example:
 
 
 
+<a name="changing-template-compiler"/>
+#Changing template compiler
+
+You can use your own custom template compiler, like [Handlebars](http://handlebarsjs.com/) by passing a reference to the function into `Backbone.Form.setTemplateCompiler()`.
+
+Example:
+
+    Backbone.Form.setTemplateCompiler(Handlebars.compile);
+
+[Back to top](#top)
+
+
+
 <a name="more"/>
 #More
 
@@ -713,3 +728,12 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 ##Contributors
 
 - Charles Davison - [powmedia](http://github.com/powmedia)
+
+
+<a name="changelog"/>
+##Changelog
+
+###0.9.0
+- Added ability to use a custom template compiler (geowa4)
+- Added distribution files (development and minified production versions)
+- Added AMD-compatible version (development and minified production versions)

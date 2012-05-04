@@ -4,8 +4,13 @@
   "author": {
     "name": "Charles Davison"
   },
-  "version": "0.7.3",
+  "version": "0.9.0",
   "dependencies": {
     "backbone": ">=0.9.1"
-  }
+  },
+  "devDependencies": {
+    "underscore": "latest",
+    "uglify-js": "latest"
+  },
+  "main": "src/backbone-forms.js"
 }
