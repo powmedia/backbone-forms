@@ -1,5 +1,5 @@
 /**
- * Backbone Forms v0.8.0
+ * Backbone Forms v0.9.0
  *
  * NOTE:
  * This version is for use with RequireJS

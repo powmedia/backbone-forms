@@ -1,5 +1,5 @@
 /**
- * Backbone Forms v0.8.0
+ * Backbone Forms v0.9.0
  *
  * Copyright (c) 2012 Charles Davison, Pow Media Ltd
  *
