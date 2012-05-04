@@ -45,6 +45,7 @@ The schema above will automatically create a form similar to this:
   - [Using nested fields](#nested-fields)
   - [Custom editors](#custom-editors)
   - [Help](#help)
+  - [Changelog](#changelog)
 
 
 
@@ -723,11 +724,6 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 ##Help & discussion
 
 - [Google Groups](http://groups.google.com/group/backbone-forms)
-
-
-##Contributors
-
-- Charles Davison - [powmedia](http://github.com/powmedia)
 
 
 <a name="changelog"/>
