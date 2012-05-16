@@ -10,7 +10,7 @@
  * License and more information at:
  * http://github.com/powmedia/backbone-forms
  */
-define('backbone-forms', ['jquery', 'Backbone'], function() {
+define(['jquery', 'Backbone'], function($, Backbone) {
 
   
 //==================================================================================================
