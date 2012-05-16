@@ -150,7 +150,7 @@ var Form = (function() {
 
         //Render the fields with editors, apart from Hidden fields
         if (itemSchema.type == 'Hidden') {
-          field.editor = helpers.createEditor('Hidden', options);
+          field.editor = Form.helpers.createEditor('Hidden', options);
         } else {
           $container.append(field.render().el);
         }
