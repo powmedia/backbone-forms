@@ -729,7 +729,7 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 <a name="changelog"/>
 ##Changelog
 
-###0.9.1
+###0.9.1 (in development on master)
 - Fix bug with hidden fields (jeffutter)
 - Fix AMD distribution bug (ikr)
 
