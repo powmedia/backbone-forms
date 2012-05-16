@@ -729,6 +729,10 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 <a name="changelog"/>
 ##Changelog
 
+###0.9.1
+- Fix bug with hidden fields (jeffutter)
+- Fix AMD distribution bug (ikr)
+
 ###0.9.0
 - Added ability to use a custom template compiler (geowa4)
 - Added distribution files (development and minified production versions)
