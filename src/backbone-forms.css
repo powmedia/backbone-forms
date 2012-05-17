@@ -130,3 +130,28 @@
     .bbf-checkboxes label {
         float: none;
     }
+
+
+
+.bbf-simplelist {
+
+}
+
+    .bbf-simplelist-list {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+    }
+
+        .bbf-simplelist-list li {
+            clear: both;
+        }
+
+    .bbf-simplelist-editor {
+        float: left;
+        width: 90%;
+    }
+
+    .bbf-simplelist-del {
+        float: right;
+    }

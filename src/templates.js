@@ -29,9 +29,9 @@
     ',
 
     simpleListItem: '\
-      <li class="bbf-simplelist-item">\
+      <li>\
         <div class="bbf-simplelist-editor"></div>\
-        <button class="bbf-simplelist-del">Delete</button>\
+        <button class="bbf-simplelist-del">x</button>\
       </li>\
     ',
   };

@@ -689,10 +689,6 @@ Form.editors = (function() {
       'click .bbf-simplelist-add': function(event) {
         event.preventDefault();
         this.addItem();
-      },
-      'click .bbf-simplelist-del': function(event) {
-        event.preventDefault();
-        this.removeItem();
       }
     },
 
@@ -726,34 +722,19 @@ Form.editors = (function() {
      * @param {Mixed} [value]     Value for the new item editor
      */
     addItem: function(value) {
-      //Create editor
-      var editor = Form.helpers.createEditor(this.schema.listType, {
-        key: '',
+      var item = new editors.SimpleList.Item({
         schema: this.schema,
         value: value
-      }).render();
+      });
 
-      this.items.push(editor);
+      this.items.push(item);
 
-      //Add DOM element
-      var $item = $(Form.templates.simpleListItem());
-      $item.find('.bbf-simplelist-editor').html(editor.el);
-
-      this.$list.append($item);
-    },
-
-    /**
-     * Removes an item from the list
-     */
-    removeItem: function() {
-      var $item = $(event.target).closest('.bbf-simplelist-item');
-
-      $item.remove();
+      this.$list.append(item.render().el);
     },
 
     getValue: function() {
-      var values = _.map(this.items, function(editor) {
-        return editor.getValue();
+      var values = _.map(this.items, function(item) {
+        return item.getValue();
       });
 
       //Filter empty items
@@ -763,6 +744,63 @@ Form.editors = (function() {
     setValue: function(value) {
       this.value = value;
       this.render();
+    },
+
+    /**
+     * Override default remove function in order to remove item views
+     */
+    remove: function() {
+      _.invoke(this.items, 'remove');
+
+      editors.Base.prototype.remove.call(this);
+    }
+  });
+
+
+  /**
+   * A single item in the list
+   *
+   * @param {String|Function} options.type    Editor type
+   * @param {Mixed} options.value             Value
+   */
+  editors.SimpleList.Item = Backbone.View.extend({
+    events: {
+      'click .bbf-simplelist-del': 'remove'
+    },
+
+    initialize: function(options) {
+      this.schema = options.schema;
+      this.value = options.value;
+    },
+
+    render: function() {
+      //Create the element using only the template (remove the wrapper tag)
+      this.setElement($(Form.templates.simpleListItem()));
+
+      //Add editor
+      this.editor = Form.helpers.createEditor(this.schema.listType, {
+        key: '',
+        schema: this.schema,
+        value: this.value
+      });
+
+      this.$('.bbf-simplelist-editor').html(this.editor.render().el);
+      
+      return this;
+    },
+
+    getValue: function() {
+      return this.editor.getValue();
+    },
+
+    setValue: function(value) {
+      this.editor.setValue(value);
+    },
+
+    remove: function() {
+      this.editor.remove();
+
+      Backbone.View.prototype.remove.call(this);
     }
   });
 
