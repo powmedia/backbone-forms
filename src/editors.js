@@ -677,13 +677,10 @@ Form.editors = (function() {
    *
    * Special options:
    * @param {String} [options.schema.listType]          The editor type for each item in the list. Default: 'Text'
-   * @param {Boolean} [options.schema.confirmDelete]    Whether to show a confirm dialog before deleting an item
-   * @param {String} [options.schema.confirmDeleteMsg]  Message to display in confirm delete dialog
+   * @param {String} [options.schema.confirmDelete]     If set, a confirmation dialog will be shown asking the user to confirm removing this item
    */
   editors.SimpleList = editors.Base.extend({
     className: 'bbf-simplelist',
-
-    items: [],
 
     events: {
       'click .bbf-simplelist-add': function(event) {
@@ -722,7 +719,10 @@ Form.editors = (function() {
      * @param {Mixed} [value]     Value for the new item editor
      */
     addItem: function(value) {
+      this.items = this.items || [];
+      
       var item = new editors.SimpleList.Item({
+        list: this,
         schema: this.schema,
         value: value
       });
@@ -730,6 +730,17 @@ Form.editors = (function() {
       this.items.push(item);
 
       this.$list.append(item.render().el);
+    },
+
+    /**
+     * Remove an item from the list
+     * @param {SimpleList.Item} item
+     */
+    removeItem: function(item) {
+      var index = _.indexOf(this.items, item);
+
+      this.items[index].remove();
+      this.items.splice(index, 1);
     },
 
     getValue: function() {
@@ -760,15 +771,20 @@ Form.editors = (function() {
   /**
    * A single item in the list
    *
+   * @param {editors.SimpleList} options.list The SimpleList editor instance this item belongs to
    * @param {String|Function} options.type    Editor type
    * @param {Mixed} options.value             Value
    */
   editors.SimpleList.Item = Backbone.View.extend({
     events: {
-      'click .bbf-simplelist-del': 'remove'
+      'click .bbf-simplelist-del': function(event) {
+        event.preventDefault();
+        this.list.removeItem(this);
+      }
     },
 
     initialize: function(options) {
+      this.list = options.list;
       this.schema = options.schema;
       this.value = options.value;
     },
