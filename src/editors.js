@@ -670,6 +670,103 @@ Form.editors = (function() {
   });
 
 
+  /**
+   * SIMPLE LIST
+   * 
+   * An array editor. Creates a list of other editor items.
+   *
+   * Special options:
+   * @param {String} [options.schema.listType]          The editor type for each item in the list. Default: 'Text'
+   * @param {Boolean} [options.schema.confirmDelete]    Whether to show a confirm dialog before deleting an item
+   * @param {String} [options.schema.confirmDeleteMsg]  Message to display in confirm delete dialog
+   */
+  editors.SimpleList = editors.Base.extend({
+    className: 'bbf-simplelist',
+
+    items: [],
+
+    events: {
+      'click .bbf-simplelist-add': function(event) {
+        event.preventDefault();
+        this.addItem();
+      },
+      'click .bbf-simplelist-del': function(event) {
+        event.preventDefault();
+        this.removeItem();
+      }
+    },
+
+    initialize: function(options) {
+      editors.Base.prototype.initialize.call(this, options);
+
+      if (!this.schema) throw "Missing required option 'schema'";
+      
+      this.schema.listType = this.schema.listType || 'Text';
+    },
+
+    render: function() {
+      var self = this,
+          $el = this.$el,
+          value = this.value || [];
+
+      //Create main element
+      $el.html(Form.templates.simpleList());
+
+      this.$list = $el.find('.bbf-simplelist-list');
+
+      _.each(value, function(itemValue) {
+        self.addItem(itemValue);
+      });
+      
+      return this;
+    },
+
+    /**
+     * Add a new item to the list
+     * @param {Mixed} [value]     Value for the new item editor
+     */
+    addItem: function(value) {
+      //Create editor
+      var editor = Form.helpers.createEditor(this.schema.listType, {
+        key: '',
+        schema: this.schema,
+        value: value
+      }).render();
+
+      this.items.push(editor);
+
+      //Add DOM element
+      var $item = $(Form.templates.simpleListItem());
+      $item.find('.bbf-simplelist-editor').html(editor.el);
+
+      this.$list.append($item);
+    },
+
+    /**
+     * Removes an item from the list
+     */
+    removeItem: function() {
+      var $item = $(event.target).closest('.bbf-simplelist-item');
+
+      $item.remove();
+    },
+
+    getValue: function() {
+      var values = _.map(this.items, function(editor) {
+        return editor.getValue();
+      });
+
+      //Filter empty items
+      return _.without(values, undefined, '');
+    },
+
+    setValue: function(value) {
+      this.value = value;
+      this.render();
+    }
+  });
+
+
   return editors;
 
 })();

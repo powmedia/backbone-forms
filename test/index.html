@@ -87,20 +87,22 @@
                     }},
                     nestedModel: { type: 'NestedModel', model: NestedModel },
                     customTemplate: { template: 'customField' },
-                    shorthand: 'Password'
+                    shorthand: 'Password',
+                    simpleList: { type: 'SimpleList' }
                 }
             });
             
             var model = new Model({
                 number: null,
                 checkbox: true,
-                list: ['item1', 'item2', 'item3']
+                list: ['item1', 'item2', 'item3'],
+                simpleList: [1,2,3]
             });
 
             var form = new Backbone.Form({
                 model: model,
                 fieldsets: [
-                    ['email', 'tel', 'number', 'checkbox', 'radio', 'checkboxes', 'customTemplate', 'shorthand'],
+                    ['email', 'tel', 'number', 'checkbox', 'radio', 'checkboxes', 'customTemplate', 'shorthand', 'simpleList'],
                     { legend: 'jQuery UI editors', fields: ['date', 'datetime', 'list'] },
                     { legend: 'Nested editors', fields: ['object', 'nestedModel'] }
                 ]
@@ -109,6 +111,16 @@
             window.form = form;
 
             $('#uiTest #formContainer').html(form.el);
+
+            $('#uiTest label').click(function() {
+                var name = $(this).attr('for'),
+                    $editor = $('#' + name),
+                    key = $editor.attr('name');
+
+                var editor = form.fields[key];
+
+                console.log(editor.getValue());
+            });
             
             $('#uiTest button.validate').click(function() { form.validate() });
         });

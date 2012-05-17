@@ -21,7 +21,19 @@
       <div class="bbf-editor bbf-editor{{type}}">{{editor}}</div>\
       <div class="bbf-help">{{help}}</div>\
     </li>\
-    '
+    ',
+
+    simpleList: '\
+      <ul class="bbf-simplelist-list"></ul>\
+      <button class="bbf-simplelist-add">Add</div>\
+    ',
+
+    simpleListItem: '\
+      <li class="bbf-simplelist-item">\
+        <div class="bbf-simplelist-editor"></div>\
+        <button class="bbf-simplelist-del">Delete</button>\
+      </li>\
+    ',
   };
 
   var defaultClassNames = {
