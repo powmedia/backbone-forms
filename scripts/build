@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /**
  * Builds the distribution files from /src
  * 
