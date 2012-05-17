@@ -677,7 +677,7 @@ Form.editors = (function() {
    *
    * Special options:
    * @param {String} [options.schema.listType]          The editor type for each item in the list. Default: 'Text'
-   * @param {String} [options.schema.confirmDelete]     If set, a confirmation dialog will be shown asking the user to confirm removing this item
+   * @param {String} [options.schema.confirmDelete]     Text to display in a delete confirmation dialog. If falsey, will not ask for confirmation.
    */
   editors.SimpleList = editors.Base.extend({
     className: 'bbf-simplelist',
@@ -745,6 +745,10 @@ Form.editors = (function() {
      * @param {SimpleList.Item} item
      */
     removeItem: function(item) {
+      //Confirm delete
+      var confirmMsg = this.schema.confirmDelete;
+      if (confirmMsg && !confirm(confirmMsg)) return;
+
       var index = _.indexOf(this.items, item);
 
       this.items[index].remove();
