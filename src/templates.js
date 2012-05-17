@@ -24,14 +24,14 @@
     ',
 
     simpleList: '\
-      <ul class="bbf-simplelist-list"></ul>\
-      <button class="bbf-simplelist-add">Add</div>\
+      <ul>{{items}}</ul>\
+      <div class="bbf-actions"><button data-action="add">Add</div>\
     ',
 
     simpleListItem: '\
       <li>\
-        <div class="bbf-simplelist-editor"></div>\
-        <button class="bbf-simplelist-del">x</button>\
+        <button class="bbf-remove" data-action="remove">x</button>\
+        <div class="bbf-editor-container">{{editor}}</div>\
       </li>\
     '
   };

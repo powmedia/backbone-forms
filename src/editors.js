@@ -683,7 +683,7 @@ Form.editors = (function() {
     className: 'bbf-simplelist',
 
     events: {
-      'click .bbf-simplelist-add': function(event) {
+      'click *[data-action="add"]': function(event) {
         event.preventDefault();
         this.addItem();
       }
@@ -703,13 +703,21 @@ Form.editors = (function() {
           value = this.value || [];
 
       //Create main element
-      $el.html(Form.templates.simpleList());
+      $el.html(Form.templates.simpleList({
+        items: '<span class="bbf-placeholder-items"></span>'
+      }));
 
-      this.$list = $el.find('.bbf-simplelist-list');
+      //Store a reference to the list (item container)
+      this.$list = $el.find('.bbf-placeholder-items').parent().empty();
 
-      _.each(value, function(itemValue) {
-        self.addItem(itemValue);
-      });
+      //Add items
+      if (value.length) {
+        _.each(value, function(itemValue) {
+          self.addItem(itemValue);
+        });
+      } else {
+        this.addItem();
+      }
       
       return this;
     },
@@ -741,6 +749,8 @@ Form.editors = (function() {
 
       this.items[index].remove();
       this.items.splice(index, 1);
+
+      if (!this.items.length) this.addItem();
     },
 
     getValue: function() {
@@ -777,7 +787,7 @@ Form.editors = (function() {
    */
   editors.SimpleList.Item = Backbone.View.extend({
     events: {
-      'click .bbf-simplelist-del': function(event) {
+      'click *[data-action="remove"]': function(event) {
         event.preventDefault();
         this.list.removeItem(this);
       }
@@ -790,17 +800,22 @@ Form.editors = (function() {
     },
 
     render: function() {
-      //Create the element using only the template (remove the wrapper tag)
-      this.setElement($(Form.templates.simpleListItem()));
-
-      //Add editor
+      //Create editor
       this.editor = Form.helpers.createEditor(this.schema.listType, {
         key: '',
         schema: this.schema,
         value: this.value
       });
 
-      this.$('.bbf-simplelist-editor').html(this.editor.render().el);
+      //Create main element
+      var $el = $(Form.templates.simpleListItem({
+        editor: '<span class="bbf-placeholder"></span>'
+      }));
+
+      $el.find('.bbf-placeholder').replaceWith(this.editor.render().el);
+
+      //Replace the entire element so there isn't a wrapper tag
+      this.setElement($el);
       
       return this;
     },

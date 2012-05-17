@@ -22,14 +22,16 @@
     ',
 
     simpleList: '\
-      <ul class="unstyled bbf-simplelist-list"></ul>\
-      <button class="btn bbf-simplelist-add">Add</div>\
+      <ul class="unstyled">{{items}}</ul>\
+      <div>\
+        <button class="btn" data-action="add">Add</div>\
+      </div>\
     ',
 
     simpleListItem: '\
-      <li>\
-        <div class="pull-left bbf-simplelist-editor"></div>\
-        <button class="btn pull-left bbf-simplelist-del">x</button>\
+      <li style="margin-bottom: 5px">\
+        <div class="pull-left">{{editor}}</div>\
+        <button class="btn" style="margin-left: 4px" data-action="remove">x</button>\
       </li>\
     '
   };

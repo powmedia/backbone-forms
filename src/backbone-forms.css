@@ -137,21 +137,27 @@
 
 }
 
-    .bbf-simplelist-list {
+    .bbf-simplelist ul {
         list-style-type: none;
         margin: 0;
         padding: 0;
     }
 
-        .bbf-simplelist-list li {
+        .bbf-simplelist li {
             clear: both;
+            width: 100%;
         }
 
-    .bbf-simplelist-editor {
-        float: left;
-        width: 90%;
+    .bbf-simplelist .bbf-editor-container {
+        margin-right: 2em;
     }
 
-    .bbf-simplelist-del {
+    .bbf-simplelist .bbf-remove {
         float: right;
+        width: 2em;
+    }
+
+    .bbf-simplelist .bbf-actions {
+        text-align: center;
+        clear: both;
     }

@@ -20,13 +20,13 @@
     ',
 
     simpleList: '\
-      <ul class="bbf-simplelist-list"></ul>\
+      <ul>{{items}}</ul>\
       <button class="bbf-simplelist-add">Add</div>\
     ',
 
     simpleListItem: '\
       <li>\
-        <div class="bbf-simplelist-editor"></div>\
+        <div>{{editor}}</div>\
         <button class="bbf-simplelist-del">x</button>\
       </li>\
     '
