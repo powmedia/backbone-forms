@@ -22,14 +22,12 @@
     ',
 
     simpleList: '\
-      <ul class="unstyled">{{items}}</ul>\
-      <div>\
-        <button class="btn" data-action="add">Add</div>\
-      </div>\
+      <ul class="unstyled" style="overflow: hidden">{{items}}</ul>\
+      <button class="btn" data-action="add">Add</div>\
     ',
 
     simpleListItem: '\
-      <li style="margin-bottom: 5px">\
+      <li style="margin-bottom: 5px; overflow: hidden">\
         <div class="pull-left">{{editor}}</div>\
         <button class="btn" style="margin-left: 4px" data-action="remove">x</button>\
       </li>\

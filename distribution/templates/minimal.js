@@ -17,6 +17,18 @@
         <div>{{editor}}</div>\
         <div>{{help}}</div>\
       </div>\
+    ',
+
+    simpleList: '\
+      <ul>{{items}}</ul>\
+      <button class="bbf-simplelist-add">Add</div>\
+    ',
+
+    simpleListItem: '\
+      <li>\
+        <div>{{editor}}</div>\
+        <button class="bbf-simplelist-del">x</button>\
+      </li>\
     '
   };
 
