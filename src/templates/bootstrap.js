@@ -19,6 +19,18 @@
           <div class="help-block">{{help}}</div>\
         </div>\
       </div>\
+    ',
+
+    simpleList: '\
+      <ul class="unstyled bbf-simplelist-list"></ul>\
+      <button class="btn bbf-simplelist-add">Add</div>\
+    ',
+
+    simpleListItem: '\
+      <li>\
+        <div class="pull-left bbf-simplelist-editor"></div>\
+        <button class="btn pull-left bbf-simplelist-del">x</button>\
+      </li>\
     '
   };
   

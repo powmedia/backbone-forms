@@ -33,7 +33,7 @@
         <div class="bbf-simplelist-editor"></div>\
         <button class="bbf-simplelist-del">x</button>\
       </li>\
-    ',
+    '
   };
 
   var defaultClassNames = {
