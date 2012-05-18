@@ -873,25 +873,33 @@ module('NestedModel');
 })();
 
 
-module('List');
+module('List', {
+    setup: function() {
+        this.sinon = sinon.sandbox.create();
+    },
+
+    teardown: function() {
+        this.sinon.restore();
+    }
+});
 
 (function() {
-    var editor = editors.SimpleList;
+    var Editor = editors.SimpleList;
 
     test('Default settings', function() {
-        var list = new editor();
+        var list = new Editor();
 
         same(list.schema.listType, 'Text');
     });
 
     test('Default value', function() {
-        var list = new editor().render();
+        var list = new Editor().render();
 
         same(list.getValue(), []);
     });
 
     test('Custom value', function() {
-        var list = new editor({
+        var list = new Editor({
             schema: { listType: 'Number' },
             value: [1,2,3]
         }).render();
@@ -900,7 +908,7 @@ module('List');
     });
 
     test('Value from model', function() {
-        var list = new editor({
+        var list = new Editor({
             model: new Post,
             key: 'weapons'
         }).render();
@@ -909,7 +917,7 @@ module('List');
     });
 
     test('setValue() - updates input value', function() {
-        var list = new editor().render();
+        var list = new Editor().render();
 
         list.setValue(['a', 'b', 'c']);
 
@@ -921,7 +929,7 @@ module('List');
     });
 
     test('event: clicking something with data-action="add" adds an item', function() {
-        var list = new editor().render();
+        var list = new Editor().render();
 
         same(list.items.length, 1);
 
@@ -938,7 +946,7 @@ module('List');
             simpleList: '<ul class="customList">{{items}}</div>'
         });
 
-        var list = new editor().render();
+        var list = new Editor().render();
 
         ok(list.$list.hasClass('customList'));
 
@@ -947,7 +955,7 @@ module('List');
     });
 
     test('render() - creates items for each item in value array', function() {
-        var list = new editor({
+        var list = new Editor({
             value: [1,2,3]
         });
 
@@ -959,7 +967,7 @@ module('List');
     });
 
     test('render() - creates an initial empty item for empty array', function() {
-        var list = new editor({
+        var list = new Editor({
             value: []
         });
 
@@ -971,9 +979,9 @@ module('List');
     });
 
     test('addItem() - with no value', function() {
-        var list = new editor().render();
+        var list = new Editor().render();
 
-        var spy = sinon.spy(editors.SimpleList, 'Item');
+        var spy = this.sinon.spy(Editor, 'Item');
 
         list.addItem();
 
@@ -989,14 +997,12 @@ module('List');
         same(actualOptions, expectedOptions);
         same(list.items.length, 2);
         same(_.last(list.items).value, undefined);
-
-        spy.restore();
     });
 
     test('addItem() - with value', function() {
-        var list = new editor().render();
+        var list = new Editor().render();
 
-        var spy = sinon.spy(editors.SimpleList, 'Item');
+        var spy = this.sinon.spy(Editor, 'Item');
 
         list.addItem('foo');
 
@@ -1012,12 +1018,10 @@ module('List');
         same(actualOptions, expectedOptions);
         same(list.items.length, 2);
         same(_.last(list.items).value, 'foo');
-
-        spy.restore();
     });
 
     test('addItem() - adds the item to the DOM', function() {
-        var list = new editor().render();
+        var list = new Editor().render();
 
         list.addItem('foo');
 
@@ -1027,7 +1031,7 @@ module('List');
     });
 
     test('removeItem() - removes passed item from view and item array', function() {
-        var list = new editor().render();
+        var list = new Editor().render();
 
         list.addItem();
 
@@ -1044,7 +1048,7 @@ module('List');
     });
 
     test('removeItem() - adds an empty item if list is empty', function() {
-        var list = new editor().render();
+        var list = new Editor().render();
 
         var spy = sinon.spy(list, 'addItem');
 
@@ -1056,11 +1060,11 @@ module('List');
 
     test('removeItem() - can be configured to ask for confirmation - and is cancelled', function() {
         //Simulate clicking 'cancel' on confirm dialog
-        var stub = sinon.stub(window, 'confirm', function() {
+        var stub = this.sinon.stub(window, 'confirm', function() {
             return false;
         });
 
-        var list = new editor({
+        var list = new Editor({
             schema: {
                 confirmDelete: 'You sure about this?'
             }
@@ -1078,17 +1082,15 @@ module('List');
 
         //And item was not removed
         same(list.items.length, 2, 'Did not remove item');
-
-        stub.restore();
     });
 
     test('removeItem() - can be configured to ask for confirmation - and is confirmed', function() {
         //Simulate clicking 'ok' on confirm dialog
-        var stub = sinon.stub(window, 'confirm', function() {
+        var stub = this.sinon.stub(window, 'confirm', function() {
             return true;
         });
 
-        var list = new editor({
+        var list = new Editor({
             schema: {
                 confirmDelete: 'You sure about this?'
             }
@@ -1102,16 +1104,25 @@ module('List');
 
         //And item was removed
         same(list.items.length, 1, 'Removed item');
-
-        stub.restore();
     });
 })();
 
 
-module('List.Item');
+
+module('List.Item', {
+    setup: function() {
+        this.sinon = sinon.sandbox.create();
+    },
+
+    teardown: function() {
+        this.sinon.restore();
+    }
+});
 
 (function() {
-    var item = editors.SimpleList.Item;
+    var Item = editors.SimpleList.Item;
 
+    test('render()', function() {
 
+    });
 })();
