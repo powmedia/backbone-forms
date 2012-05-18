@@ -879,73 +879,231 @@ module('List');
     var editor = editors.SimpleList;
 
     test('Default settings', function() {
-        var field = new editor();
+        var list = new editor();
 
-        same(field.schema.listType, 'Text');
+        same(list.schema.listType, 'Text');
     });
 
     test('Default value', function() {
-        var field = new editor().render();
+        var list = new editor().render();
 
-        same(field.getValue(), []);
+        same(list.getValue(), []);
     });
 
     test('Custom value', function() {
-        var field = new editor({
+        var list = new editor({
             schema: { listType: 'Number' },
             value: [1,2,3]
         }).render();
 
-        same(field.getValue(), [1,2,3]);
+        same(list.getValue(), [1,2,3]);
     });
 
     test('Value from model', function() {
-        var field = new editor({
+        var list = new editor({
             model: new Post,
             key: 'weapons'
         }).render();
 
-        same(field.getValue(), ['uzi', '9mm', 'sniper rifle']);
+        same(list.getValue(), ['uzi', '9mm', 'sniper rifle']);
     });
 
     test('setValue() - updates input value', function() {
-        var field = new editor();
+        var list = new editor().render();
 
-        field.setValue(['a', 'b', 'c']);
+        list.setValue(['a', 'b', 'c']);
 
-        same(field.getValue(), ['a', 'b', 'c']);
+        same(list.getValue(), ['a', 'b', 'c']);
     });
 
     test('validate() - returns validation errors', function() {
 
     });
 
-    test('event: click add item button', function() {
+    test('event: clicking something with data-action="add" adds an item', function() {
+        var list = new editor().render();
 
+        same(list.items.length, 1);
+
+        list.$el.find('[data-action="add"]').click();
+        
+        same(list.items.length, 2);
     });
 
-    test('render() - creates wrapper and list of items', function() {
+    test('render() - sets the $list property to the template {{items}} tag', function() {
+        //Backup original template
+        var _template = Form.templates.simpleList;
 
+        Form.setTemplates({
+            simpleList: '<ul class="customList">{{items}}</div>'
+        });
+
+        var list = new editor().render();
+
+        ok(list.$list.hasClass('customList'));
+
+        //Restore template
+        Form.templates.simpleList = _template;
     });
 
-    test('addItem()', function() {
+    test('render() - creates items for each item in value array', function() {
+        var list = new editor({
+            value: [1,2,3]
+        });
 
+        same(list.items.length, 0);
+
+        list.render();
+
+        same(list.items.length, 3);
+    });
+
+    test('render() - creates an initial empty item for empty array', function() {
+        var list = new editor({
+            value: []
+        });
+
+        same(list.items.length, 0);
+
+        list.render();
+
+        same(list.items.length, 1);
+    });
+
+    test('addItem() - with no value', function() {
+        var list = new editor().render();
+
+        var spy = sinon.spy(editors.SimpleList, 'Item');
+
+        list.addItem();
+
+        var expectedOptions = {
+            list: list,
+            schema: list.schema,
+            value: undefined
+        }
+
+        var actualOptions = spy.lastCall.args[0];
+
+        same(spy.callCount, 1);
+        same(actualOptions, expectedOptions);
+        same(list.items.length, 2);
+        same(_.last(list.items).value, undefined);
+
+        spy.restore();
+    });
+
+    test('addItem() - with value', function() {
+        var list = new editor().render();
+
+        var spy = sinon.spy(editors.SimpleList, 'Item');
+
+        list.addItem('foo');
+
+        var expectedOptions = {
+            list: list,
+            schema: list.schema,
+            value: 'foo'
+        }
+
+        var actualOptions = spy.lastCall.args[0];
+
+        same(spy.callCount, 1);
+        same(actualOptions, expectedOptions);
+        same(list.items.length, 2);
+        same(_.last(list.items).value, 'foo');
+
+        spy.restore();
+    });
+
+    test('addItem() - adds the item to the DOM', function() {
+        var list = new editor().render();
+
+        list.addItem('foo');
+
+        var $el = list.$('li:last input');
+
+        same($el.val(), 'foo');
     });
 
     test('removeItem() - removes passed item from view and item array', function() {
+        var list = new editor().render();
 
+        list.addItem();
+
+        same(list.items.length, 2);
+        same(list.$('li').length, 2);
+
+        var item = _.last(list.items);
+
+        list.removeItem(item);
+
+        same(list.items.length, 1);
+        same(list.$('li').length, 1);
+        same(_.indexOf(list.items, item), -1, 'Removed item is no longer in list.items');
     });
 
     test('removeItem() - adds an empty item if list is empty', function() {
+        var list = new editor().render();
 
+        var spy = sinon.spy(list, 'addItem');
+
+        list.removeItem(list.items[0]);
+
+        same(spy.callCount, 1);
+        same(list.items.length, 1);
     });
 
-    test('removeItem() - can be configured to ask for confirmation', function() {
+    test('removeItem() - can be configured to ask for confirmation - and is cancelled', function() {
+        //Simulate clicking 'cancel' on confirm dialog
+        var stub = sinon.stub(window, 'confirm', function() {
+            return false;
+        });
 
+        var list = new editor({
+            schema: {
+                confirmDelete: 'You sure about this?'
+            }
+        }).render();
+
+        list.addItem();
+        list.removeItem(_.last(list.items));
+
+        //Check confirmation was shown
+        same(stub.callCount, 1);
+
+        //With custom message
+        var confirmMsg = stub.lastCall.args[0];
+        same(confirmMsg, 'You sure about this?')
+
+        //And item was not removed
+        same(list.items.length, 2, 'Did not remove item');
+
+        stub.restore();
     });
 
-    test('remove() - removes items and self', function() {
+    test('removeItem() - can be configured to ask for confirmation - and is confirmed', function() {
+        //Simulate clicking 'ok' on confirm dialog
+        var stub = sinon.stub(window, 'confirm', function() {
+            return true;
+        });
 
+        var list = new editor({
+            schema: {
+                confirmDelete: 'You sure about this?'
+            }
+        }).render();
+
+        list.addItem();
+        list.removeItem(_.last(list.items));
+
+        //Check confirm was shown
+        same(stub.callCount, 1);
+
+        //And item was removed
+        same(list.items.length, 1, 'Removed item');
+
+        stub.restore();
     });
 })();
 

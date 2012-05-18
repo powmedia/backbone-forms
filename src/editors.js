@@ -708,6 +708,8 @@ Form.editors = (function() {
       if (!this.schema) throw "Missing required option 'schema'";
       
       this.schema.listType = this.schema.listType || 'Text';
+
+      this.items = [];
     },
 
     render: function() {
@@ -739,9 +741,7 @@ Form.editors = (function() {
      * Add a new item to the list
      * @param {Mixed} [value]     Value for the new item editor
      */
-    addItem: function(value) {
-      this.items = this.items || [];
-      
+    addItem: function(value) {      
       var item = new editors.SimpleList.Item({
         list: this,
         schema: this.schema,
