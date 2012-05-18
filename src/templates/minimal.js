@@ -19,6 +19,13 @@
       </div>\
     ',
 
+    nestedField: '\
+      <div title="{{title}}">\
+        <div>{{editor}}</div>\
+        <div>{{help}}</div>\
+      </div>\
+    ',
+
     simpleList: '\
       <ul>{{items}}</ul>\
       <button class="bbf-simplelist-add">Add</div>\

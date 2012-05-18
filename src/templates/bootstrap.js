@@ -21,6 +21,11 @@
       </div>\
     ',
 
+    nestedField: '\
+      <div title="{{title}}" class="input-xlarge">{{editor}}</div>\
+      <div class="help-block">{{help}}</div>\
+    ',
+
     simpleList: '\
       <ul class="unstyled clearfix">{{items}}</ul>\
       <button class="btn" style="margin-top: -10px" data-action="add">Add</div>\
