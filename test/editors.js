@@ -216,7 +216,7 @@ module('Number');
     });
     
     test("TODO: Restricts non-numeric characters", function() {
-        console.log('TODO')
+
     });
 
     test("setValue() - updates the input value", function() {
@@ -506,27 +506,27 @@ module('Select');
     });
     
     test('TODO: Options as array of items', function() {
-        console.log('TODO')
+        
     });
     
     test('TODO: Options as array of objects', function() {
-        console.log('TODO')
+
     });
 
     test('TODO: Options as function that calls back with options', function() {
-        console.log('TODO')
+
     });
 
     test('TODO: Options as string of HTML', function() {
-        console.log('TODO')
+
     });
 
     test('TODO: Options as a pre-populated collection', function() {
-        console.log('TODO')
+
     });
     
     test('TODO: Options as a new collection (needs to be fetched)', function() {
-        console.log('TODO')
+
     });
     
     test("setValue() - updates the input value", function() {
@@ -829,15 +829,19 @@ module('NestedModel');
     });
     
     test("TODO: idPrefix is added to child form elements", function() {
-        console.log('TODO')
+
     });
     
     test("TODO: Validation on nested model", function() {
-        console.log('TODO')
+
+    });
+
+    test('TODO: uses the nestedField template, unless overridden in field schema', function() {
+
     });
 
     test("TODO: remove() - Removes embedded form", function() {
-        console.log('TODO')
+
     });
     
     test("setValue() - updates the input value", function() {
