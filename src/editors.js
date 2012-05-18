@@ -578,6 +578,13 @@ Form.editors = (function() {
           schema = this.schema,
           objSchema = schema.subSchema;
 
+      //Temporary hack for using nestedField templates
+      //TODO: Enable setting the field in the form constructor
+      _.each(objSchema, function(schema) {
+        if (!schema.template) schema.template = 'nestedField';
+      });
+
+      //Create the nested form
       this.form = new Form({
         schema: objSchema,
         data: data,
@@ -638,6 +645,12 @@ Form.editors = (function() {
 
       //Handle schema functions
       if (_.isFunction(nestedModelSchema)) nestedModelSchema = nestedModelSchema();
+
+      //Temporary hack for using nestedField templates
+      //TODO: Enable setting the field in the form constructor
+      _.each(nestedModelSchema, function(schema) {
+        if (!schema.template) schema.template = 'nestedField';
+      });
 
       this.form = new Form({
         schema: nestedModelSchema,

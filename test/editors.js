@@ -718,11 +718,15 @@ module('Object');
     });
     
     test("TODO: idPrefix is added to child form elements", function() {
-        console.log('TODO')
+        
     });
     
     test("TODO: remove() - Removes embedded form", function() {
-        console.log('TODO')
+        
+    });
+
+    test('TODO: uses the nestedField template, unless overridden in field schema', function() {
+
     });
     
     test("setValue() - updates the input value", function() {
@@ -793,7 +797,6 @@ module('NestedModel');
         
         deepEqual(field.getValue(), { id: 0, name: '' });
         */
-        console.log('TODO');
     });
 
     test('Custom value', function() {
