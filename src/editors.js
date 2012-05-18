@@ -1024,21 +1024,14 @@ Form.editors = (function() {
       //Render the date element first
       editors.SimpleDate.prototype.render.call(this);
 
-      //Setup hour options
-      var hours = _.range(0, 24),
-          hoursOptions = [];
-
-      _.each(hours, function(hour) {
-        hoursOptions.push('<option value="'+hour+'">' + pad(hour) + '</option>');
+      //Create options
+      var hoursOptions = _.map(_.range(0, 24), function(hour) {
+        return '<option value="'+hour+'">' + pad(hour) + '</option>';
       });
 
-      //Setup minute options
-      var minsInterval = this.schema.minsInterval || 15,
-          mins = _.range(0, 60, minsInterval),
-          minsOptions = [];
-
-      _.each(mins, function(min) {
-        minsOptions.push('<option value="'+min+'">' + pad(min) + '</option>');
+      var minsInterval = this.schema.minsInterval || 15;
+      var minsOptions = _.map(_.range(0, 60, minsInterval), function(min) {
+        return '<option value="'+min+'">' + pad(min) + '</option>';
       });
 
       //Render time selects
@@ -1049,9 +1042,6 @@ Form.editors = (function() {
 
       //Store references to selects
       //TODO: Don't base this on order, in case order in template changes (e.g. for American dates)
-      this.$date = $('select:eq(0)', this.el);
-      this.$month = $('select:eq(1)', this.el);
-      this.$year = $('select:eq(2)', this.el);
       this.$hours = $('select:eq(3)', this.el);
       this.$mins = $('select:eq(4)', this.el);
       
@@ -1065,15 +1055,7 @@ Form.editors = (function() {
     * @return {Date}   Selected datetime
     */
     getValue: function() {
-      var date = new Date;
-
-      date.setFullYear(this.$year.val());
-      date.setMonth(this.$month.val());
-      date.setDate(this.$date.val());
-      date.setHours(this.$hours.val());
-      date.setMinutes(this.$mins.val());
-      date.setSeconds(0);
-      date.setMilliseconds(0);
+      var date = editors.SimpleDate.prototype.getValue.call(this);
 
       date.setHours(this.$hours.val());
       date.setMinutes(this.$mins.val());
