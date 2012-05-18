@@ -1120,9 +1120,84 @@ module('List.Item', {
 });
 
 (function() {
-    var Item = editors.SimpleList.Item;
+    var List = editors.SimpleList;
 
-    test('render()', function() {
+    test('render() - creates the editor for the given listType', function() {
+        var spy = this.sinon.spy(Form.helpers, 'createEditor');
 
+        var list = new List({
+            schema: { listType: 'Number' }
+        }).render();
+
+        var item = new List.Item({
+            list: list,
+            value: 123
+        }).render();
+
+        //Check created correct editor
+        var editorType = spy.lastCall.args[0],
+            editorOptions = spy.lastCall.args[1];
+
+        same(editorType, 'Number');
+        same(editorOptions, {
+            key: '',
+            schema: item.schema,
+            value: 123
+        });
+    });
+
+    test('render() - creates the main element entirely from template, with editor in {{editor}} tag location', function() {
+        //Replace template
+        var _template = Form.templates.simpleListItem;
+
+        Form.setTemplates({
+            simpleListItem: '<div class="outer"><div class="inner">{{editor}}</div></div>'
+        })
+
+        //Create item
+        var item = new List.Item({ list: new List }).render();
+
+        //Check there is no wrapper tag
+        ok(item.$el.hasClass('outer'));
+
+        //Check editor placed in correct location
+        ok(item.editor.$el.parent().hasClass('inner'));
+
+        //Restore template
+        Form.templates.simpleListItem = _template;
+    });
+
+    test('getValue() - returns editor value', function() {
+        var item = new List.Item({
+            list: new List,
+            value: 'foo'
+        }).render();
+
+        same(item.editor.getValue(), 'foo');
+        same(item.getValue(), 'foo');
+    });
+
+    test('setValue() - sets editor value', function() {
+        var item = new List.Item({ list: new List }).render();
+
+        item.setValue('woo');
+
+        same(item.editor.getValue(), 'woo');
+        same(item.getValue(), 'woo');
+    });
+
+    test('remove() - removes the editor then itself', function() {
+        var item = new List.Item({ list: new List }).render();
+
+        var editorSpy = this.sinon.spy(item.editor, 'remove'),
+            viewSpy = this.sinon.spy(Backbone.View.prototype.remove, 'call');
+
+        item.remove();
+
+        //Check removed editor
+        ok(editorSpy.calledOnce, 'Called editor remove');
+
+        //Check removed main item
+        ok(viewSpy.calledWith(item), 'Called parent view remove');
     });
 })();

@@ -812,7 +812,7 @@ Form.editors = (function() {
 
     initialize: function(options) {
       this.list = options.list;
-      this.schema = options.schema;
+      this.schema = options.schema || this.list.schema;
       this.value = options.value;
     },
 
