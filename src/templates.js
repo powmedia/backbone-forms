@@ -16,11 +16,18 @@
     ',
     
     field: '\
-    <li class="bbf-field bbf-field{{type}}">\
-      <label for="{{id}}">{{title}}</label>\
-      <div class="bbf-editor bbf-editor{{type}}">{{editor}}</div>\
-      <div class="bbf-help">{{help}}</div>\
-    </li>\
+      <li class="bbf-field bbf-field{{type}}">\
+        <label for="{{id}}">{{title}}</label>\
+        <div class="bbf-editor bbf-editor{{type}}">{{editor}}</div>\
+        <div class="bbf-help">{{help}}</div>\
+      </li>\
+    ',
+
+    nestedField: '\
+      <li class="bbf-narrow-field bbf-field{{type}}">\
+        <div class="bbf-editor bbf-editor{{type}}">{{editor}}</div>\
+        <div class="bbf-help">{{help}}</div>\
+      </li>\
     ',
 
     simpleList: '\
