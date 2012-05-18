@@ -41,7 +41,19 @@
         <button class="bbf-remove" data-action="remove">x</button>\
         <div class="bbf-editor-container">{{editor}}</div>\
       </li>\
-    '
+    ',
+
+    date: '\
+      <select style="width: 4em">{{dates}}</select>\
+      <select style="width: 4em">{{months}}</select>\
+      <select style="width: 6em">{{years}}</select>\
+    ',
+
+    time: '\
+      <select style="width: 4em">{{hours}}</select>\
+      :\
+      <select style="width: 4em">{{mins}}</select>\
+    ',
   };
 
   var defaultClassNames = {
