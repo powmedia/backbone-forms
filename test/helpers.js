@@ -74,8 +74,6 @@ test('Transforms camelCased string to words', function() {
       this._templates = Form.templates;
       this._classNames = _.clone(Form.classNames);
       this._createTemplate = Form.helpers.createTemplate;
-
-      console.log(Form.classNames)
     },
     
     teardown: function() {
