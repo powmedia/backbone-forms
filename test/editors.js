@@ -1,3 +1,5 @@
+var same = deepEqual;
+
 (function() {
   module('Base');
   
@@ -506,7 +508,7 @@ module('Select');
     });
     
     test('TODO: Options as array of items', function() {
-        
+
     });
     
     test('TODO: Options as array of objects', function() {
@@ -867,5 +869,91 @@ module('NestedModel');
         
         deepEqual(field.getValue(), newValue);
     });
+
+})();
+
+
+module('List');
+
+(function() {
+    var editor = editors.SimpleList;
+
+    test('Default settings', function() {
+        var field = new editor();
+
+        same(field.schema.listType, 'Text');
+    });
+
+    test('Default value', function() {
+        var field = new editor().render();
+
+        same(field.getValue(), []);
+    });
+
+    test('Custom value', function() {
+        var field = new editor({
+            schema: { listType: 'Number' },
+            value: [1,2,3]
+        }).render();
+
+        same(field.getValue(), [1,2,3]);
+    });
+
+    test('Value from model', function() {
+        var field = new editor({
+            model: new Post,
+            key: 'weapons'
+        }).render();
+
+        same(field.getValue(), ['uzi', '9mm', 'sniper rifle']);
+    });
+
+    test('setValue() - updates input value', function() {
+        var field = new editor();
+
+        field.setValue(['a', 'b', 'c']);
+
+        same(field.getValue(), ['a', 'b', 'c']);
+    });
+
+    test('validate() - returns validation errors', function() {
+
+    });
+
+    test('event: click add item button', function() {
+
+    });
+
+    test('render() - creates wrapper and list of items', function() {
+
+    });
+
+    test('addItem()', function() {
+
+    });
+
+    test('removeItem() - removes passed item from view and item array', function() {
+
+    });
+
+    test('removeItem() - adds an empty item if list is empty', function() {
+
+    });
+
+    test('removeItem() - can be configured to ask for confirmation', function() {
+
+    });
+
+    test('remove() - removes items and self', function() {
+
+    });
+})();
+
+
+module('List.Item');
+
+(function() {
+    var item = editors.SimpleList.Item;
+
 
 })();
