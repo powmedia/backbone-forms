@@ -137,6 +137,10 @@
 
 }
 
+    .bbf-simplelist .bbf-error {
+        border: 1px solid red;
+    }
+
     .bbf-simplelist ul {
         list-style-type: none;
         margin: 0;

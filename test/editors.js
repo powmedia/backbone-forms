@@ -925,7 +925,29 @@ module('List', {
     });
 
     test('validate() - returns validation errors', function() {
+        var list = new Editor({
+            schema: { validators: ['required', 'email'] },
+            value: ['invalid', 'john@example.com', '', 'ok@example.com']
+        }).render();
 
+        var err = list.validate();
+
+        same(err.type, 'list');
+        same(err.errors[0].type, 'email');
+        same(err.errors[1], null);
+        same(err.errors[2].type, 'required');
+        same(err.errors[3], null);
+    });
+
+    test('validate() - returns null if there are no errors', function() {
+        var list = new Editor({
+            schema: { validators: ['required', 'email'] },
+            value: ['john@example.com', 'ok@example.com']
+        }).render();
+
+        var errs = list.validate();
+
+        same(errs, null);
     });
 
     test('event: clicking something with data-action="add" adds an item', function() {
@@ -1199,5 +1221,58 @@ module('List.Item', {
 
         //Check removed main item
         ok(viewSpy.calledWith(item), 'Called parent view remove');
+    });
+
+    test('validate() - invalid - calls showError and returns error', function() {
+        var item = new List.Item({
+            list: new List({
+                schema: { validators: ['required', 'email'] }
+            }),
+            value: 'invalid'
+        }).render();
+
+        var spy = this.sinon.spy(item, 'showError');
+
+        var err = item.validate();
+
+        same(err.type, 'email');
+        same(spy.callCount, 1, 'Called showError');
+        same(spy.lastCall.args[0], err, 'Called with error');
+    });
+
+    test('validate() - valid - calls hideError and returns null', function() {
+        var item = new List.Item({
+            list: new List({
+                schema: { validators: ['required', 'email'] }
+            }),
+            value: 'valid@example.com'
+        }).render();
+
+        var spy = this.sinon.spy(item, 'hideError');
+
+        var err = item.validate();
+
+        same(err, null);
+        same(spy.callCount, 1, 'Called hideError');
+    });
+
+    test('showError()', function() {
+        var item = new List.Item({ list: new List }).render();
+
+        item.showError({ type: 'errType', message: 'ErrMessage' });
+
+        ok(item.$el.hasClass(Form.classNames.error), 'Element has error class');
+        same(item.$el.attr('title'), 'ErrMessage');
+    });
+
+    test('hideError()', function() {
+        var item = new List.Item({ list: new List }).render();
+
+        item.showError({ type: 'errType', message: 'ErrMessage' });
+
+        item.hideError();
+
+        same(item.$el.hasClass(Form.classNames.error), false, 'Error class is removed from element');
+        same(item.$el.attr('title'), undefined);
     });
 })();

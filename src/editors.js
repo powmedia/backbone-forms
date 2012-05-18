@@ -108,10 +108,11 @@ Form.editors = (function() {
           getValidator = Form.helpers.getValidator;
 
       if (validators) {
-        _.each(validators, function(validator) {
-          if (!error) {
-            error = getValidator(validator)(value, formValues);
-          }
+        //Run through validators until an error is found
+        _.every(validators, function(validator) {
+          error = getValidator(validator)(value, formValues);
+
+          return continueLoop = error ? false : true;
         });
       }
 
@@ -693,6 +694,9 @@ Form.editors = (function() {
    * @param {String} [options.schema.confirmDelete]     Text to display in a delete confirmation dialog. If falsey, will not ask for confirmation.
    */
   editors.SimpleList = editors.Base.extend({
+    //Prevent error classes being set on the main control; they are internally on the individual fields
+    //hasNestedForm: true,
+
     className: 'bbf-simplelist',
 
     events: {
@@ -791,6 +795,33 @@ Form.editors = (function() {
       _.invoke(this.items, 'remove');
 
       editors.Base.prototype.remove.call(this);
+    },
+    
+    /**
+     * Run validation
+     * 
+     * @return {Object|Null}
+     */
+    validate: function() {
+      if (!this.validators) return null;
+
+      //Collect errors
+      var errors = _.map(this.items, function(item) {
+        return item.validate();
+      });
+
+      //Check if any item has errors
+      var hasErrors = _.compact(errors).length ? true : false;
+      if (!hasErrors) return null;
+
+      //If so create a shared error
+      var fieldError = {
+        type: 'list',
+        message: 'Some of the items in the list failed validation',
+        errors: errors
+      };
+
+      return fieldError;
     }
   });
 
@@ -849,6 +880,45 @@ Form.editors = (function() {
       this.editor.remove();
 
       Backbone.View.prototype.remove.call(this);
+    },
+
+    validate: function() {
+      var value = this.getValue(),
+          formValues = this.list.form ? this.list.form.getValue() : {},
+          validators = this.schema.validators,
+          getValidator = Form.helpers.getValidator;
+
+      if (!validators) return null;
+
+      //Run through validators until an error is found
+      var error = null;
+      _.every(validators, function(validator) {
+        error = getValidator(validator)(value, formValues);
+
+        return continueLoop = error ? false : true;
+      });
+
+      //Show/hide error
+      error ? this.showError(error) : this.hideError();
+
+      //Return error to be aggregated by list
+      return error ? error : null;
+    },
+
+    /**
+     * Show a validation error
+     */
+    showError: function(err) {
+      this.$el.addClass(Form.classNames.error);
+      this.$el.attr('title', err.message);
+    },
+
+    /**
+     * Hide validation errors
+     */
+    hideError: function() {
+      this.$el.removeClass(Form.classNames.error);
+      this.$el.attr('title', null);
     }
   });
 
