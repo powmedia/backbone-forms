@@ -105,14 +105,10 @@ var Form = (function() {
     renderFields: function (fieldsToRender, $container) {
       var self = this,
           schema = this.schema,
-          model = this.model,
-          data = this.data,
-          fields = this.fields,
           getNested = Form.helpers.getNested;
-      
-      //Create form fields
+
       _.each(fieldsToRender, function(key) {
-        //Get nested schema
+        //Get the schema
         var itemSchema = (function() {
           //Return a normal key or path key
           if (schema[key]) return schema[key];
@@ -124,32 +120,44 @@ var Form = (function() {
 
         if (!itemSchema) throw "Field '"+key+"' not found in schema";
 
-        var options = {
-          form: self,
-          key: key,
-          schema: itemSchema,
-          idPrefix: self.options.idPrefix
-        };
-
-        if (model) {
-          options.model = model;
-        } else if (data) {
-          options.value = data[key];
-        } else {
-          options.value = null;
-        }
-
-        var field = new Form.Field(options);
-
-        //Render the fields with editors, apart from Hidden fields
-        if (itemSchema.type == 'Hidden') {
-          field.editor = Form.helpers.createEditor('Hidden', options);
-        } else {
-          $container.append(field.render().el);
-        }
-
-        fields[key] = field;
+        self.renderField(key, itemSchema, $container);
       });
+    },
+
+    /**
+     * Renders a field and returns it
+     *
+     * @param {String} key            The key for the field in the form schema
+     * @param {Object} schema         Field schema
+     * @param {jQuery} $container     Where the field will be appended
+     * @return {Field}
+     */
+    renderField: function(key, schema, $container) {
+      var options = {
+        form: this,
+        key: key,
+        schema: schema,
+        idPrefix: this.options.idPrefix
+      };
+
+      if (this.model) {
+        options.model = this.model;
+      } else if (this.data) {
+        options.value = this.data[key];
+      } else {
+        options.value = null;
+      }
+
+      var field = new Form.Field(options);
+
+      //Render the fields with editors, apart from Hidden fields
+      if (schema.type == 'Hidden') {
+        field.editor = Form.helpers.createEditor('Hidden', options);
+      } else {
+        $container.append(field.render().el);
+      }
+
+      this.fields[key] = field;
     },
 
     /**

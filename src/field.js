@@ -73,9 +73,7 @@ Form.Field = (function() {
       }));
       
       //Render editor
-      var $editorContainer = $('.bbf-tmp-editor', $field)
-      $editorContainer.append(editor.render().el);
-      $editorContainer.children().unwrap();
+      $field.find('.bbf-tmp-editor').replaceWith(editor.render().el);
 
       //Set help text
       this.$help = $('.bbf-tmp-help', $field).parent();
