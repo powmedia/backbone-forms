@@ -947,10 +947,11 @@ Form.editors = (function() {
   editors.SimpleDate = editors.Base.extend({
 
     initialize: function(options) {
+      options = options || {}
+
       editors.Base.prototype.initialize.call(this, options);
 
       var Self = editors.SimpleDate,
-          options = options || {},
           today = new Date;
 
       //Option defaults
@@ -1053,11 +1054,24 @@ Form.editors = (function() {
   editors.SimpleDateTime = editors.Base.extend({
 
     initialize: function(options) {
+      options = options || {};
+
       editors.Base.prototype.initialize.call(this, options);
 
+      //Option defaults
+      this.options = _.extend({
+        DateEditor: editors.SimpleDateTime.DateEditor
+      }, options);
+
+      //Schema defaults
+      this.schema = _.extend({
+        minsInterval: 15
+      }, options.schema || {});
+
       //Create embedded date editor
-      var DateEditor = options.DateEditor || editors.SimpleDateTime.DateEditor;
-      this.dateEditor = new DateEditor(options);
+      this.dateEditor = new this.options.DateEditor(options);
+
+      this.value = this.dateEditor.value;
     },
 
     render: function() {
@@ -1065,18 +1079,19 @@ Form.editors = (function() {
         return n < 10 ? '0' + n : n
       }
 
+      var schema = this.schema;
+
       //Create options
       var hoursOptions = _.map(_.range(0, 24), function(hour) {
         return '<option value="'+hour+'">' + pad(hour) + '</option>';
       });
 
-      var minsInterval = this.schema.minsInterval || 15;
-      var minsOptions = _.map(_.range(0, 60, minsInterval), function(min) {
+      var minsOptions = _.map(_.range(0, 60, schema.minsInterval), function(min) {
         return '<option value="'+min+'">' + pad(min) + '</option>';
       });
 
       //Render time selects
-      this.$el.append(Form.templates.time({
+      this.$el.append(Form.templates.dateTime({
         date: '<span class="bbf-placeholder"></span>',
         hours: hoursOptions.join(),
         mins: minsOptions.join()
@@ -1091,11 +1106,7 @@ Form.editors = (function() {
       this.$min = this.$('[data-type="min"]');
       
       //Set time
-      var now = new Date(),
-          date = this.dateEditor.getValue();
-      date.setHours(now.getHours());
-      date.setMinutes(now.getMinutes());
-      this.setValue(date);
+      this.setValue(this.value);
 
       return this;
     },
