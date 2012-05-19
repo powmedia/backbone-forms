@@ -233,6 +233,29 @@ module('Number');
         equal($(field.el).val(), 2.4);
     });
 
+    test('setValue() - handles different types', function() {
+        var field = new editor().render();
+
+        field.setValue('123');
+        same(field.getValue(), 123);
+
+        field.setValue('123.78');
+        same(field.getValue(), 123.78);
+
+        field.setValue(undefined);
+        same(field.getValue(), null);
+
+        field.setValue('');
+        same(field.getValue(), null);
+
+        field.setValue(' ');
+        same(field.getValue(), null);
+
+        //For Firefox
+        field.setValue('heuo46fuek');
+        same(field.getValue(), null);
+    });
+
 })();
 
 
