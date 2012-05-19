@@ -49,7 +49,7 @@
       <select data-type="hour">{{hours}}</select>\
       :\
       <select data-type="min">{{mins}}</select>\
-    ',
+    '
   };
 
   Backbone.Form.helpers.setTemplates(templates);

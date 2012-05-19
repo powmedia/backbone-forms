@@ -32,29 +32,29 @@
     ',
 
     list: '\
-      <ul class="bbf-list">{{items}}</ul>\
-      <div class="bbf-list-actions"><button data-action="add">Add</div>\
+      <ul>{{items}}</ul>\
+      <div class="bbf-actions"><button data-action="add">Add</div>\
     ',
 
     listItem: '\
-      <li class="bbf-listitem">\
-        <button data-action="remove" class="bbf-listitem-remove" >x</button>\
-        <div class="bbf-listitem-editor">{{editor}}</div>\
+      <li>\
+        <button data-action="remove" class="bbf-remove" >x</button>\
+        <div class="bbf-editor-container">{{editor}}</div>\
       </li>\
     ',
 
     date: '\
-      <select data-type="date" class="bbf-date-date">{{dates}}</select>\
-      <select data-type="month" class="bbf-date-month">{{months}}</select>\
-      <select data-type="year" class="bbf-date-year">{{years}}</select>\
+      <select data-type="date" class="bbf-date">{{dates}}</select>\
+      <select data-type="month" class="bbf-month">{{months}}</select>\
+      <select data-type="year" class="bbf-year">{{years}}</select>\
     ',
 
     dateTime: '\
-      <div class="bbf-datetime-date">{{date}}</div>\
-      <select data-type="hour" class="bbf-datetime-hour">{{hours}}</select>\
+      <div class="bbf-date-container">{{date}}</div>\
+      <select data-type="hour" class="bbf-hour">{{hours}}</select>\
       :\
-      <select data-type="min" class="bbf-datetime-min">{{mins}}</select>\
-    ',
+      <select data-type="min" class="bbf-min">{{mins}}</select>\
+    '
   };
 
   var defaultClassNames = {

@@ -707,6 +707,8 @@ Form.editors = (function() {
     //Prevent error classes being set on the main control; they are internally on the individual fields
     //hasNestedForm: true,
 
+    className: 'bbf-list',
+
     events: {
       'click *[data-action="add"]': function(event) {
         event.preventDefault();
@@ -944,6 +946,8 @@ Form.editors = (function() {
    */
   editors.Date = editors.Base.extend({
 
+    className: 'bbf-date',
+
     initialize: function(options) {
       options = options || {}
 
@@ -1000,12 +1004,10 @@ Form.editors = (function() {
       this.$el.html(Form.templates.date({
         dates: datesOptions.join(''),
         months: monthsOptions.join(''),
-        years: yearsOptions.join(''),
-        monthWidth: options.showMonthNames ? 9 : 4
+        years: yearsOptions.join('')
       }));
 
       //Store references to selects
-      //TODO: Don't base this on order, in case order in template changes (e.g. for American dates)
       this.$date = this.$('[data-type="date"]');
       this.$month = this.$('[data-type="month"]');
       this.$year = this.$('[data-type="year"]');
@@ -1050,6 +1052,8 @@ Form.editors = (function() {
    * @param {Number} [options.schema.minsInterval]  Interval between minutes. Default: 15
    */
   editors.DateTime = editors.Base.extend({
+
+    className: 'bbf-datetime',
 
     initialize: function(options) {
       options = options || {};
@@ -1099,7 +1103,6 @@ Form.editors = (function() {
       this.$('.bbf-placeholder').replaceWith(this.dateEditor.render().el);
 
       //Store references to selects
-      //TODO: Don't base this on order, in case order in template changes (e.g. for American dates)
       this.$hour = this.$('[data-type="hour"]');
       this.$min = this.$('[data-type="min"]');
       

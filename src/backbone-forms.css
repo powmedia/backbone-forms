@@ -68,7 +68,7 @@
 
 
 /* List */
-.bbf-list {
+.bbf-list ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
@@ -78,50 +78,50 @@
     border: 1px solid red;
   }
 
-  .bbf-listitem {
+  .bbf-list li {
     clear: both;
     width: 100%;
   }
 
-    .bbf-listitem .bbf-listitem-editor {
+    .bbf-list li .bbf-editor-container {
       margin-right: 2em;
     }
 
-    .bbf-listitem .bbf-listitem-remove {
+    .bbf-list li .bbf-remove {
       float: right;
       width: 2em;
     }
 
-.bbf-list-actions {
+.bbf-list .bbf-actions {
   text-align: center;
   clear: both;
 }
 
 
 /* Date */
-select.bbf-date-date {
+.bbf-date .bbf-date {
   width: 4em;
 }
 
-select.bbf-date-month {
+.bbf-date .bbf-month {
   width: 9em;
 }
 
-select.bbf-date-year {
+.bbf-date .bbf-year {
   width: 6em;
 }
 
 
 /* DateTime */
-.bbf-datetime-date {
+.bbf-datetime .bbf-date-container {
   float: left;
   margin-right: 1em;
 }
 
-select.bbf-datetime-hour {
+.bbf-datetime .bbf-hour {
   width: 4em;
 }
 
-select.bbf-datetime-min {
+.bbf-datetime .bbf-min {
   width: 4em;
 }

@@ -40,7 +40,7 @@
 
     date: '\
       <select data-type="date" style="width: 4em">{{dates}}</select>\
-      <select data-type="month" style="width: {{monthWidth}}em">{{months}}</select>\
+      <select data-type="month" style="width: 9em">{{months}}</select>\
       <select data-type="year" style="width: 5em">{{years}}</select>\
     ',
 
@@ -51,7 +51,7 @@
         :\
         <select data-type="min" style="width: 4em">{{mins}}</select>\
       </p>\
-    ',
+    '
   };
   
   var classNames = {
