@@ -324,23 +324,23 @@ var Form = (function() {
 
     listItem: '\
       <li>\
-        <button class="bbf-remove" data-action="remove">x</button>\
+        <button data-action="remove" class="bbf-remove" >x</button>\
         <div class="bbf-editor-container">{{editor}}</div>\
       </li>\
     ',
 
     date: '\
-      <select data-type="date" style="width: 4em">{{dates}}</select>\
-      <select data-type="month" style="width: {{monthWidth}}em">{{months}}</select>\
-      <select data-type="year" style="width: 6em">{{years}}</select>\
+      <select data-type="date" class="bbf-date">{{dates}}</select>\
+      <select data-type="month" class="bbf-month">{{months}}</select>\
+      <select data-type="year" class="bbf-year">{{years}}</select>\
     ',
 
     dateTime: '\
-      <div style="float: left; margin-right: 1em">{{date}}</div>\
-      <select data-type="hour" style="width: 4em">{{hours}}</select>\
+      <div class="bbf-date-container">{{date}}</div>\
+      <select data-type="hour" class="bbf-hour">{{hours}}</select>\
       :\
-      <select data-type="min" style="width: 4em">{{mins}}</select>\
-    ',
+      <select data-type="min" class="bbf-min">{{mins}}</select>\
+    '
   };
 
   var defaultClassNames = {
@@ -1821,6 +1821,8 @@ Form.editors = (function() {
    */
   editors.Date = editors.Base.extend({
 
+    className: 'bbf-date',
+
     initialize: function(options) {
       options = options || {}
 
@@ -1877,12 +1879,10 @@ Form.editors = (function() {
       this.$el.html(Form.templates.date({
         dates: datesOptions.join(''),
         months: monthsOptions.join(''),
-        years: yearsOptions.join(''),
-        monthWidth: options.showMonthNames ? 9 : 4
+        years: yearsOptions.join('')
       }));
 
       //Store references to selects
-      //TODO: Don't base this on order, in case order in template changes (e.g. for American dates)
       this.$date = this.$('[data-type="date"]');
       this.$month = this.$('[data-type="month"]');
       this.$year = this.$('[data-type="year"]');
@@ -1927,6 +1927,8 @@ Form.editors = (function() {
    * @param {Number} [options.schema.minsInterval]  Interval between minutes. Default: 15
    */
   editors.DateTime = editors.Base.extend({
+
+    className: 'bbf-datetime',
 
     initialize: function(options) {
       options = options || {};
@@ -1976,7 +1978,6 @@ Form.editors = (function() {
       this.$('.bbf-placeholder').replaceWith(this.dateEditor.render().el);
 
       //Store references to selects
-      //TODO: Don't base this on order, in case order in template changes (e.g. for American dates)
       this.$hour = this.$('[data-type="hour"]');
       this.$min = this.$('[data-type="min"]');
       
