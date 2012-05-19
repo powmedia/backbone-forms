@@ -21,23 +21,22 @@ Form.Field = (function() {
      *          idPrefix    {String} : Prefix to add to the editor DOM element's ID
      */
     initialize: function(options) {
+      options = options || {};
+
       this.form = options.form;
       this.key = options.key;
       this.value = options.value;
       this.model = options.model;
 
-      //Get schema
-      var schema = this.schema = (function() {
-        //Handle schema type shorthand where the editor name is passed instead of a schema config object
-        if (_.isString(options.schema)) return { type: options.schema };
-
-        return options.schema || {};
-      })();
+      //Turn schema shorthand notation (e.g. 'Text') into schema object
+      if (_.isString(options.schema)) options.schema = { type: options.schema };
       
       //Set schema defaults
-      if (!schema.type) schema.type = 'Text';
-      if (!schema.title) schema.title = helpers.keyToTitle(this.key);
-      if (!schema.template) schema.template = 'field';
+      this.schema = _.extend({
+        type: 'Text',
+        title: helpers.keyToTitle(this.key),
+        template: 'field'
+      }, options.schema);
     },
 
     render: function() {
