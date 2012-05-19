@@ -38,22 +38,22 @@
 
     listItem: '\
       <li class="bbf-listitem">\
-        <button class="bbf-listitem-remove" data-action="remove">x</button>\
+        <button data-action="remove" class="bbf-listitem-remove" >x</button>\
         <div class="bbf-listitem-editor">{{editor}}</div>\
       </li>\
     ',
 
     date: '\
-      <select data-type="date" style="width: 4em">{{dates}}</select>\
-      <select data-type="month" style="width: {{monthWidth}}em">{{months}}</select>\
-      <select data-type="year" style="width: 6em">{{years}}</select>\
+      <select data-type="date" class="bbf-date-date">{{dates}}</select>\
+      <select data-type="month" class="bbf-date-month">{{months}}</select>\
+      <select data-type="year" class="bbf-date-year">{{years}}</select>\
     ',
 
     dateTime: '\
-      <div style="float: left; margin-right: 1em">{{date}}</div>\
-      <select data-type="hour" style="width: 4em">{{hours}}</select>\
+      <div class="bbf-datetime-date">{{date}}</div>\
+      <select data-type="hour" class="bbf-datetime-hour">{{hours}}</select>\
       :\
-      <select data-type="min" style="width: 4em">{{mins}}</select>\
+      <select data-type="min" class="bbf-datetime-min">{{mins}}</select>\
     ',
   };
 
