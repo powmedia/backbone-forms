@@ -907,7 +907,7 @@ module('List', {
 });
 
 (function() {
-    var Editor = editors.SimpleList;
+    var Editor = editors.List;
 
     test('Default settings', function() {
         var list = new Editor();
@@ -985,10 +985,10 @@ module('List', {
 
     test('render() - sets the $list property to the template {{items}} tag', function() {
         //Backup original template
-        var _template = Form.templates.simpleList;
+        var _template = Form.templates.list;
 
         Form.setTemplates({
-            simpleList: '<ul class="customList">{{items}}</div>'
+            list: '<ul class="customList">{{items}}</div>'
         });
 
         var list = new Editor().render();
@@ -996,7 +996,7 @@ module('List', {
         ok(list.$list.hasClass('customList'));
 
         //Restore template
-        Form.templates.simpleList = _template;
+        Form.templates.list = _template;
     });
 
     test('render() - creates items for each item in value array', function() {
@@ -1165,7 +1165,7 @@ module('List.Item', {
 });
 
 (function() {
-    var List = editors.SimpleList;
+    var List = editors.List;
 
     test('render() - creates the editor for the given listType', function() {
         var spy = this.sinon.spy(Form.helpers, 'createEditor');
@@ -1193,10 +1193,10 @@ module('List.Item', {
 
     test('render() - creates the main element entirely from template, with editor in {{editor}} tag location', function() {
         //Replace template
-        var _template = Form.templates.simpleListItem;
+        var _template = Form.templates.listItem;
 
         Form.setTemplates({
-            simpleListItem: '<div class="outer"><div class="inner">{{editor}}</div></div>'
+            listItem: '<div class="outer"><div class="inner">{{editor}}</div></div>'
         })
 
         //Create item
@@ -1209,7 +1209,7 @@ module('List.Item', {
         ok(item.editor.$el.parent().hasClass('inner'));
 
         //Restore template
-        Form.templates.simpleListItem = _template;
+        Form.templates.listItem = _template;
     });
 
     test('getValue() - returns editor value', function() {
@@ -1313,7 +1313,7 @@ module('Date', {
 });
 
 (function() {
-    var Editor = editors.SimpleDate;
+    var Editor = editors.Date;
 
     test('initialize() - casts values to date', function() {
         var date = new Date(2000, 0, 1);
@@ -1433,8 +1433,8 @@ module('DateTime', {
 });
 
 (function() {
-    var DateEditor = editors.SimpleDate,
-        Editor = editors.SimpleDateTime;
+    var DateEditor = editors.Date,
+        Editor = editors.DateTime;
 
     test('initialize() - default value - now (to the hour)', function() {
         var editor = new Editor;

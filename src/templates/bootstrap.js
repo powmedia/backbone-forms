@@ -26,12 +26,12 @@
       <div class="help-block">{{help}}</div>\
     ',
 
-    simpleList: '\
+    list: '\
       <ul class="unstyled clearfix">{{items}}</ul>\
       <button class="btn" style="margin-top: -10px" data-action="add">Add</div>\
     ',
 
-    simpleListItem: '\
+    listItem: '\
       <li class="clearfix" style="margin-bottom: 5px;">\
         <div class="pull-left">{{editor}}</div>\
         <button class="btn" style="margin-left: 4px" data-action="remove">x</button>\

@@ -26,29 +26,29 @@
       </div>\
     ',
 
-    simpleList: '\
+    list: '\
       <ul>{{items}}</ul>\
-      <button class="bbf-simplelist-add">Add</div>\
+      <div><button data-action="add">Add</div>\
     ',
 
-    simpleListItem: '\
+    listItem: '\
       <li>\
+        <button data-action="remove">x</button>\
         <div>{{editor}}</div>\
-        <button class="bbf-simplelist-del">x</button>\
       </li>\
     ',
 
     date: '\
-      <select data-type="date" style="width: 4em">{{dates}}</select>\
-      <select data-type="month" style="width: {{monthWidth}}em">{{months}}</select>\
-      <select data-type="year" style="width: 6em">{{years}}</select>\
+      <select data-type="date">{{dates}}</select>\
+      <select data-type="month">{{months}}</select>\
+      <select data-type="year">{{years}}</select>\
     ',
 
-    time: '\
-      <div style="float: left; margin-right: 1em">{{date}}</div>\
-      <select data-type="hour" style="width: 4em">{{hours}}</select>\
+    dateTime: '\
+      <div>{{date}}</div>\
+      <select data-type="hour">{{hours}}</select>\
       :\
-      <select data-type="min" style="width: 4em">{{mins}}</select>\
+      <select data-type="min">{{mins}}</select>\
     ',
   };
 

@@ -26,17 +26,30 @@
       </div>\
     ',
 
-    simpleList: '\
+    list: '\
       <ul>{{items}}</ul>\
-      <button class="bbf-simplelist-add">Add</div>\
+      <div><button data-action="add">Add</div>\
     ',
 
-    simpleListItem: '\
+    listItem: '\
       <li>\
+        <button data-action="remove">x</button>\
         <div>{{editor}}</div>\
-        <button class="bbf-simplelist-del">x</button>\
       </li>\
-    '
+    ',
+
+    date: '\
+      <select data-type="date">{{dates}}</select>\
+      <select data-type="month">{{months}}</select>\
+      <select data-type="year">{{years}}</select>\
+    ',
+
+    dateTime: '\
+      <div>{{date}}</div>\
+      <select data-type="hour">{{hours}}</select>\
+      :\
+      <select data-type="min">{{mins}}</select>\
+    ',
   };
 
   Backbone.Form.helpers.setTemplates(templates);

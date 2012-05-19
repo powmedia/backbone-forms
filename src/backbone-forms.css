@@ -38,73 +38,6 @@
 
 
 
-.bbf-date input, .bbf-datetime input {
-    width: 100px;
-    text-align: center;
-}
-
-    .bbf-datetime input {
-        margin-right: 1em;
-    }
-
-    .bbf-datetime select {
-        width: 50px;
-        text-align: center;
-    }
-    
-    
-
-.bbf-list {
-    list-style-type: none;
-}
-    
-    .bbf-list ul {
-        border: 1px solid #ccc;
-        border-bottom: none;
-        max-height: 150px;
-        overflow: auto;
-        margin: 0;
-        padding: 0;
-    }
-
-    .bbf-list li {
-        border-top: 1px solid #ccc;
-        border-bottom: 1px solid #ccc;
-        height: 16px;
-        background: #fff;
-        padding: 4px;
-        margin: 0;
-        list-style-type: none;
-        margin-top: -1px;
-        position: relative;
-        
-    }    
-        .bbf-list-sortable li {
-            cursor: move;
-        }
-        
-        .bbf-list .bbf-list-actions {
-            position: absolute;
-            top: 2px;
-            right: 2px;
-        }
-    
-        .bbf-list .bbf-list-actions button {
-            width: 19px;
-            height: 19px;
-        }
-    
-        .bbf-list .bbf-list-add {
-            width: 100%;
-            height: 20px;
-            margin-top: -2px;
-        }
-        
-    .bbf-list-editor {
-        width: 98%;
-    }
-
-
 .bbf-radio {
     list-style-type: none;
 }
@@ -133,35 +66,35 @@
 
 
 
-.bbf-simplelist {
+.bbf-list {
 
 }
 
-    .bbf-simplelist .bbf-error {
+    .bbf-list .bbf-error {
         border: 1px solid red;
     }
 
-    .bbf-simplelist ul {
+    .bbf-list ul {
         list-style-type: none;
         margin: 0;
         padding: 0;
     }
 
-        .bbf-simplelist li {
+        .bbf-list li {
             clear: both;
             width: 100%;
         }
 
-    .bbf-simplelist .bbf-editor-container {
+    .bbf-list .bbf-editor-container {
         margin-right: 2em;
     }
 
-    .bbf-simplelist .bbf-remove {
+    .bbf-list .bbf-remove {
         float: right;
         width: 2em;
     }
 
-    .bbf-simplelist .bbf-actions {
+    .bbf-list .bbf-actions {
         text-align: center;
         clear: both;
     }

@@ -31,12 +31,12 @@
       </li>\
     ',
 
-    simpleList: '\
+    list: '\
       <ul>{{items}}</ul>\
       <div class="bbf-actions"><button data-action="add">Add</div>\
     ',
 
-    simpleListItem: '\
+    listItem: '\
       <li>\
         <button class="bbf-remove" data-action="remove">x</button>\
         <div class="bbf-editor-container">{{editor}}</div>\

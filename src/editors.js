@@ -695,7 +695,7 @@ Form.editors = (function() {
 
 
   /**
-   * SIMPLE LIST
+   * LIST
    * 
    * An array editor. Creates a list of other editor items.
    *
@@ -703,11 +703,11 @@ Form.editors = (function() {
    * @param {String} [options.schema.listType]          The editor type for each item in the list. Default: 'Text'
    * @param {String} [options.schema.confirmDelete]     Text to display in a delete confirmation dialog. If falsey, will not ask for confirmation.
    */
-  editors.SimpleList = editors.Base.extend({
+  editors.List = editors.Base.extend({
     //Prevent error classes being set on the main control; they are internally on the individual fields
     //hasNestedForm: true,
 
-    className: 'bbf-simplelist',
+    className: 'bbf-list',
 
     events: {
       'click *[data-action="add"]': function(event) {
@@ -732,7 +732,7 @@ Form.editors = (function() {
           value = this.value || [];
 
       //Create main element
-      $el.html(Form.templates.simpleList({
+      $el.html(Form.templates.list({
         items: '<span class="bbf-placeholder-items"></span>'
       }));
 
@@ -756,7 +756,7 @@ Form.editors = (function() {
      * @param {Mixed} [value]     Value for the new item editor
      */
     addItem: function(value) {      
-      var item = new editors.SimpleList.Item({
+      var item = new editors.List.Item({
         list: this,
         schema: this.schema,
         value: value
@@ -769,7 +769,7 @@ Form.editors = (function() {
 
     /**
      * Remove an item from the list
-     * @param {SimpleList.Item} item
+     * @param {List.Item} item
      */
     removeItem: function(item) {
       //Confirm delete
@@ -839,11 +839,11 @@ Form.editors = (function() {
   /**
    * A single item in the list
    *
-   * @param {editors.SimpleList} options.list The SimpleList editor instance this item belongs to
+   * @param {editors.List} options.list The List editor instance this item belongs to
    * @param {String|Function} options.type    Editor type
    * @param {Mixed} options.value             Value
    */
-  editors.SimpleList.Item = Backbone.View.extend({
+  editors.List.Item = Backbone.View.extend({
     events: {
       'click *[data-action="remove"]': function(event) {
         event.preventDefault();
@@ -866,7 +866,7 @@ Form.editors = (function() {
       });
 
       //Create main element
-      var $el = $(Form.templates.simpleListItem({
+      var $el = $(Form.templates.listItem({
         editor: '<span class="bbf-placeholder"></span>'
       }));
 
@@ -940,18 +940,18 @@ Form.editors = (function() {
    * @param {Number|String} [options.schema.yearStart]  First year in list. Default: 100 years ago
    * @param {Number|String} [options.schema.yearEnd]    Last year in list. Default: current year
    *
-   * Config options (if not set, defaults to options stored on the main SimpleDate class)
+   * Config options (if not set, defaults to options stored on the main Date class)
    * @param {Boolean} [options.showMonthNames]  Use month names instead of numbers. Default: true
    * @param {String[]} [options.monthNames]     Month names. Default: Full English names
    */
-  editors.SimpleDate = editors.Base.extend({
+  editors.Date = editors.Base.extend({
 
     initialize: function(options) {
       options = options || {}
 
       editors.Base.prototype.initialize.call(this, options);
 
-      var Self = editors.SimpleDate,
+      var Self = editors.Date,
           today = new Date;
 
       //Option defaults
@@ -1039,8 +1039,8 @@ Form.editors = (function() {
     //Whether to show month names instead of numbers
     showMonthNames: true,
 
-    //Month names to use if SimpleDate.showMonthNames is true
-    //Replace for localisation, e.g. SimpleDate.monthNames = ['Janvier', 'Fevrier'...]
+    //Month names to use if Date.showMonthNames is true
+    //Replace for localisation, e.g. Date.monthNames = ['Janvier', 'Fevrier'...]
     monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
   });
 
@@ -1051,7 +1051,7 @@ Form.editors = (function() {
    * @param {Editor} [options.DateEditor]           Date editor view to use (not definition)
    * @param {Number} [options.schema.minsInterval]  Interval between minutes. Default: 15
    */
-  editors.SimpleDateTime = editors.Base.extend({
+  editors.DateTime = editors.Base.extend({
 
     initialize: function(options) {
       options = options || {};
@@ -1060,7 +1060,7 @@ Form.editors = (function() {
 
       //Option defaults
       this.options = _.extend({
-        DateEditor: editors.SimpleDateTime.DateEditor
+        DateEditor: editors.DateTime.DateEditor
       }, options);
 
       //Schema defaults
@@ -1134,7 +1134,7 @@ Form.editors = (function() {
     //STATICS
 
     //The date editor to use (editor definition, not instance)
-    DateEditor: editors.SimpleDate
+    DateEditor: editors.Date
   });
 
   return editors;
