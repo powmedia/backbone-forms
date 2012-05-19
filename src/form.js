@@ -59,11 +59,11 @@ var Form = (function() {
       
       //Create el from template
       var $form = $(templates[this.templateName]({
-        fieldsets: '<div class="bbf-placeholder"></div>'
+        fieldsets: '<b class="bbf-tmp"></b>'
       }));
 
       //Get a reference to where fieldsets should go
-      var $fieldsetContainer = $('.bbf-placeholder', $form);
+      var $fieldsetContainer = $('.bbf-tmp', $form);
 
       if(!fieldsets) {
         fieldsets = [{fields: this.fieldsToRender}]
@@ -78,10 +78,10 @@ var Form = (function() {
         //Concatenating HTML as strings won't work so we need to insert field elements into a placeholder
         var $fieldset = $(templates.fieldset(_.extend({}, fs, {
           legend: (fs.legend) ? '<legend>' + fs.legend + '</legend>' : '',
-          fields: '<div class="bbf-placeholder"></div>'
+          fields: '<b class="bbf-tmp"></b>'
         })));
 
-        var $fieldsContainer = $('.bbf-placeholder', $fieldset);
+        var $fieldsContainer = $('.bbf-tmp', $fieldset);
 
         self.renderFields(fs.fields, $fieldsContainer);
 

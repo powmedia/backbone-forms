@@ -68,17 +68,17 @@ Form.Field = (function() {
         title: schema.title,
         id: editor.id,
         type: schema.type,
-        editor: '<span class="bbf-placeholder-editor"></span>',
-        help: '<span class="bbf-placeholder-help"></span>'
+        editor: '<b class="bbf-tmp-editor"></b>',
+        help: '<b class="bbf-tmp-help"></b>'
       }));
       
       //Render editor
-      var $editorContainer = $('.bbf-placeholder-editor', $field)
+      var $editorContainer = $('.bbf-tmp-editor', $field)
       $editorContainer.append(editor.render().el);
       $editorContainer.children().unwrap();
 
       //Set help text
-      this.$help = $('.bbf-placeholder-help', $field).parent();
+      this.$help = $('.bbf-tmp-help', $field).parent();
       this.$help.empty();
       if (this.schema.help) this.$help.html(this.schema.help);
       
