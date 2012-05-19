@@ -23,6 +23,9 @@ var Form = (function() {
      *          template {String} : Template to use. Default to 'form'.
      */
     initialize: function(options) { 
+      //Check templates have been loaded
+      if (!Form.templates.form) throw new Error('Templates not loaded');
+
       //Get the schema
       this.schema = (function() {
         if (options.schema) return options.schema;
