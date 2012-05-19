@@ -53,10 +53,11 @@ Form.Field = (function() {
       };
 
       //Decide on data delivery type to pass to editors
-      if (this.model)
+      if (this.model) {
         options.model = this.model;
-      else
+      } else {
         options.value = this.value;
+      }
 
       //Decide on the editor to use
       var editor = this.editor = helpers.createEditor(schema.type, options);
@@ -85,6 +86,7 @@ Form.Field = (function() {
       //Add custom attributes
       if (this.schema.fieldAttrs) $field.attr(this.schema.fieldAttrs);
       
+      //Replace the generated wrapper tag
       this.setElement($field);
 
       return this;
@@ -102,7 +104,6 @@ Form.Field = (function() {
           id = this.key;
 
       //Replace periods with underscores (e.g. for when using paths)
-      //id = id.replace(new RegExp('\\.', 'g'), '_');
       id = id.replace(/\./g, '_');
 
       //If a specific ID prefix is set, use it
@@ -185,12 +186,6 @@ Form.Field = (function() {
      */
     setValue: function(value) {
       this.editor.setValue(value);
-    },
-
-    logValue: function() {
-      if (!console || !console.log) return;
-      
-      console.log(this.getValue());
     },
 
     remove: function() {
