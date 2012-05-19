@@ -67,34 +67,30 @@
 
 
 .bbf-list {
-
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
 }
 
     .bbf-list .bbf-error {
         border: 1px solid red;
     }
 
-    .bbf-list ul {
-        list-style-type: none;
-        margin: 0;
-        padding: 0;
+    .bbf-listitem {
+        clear: both;
+        width: 100%;
     }
 
-        .bbf-list li {
-            clear: both;
-            width: 100%;
+        .bbf-listitem .bbf-listitem-editor {
+            margin-right: 2em;
         }
 
-    .bbf-list .bbf-editor-container {
-        margin-right: 2em;
-    }
+        .bbf-listitem .bbf-listitem-remove {
+            float: right;
+            width: 2em;
+        }
 
-    .bbf-list .bbf-remove {
-        float: right;
-        width: 2em;
-    }
-
-    .bbf-list .bbf-actions {
-        text-align: center;
-        clear: both;
-    }
+.bbf-list-actions {
+    text-align: center;
+    clear: both;
+}

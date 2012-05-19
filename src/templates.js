@@ -32,14 +32,14 @@
     ',
 
     list: '\
-      <ul>{{items}}</ul>\
-      <div class="bbf-actions"><button data-action="add">Add</div>\
+      <ul class="bbf-list">{{items}}</ul>\
+      <div class="bbf-list-actions"><button data-action="add">Add</div>\
     ',
 
     listItem: '\
-      <li>\
-        <button class="bbf-remove" data-action="remove">x</button>\
-        <div class="bbf-editor-container">{{editor}}</div>\
+      <li class="bbf-listitem">\
+        <button class="bbf-listitem-remove" data-action="remove">x</button>\
+        <div class="bbf-listitem-editor">{{editor}}</div>\
       </li>\
     ',
 

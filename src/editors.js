@@ -707,8 +707,6 @@ Form.editors = (function() {
     //Prevent error classes being set on the main control; they are internally on the individual fields
     //hasNestedForm: true,
 
-    className: 'bbf-list',
-
     events: {
       'click *[data-action="add"]': function(event) {
         event.preventDefault();
