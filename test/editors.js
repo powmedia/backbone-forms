@@ -1315,7 +1315,7 @@ module('Date', {
 (function() {
     var Editor = editors.SimpleDate;
 
-    test('casts values to date', function() {
+    test('initialize() - casts values to date', function() {
         var date = new Date(2000, 0, 1);
 
         var editor = new Editor({ value: date.toString() });
@@ -1324,7 +1324,7 @@ module('Date', {
         same(editor.value.getTime(), date.getTime());
     });
 
-    test('default value - today', function() {
+    test('initialize() - default value - today', function() {
         var editor = new Editor;
 
         var today = new Date,
@@ -1335,6 +1335,22 @@ module('Date', {
         same(value.getDate(), today.getDate());
     });
 
+    test('initialize() - default options and schema', function() {
+        var editor = new Editor();
+
+        var schema = editor.schema,
+            options = editor.options;
+
+        //Schema options
+        var today = new Date;
+        same(schema.yearStart, today.getFullYear() - 100);
+        same(schema.yearEnd, today.getFullYear());
+
+        //Options should default to those stored on the static class
+        same(editor.options.showMonthNames, Editor.showMonthNames);
+        same(editor.options.monthNames, Editor.monthNames);
+    });
+
     test('render()', function() {
         var date = new Date,
             editor = new Editor({ value: date }),
@@ -1342,18 +1358,64 @@ module('Date', {
 
         editor.render();
 
+        //Test DOM elements
         same(editor.$date.attr('data-type'), 'date');
+        same(editor.$date.find('option:first').val(), '1');
+        same(editor.$date.find('option:last').val(), '31');
+        same(editor.$date.find('option:first').html(), '1');
+        same(editor.$date.find('option:last').html(), '31');
+
         same(editor.$month.attr('data-type'), 'month');
+        same(editor.$month.find('option:first').val(), '0');
+        same(editor.$month.find('option:last').val(), '11');
+        same(editor.$month.find('option:first').html(), 'January');
+        same(editor.$month.find('option:last').html(), 'December');
+
         same(editor.$year.attr('data-type'), 'year');
+        same(editor.$year.find('option:first').val(), editor.schema.yearStart.toString());
+        same(editor.$year.find('option:last').val(), editor.schema.yearEnd.toString());
+        same(editor.$year.find('option:first').html(), editor.schema.yearStart.toString());
+        same(editor.$year.find('option:last').html(), editor.schema.yearEnd.toString());
 
         ok(spy.calledWith(date), 'Called setValue');
     });
 
-    test('getValue()', function() {
+    test('render() - with showMonthNames false', function() {
+        var editor = new Editor({
+            showMonthNames: false
+        }).render();
 
+        same(editor.$month.attr('data-type'), 'month');
+        same(editor.$month.find('option:first').html(), '1');
+        same(editor.$month.find('option:last').html(), '12');
+    });
+
+    test('getValue() - returns a Date', function() {
+        var date = new Date(2010, 5, 5),
+            editor = new Editor({ value: date }).render();
+
+        var value = editor.getValue();
+
+        same(value.constructor.name, 'Date');
+        same(value.getTime(), date.getTime());
     });
 
     test('setValue()', function() {
+        var date = new Date(2015, 1, 4);
+        
+        var editor = new Editor({
+            schema: {
+                yearStart: 2000,
+                yearEnd: 2020
+            }
+        }).render();
 
+        editor.setValue(date);
+
+        same(editor.$date.val(), '4');
+        same(editor.$month.val(), '1');
+        same(editor.$year.val(), '2015');
+
+        same(editor.getValue().getTime(), date.getTime());
     });
 })();

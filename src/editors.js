@@ -939,19 +939,32 @@ Form.editors = (function() {
    * Schema options
    * @param {Number|String} [options.schema.yearStart]  First year in list. Default: 100 years ago
    * @param {Number|String} [options.schema.yearEnd]    Last year in list. Default: current year
+   *
+   * Config options (if not set, defaults to options stored on the main SimpleDate class)
+   * @param {Boolean} [options.showMonthNames]  Use month names instead of numbers. Default: true
+   * @param {String[]} [options.monthNames]     Month names. Default: Full English names
    */
   editors.SimpleDate = editors.Base.extend({
 
     initialize: function(options) {
       editors.Base.prototype.initialize.call(this, options);
 
-      //Schema defaults
-      var schema = this.schema,
+      var Self = editors.SimpleDate,
+          options = options || {},
           today = new Date;
-      
-      schema.yearStart = schema.yearStart || today.getFullYear() - 100;
-      schema.yearEnd = schema.yearEnd || today.getFullYear();
-      
+
+      //Option defaults
+      this.options = _.extend({
+        monthNames: Self.monthNames,
+        showMonthNames: Self.showMonthNames
+      }, options);
+
+      //Schema defaults
+      this.schema = _.extend({
+        yearStart: today.getFullYear() - 100,
+        yearEnd: today.getFullYear()
+      }, options.schema || {});
+            
       //Cast to Date
       if (this.value && !_.isDate(this.value)) {
         this.value = new Date(this.value);
@@ -968,8 +981,7 @@ Form.editors = (function() {
     },
 
     render: function() {
-      var monthNames = editors.SimpleDate.monthNames,
-          showMonthNames = editors.SimpleDate.showMonthNames,
+      var options = this.options,
           schema = this.schema;
 
       var datesOptions = _.map(_.range(1, 32), function(date) {
@@ -977,7 +989,7 @@ Form.editors = (function() {
       });
 
       var monthsOptions = _.map(_.range(0, 12), function(month) {
-        var value = showMonthNames ? monthNames[month] : (month + 1);
+        var value = options.showMonthNames ? options.monthNames[month] : (month + 1);
         return '<option value="'+month+'">' + value + '</option>';
       });
 
@@ -990,7 +1002,7 @@ Form.editors = (function() {
         dates: datesOptions.join(''),
         months: monthsOptions.join(''),
         years: yearsOptions.join(''),
-        monthWidth: showMonthNames ? 9 : 4
+        monthWidth: options.showMonthNames ? 9 : 4
       }));
 
       //Store references to selects
@@ -1008,9 +1020,7 @@ Form.editors = (function() {
     * @return {Date}   Selected date
     */
     getValue: function() {
-      var date = new Date(this.$year.val(), this.$month.val(), this.$date.val());
-
-      return date;
+      return new Date(this.$year.val(), this.$month.val(), this.$date.val());
     },
     
     /**
