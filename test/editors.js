@@ -1276,3 +1276,51 @@ module('List.Item', {
         same(item.$el.attr('title'), undefined);
     });
 })();
+
+
+
+module('Date', {
+    setup: function() {
+        this.sinon = sinon.sandbox.create();
+    },
+
+    teardown: function() {
+        this.sinon.restore();
+    }
+});
+
+(function() {
+    var Editor = editors.SimpleDate;
+
+    test('casts values to date', function() {
+        var date = new Date(2000, 0, 1);
+
+        var editor = new Editor({ value: date.toString() });
+
+        same(editor.value.constructor.name, 'Date');
+        same(editor.value.getTime(), date.getTime());
+    });
+
+    test('default value - today', function() {
+        var editor = new Editor;
+
+        var today = new Date,
+            value = editor.value;
+
+        same(value.getFullYear(), today.getFullYear());
+        same(value.getMonth(), today.getMonth());
+        same(value.getDate(), today.getDate());
+    });
+
+    test('render()', function() {
+    
+    });
+
+    test('getValue()', function() {
+
+    });
+
+    test('setValue()', function() {
+
+    });
+})();

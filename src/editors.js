@@ -925,13 +925,25 @@ Form.editors = (function() {
   });
 
 
-  //DATE
+  /**
+   * DATE
+   *
+   * @param {Number|String} [options.schema.yearStart]  First year in list. Default: 100 years ago
+   * @param {Number|String} [options.schema.yearEnd]    Last year in list. Default: current year
+   */
   editors.SimpleDate = editors.Base.extend({
 
     className: 'bbf-date',
 
     initialize: function(options) {
       editors.Base.prototype.initialize.call(this, options);
+
+      //Schema defaults
+      var schema = this.schema,
+          today = new Date;
+      
+      schema.yearStart = schema.yearStart || today.getFullYear() - 100;
+      schema.yearEnd = schema.yearEnd || today.getFullYear();
       
       //Cast to Date
       if (this.value && !_.isDate(this.value)) {
@@ -949,32 +961,36 @@ Form.editors = (function() {
     },
 
     render: function() {
-      var now = new Date();
+      var monthNames = editors.SimpleDate.monthNames,
+          showMonthNames = editors.SimpleDate.showMonthNames,
+          schema = this.schema;
 
       var datesOptions = _.map(_.range(1, 32), function(date) {
         return '<option value="'+date+'">' + date + '</option>';
       });
 
       var monthsOptions = _.map(_.range(0, 12), function(month) {
-        return '<option value="'+month+'">' + (month + 1) + '</option>';
+        var value = showMonthNames ? monthNames[month] : (month + 1);
+        return '<option value="'+month+'">' + value + '</option>';
       });
 
-      var yearsOptions = _.map(_.range(now.getFullYear() - 110, now.getFullYear() + 1), function(year) {
+      var yearsOptions = _.map(_.range(schema.yearStart, schema.yearEnd + 1), function(year) {
         return '<option value="'+year+'">' + year + '</option>';
       });
 
       //Render the selects
       this.$el.html(Form.templates.date({
-        dates: datesOptions.join(),
-        months: monthsOptions.join(),
-        years: yearsOptions.join()
+        dates: datesOptions.join(''),
+        months: monthsOptions.join(''),
+        years: yearsOptions.join(''),
+        monthWidth: showMonthNames ? 9 : 4
       }));
 
       //Store references to selects
       //TODO: Don't base this on order, in case order in template changes (e.g. for American dates)
-      this.$date = $('select:eq(0)', this.el);
-      this.$month = $('select:eq(1)', this.el);
-      this.$year = $('select:eq(2)', this.el);
+      this.$date = this.$('[data-type="date"]');
+      this.$month = this.$('[data-type="month"]');
+      this.$year = this.$('[data-type="year"]');
 
       //Make sure setValue of this object is called, not of any objects extending it (e.g. DateTime)
       editors.SimpleDate.prototype.setValue.call(this, this.value);
@@ -1000,6 +1016,15 @@ Form.editors = (function() {
       this.$year.val(date.getFullYear());
     }
 
+  }, {
+    //STATICS
+
+    //Whether to show month names instead of numbers
+    showMonthNames: true,
+
+    //Month names to use if SimpleDate.showMonthNames is true
+    //Replace for localisation, e.g. SimpleDate.monthNames = ['Janvier', 'Fevrier'...]
+    monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
   });
 
 
@@ -1034,8 +1059,8 @@ Form.editors = (function() {
 
       //Store references to selects
       //TODO: Don't base this on order, in case order in template changes (e.g. for American dates)
-      this.$hours = $('select:eq(3)', this.el);
-      this.$mins = $('select:eq(4)', this.el);
+      this.$hour = this.$('[data-type="hour"]');
+      this.$min = this.$('[data-type="min"]');
       
       //Set time
       this.setValue(this.value);
@@ -1049,8 +1074,8 @@ Form.editors = (function() {
     getValue: function() {
       var date = editors.SimpleDate.prototype.getValue.call(this);
 
-      date.setHours(this.$hours.val());
-      date.setMinutes(this.$mins.val());
+      date.setHours(this.$hour.val());
+      date.setMinutes(this.$min.val());
 
       return date;
     },
@@ -1058,8 +1083,8 @@ Form.editors = (function() {
     setValue: function(date) {
       editors.SimpleDate.prototype.setValue.call(this, date);
       
-      this.$hours.val(date.getHours());
-      this.$mins.val(date.getMinutes());
+      this.$hour.val(date.getHours());
+      this.$min.val(date.getMinutes());
     }
 
   });

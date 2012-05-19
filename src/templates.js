@@ -44,15 +44,16 @@
     ',
 
     date: '\
-      <select style="width: 4em">{{dates}}</select>\
-      <select style="width: 4em">{{months}}</select>\
-      <select style="width: 6em">{{years}}</select>\
+      <select data-type="date" style="width: 4em">{{dates}}</select>\
+      <select data-type="month" style="width: {{monthWidth}}em">{{months}}</select>\
+      <select data-type="year" style="width: 6em">{{years}}</select>\
     ',
 
     time: '\
-      <select style="width: 4em">{{hours}}</select>\
+      &nbsp;\
+      <select data-type="hour" style="width: 4em">{{hours}}</select>\
       :\
-      <select style="width: 4em">{{mins}}</select>\
+      <select data-type="min" style="width: 4em">{{mins}}</select>\
     ',
   };
 
