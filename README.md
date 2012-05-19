@@ -729,7 +729,9 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 <a name="changelog"/>
 ##Changelog
 
-###0.9.1 (in development on master)
+###0.9.1 (in development)
+- Create new List, Date and DateTime editors that don't rely on jQuery UI.
+- Rename jQuery UI editors to jqueryui.List, jqueryui.Date, jqueryui.DateTime. These may be moved to a separate repository soon.
 - Fix #65 Number editor Firefox NaN bug
 - Fix bug with hidden fields (jeffutter)
 - Fix AMD distribution bug (ikr)
