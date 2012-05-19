@@ -730,6 +730,7 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 ##Changelog
 
 ###0.9.1 (in development on master)
+- Fix #65 Number editor Firefox NaN bug
 - Fix bug with hidden fields (jeffutter)
 - Fix AMD distribution bug (ikr)
 
