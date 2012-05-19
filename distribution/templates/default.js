@@ -1,9 +1,5 @@
-
-//==================================================================================================
-//TEMPLATES
-//==================================================================================================
-
-  var defaultTemplates = {
+;(function() {
+  var templates = {
     form: '\
       <form class="bbf-form">{{fieldsets}}</form>\
     ',
@@ -56,8 +52,10 @@
       <select data-type="min" class="bbf-min">{{mins}}</select>\
     '
   };
-
-  var defaultClassNames = {
+  
+  var classNames = {
     error: 'bbf-error'
   };
-  
+
+  Backbone.Form.helpers.setTemplates(templates, classNames);
+})();
