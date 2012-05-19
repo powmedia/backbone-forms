@@ -7,13 +7,15 @@ var Post = Backbone.Model.extend({
         title: 'Danger Zone!',
         content: 'I love my turtleneck',
         author: 'Sterling Archer',
-        slug: 'danger-zone'
+        slug: 'danger-zone',
+        weapons: ['uzi', '9mm', 'sniper rifle']
     },
     
     schema: {
         title:      { type: 'Text' },
         content:    { type: 'TextArea' },
         author:     {},
-        slug:       {}
+        slug:       {},
+        weapons:    { type: 'List' }
     }
 });

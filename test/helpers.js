@@ -72,7 +72,7 @@ test('Transforms camelCased string to words', function() {
   module('setTemplates', {
     setup: function() {
       this._templates = Form.templates;
-      this._classNames = Form.classNames;
+      this._classNames = _.clone(Form.classNames);
       this._createTemplate = Form.helpers.createTemplate;
     },
     

@@ -1,0 +1,2 @@
+#Watches the /src directory for changes and builds the distribution files
+supervisor --watch src --no-restart-on exit --quiet --extensions 'node|js|css' --exec node scripts/build

@@ -1,3 +1,5 @@
+var same = deepEqual;
+
 (function() {
   module('Base');
   
@@ -216,7 +218,7 @@ module('Number');
     });
     
     test("TODO: Restricts non-numeric characters", function() {
-        console.log('TODO')
+
     });
 
     test("setValue() - updates the input value", function() {
@@ -529,27 +531,27 @@ module('Select');
     });
     
     test('TODO: Options as array of items', function() {
-        console.log('TODO')
+
     });
     
     test('TODO: Options as array of objects', function() {
-        console.log('TODO')
+
     });
 
     test('TODO: Options as function that calls back with options', function() {
-        console.log('TODO')
+
     });
 
     test('TODO: Options as string of HTML', function() {
-        console.log('TODO')
+
     });
 
     test('TODO: Options as a pre-populated collection', function() {
-        console.log('TODO')
+
     });
     
     test('TODO: Options as a new collection (needs to be fetched)', function() {
-        console.log('TODO')
+
     });
     
     test("setValue() - updates the input value", function() {
@@ -741,11 +743,15 @@ module('Object');
     });
     
     test("TODO: idPrefix is added to child form elements", function() {
-        console.log('TODO')
+        
     });
     
     test("TODO: remove() - Removes embedded form", function() {
-        console.log('TODO')
+        
+    });
+
+    test('TODO: uses the nestedField template, unless overridden in field schema', function() {
+
     });
     
     test("setValue() - updates the input value", function() {
@@ -816,7 +822,6 @@ module('NestedModel');
         
         deepEqual(field.getValue(), { id: 0, name: '' });
         */
-        console.log('TODO');
     });
 
     test('Custom value', function() {
@@ -849,15 +854,19 @@ module('NestedModel');
     });
     
     test("TODO: idPrefix is added to child form elements", function() {
-        console.log('TODO')
+
     });
     
     test("TODO: Validation on nested model", function() {
-        console.log('TODO')
+
+    });
+
+    test('TODO: uses the nestedField template, unless overridden in field schema', function() {
+
     });
 
     test("TODO: remove() - Removes embedded form", function() {
-        console.log('TODO')
+
     });
     
     test("setValue() - updates the input value", function() {
@@ -884,4 +893,667 @@ module('NestedModel');
         deepEqual(field.getValue(), newValue);
     });
 
+})();
+
+
+module('List', {
+    setup: function() {
+        this.sinon = sinon.sandbox.create();
+    },
+
+    teardown: function() {
+        this.sinon.restore();
+    }
+});
+
+(function() {
+    var Editor = editors.List;
+
+    test('Default settings', function() {
+        var list = new Editor();
+
+        same(list.schema.listType, 'Text');
+    });
+
+    test('Default value', function() {
+        var list = new Editor().render();
+
+        same(list.getValue(), []);
+    });
+
+    test('Custom value', function() {
+        var list = new Editor({
+            schema: { listType: 'Number' },
+            value: [1,2,3]
+        }).render();
+
+        same(list.getValue(), [1,2,3]);
+    });
+
+    test('Value from model', function() {
+        var list = new Editor({
+            model: new Post,
+            key: 'weapons'
+        }).render();
+
+        same(list.getValue(), ['uzi', '9mm', 'sniper rifle']);
+    });
+
+    test('setValue() - updates input value', function() {
+        var list = new Editor().render();
+
+        list.setValue(['a', 'b', 'c']);
+
+        same(list.getValue(), ['a', 'b', 'c']);
+    });
+
+    test('validate() - returns validation errors', function() {
+        var list = new Editor({
+            schema: { validators: ['required', 'email'] },
+            value: ['invalid', 'john@example.com', '', 'ok@example.com']
+        }).render();
+
+        var err = list.validate();
+
+        same(err.type, 'list');
+        same(err.errors[0].type, 'email');
+        same(err.errors[1], null);
+        same(err.errors[2].type, 'required');
+        same(err.errors[3], null);
+    });
+
+    test('validate() - returns null if there are no errors', function() {
+        var list = new Editor({
+            schema: { validators: ['required', 'email'] },
+            value: ['john@example.com', 'ok@example.com']
+        }).render();
+
+        var errs = list.validate();
+
+        same(errs, null);
+    });
+
+    test('event: clicking something with data-action="add" adds an item', function() {
+        var list = new Editor().render();
+
+        same(list.items.length, 1);
+
+        list.$el.find('[data-action="add"]').click();
+        
+        same(list.items.length, 2);
+    });
+
+    test('render() - sets the $list property to the template {{items}} tag', function() {
+        //Backup original template
+        var _template = Form.templates.list;
+
+        Form.setTemplates({
+            list: '<ul class="customList">{{items}}</div>'
+        });
+
+        var list = new Editor().render();
+
+        ok(list.$list.hasClass('customList'));
+
+        //Restore template
+        Form.templates.list = _template;
+    });
+
+    test('render() - creates items for each item in value array', function() {
+        var list = new Editor({
+            value: [1,2,3]
+        });
+
+        same(list.items.length, 0);
+
+        list.render();
+
+        same(list.items.length, 3);
+    });
+
+    test('render() - creates an initial empty item for empty array', function() {
+        var list = new Editor({
+            value: []
+        });
+
+        same(list.items.length, 0);
+
+        list.render();
+
+        same(list.items.length, 1);
+    });
+
+    test('addItem() - with no value', function() {
+        var list = new Editor().render();
+
+        var spy = this.sinon.spy(Editor, 'Item');
+
+        list.addItem();
+
+        var expectedOptions = {
+            list: list,
+            schema: list.schema,
+            value: undefined
+        }
+
+        var actualOptions = spy.lastCall.args[0];
+
+        same(spy.callCount, 1);
+        same(actualOptions, expectedOptions);
+        same(list.items.length, 2);
+        same(_.last(list.items).value, undefined);
+    });
+
+    test('addItem() - with value', function() {
+        var list = new Editor().render();
+
+        var spy = this.sinon.spy(Editor, 'Item');
+
+        list.addItem('foo');
+
+        var expectedOptions = {
+            list: list,
+            schema: list.schema,
+            value: 'foo'
+        }
+
+        var actualOptions = spy.lastCall.args[0];
+
+        same(spy.callCount, 1);
+        same(actualOptions, expectedOptions);
+        same(list.items.length, 2);
+        same(_.last(list.items).value, 'foo');
+    });
+
+    test('addItem() - adds the item to the DOM', function() {
+        var list = new Editor().render();
+
+        list.addItem('foo');
+
+        var $el = list.$('li:last input');
+
+        same($el.val(), 'foo');
+    });
+
+    test('removeItem() - removes passed item from view and item array', function() {
+        var list = new Editor().render();
+
+        list.addItem();
+
+        same(list.items.length, 2);
+        same(list.$('li').length, 2);
+
+        var item = _.last(list.items);
+
+        list.removeItem(item);
+
+        same(list.items.length, 1);
+        same(list.$('li').length, 1);
+        same(_.indexOf(list.items, item), -1, 'Removed item is no longer in list.items');
+    });
+
+    test('removeItem() - adds an empty item if list is empty', function() {
+        var list = new Editor().render();
+
+        var spy = sinon.spy(list, 'addItem');
+
+        list.removeItem(list.items[0]);
+
+        same(spy.callCount, 1);
+        same(list.items.length, 1);
+    });
+
+    test('removeItem() - can be configured to ask for confirmation - and is cancelled', function() {
+        //Simulate clicking 'cancel' on confirm dialog
+        var stub = this.sinon.stub(window, 'confirm', function() {
+            return false;
+        });
+
+        var list = new Editor({
+            schema: {
+                confirmDelete: 'You sure about this?'
+            }
+        }).render();
+
+        list.addItem();
+        list.removeItem(_.last(list.items));
+
+        //Check confirmation was shown
+        same(stub.callCount, 1);
+
+        //With custom message
+        var confirmMsg = stub.lastCall.args[0];
+        same(confirmMsg, 'You sure about this?')
+
+        //And item was not removed
+        same(list.items.length, 2, 'Did not remove item');
+    });
+
+    test('removeItem() - can be configured to ask for confirmation - and is confirmed', function() {
+        //Simulate clicking 'ok' on confirm dialog
+        var stub = this.sinon.stub(window, 'confirm', function() {
+            return true;
+        });
+
+        var list = new Editor({
+            schema: {
+                confirmDelete: 'You sure about this?'
+            }
+        }).render();
+
+        list.addItem();
+        list.removeItem(_.last(list.items));
+
+        //Check confirm was shown
+        same(stub.callCount, 1);
+
+        //And item was removed
+        same(list.items.length, 1, 'Removed item');
+    });
+})();
+
+
+
+module('List.Item', {
+    setup: function() {
+        this.sinon = sinon.sandbox.create();
+    },
+
+    teardown: function() {
+        this.sinon.restore();
+    }
+});
+
+(function() {
+    var List = editors.List;
+
+    test('render() - creates the editor for the given listType', function() {
+        var spy = this.sinon.spy(Form.helpers, 'createEditor');
+
+        var list = new List({
+            schema: { listType: 'Number' }
+        }).render();
+
+        var item = new List.Item({
+            list: list,
+            value: 123
+        }).render();
+
+        //Check created correct editor
+        var editorType = spy.lastCall.args[0],
+            editorOptions = spy.lastCall.args[1];
+
+        same(editorType, 'Number');
+        same(editorOptions, {
+            key: '',
+            schema: item.schema,
+            value: 123
+        });
+    });
+
+    test('render() - creates the main element entirely from template, with editor in {{editor}} tag location', function() {
+        //Replace template
+        var _template = Form.templates.listItem;
+
+        Form.setTemplates({
+            listItem: '<div class="outer"><div class="inner">{{editor}}</div></div>'
+        })
+
+        //Create item
+        var item = new List.Item({ list: new List }).render();
+
+        //Check there is no wrapper tag
+        ok(item.$el.hasClass('outer'));
+
+        //Check editor placed in correct location
+        ok(item.editor.$el.parent().hasClass('inner'));
+
+        //Restore template
+        Form.templates.listItem = _template;
+    });
+
+    test('getValue() - returns editor value', function() {
+        var item = new List.Item({
+            list: new List,
+            value: 'foo'
+        }).render();
+
+        same(item.editor.getValue(), 'foo');
+        same(item.getValue(), 'foo');
+    });
+
+    test('setValue() - sets editor value', function() {
+        var item = new List.Item({ list: new List }).render();
+
+        item.setValue('woo');
+
+        same(item.editor.getValue(), 'woo');
+        same(item.getValue(), 'woo');
+    });
+
+    test('remove() - removes the editor then itself', function() {
+        var item = new List.Item({ list: new List }).render();
+
+        var editorSpy = this.sinon.spy(item.editor, 'remove'),
+            viewSpy = this.sinon.spy(Backbone.View.prototype.remove, 'call');
+
+        item.remove();
+
+        //Check removed editor
+        ok(editorSpy.calledOnce, 'Called editor remove');
+
+        //Check removed main item
+        ok(viewSpy.calledWith(item), 'Called parent view remove');
+    });
+
+    test('validate() - invalid - calls showError and returns error', function() {
+        var item = new List.Item({
+            list: new List({
+                schema: { validators: ['required', 'email'] }
+            }),
+            value: 'invalid'
+        }).render();
+
+        var spy = this.sinon.spy(item, 'showError');
+
+        var err = item.validate();
+
+        same(err.type, 'email');
+        same(spy.callCount, 1, 'Called showError');
+        same(spy.lastCall.args[0], err, 'Called with error');
+    });
+
+    test('validate() - valid - calls hideError and returns null', function() {
+        var item = new List.Item({
+            list: new List({
+                schema: { validators: ['required', 'email'] }
+            }),
+            value: 'valid@example.com'
+        }).render();
+
+        var spy = this.sinon.spy(item, 'hideError');
+
+        var err = item.validate();
+
+        same(err, null);
+        same(spy.callCount, 1, 'Called hideError');
+    });
+
+    test('showError()', function() {
+        var item = new List.Item({ list: new List }).render();
+
+        item.showError({ type: 'errType', message: 'ErrMessage' });
+
+        ok(item.$el.hasClass(Form.classNames.error), 'Element has error class');
+        same(item.$el.attr('title'), 'ErrMessage');
+    });
+
+    test('hideError()', function() {
+        var item = new List.Item({ list: new List }).render();
+
+        item.showError({ type: 'errType', message: 'ErrMessage' });
+
+        item.hideError();
+
+        same(item.$el.hasClass(Form.classNames.error), false, 'Error class is removed from element');
+        same(item.$el.attr('title'), undefined);
+    });
+})();
+
+
+
+module('Date', {
+    setup: function() {
+        this.sinon = sinon.sandbox.create();
+    },
+
+    teardown: function() {
+        this.sinon.restore();
+    }
+});
+
+(function() {
+    var Editor = editors.Date;
+
+    test('initialize() - casts values to date', function() {
+        var date = new Date(2000, 0, 1);
+
+        var editor = new Editor({ value: date.toString() });
+
+        same(editor.value.constructor.name, 'Date');
+        same(editor.value.getTime(), date.getTime());
+    });
+
+    test('initialize() - default value - today', function() {
+        var editor = new Editor;
+
+        var today = new Date,
+            value = editor.value;
+
+        same(value.getFullYear(), today.getFullYear());
+        same(value.getMonth(), today.getMonth());
+        same(value.getDate(), today.getDate());
+    });
+
+    test('initialize() - default options and schema', function() {
+        var editor = new Editor();
+
+        var schema = editor.schema,
+            options = editor.options;
+
+        //Schema options
+        var today = new Date;
+        same(schema.yearStart, today.getFullYear() - 100);
+        same(schema.yearEnd, today.getFullYear());
+
+        //Options should default to those stored on the static class
+        same(editor.options.showMonthNames, Editor.showMonthNames);
+        same(editor.options.monthNames, Editor.monthNames);
+    });
+
+    test('render()', function() {
+        var date = new Date,
+            editor = new Editor({ value: date }),
+            spy = this.sinon.spy(editor, 'setValue');
+
+        editor.render();
+
+        //Test DOM elements
+        same(editor.$date.attr('data-type'), 'date');
+        same(editor.$date.find('option:first').val(), '1');
+        same(editor.$date.find('option:last').val(), '31');
+        same(editor.$date.find('option:first').html(), '1');
+        same(editor.$date.find('option:last').html(), '31');
+
+        same(editor.$month.attr('data-type'), 'month');
+        same(editor.$month.find('option:first').val(), '0');
+        same(editor.$month.find('option:last').val(), '11');
+        same(editor.$month.find('option:first').html(), 'January');
+        same(editor.$month.find('option:last').html(), 'December');
+
+        same(editor.$year.attr('data-type'), 'year');
+        same(editor.$year.find('option:first').val(), editor.schema.yearStart.toString());
+        same(editor.$year.find('option:last').val(), editor.schema.yearEnd.toString());
+        same(editor.$year.find('option:first').html(), editor.schema.yearStart.toString());
+        same(editor.$year.find('option:last').html(), editor.schema.yearEnd.toString());
+
+        ok(spy.calledWith(date), 'Called setValue');
+    });
+
+    test('render() - with showMonthNames false', function() {
+        var editor = new Editor({
+            showMonthNames: false
+        }).render();
+
+        same(editor.$month.attr('data-type'), 'month');
+        same(editor.$month.find('option:first').html(), '1');
+        same(editor.$month.find('option:last').html(), '12');
+    });
+
+    test('getValue() - returns a Date', function() {
+        var date = new Date(2010, 5, 5),
+            editor = new Editor({ value: date }).render();
+
+        var value = editor.getValue();
+
+        same(value.constructor.name, 'Date');
+        same(value.getTime(), date.getTime());
+    });
+
+    test('setValue()', function() {
+        var date = new Date(2015, 1, 4);
+        
+        var editor = new Editor({
+            schema: {
+                yearStart: 2000,
+                yearEnd: 2020
+            }
+        }).render();
+
+        editor.setValue(date);
+
+        same(editor.$date.val(), '4');
+        same(editor.$month.val(), '1');
+        same(editor.$year.val(), '2015');
+
+        same(editor.getValue().getTime(), date.getTime());
+    });
+})();
+
+
+
+module('DateTime', {
+    setup: function() {
+        this.sinon = sinon.sandbox.create();
+    },
+
+    teardown: function() {
+        this.sinon.restore();
+    }
+});
+
+(function() {
+    var DateEditor = editors.Date,
+        Editor = editors.DateTime;
+
+    test('initialize() - default value - now (to the hour)', function() {
+        var editor = new Editor;
+
+        var now = new Date,
+            value = editor.value;
+
+        same(value.getFullYear(), now.getFullYear());
+        same(value.getMonth(), now.getMonth());
+        same(value.getDate(), now.getDate());
+        same(value.getHours(), now.getHours());
+        same(value.getMinutes(), now.getMinutes());
+    });
+
+    test('initialize() - default options and schema', function() {
+        var editor = new Editor();
+
+        var schema = editor.schema,
+            options = editor.options;
+
+        //Options should default to those stored on the static class
+        same(editor.options.DateEditor, Editor.DateEditor);
+
+        //Schema options
+        same(schema.minsInterval, 15);
+    });
+
+    test('initialize() - creates a Date instance', function() {
+        var spy = this.sinon.spy(Editor, 'DateEditor');
+
+        var options = {},
+            editor = new Editor(options);
+
+        ok(editor.dateEditor instanceof Editor.DateEditor, 'Created instance of date editor');
+        same(spy.lastCall.args[0], options);
+    });
+
+    test('render() - calls setValue', function() {
+        var date = new Date,
+            editor = new Editor({ value: date }),
+            spy = this.sinon.spy(editor, 'setValue');
+
+        editor.render();
+
+        ok(spy.calledWith(date), 'Called setValue');
+    });
+
+    test('render() - creates hours and mins', function() {
+        var editor = new Editor().render();
+
+        //Test DOM elements
+        same(editor.$hour.attr('data-type'), 'hour');
+        same(editor.$hour.find('option').length, 24);
+        same(editor.$hour.find('option:first').val(), '0');
+        same(editor.$hour.find('option:last').val(), '23');
+        same(editor.$hour.find('option:first').html(), '00');
+        same(editor.$hour.find('option:last').html(), '23');
+
+        same(editor.$min.attr('data-type'), 'min');
+        same(editor.$min.find('option').length, 4);
+        same(editor.$min.find('option:first').val(), '0');
+        same(editor.$min.find('option:last').val(), '45');
+        same(editor.$min.find('option:first').html(), '00');
+        same(editor.$min.find('option:last').html(), '45');
+    });
+
+    test('render() - creates hours and mins - with custom minsInterval', function() {
+        var editor = new Editor({
+            schema: { minsInterval: 1 }
+        }).render();
+
+        same(editor.$min.attr('data-type'), 'min');
+        same(editor.$min.find('option').length, 60);
+        same(editor.$min.find('option:first').val(), '0');
+        same(editor.$min.find('option:last').val(), '59');
+        same(editor.$min.find('option:first').html(), '00');
+        same(editor.$min.find('option:last').html(), '59');
+    });
+
+    test('render() - adds date editor in {{date}} template tag', function() {
+        //Replace template
+        var _template = Form.templates.dateTime;
+
+        Form.setTemplates({
+            dateTime: '<div class="foo">{{date}}</div>'
+        });
+
+        //Create item
+        var editor = new Editor().render();
+
+        //Check editor placed in correct location
+        ok(editor.dateEditor.$el.parent().hasClass('foo'), 'Date el placed correctly');
+
+        //Restore template
+        Form.templates.dateTime = _template;
+    });
+
+    test('getValue() - returns a Date', function() {
+        var date = new Date(2010, 5, 5, 14, 30),
+            editor = new Editor({ value: date }).render();
+
+        var value = editor.getValue();
+
+        same(value.constructor.name, 'Date');
+        same(value.getTime(), date.getTime());
+    });
+
+    test('setValue()', function() {
+        var editor = new Editor().render();
+
+        var spy = this.sinon.spy(editor.dateEditor, 'setValue');
+        
+        var date = new Date(2005, 1, 4, 19, 45);
+        
+        editor.setValue(date);
+
+        //Should set value on date editor
+        same(spy.lastCall.args[0], date);
+
+        same(editor.getValue().getTime(), date.getTime());
+    });
 })();

@@ -26,7 +26,7 @@ test("'schema' option - If not present, the 'schema' attribute on the model is u
     equal(form.schema, post.schema);
 
     //Check correct fields have been added
-    equal($('input', form.el).length, 3);
+    equal($('input', form.el).length, 6);
     equal($('textarea', form.el).length, 1);
 });
 
