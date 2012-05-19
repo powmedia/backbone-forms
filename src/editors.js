@@ -936,12 +936,11 @@ Form.editors = (function() {
   /**
    * DATE
    *
+   * Schema options
    * @param {Number|String} [options.schema.yearStart]  First year in list. Default: 100 years ago
    * @param {Number|String} [options.schema.yearEnd]    Last year in list. Default: current year
    */
   editors.SimpleDate = editors.Base.extend({
-
-    className: 'bbf-date',
 
     initialize: function(options) {
       editors.Base.prototype.initialize.call(this, options);
@@ -1000,8 +999,7 @@ Form.editors = (function() {
       this.$month = this.$('[data-type="month"]');
       this.$year = this.$('[data-type="year"]');
 
-      //Make sure setValue of this object is called, not of any objects extending it (e.g. DateTime)
-      editors.SimpleDate.prototype.setValue.call(this, this.value);
+      this.setValue(this.value);
 
       return this;
     },
@@ -1036,18 +1034,26 @@ Form.editors = (function() {
   });
 
 
-  //DATETIME
-  editors.SimpleDateTime = editors.SimpleDate.extend({
+  /**
+   * DATETIME
+   * 
+   * @param {Editor} [options.DateEditor]           Date editor view to use (not definition)
+   * @param {Number} [options.schema.minsInterval]  Interval between minutes. Default: 15
+   */
+  editors.SimpleDateTime = editors.Base.extend({
 
-    className: 'bbf-datetime',
+    initialize: function(options) {
+      editors.Base.prototype.initialize.call(this, options);
+
+      //Create embedded date editor
+      var DateEditor = options.DateEditor || editors.SimpleDateTime.DateEditor;
+      this.dateEditor = new DateEditor(options);
+    },
 
     render: function() {
       function pad(n) {
         return n < 10 ? '0' + n : n
       }
-
-      //Render the date element first
-      editors.SimpleDate.prototype.render.call(this);
 
       //Create options
       var hoursOptions = _.map(_.range(0, 24), function(hour) {
@@ -1061,9 +1067,13 @@ Form.editors = (function() {
 
       //Render time selects
       this.$el.append(Form.templates.time({
+        date: '<span class="bbf-placeholder"></span>',
         hours: hoursOptions.join(),
         mins: minsOptions.join()
       }));
+
+      //Include the date editor
+      this.$('.bbf-placeholder').replaceWith(this.dateEditor.render().el);
 
       //Store references to selects
       //TODO: Don't base this on order, in case order in template changes (e.g. for American dates)
@@ -1071,7 +1081,11 @@ Form.editors = (function() {
       this.$min = this.$('[data-type="min"]');
       
       //Set time
-      this.setValue(this.value);
+      var now = new Date(),
+          date = this.dateEditor.getValue();
+      date.setHours(now.getHours());
+      date.setMinutes(now.getMinutes());
+      this.setValue(date);
 
       return this;
     },
@@ -1080,7 +1094,7 @@ Form.editors = (function() {
     * @return {Date}   Selected datetime
     */
     getValue: function() {
-      var date = editors.SimpleDate.prototype.getValue.call(this);
+      var date = this.dateEditor.getValue();
 
       date.setHours(this.$hour.val());
       date.setMinutes(this.$min.val());
@@ -1089,12 +1103,17 @@ Form.editors = (function() {
     },
     
     setValue: function(date) {
-      editors.SimpleDate.prototype.setValue.call(this, date);
+      this.dateEditor.setValue(date);
       
       this.$hour.val(date.getHours());
       this.$min.val(date.getMinutes());
     }
 
+  }, {
+    //STATICS
+
+    //The date editor to use (editor definition, not instance)
+    DateEditor: editors.SimpleDate
   });
 
   return editors;

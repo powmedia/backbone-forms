@@ -1336,7 +1336,17 @@ module('Date', {
     });
 
     test('render()', function() {
-    
+        var date = new Date,
+            editor = new Editor({ value: date }),
+            spy = this.sinon.spy(editor, 'setValue');
+
+        editor.render();
+
+        same(editor.$date.attr('data-type'), 'date');
+        same(editor.$month.attr('data-type'), 'month');
+        same(editor.$year.attr('data-type'), 'year');
+
+        ok(spy.calledWith(date), 'Called setValue');
     });
 
     test('getValue()', function() {

@@ -50,7 +50,7 @@
     ',
 
     time: '\
-      &nbsp;\
+      <div style="float: left; margin-right: 1em">{{date}}</div>\
       <select data-type="hour" style="width: 4em">{{hours}}</select>\
       :\
       <select data-type="min" style="width: 4em">{{mins}}</select>\
