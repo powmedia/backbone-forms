@@ -36,7 +36,20 @@
         <div class="pull-left">{{editor}}</div>\
         <button class="btn" style="margin-left: 4px" data-action="remove">x</button>\
       </li>\
-    '
+    ',
+
+    date: '\
+      <select data-type="date" style="width: 4em">{{dates}}</select>\
+      <select data-type="month" style="width: {{monthWidth}}em">{{months}}</select>\
+      <select data-type="year" style="width: 6em">{{years}}</select>\
+    ',
+
+    time: '\
+      <div style="float: left; margin-right: 1em">{{date}}</div>\
+      <select data-type="hour" style="width: 4em">{{hours}}</select>\
+      :\
+      <select data-type="min" style="width: 4em">{{mins}}</select>\
+    ',
   };
   
   var classNames = {

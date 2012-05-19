@@ -49,7 +49,7 @@
       <select data-type="year" style="width: 6em">{{years}}</select>\
     ',
 
-    time: '\
+    dateTime: '\
       <div style="float: left; margin-right: 1em">{{date}}</div>\
       <select data-type="hour" style="width: 4em">{{hours}}</select>\
       :\
