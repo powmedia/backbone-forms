@@ -209,7 +209,15 @@ Form.editors = (function() {
     },
     
     setValue: function(value) {
-      value = value === null ? null : parseFloat(value, 10);
+      value = (function() {
+        if (_.isNumber(value)) return value;
+
+        if (_.isString(value) && value !== '') return parseFloat(value, 10);
+
+        return null;
+      })();
+
+      if (_.isNaN(value)) value = null;
       
       editors.Text.prototype.setValue.call(this, value);
     }
