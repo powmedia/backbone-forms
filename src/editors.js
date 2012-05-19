@@ -986,15 +986,7 @@ Form.editors = (function() {
     * @return {Date}   Selected date
     */
     getValue: function() {
-      var date = new Date;
-
-      date.setFullYear(this.$year.val());
-      date.setMonth(this.$month.val());
-      date.setDate(this.$date.val());
-      date.setHours(0);
-      date.setMinutes(0);
-      date.setSeconds(0);
-      date.setMilliseconds(0);
+      var date = new Date(this.$year.val(), this.$month.val(), this.$date.val());
 
       return date;
     },
@@ -1059,7 +1051,6 @@ Form.editors = (function() {
 
       date.setHours(this.$hours.val());
       date.setMinutes(this.$mins.val());
-      date.setMilliseconds(0);
 
       return date;
     },
