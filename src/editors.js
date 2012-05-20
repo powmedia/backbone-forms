@@ -573,13 +573,13 @@ Form.editors = (function() {
 
     className: 'bbf-object',
 
-    defaultValue: {},
-
     initialize: function(options) {
       editors.Base.prototype.initialize.call(this, options);
 
       if (!this.schema.subSchema)
         throw "Missing required 'schema.subSchema' option for Object editor";
+
+      this.defaultValue = {};
     },
 
     render: function() {
