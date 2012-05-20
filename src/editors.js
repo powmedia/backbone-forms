@@ -733,11 +733,11 @@ Form.editors = (function() {
 
       //Create main element
       $el.html(Form.templates.list({
-        items: '<span class="bbf-placeholder-items"></span>'
+        items: '<b class="bbf-tmp"></b>'
       }));
 
       //Store a reference to the list (item container)
-      this.$list = $el.find('.bbf-placeholder-items').parent().empty();
+      this.$list = $el.find('.bbf-tmp').parent().empty();
 
       //Add items
       if (value.length) {
@@ -867,10 +867,10 @@ Form.editors = (function() {
 
       //Create main element
       var $el = $(Form.templates.listItem({
-        editor: '<span class="bbf-placeholder"></span>'
+        editor: '<b class="bbf-tmp"></b>'
       }));
 
-      $el.find('.bbf-placeholder').replaceWith(this.editor.render().el);
+      $el.find('.bbf-tmp').replaceWith(this.editor.render().el);
 
       //Replace the entire element so there isn't a wrapper tag
       this.setElement($el);
@@ -909,7 +909,7 @@ Form.editors = (function() {
       });
 
       //Show/hide error
-      error ? this.showError(error) : this.hideError();
+      error ? this.setError(error) : this.clearError();
 
       //Return error to be aggregated by list
       return error ? error : null;
@@ -918,7 +918,7 @@ Form.editors = (function() {
     /**
      * Show a validation error
      */
-    showError: function(err) {
+    setError: function(err) {
       this.$el.addClass(Form.classNames.error);
       this.$el.attr('title', err.message);
     },
@@ -926,7 +926,7 @@ Form.editors = (function() {
     /**
      * Hide validation errors
      */
-    hideError: function() {
+    clearError: function() {
       this.$el.removeClass(Form.classNames.error);
       this.$el.attr('title', null);
     }
@@ -1094,13 +1094,13 @@ Form.editors = (function() {
 
       //Render time selects
       this.$el.append(Form.templates.dateTime({
-        date: '<span class="bbf-placeholder"></span>',
+        date: '<b class="bbf-tmp"></b>',
         hours: hoursOptions.join(),
         mins: minsOptions.join()
       }));
 
       //Include the date editor
-      this.$('.bbf-placeholder').replaceWith(this.dateEditor.render().el);
+      this.$('.bbf-tmp').replaceWith(this.dateEditor.render().el);
 
       //Store references to selects
       this.$hour = this.$('[data-type="hour"]');

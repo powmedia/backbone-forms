@@ -6,7 +6,7 @@
 
     fieldset: '\
       <fieldset>\
-        {{legend}}\
+        <legend>{{legend}}</legend>\
         {{fields}}\
       </fieldset>\
     ',

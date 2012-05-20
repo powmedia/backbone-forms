@@ -100,7 +100,6 @@ function copy(srcPath, outputPath) {
 // RUN
 var fileList = [
   srcDir + '/form.js',
-  srcDir + '/templates.js',
   srcDir + '/helpers.js',
   srcDir + '/validators.js',
   srcDir + '/field.js',
@@ -138,9 +137,10 @@ try {
 } catch (e) {}
 
 //Copy other files over to distribution
-copy(srcDir + '/backbone-forms.css', outputDir + '/backbone-forms.css');
 copy(srcDir + '/editors/jquery-ui.css', outputDir + '/editors/jquery-ui.css');
 copy(srcDir + '/editors/jquery-ui.js', outputDir + '/editors/jquery-ui.js');
 uglify(srcDir + '/editors/jquery-ui.js', outputDir + '/editors/jquery-ui.min.js');
+copy(srcDir + '/templates/default.css', outputDir + '/templates/default.css');
+copy(srcDir + '/templates/default.js', outputDir + '/templates/default.js');
 copy(srcDir + '/templates/bootstrap.js', outputDir + '/templates/bootstrap.js');
 copy(srcDir + '/templates/minimal.js', outputDir + '/templates/minimal.js');

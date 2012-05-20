@@ -20,26 +20,40 @@ Form.Field = (function() {
      *          model       {Backbone.Model} : Use instead of value, and use commit().
      *          idPrefix    {String} : Prefix to add to the editor DOM element's ID
      */
+    /**
+     * Creates a new field
+     * 
+     * @param {Object} options
+     * @param {Object} [options.schema]     Field schema. Defaults to { type: 'Text' }
+     * @param {Model} [options.model]       Model the field relates to. Required if options.data is not set.
+     * @param {String} [options.key]        Model key/attribute the field relates to.
+     * @param {Mixed} [options.value]       Field value. Required if options.model is not set.
+     * @param {String} [options.idPrefix]   Prefix for the editor ID. By default, the model's CID is used.
+     *
+     * @return {Field}
+     */
     initialize: function(options) {
+      options = options || {};
+
       this.form = options.form;
       this.key = options.key;
       this.value = options.value;
       this.model = options.model;
 
-      //Get schema
-      var schema = this.schema = (function() {
-        //Handle schema type shorthand where the editor name is passed instead of a schema config object
-        if (_.isString(options.schema)) return { type: options.schema };
-
-        return options.schema || {};
-      })();
+      //Turn schema shorthand notation (e.g. 'Text') into schema object
+      if (_.isString(options.schema)) options.schema = { type: options.schema };
       
       //Set schema defaults
-      if (!schema.type) schema.type = 'Text';
-      if (!schema.title) schema.title = helpers.keyToTitle(this.key);
-      if (!schema.template) schema.template = 'field';
+      this.schema = _.extend({
+        type: 'Text',
+        title: helpers.keyToTitle(this.key),
+        template: 'field'
+      }, options.schema);
     },
 
+    /**
+     * Renders the field
+     */
     render: function() {
       var schema = this.schema,
           templates = Form.templates;
@@ -54,10 +68,11 @@ Form.Field = (function() {
       };
 
       //Decide on data delivery type to pass to editors
-      if (this.model)
+      if (this.model) {
         options.model = this.model;
-      else
+      } else {
         options.value = this.value;
+      }
 
       //Decide on the editor to use
       var editor = this.editor = helpers.createEditor(schema.type, options);
@@ -68,17 +83,15 @@ Form.Field = (function() {
         title: schema.title,
         id: editor.id,
         type: schema.type,
-        editor: '<span class="bbf-placeholder-editor"></span>',
-        help: '<span class="bbf-placeholder-help"></span>'
+        editor: '<b class="bbf-tmp-editor"></b>',
+        help: '<b class="bbf-tmp-help"></b>'
       }));
       
       //Render editor
-      var $editorContainer = $('.bbf-placeholder-editor', $field)
-      $editorContainer.append(editor.render().el);
-      $editorContainer.children().unwrap();
+      $field.find('.bbf-tmp-editor').replaceWith(editor.render().el);
 
       //Set help text
-      this.$help = $('.bbf-placeholder-help', $field).parent();
+      this.$help = $('.bbf-tmp-help', $field).parent();
       this.$help.empty();
       if (this.schema.help) this.$help.html(this.schema.help);
       
@@ -88,6 +101,7 @@ Form.Field = (function() {
       //Add custom attributes
       if (this.schema.fieldAttrs) $field.attr(this.schema.fieldAttrs);
       
+      //Replace the generated wrapper tag
       this.setElement($field);
 
       return this;
@@ -97,15 +111,12 @@ Form.Field = (function() {
      * Creates the ID that will be assigned to the editor
      *
      * @return {String}
-     *
-     * @api private
      */
     getId: function() {
       var prefix = this.options.idPrefix,
           id = this.key;
 
       //Replace periods with underscores (e.g. for when using paths)
-      //id = id.replace(new RegExp('\\.', 'g'), '_');
       id = id.replace(/\./g, '_');
 
       //If a specific ID prefix is set, use it
@@ -120,6 +131,7 @@ Form.Field = (function() {
     
     /**
      * Check the validity of the field
+     *
      * @return {String}
      */
     validate: function() {
@@ -137,9 +149,9 @@ Form.Field = (function() {
     /**
      * Set the field into an error state, adding the error class and setting the error message
      *
-     * @param {String} errMsg
+     * @param {String} msg     Error message
      */
-    setError: function(errMsg) {
+    setError: function(msg) {
       //Object and NestedModel types set their own errors internally
       if (this.editor.hasNestedForm) return;
       
@@ -147,7 +159,7 @@ Form.Field = (function() {
 
       this.$el.addClass(errClass);
       
-      if (this.$help) this.$help.html(errMsg);
+      if (this.$help) this.$help.html(msg);
     },
     
     /**
@@ -177,6 +189,7 @@ Form.Field = (function() {
 
     /**
      * Get the value from the editor
+     *
      * @return {Mixed}
      */
     getValue: function() {
@@ -185,17 +198,16 @@ Form.Field = (function() {
     
     /**
      * Set/change the value of the editor
+     *
+     * @param {Mixed} value
      */
     setValue: function(value) {
       this.editor.setValue(value);
     },
 
-    logValue: function() {
-      if (!console || !console.log) return;
-      
-      console.log(this.getValue());
-    },
-
+    /**
+     * Remove the field and editor views
+     */
     remove: function() {
       this.editor.remove();
 
