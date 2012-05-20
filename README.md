@@ -730,6 +730,7 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 ##Changelog
 
 ###0.10.0
+- Refactor rendering. <legend> tags are now defined in the template.
 - Create new List, Date and DateTime editors that don't rely on jQuery UI.
 - Rename jQuery UI editors to jqueryui.List, jqueryui.Date, jqueryui.DateTime. These may be moved to a separate repository soon.
 - Fix #65 Number editor Firefox NaN bug
