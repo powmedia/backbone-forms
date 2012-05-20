@@ -1246,7 +1246,7 @@ module('List.Item', {
         ok(viewSpy.calledWith(item), 'Called parent view remove');
     });
 
-    test('validate() - invalid - calls showError and returns error', function() {
+    test('validate() - invalid - calls setError and returns error', function() {
         var item = new List.Item({
             list: new List({
                 schema: { validators: ['required', 'email'] }
@@ -1254,16 +1254,16 @@ module('List.Item', {
             value: 'invalid'
         }).render();
 
-        var spy = this.sinon.spy(item, 'showError');
+        var spy = this.sinon.spy(item, 'setError');
 
         var err = item.validate();
 
         same(err.type, 'email');
-        same(spy.callCount, 1, 'Called showError');
+        same(spy.callCount, 1, 'Called setError');
         same(spy.lastCall.args[0], err, 'Called with error');
     });
 
-    test('validate() - valid - calls hideError and returns null', function() {
+    test('validate() - valid - calls clearError and returns null', function() {
         var item = new List.Item({
             list: new List({
                 schema: { validators: ['required', 'email'] }
@@ -1271,29 +1271,29 @@ module('List.Item', {
             value: 'valid@example.com'
         }).render();
 
-        var spy = this.sinon.spy(item, 'hideError');
+        var spy = this.sinon.spy(item, 'clearError');
 
         var err = item.validate();
 
         same(err, null);
-        same(spy.callCount, 1, 'Called hideError');
+        same(spy.callCount, 1, 'Called clearError');
     });
 
-    test('showError()', function() {
+    test('setError()', function() {
         var item = new List.Item({ list: new List }).render();
 
-        item.showError({ type: 'errType', message: 'ErrMessage' });
+        item.setError({ type: 'errType', message: 'ErrMessage' });
 
         ok(item.$el.hasClass(Form.classNames.error), 'Element has error class');
         same(item.$el.attr('title'), 'ErrMessage');
     });
 
-    test('hideError()', function() {
+    test('clearError()', function() {
         var item = new List.Item({ list: new List }).render();
 
-        item.showError({ type: 'errType', message: 'ErrMessage' });
+        item.setError({ type: 'errType', message: 'ErrMessage' });
 
-        item.hideError();
+        item.clearError();
 
         same(item.$el.hasClass(Form.classNames.error), false, 'Error class is removed from element');
         same(item.$el.attr('title'), undefined);

@@ -909,7 +909,7 @@ Form.editors = (function() {
       });
 
       //Show/hide error
-      error ? this.showError(error) : this.hideError();
+      error ? this.setError(error) : this.clearError();
 
       //Return error to be aggregated by list
       return error ? error : null;
@@ -918,7 +918,7 @@ Form.editors = (function() {
     /**
      * Show a validation error
      */
-    showError: function(err) {
+    setError: function(err) {
       this.$el.addClass(Form.classNames.error);
       this.$el.attr('title', err.message);
     },
@@ -926,7 +926,7 @@ Form.editors = (function() {
     /**
      * Hide validation errors
      */
-    hideError: function() {
+    clearError: function() {
       this.$el.removeClass(Form.classNames.error);
       this.$el.attr('title', null);
     }
