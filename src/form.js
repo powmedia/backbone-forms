@@ -6,9 +6,6 @@
 var Form = (function() {
 
   return Backbone.View.extend({
-    
-    //Field views
-    fields: null,
 
     /**
      * @param {Object}  Options
@@ -37,15 +34,25 @@ var Form = (function() {
       
         return model.schema;
       })();
+
+      //Option defaults
+      options = _.extend({
+        template: 'form',
+        fieldTemplate: 'field',
+        fieldsetTemplate: 'fieldset'
+      }, options);
+
+      //Determine fieldsets
+      if (!options.fieldsets) {
+        var fields = options.fields || _.keys(this.schema);
+
+        options.fieldsets = [{ fields: fields }];
+      }
       
-      //Handle other options
+      //Store main attributes
+      this.options = options;
       this.model = options.model;
       this.data = options.data;
-      this.fieldsToRender = options.fields || _.keys(this.schema);
-      this.fieldsets = options.fieldsets;
-      this.templateName = options.template || 'form';
-      
-      //Stores all Field views
       this.fields = {};
     },
 
@@ -54,47 +61,60 @@ var Form = (function() {
      */
     render: function() {
       var self = this,
-          fieldsets = this.fieldsets,
-          templates = Form.templates;
+          options = this.options,
+          template = Form.templates[options.template];
       
       //Create el from template
-      var $form = $(templates[this.templateName]({
+      var $form = $(template({
         fieldsets: '<b class="bbf-tmp"></b>'
       }));
 
-      //Get a reference to where fieldsets should go
+      //Render fieldsets
       var $fieldsetContainer = $('.bbf-tmp', $form);
 
-      if(!fieldsets) {
-        fieldsets = [{fields: this.fieldsToRender}]
-      }
-
-      //TODO: Update handling of fieldsets
-      _.each(fieldsets, function(fs) {
-        if (_(fs).isArray()) {
-          fs = {'fields': fs};
-        }
-
-        //Concatenating HTML as strings won't work so we need to insert field elements into a placeholder
-        var $fieldset = $(templates.fieldset(_.extend({}, fs, {
-          legend: (fs.legend) ? '<legend>' + fs.legend + '</legend>' : '',
-          fields: '<b class="bbf-tmp"></b>'
-        })));
-
-        var $fieldsContainer = $('.bbf-tmp', $fieldset);
-
-        self.renderFields(fs.fields, $fieldsContainer);
-
-        $fieldsContainer = $fieldsContainer.children().unwrap()
-
-        $fieldsetContainer.append($fieldset);
+      _.each(options.fieldsets, function(fieldset) {
+        self.renderFieldset(fieldset, $fieldsetContainer);
       });
 
-      $fieldsetContainer.children().unwrap()
+      $fieldsetContainer.children().unwrap();
 
+      //Set the template contents as the main element; removes the wrapper element
       this.setElement($form);
 
       return this;
+    },
+
+    /**
+     * Renders a fieldset and the fields within it
+     *
+     * Valid fieldset definitions:
+     * ['field1', 'field2']
+     * { legend: 'Some Fieldset', fields: ['field1', 'field2'] }
+     *
+     * @param {Object|Array} fieldset     A fieldset definition
+     * @param {jQuery} $container         Wrapped DOM element where the fieldset will go
+     */
+    renderFieldset: function(fieldset, $container) {
+      var template = Form.templates[this.options.fieldsetTemplate];
+
+      //Normalise to object
+      if (_.isArray(fieldset)) {
+        fieldset = { fields: fieldset };
+      }
+
+      //Concatenating HTML as strings won't work so we need to insert field elements into a placeholder
+      var $fieldset = $(template(_.extend({}, fieldset, {
+        legend: fieldset.legend || '',
+        fields: '<b class="bbf-tmp"></b>'
+      })));
+
+      var $fieldsContainer = $('.bbf-tmp', $fieldset);
+
+      this.renderFields(fieldset.fields, $fieldsContainer);
+
+      $fieldsContainer = $fieldsContainer.children().unwrap()
+
+      $container.append($fieldset);
     },
 
     /**
