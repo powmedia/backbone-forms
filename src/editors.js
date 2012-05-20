@@ -580,14 +580,17 @@ Form.editors = (function() {
         throw "Missing required 'schema.subSchema' option for Object editor";
 
       this.defaultValue = {};
+
+      this.form = this.createForm();
     },
 
-    render: function() {
-      var $el = this.$el,
-          data = this.value || {},
-          key = this.key,
-          schema = this.schema,
-          objSchema = schema.subSchema;
+    /**
+     * Creates the nested form
+     *
+     * @return {Form}
+     */
+    createForm: function() {
+      var objSchema = this.schema.subSchema;
 
       //Temporary hack for using nestedField templates
       //TODO: Enable setting the field in the form constructor
@@ -595,15 +598,15 @@ Form.editors = (function() {
         if (!schema.template) schema.template = 'nestedField';
       });
 
-      //Create the nested form
-      this.form = new Form({
+      return new Form({
         schema: objSchema,
-        data: data,
+        data: this.value || {},
         idPrefix: this.id + '_'
       });
+    },
 
-      //Render form
-      $el.html(this.form.render().el);
+    render: function() {
+      this.$el.html(this.form.render().el);
 
       return this;
     },
