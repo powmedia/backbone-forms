@@ -73,7 +73,7 @@ var Form = (function() {
       var $fieldsetContainer = $('.bbf-tmp', $form);
 
       _.each(options.fieldsets, function(fieldset) {
-        self.renderFieldset(fieldset, $fieldsetContainer);
+        $fieldsetContainer.append(self.renderFieldset(fieldset));
       });
 
       $fieldsetContainer.children().unwrap();
@@ -92,9 +92,10 @@ var Form = (function() {
      * { legend: 'Some Fieldset', fields: ['field1', 'field2'] }
      *
      * @param {Object|Array} fieldset     A fieldset definition
-     * @param {jQuery} $container         Wrapped DOM element where the fieldset will go
+     * 
+     * @return {jQuery}                   The fieldset element
      */
-    renderFieldset: function(fieldset, $container) {
+    renderFieldset: function(fieldset) {
       var template = Form.templates[this.options.fieldsetTemplate];
 
       //Normalise to object
@@ -114,13 +115,12 @@ var Form = (function() {
 
       $fieldsContainer = $fieldsContainer.children().unwrap()
 
-      $container.append($fieldset);
+      return $fieldset;
     },
 
     /**
      * Render a list of fields. Returns the rendered Field object.
      * @param {Array}           Fields to render
-     * @param {jQuery}          Wrapped DOM element where field elemends will go
      */
     renderFields: function (fieldsToRender, $container) {
       var self = this,
