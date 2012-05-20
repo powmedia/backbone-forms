@@ -8,16 +8,19 @@ var Form = (function() {
   return Backbone.View.extend({
 
     /**
-     * @param {Object}  Options
-     *      Required:
-     *          schema  {Array}
-     *      Optional:
-     *          model   {Backbone.Model} : Use instead of data, and use commit().
-     *          data    {Array} : Pass this when not using a model. Use getValue() to get out value
-     *          fields  {Array} : Keys of fields to include in the form, in display order (default: all fields)
-     *          fieldsets {Array} : Allows choosing and ordering fields within fieldsets.
-     *          idPrefix {String} : Prefix for editor IDs. If undefined, the model's CID is used.
-     *          template {String} : Template to use. Default to 'form'.
+     * Creates a new form
+     *
+     * @param {Object} options
+     * @param {Model} [options.model]                 Model the form relates to. Required if options.data is not set
+     * @param {Object} [options.data]                 Date to populate the form. Required if options.model is not set
+     * @param {String[]} [options.fields]             Fields to include in the form, in order
+     * @param {String[]|Object[]} [options.fieldsets] How to divide the fields up by section. E.g. [{ legend: 'Title', fields: ['field1', 'field2'] }]        
+     * @param {String} [options.idPrefix]             Prefix for editor IDs. By default, the model's CID is used.
+     * @param {String} [options.template]             Form template key/name
+     * @param {String} [options.fieldsetTemplate]     Fieldset template key/name
+     * @param {String} [options.fieldTemplate]        Field template key/name
+     *
+     * @return {Form}
      */
     initialize: function(options) { 
       //Check templates have been loaded
@@ -38,8 +41,8 @@ var Form = (function() {
       //Option defaults
       options = _.extend({
         template: 'form',
-        fieldTemplate: 'field',
-        fieldsetTemplate: 'fieldset'
+        fieldsetTemplate: 'fieldset',
+        fieldTemplate: 'field'
       }, options);
 
       //Determine fieldsets
@@ -113,8 +116,6 @@ var Form = (function() {
       })));
 
       var $fieldsContainer = $('.bbf-tmp', $fieldset);
-
-      //this.renderFields(fieldset.fields, $fieldsContainer);
 
       //Render fields
       _.each(fieldset.fields, function(key) {
@@ -253,7 +254,7 @@ var Form = (function() {
      * Get all the field values as an object.
      * Use this method when passing data instead of objects
      * 
-     * @param {String}  To get a specific field value pass the key name
+     * @param {String} [key]    Specific field value to get
      */
     getValue: function(key) {
       //Return only given key if specified
@@ -270,7 +271,7 @@ var Form = (function() {
     
     /**
      * Update field values, referenced by key
-     * @param {Object}  New values to set
+     * @param {Object} data     New values to set
      */
     setValue: function(data) {
       for (var key in data) {

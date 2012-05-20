@@ -20,6 +20,18 @@ Form.Field = (function() {
      *          model       {Backbone.Model} : Use instead of value, and use commit().
      *          idPrefix    {String} : Prefix to add to the editor DOM element's ID
      */
+    /**
+     * Creates a new field
+     * 
+     * @param {Object} options
+     * @param {Object} [options.schema]     Field schema. Defaults to { type: 'Text' }
+     * @param {Model} [options.model]       Model the field relates to. Required if options.data is not set.
+     * @param {String} [options.key]        Model key/attribute the field relates to.
+     * @param {Mixed} [options.value]       Field value. Required if options.model is not set.
+     * @param {String} [options.idPrefix]   Prefix for the editor ID. By default, the model's CID is used.
+     *
+     * @return {Field}
+     */
     initialize: function(options) {
       options = options || {};
 
@@ -39,6 +51,9 @@ Form.Field = (function() {
       }, options.schema);
     },
 
+    /**
+     * Renders the field
+     */
     render: function() {
       var schema = this.schema,
           templates = Form.templates;
@@ -96,8 +111,6 @@ Form.Field = (function() {
      * Creates the ID that will be assigned to the editor
      *
      * @return {String}
-     *
-     * @api private
      */
     getId: function() {
       var prefix = this.options.idPrefix,
@@ -118,6 +131,7 @@ Form.Field = (function() {
     
     /**
      * Check the validity of the field
+     *
      * @return {String}
      */
     validate: function() {
@@ -135,9 +149,9 @@ Form.Field = (function() {
     /**
      * Set the field into an error state, adding the error class and setting the error message
      *
-     * @param {String} errMsg
+     * @param {String} msg     Error message
      */
-    setError: function(errMsg) {
+    setError: function(msg) {
       //Object and NestedModel types set their own errors internally
       if (this.editor.hasNestedForm) return;
       
@@ -145,7 +159,7 @@ Form.Field = (function() {
 
       this.$el.addClass(errClass);
       
-      if (this.$help) this.$help.html(errMsg);
+      if (this.$help) this.$help.html(msg);
     },
     
     /**
@@ -175,6 +189,7 @@ Form.Field = (function() {
 
     /**
      * Get the value from the editor
+     *
      * @return {Mixed}
      */
     getValue: function() {
@@ -183,11 +198,16 @@ Form.Field = (function() {
     
     /**
      * Set/change the value of the editor
+     *
+     * @param {Mixed} value
      */
     setValue: function(value) {
       this.editor.setValue(value);
     },
 
+    /**
+     * Remove the field and editor views
+     */
     remove: function() {
       this.editor.remove();
 
