@@ -93,10 +93,13 @@ var Form = (function() {
      *
      * @param {Object|Array} fieldset     A fieldset definition
      * 
-     * @return {jQuery}                   The fieldset element
+     * @return {jQuery}                   The fieldset DOM element
      */
     renderFieldset: function(fieldset) {
-      var template = Form.templates[this.options.fieldsetTemplate];
+      var self = this,
+          template = Form.templates[this.options.fieldsetTemplate],
+          schema = this.schema,
+          getNested = Form.helpers.getNested;
 
       //Normalise to object
       if (_.isArray(fieldset)) {
@@ -111,24 +114,11 @@ var Form = (function() {
 
       var $fieldsContainer = $('.bbf-tmp', $fieldset);
 
-      this.renderFields(fieldset.fields, $fieldsContainer);
+      //this.renderFields(fieldset.fields, $fieldsContainer);
 
-      $fieldsContainer = $fieldsContainer.children().unwrap()
-
-      return $fieldset;
-    },
-
-    /**
-     * Render a list of fields. Returns the rendered Field object.
-     * @param {Array}           Fields to render
-     */
-    renderFields: function (fieldsToRender, $container) {
-      var self = this,
-          schema = this.schema,
-          getNested = Form.helpers.getNested;
-
-      _.each(fieldsToRender, function(key) {
-        //Get the schema
+      //Render fields
+      _.each(fieldset.fields, function(key) {
+        //Get the field schema
         var itemSchema = (function() {
           //Return a normal key or path key
           if (schema[key]) return schema[key];
@@ -140,8 +130,20 @@ var Form = (function() {
 
         if (!itemSchema) throw "Field '"+key+"' not found in schema";
 
-        self.renderField(key, itemSchema, $container);
+        //Create the field
+        var field = self.fields[key] = self.createField(key, itemSchema);
+
+        //Render the fields with editors, apart from Hidden fields
+        if (schema.type == 'Hidden') {
+          field.editor = Form.helpers.createEditor('Hidden', options);
+        } else {
+          $fieldsContainer.append(field.render().el);
+        }
       });
+
+      $fieldsContainer = $fieldsContainer.children().unwrap()
+
+      return $fieldset;
     },
 
     /**
@@ -149,10 +151,10 @@ var Form = (function() {
      *
      * @param {String} key            The key for the field in the form schema
      * @param {Object} schema         Field schema
-     * @param {jQuery} $container     Where the field will be appended
-     * @return {Field}
+     *
+     * @return {Field}                The field view
      */
-    renderField: function(key, schema, $container) {
+    createField: function(key, schema) {
       var options = {
         form: this,
         key: key,
@@ -168,16 +170,7 @@ var Form = (function() {
         options.value = null;
       }
 
-      var field = new Form.Field(options);
-
-      //Render the fields with editors, apart from Hidden fields
-      if (schema.type == 'Hidden') {
-        field.editor = Form.helpers.createEditor('Hidden', options);
-      } else {
-        $container.append(field.render().el);
-      }
-
-      this.fields[key] = field;
+      return new Form.Field(options);
     },
 
     /**
