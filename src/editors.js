@@ -580,20 +580,19 @@ Form.editors = (function() {
       //Init
       editors.Base.prototype.initialize.call(this, options);
 
-      //Get the schema for the nested form
-      var objSchema = this.schema.subSchema;
-      if (!objSchema) throw new Error("Missing required 'schema.subSchema' option for Object editor");
+      //Check required options
+      if (!this.schema.subSchema) throw new Error("Missing required 'schema.subSchema' option for Object editor");
+    },
 
+    render: function() {
       //Create the nested form
       this.form = new Form({
-        schema: objSchema,
+        schema: this.schema.subSchema,
         data: this.value,
         idPrefix: this.id + '_',
         fieldTemplate: 'nestedField'
       });
-    },
 
-    render: function() {
       this.$el.html(this.form.render().el);
 
       return this;
