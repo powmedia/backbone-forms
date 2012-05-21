@@ -599,7 +599,9 @@ Form.editors = (function() {
     },
 
     getValue: function() {
-      return this.form.getValue();
+      if (this.form) return this.form.getValue();
+
+      return this.value;
     },
     
     setValue: function(value) {
