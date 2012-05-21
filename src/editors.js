@@ -563,9 +563,9 @@ Form.editors = (function() {
    * 
    * Creates a child form. For editing Javascript objects
    * 
-   * Special options:
-   *   schema.subSchema:    Subschema for object.
-   *   idPrefix, 
+   * @param {Object} options
+   * @param {Object} options.schema             The schema for the object
+   * @param {Object} options.schema.subSchema   The schema for the nested form
    */
   editors.Object = editors.Base.extend({
     //Prevent error classes being set on the main control; they are internally on the individual fields
@@ -574,34 +574,22 @@ Form.editors = (function() {
     className: 'bbf-object',
 
     initialize: function(options) {
+      //Set default value for the instance so it's not a shared object
+      this.value = {};
+
+      //Init
       editors.Base.prototype.initialize.call(this, options);
 
-      if (!this.schema.subSchema)
-        throw "Missing required 'schema.subSchema' option for Object editor";
-
-      this.defaultValue = {};
-
-      this.form = this.createForm();
-    },
-
-    /**
-     * Creates the nested form
-     *
-     * @return {Form}
-     */
-    createForm: function() {
+      //Get the schema for the nested form
       var objSchema = this.schema.subSchema;
+      if (!objSchema) throw new Error("Missing required 'schema.subSchema' option for Object editor");
 
-      //Temporary hack for using nestedField templates
-      //TODO: Enable setting the field in the form constructor
-      _.each(objSchema, function(schema) {
-        if (!schema.template) schema.template = 'nestedField';
-      });
-
-      return new Form({
+      //Create the nested form
+      this.form = new Form({
         schema: objSchema,
-        data: this.value || {},
-        idPrefix: this.id + '_'
+        data: this.value,
+        idPrefix: this.id + '_',
+        fieldTemplate: 'nestedField'
       });
     },
 
@@ -660,16 +648,11 @@ Form.editors = (function() {
       //Handle schema functions
       if (_.isFunction(nestedModelSchema)) nestedModelSchema = nestedModelSchema();
 
-      //Temporary hack for using nestedField templates
-      //TODO: Enable setting the field in the form constructor
-      _.each(nestedModelSchema, function(schema) {
-        if (!schema.template) schema.template = 'nestedField';
-      });
-
       this.form = new Form({
         schema: nestedModelSchema,
         model: new nestedModel(data),
-        idPrefix: this.id + '_'
+        idPrefix: this.id + '_',
+        fieldTemplate: 'nestedField'
       });
 
       //Render form

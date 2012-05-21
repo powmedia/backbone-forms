@@ -165,11 +165,14 @@ var Form = (function() {
      * @return {Field}                The field view
      */
     createField: function(key, schema) {
+      schema.template = schema.template || this.options.fieldTemplate;
+
       var options = {
         form: this,
         key: key,
         schema: schema,
-        idPrefix: this.options.idPrefix
+        idPrefix: this.options.idPrefix,
+        template: this.options.fieldTemplate
       };
 
       if (this.model) {
