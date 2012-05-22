@@ -14,6 +14,7 @@
 
     /**
      * @param {Object} options
+     * @param {Form.editors.List} options.list    The list this editor appears in
      */
     initialize: function(options) {
       editors.Base.prototype.initialize.call(this, options);
@@ -21,14 +22,33 @@
       //Dependencies
       if (!Backbone.BootstrapModal) throw new Error('Backbone.BootstrapModal is required');
 
-      this.objectEditor = new editors.Object(options);
+      //Required options
+      if (!options.list) throw new Error('options.list is required');
+      this.list = options.list;
+
+      if (!options.item) throw new Error('options.item is required');
+      this.item = options.item;
     },
 
     /**
      * Render the list item representation
      */
     render: function() {
-      this.$el.append(this.getStringValue());
+      var isFirstItem = (this.list.items.length == 1 && this.list.items[0] == this.item) ? true : false
+
+      //Render if an empty list
+      if (isFirstItem && _.isEmpty(this.value)) {
+        this.$el.html('[Click to edit]');
+        return this;
+      }
+
+      //Otherwise show item summary
+      this.$el.html(this.getStringValue());
+
+      //Open editor if item has just been added
+      if (_.isEmpty(this.value)) {
+        this.openEditor();
+      }
 
       return this;
     },
@@ -41,7 +61,20 @@
      * @return {String}
      */
     objectToString: function(value) {
-      return 'test';//_.keys(value);
+      value = value || {};
+
+      //Pretty print the object keys and values
+      var parts = [];
+      _.each(this.schema.subSchema, function(schema, key) {
+        var desc = schema.title ? schema.title : Form.helpers.keyToTitle(key),
+            val = value[key];
+
+        if (_.isUndefined(val) || _.isNull(val)) val = '';
+
+        parts.push(desc + ': ' + val);
+      });
+
+      return parts.join('<br />');
     },
 
     /**
@@ -51,8 +84,7 @@
       var schema = this.schema,
           value = this.getValue();
 
-      //Prevent null/undefineds being converted to string
-      if (!value) return '';
+      if (_.isEmpty(value)) return '[Empty]';
 
       //If there's a specified toString use that
       if (schema.itemToString) return schema.itemToString(value);
@@ -71,20 +103,39 @@
     },
 
     openEditor: function() {
+      var self = this;
+
+      var form = new Form({
+        schema: this.schema.subSchema,
+        data: this.value
+      });
+
       var modal = new Backbone.BootstrapModal({
-        content: this.objectEditor
+        content: form
       }).open();
 
-      return this;
+      modal.on('ok', function() {
+        self.value = form.getValue();
+        self.render();
+      });
+
+      modal.on('cancel', function() {
+        self.list.removeItem(self.item);
+      });
     },
 
     getValue: function() {
-      return this.objectEditor.getValue();
+      return this.value;
     },
 
     setValue: function(value) {
-      return this.objectEditor.setValue(value);
+      this.value = value;
     }
+  }, {
+    //STATICS
+
+    //Don't display empty objects in the list
+    displayEmpty: false
   });
 
 })();

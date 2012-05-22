@@ -700,6 +700,11 @@ Form.editors = (function() {
       'click *[data-action="add"]': function(event) {
         event.preventDefault();
         this.addItem();
+      },
+
+      //TODO: Remove
+      'click': function() {
+        console.log(this.getValue())
       }
     },
 
@@ -849,7 +854,9 @@ Form.editors = (function() {
       this.editor = Form.helpers.createEditor(this.schema.listType, {
         key: '',
         schema: this.schema,
-        value: this.value
+        value: this.value,
+        list: this.list,
+        item: this
       });
 
       //Create main element

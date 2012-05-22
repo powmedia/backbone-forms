@@ -1187,7 +1187,9 @@ module('List.Item', {
         same(editorOptions, {
             key: '',
             schema: item.schema,
-            value: 123
+            value: 123,
+            list: list,
+            item: item
         });
     });
 
