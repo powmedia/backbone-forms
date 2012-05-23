@@ -34,23 +34,17 @@
      * Render the list item representation
      */
     render: function() {
-      var isFirstItem = (this.list.items.length == 1 && this.list.items[0] == this.item) ? true : false
-
-      //Render if an empty list
-      if (isFirstItem && _.isEmpty(this.value)) {
-        this.$el.html('[Click to edit]');
-        return this;
-      }
-
-      //Otherwise show item summary
-      this.$el.html(this.getStringValue());
-
-      //Open editor if item has just been added
-      if (_.isEmpty(this.value)) {
-        this.openEditor();
-      }
+      //Actual rendering only takes place once the dialog has been OK'd
+      this.openEditor();
 
       return this;
+    },
+
+    /**
+     * Renders the list item representation
+     */
+    renderSummary: function() {
+      this.$el.html(this.getStringValue());
     },
 
     /**
@@ -115,12 +109,13 @@
       }).open();
 
       modal.on('ok', function() {
-        self.value = form.getValue();
-        self.render();
-      });
+        var isNew = _.isEmpty(self.value);
 
-      modal.on('cancel', function() {
-        self.list.removeItem(self.item);
+        self.value = form.getValue();
+
+        self.renderSummary();
+
+        if (isNew) self.trigger('readyToAdd');
       });
     },
 
@@ -133,9 +128,9 @@
     }
   }, {
     //STATICS
-
-    //Don't display empty objects in the list
-    displayEmpty: false
+    
+    //Make the wait list for the 'ready' event before adding the item to the list
+    isAsync: true
   });
 
 })();

@@ -731,13 +731,18 @@ Form.editors = (function() {
       //Store a reference to the list (item container)
       this.$list = $el.find('.bbf-tmp').parent().empty();
 
-      //Add items
+      //Add existing items
       if (value.length) {
         _.each(value, function(itemValue) {
           self.addItem(itemValue);
         });
-      } else {
-        this.addItem();
+      }
+
+      //If no existing items create an empty one, unless the editor specifies otherwise
+      else {
+        var Editor = Form.editors[this.schema.listType];
+
+        if (!Editor.isAsync) this.addItem();
       }
       
       return this;
@@ -747,16 +752,30 @@ Form.editors = (function() {
      * Add a new item to the list
      * @param {Mixed} [value]     Value for the new item editor
      */
-    addItem: function(value) {      
+    addItem: function(value) {
+      var self = this,
+          Editor = Form.editors[this.schema.listType];
+
+      //Create the item
       var item = new editors.List.Item({
         list: this,
         schema: this.schema,
         value: value
-      });
+      }).render();
 
-      this.items.push(item);
+      //Check if we need to wait for the item to complete before adding to the list
+      if (Editor.isAsync) {
+        item.editor.on('readyToAdd', function() {
+          self.items.push(item);
+          self.$list.append(item.el);
+        });
+      }
 
-      this.$list.append(item.render().el);
+      //Most editors can be added automatically
+      else {
+        this.items.push(item);
+        this.$list.append(item.el);
+      }
     },
 
     /**
@@ -857,18 +876,18 @@ Form.editors = (function() {
         value: this.value,
         list: this.list,
         item: this
-      });
+      }).render();
 
       //Create main element
       var $el = $(Form.templates.listItem({
         editor: '<b class="bbf-tmp"></b>'
       }));
 
-      $el.find('.bbf-tmp').replaceWith(this.editor.render().el);
+      $el.find('.bbf-tmp').replaceWith(this.editor.el);
 
       //Replace the entire element so there isn't a wrapper tag
       this.setElement($el);
-      
+        
       return this;
     },
 
