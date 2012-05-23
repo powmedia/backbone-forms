@@ -715,6 +715,8 @@ Form.editors = (function() {
       
       this.schema.listType = this.schema.listType || 'Text';
 
+      this.isAsyncEditor = Form.editors[this.schema.listType].isAsync;
+
       this.items = [];
     },
 
@@ -740,9 +742,7 @@ Form.editors = (function() {
 
       //If no existing items create an empty one, unless the editor specifies otherwise
       else {
-        var Editor = Form.editors[this.schema.listType];
-
-        if (!Editor.isAsync) this.addItem();
+        if (!this.isAsyncEditor) this.addItem();
       }
       
       return this;
@@ -753,8 +753,7 @@ Form.editors = (function() {
      * @param {Mixed} [value]     Value for the new item editor
      */
     addItem: function(value) {
-      var self = this,
-          Editor = Form.editors[this.schema.listType];
+      var self = this;
 
       //Create the item
       var item = new editors.List.Item({
@@ -764,7 +763,7 @@ Form.editors = (function() {
       }).render();
 
       //Check if we need to wait for the item to complete before adding to the list
-      if (Editor.isAsync) {
+      if (this.isAsyncEditor) {
         item.editor.on('readyToAdd', function() {
           self.items.push(item);
           self.$list.append(item.el);
@@ -792,7 +791,7 @@ Form.editors = (function() {
       this.items[index].remove();
       this.items.splice(index, 1);
 
-      if (!this.items.length) this.addItem();
+      if (!this.items.length && !this.isAsyncEditor) this.addItem();
     },
 
     getValue: function() {
