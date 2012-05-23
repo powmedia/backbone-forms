@@ -121,11 +121,20 @@ var Form = (function() {
 
       //Concatenating HTML as strings won't work so we need to insert field elements into a placeholder
       var $fieldset = $(template(_.extend({}, fieldset, {
-        legend: fieldset.legend || '',
-        fields: '<b class="bbf-tmp"></b>'
+        legend: '<b class="bbf-tmp-legend"></b>',
+        fields: '<b class="bbf-tmp-fields"></b>'
       })));
 
-      var $fieldsContainer = $('.bbf-tmp', $fieldset);
+      //Set legend
+      if (fieldset.legend) {
+        $fieldset.find('.bbf-tmp-legend').replaceWith(fieldset.legend);
+      }
+      //or remove the containing tag if there isn't a legend
+      else {
+        $fieldset.find('.bbf-tmp-legend').parent().remove();
+      }
+
+      var $fieldsContainer = $('.bbf-tmp-fields', $fieldset);
 
       //Render fields
       _.each(fieldset.fields, function(key) {
@@ -166,11 +175,14 @@ var Form = (function() {
      * @return {Field}                The field view
      */
     createField: function(key, schema) {
+      schema.template = schema.template || this.options.fieldTemplate;
+
       var options = {
         form: this,
         key: key,
         schema: schema,
-        idPrefix: this.options.idPrefix
+        idPrefix: this.options.idPrefix,
+        template: this.options.fieldTemplate
       };
 
       if (this.model) {
@@ -1408,9 +1420,9 @@ Form.editors = (function() {
    * 
    * Creates a child form. For editing Javascript objects
    * 
-   * Special options:
-   *   schema.subSchema:    Subschema for object.
-   *   idPrefix, 
+   * @param {Object} options
+   * @param {Object} options.schema             The schema for the object
+   * @param {Object} options.schema.subSchema   The schema for the nested form
    */
   editors.Object = editors.Base.extend({
     //Prevent error classes being set on the main control; they are internally on the individual fields
@@ -1418,43 +1430,35 @@ Form.editors = (function() {
 
     className: 'bbf-object',
 
-    defaultValue: {},
-
     initialize: function(options) {
+      //Set default value for the instance so it's not a shared object
+      this.value = {};
+
+      //Init
       editors.Base.prototype.initialize.call(this, options);
 
-      if (!this.schema.subSchema)
-        throw "Missing required 'schema.subSchema' option for Object editor";
+      //Check required options
+      if (!this.schema.subSchema) throw new Error("Missing required 'schema.subSchema' option for Object editor");
     },
 
     render: function() {
-      var $el = this.$el,
-          data = this.value || {},
-          key = this.key,
-          schema = this.schema,
-          objSchema = schema.subSchema;
-
-      //Temporary hack for using nestedField templates
-      //TODO: Enable setting the field in the form constructor
-      _.each(objSchema, function(schema) {
-        if (!schema.template) schema.template = 'nestedField';
-      });
-
       //Create the nested form
       this.form = new Form({
-        schema: objSchema,
-        data: data,
-        idPrefix: this.id + '_'
+        schema: this.schema.subSchema,
+        data: this.value,
+        idPrefix: this.id + '_',
+        fieldTemplate: 'nestedField'
       });
 
-      //Render form
-      $el.html(this.form.render().el);
+      this.$el.html(this.form.render().el);
 
       return this;
     },
 
     getValue: function() {
-      return this.form.getValue();
+      if (this.form) return this.form.getValue();
+
+      return this.value;
     },
     
     setValue: function(value) {
@@ -1502,16 +1506,11 @@ Form.editors = (function() {
       //Handle schema functions
       if (_.isFunction(nestedModelSchema)) nestedModelSchema = nestedModelSchema();
 
-      //Temporary hack for using nestedField templates
-      //TODO: Enable setting the field in the form constructor
-      _.each(nestedModelSchema, function(schema) {
-        if (!schema.template) schema.template = 'nestedField';
-      });
-
       this.form = new Form({
         schema: nestedModelSchema,
         model: new nestedModel(data),
-        idPrefix: this.id + '_'
+        idPrefix: this.id + '_',
+        fieldTemplate: 'nestedField'
       });
 
       //Render form
@@ -1558,6 +1557,11 @@ Form.editors = (function() {
       'click *[data-action="add"]': function(event) {
         event.preventDefault();
         this.addItem();
+      },
+
+      //TODO: Remove
+      'click': function() {
+        console.log(this.getValue())
       }
     },
 
@@ -1707,7 +1711,9 @@ Form.editors = (function() {
       this.editor = Form.helpers.createEditor(this.schema.listType, {
         key: '',
         schema: this.schema,
-        value: this.value
+        value: this.value,
+        list: this.list,
+        item: this
       });
 
       //Create main element
