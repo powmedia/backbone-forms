@@ -121,15 +121,26 @@
         animate: true
       }).open();
 
-      modal.on('ok', function() {
-        var isNew = _.isEmpty(self.value);
+      modal.on('ok', _.bind(this.onModalSubmitted, this, form, modal));
+    },
 
-        self.value = form.getValue();
+    /**
+     * Called when the user clicks 'OK'.
+     * Runs validation and tells the list when ready to add the item
+     */
+    onModalSubmitted: function(form, modal) {
+      var isNew = _.isEmpty(this.value);
 
-        self.renderSummary();
+      //Stop if there are validation errors
+      var error = form.validate();
+      if (error) return modal.preventClose();
 
-        if (isNew) self.trigger('readyToAdd');
-      });
+      //If OK, render the list item
+      this.value = form.getValue();
+
+      this.renderSummary();
+
+      if (isNew) this.trigger('readyToAdd');
     },
 
     getValue: function() {
