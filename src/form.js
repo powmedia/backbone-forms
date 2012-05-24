@@ -111,11 +111,20 @@ var Form = (function() {
 
       //Concatenating HTML as strings won't work so we need to insert field elements into a placeholder
       var $fieldset = $(template(_.extend({}, fieldset, {
-        legend: fieldset.legend || '',
-        fields: '<b class="bbf-tmp"></b>'
+        legend: '<b class="bbf-tmp-legend"></b>',
+        fields: '<b class="bbf-tmp-fields"></b>'
       })));
 
-      var $fieldsContainer = $('.bbf-tmp', $fieldset);
+      //Set legend
+      if (fieldset.legend) {
+        $fieldset.find('.bbf-tmp-legend').replaceWith(fieldset.legend);
+      }
+      //or remove the containing tag if there isn't a legend
+      else {
+        $fieldset.find('.bbf-tmp-legend').parent().remove();
+      }
+
+      var $fieldsContainer = $('.bbf-tmp-fields', $fieldset);
 
       //Render fields
       _.each(fieldset.fields, function(key) {
@@ -156,11 +165,14 @@ var Form = (function() {
      * @return {Field}                The field view
      */
     createField: function(key, schema) {
+      schema.template = schema.template || this.options.fieldTemplate;
+
       var options = {
         form: this,
         key: key,
         schema: schema,
-        idPrefix: this.options.idPrefix
+        idPrefix: this.options.idPrefix,
+        template: this.options.fieldTemplate
       };
 
       if (this.model) {

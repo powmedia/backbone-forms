@@ -50,6 +50,12 @@
       <select data-type="hour" class="bbf-hour">{{hours}}</select>\
       :\
       <select data-type="min" class="bbf-min">{{mins}}</select>\
+    ',
+
+    'list.Modal': '\
+      <div style="cursor: pointer; border: 1px solid #ccc; width: 208px; border-radius: 3px; padding: 4px; color: #555">\
+        {{summary}}\
+      </div>\
     '
   };
   

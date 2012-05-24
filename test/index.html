@@ -94,13 +94,16 @@
                     nestedModel: { type: 'NestedModel', model: NestedModel },
                     customTemplate: { template: 'customField' },
                     shorthand: 'Password',
-                    list: { type: 'List', listType: 'Object', subSchema: {
-                        name: 'Text',
-                        age: 'Number'
-                    } },
-                    list: { type: 'List', listType: 'Text', validators: ['required', 'email'] },
                     date: { type: 'Date' },
                     dateTime: { type: 'DateTime', yearStart: 1980, yearEnd: 2000 },
+
+                    //List
+                    textList: { type: 'List', itemType: 'Text', validators: ['required', 'email'] },
+                    objList: { type: 'List', itemType: 'Object', subSchema: {
+                        name: { type: 'Text', validators: ['required'] },
+                        age: 'Number'
+                    } },
+                    
 
                     //jQuery UI
                     jqueryDate:       { type: 'jqueryui.Date', help: 'Some help text' },
@@ -119,7 +122,8 @@
             var form = new Backbone.Form({
                 model: model,
                 fieldsets: [
-                    ['email', 'tel', 'number', 'checkbox', 'radio', 'checkboxes', 'customTemplate', 'shorthand', 'list', 'date', 'dateTime'],
+                    ['email', 'tel', 'number', 'checkbox', 'radio', 'checkboxes', 'customTemplate', 'shorthand', 'date', 'dateTime'],
+                    { legend: 'Lists', fields: ['textList', 'objList'] },
                     { legend: 'jQuery UI editors', fields: ['jqueryDate', 'jqueryDateTime', 'jqueryList'] },
                     { legend: 'Nested editors', fields: ['object', 'nestedModel'] }
                 ]

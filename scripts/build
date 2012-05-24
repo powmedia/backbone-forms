@@ -26,6 +26,16 @@ var fs = require('fs'),
 _.templateSettings.interpolate = /\{\{(.+?)\}\}/g;
 
 
+//OPTIONS
+var options = {
+  uglify: true,
+
+  templateData: {
+    version: '0.10.0'
+  }
+};
+
+
 // TASKS
 /**
  * Build the output by concatenating files and optionally wrapping them in a template
@@ -67,6 +77,8 @@ function build(fileList, outputPath, options) {
  * @param {outputPath} outputPath   Relative path to output file
  */
 function uglify(srcPath, outputPath) {
+  if (!options.uglify) return;
+
   var parse = uglifyJS.parser.parse,
       uglify = uglifyJS.uglify;
 
@@ -107,22 +119,18 @@ var fileList = [
   srcDir + '/setup.js'
 ];
 
-var templateData = {
-  version: '0.10.0'
-};
-
 //Main file
 build(fileList, outputDir + '/backbone-forms.js', {
   template: templateDir + '/backbone-forms.js',
-  data: templateData
+  data: options.templateData
 });
 uglify(outputDir + '/backbone-forms.js', outputDir + '/backbone-forms.min.js');
 
 
-//File for AMD (requireJS)
+//File for AMD (RequireJS)
 build(fileList, outputDir + '/backbone-forms.amd.js', {
   template: templateDir + '/backbone-forms.amd.js',
-  data: templateData
+  data: options.templateData
 });
 uglify(outputDir + '/backbone-forms.amd.js', outputDir + '/backbone-forms.amd.min.js');
 
@@ -136,11 +144,22 @@ try {
   fs.mkdirSync(outputDir + '/editors');
 } catch (e) {}
 
+try {
+  fs.mkdirSync(outputDir + '/adapters');
+} catch (e) {}
+
 //Copy other files over to distribution
-copy(srcDir + '/editors/jquery-ui.css', outputDir + '/editors/jquery-ui.css');
-copy(srcDir + '/editors/jquery-ui.js', outputDir + '/editors/jquery-ui.js');
-uglify(srcDir + '/editors/jquery-ui.js', outputDir + '/editors/jquery-ui.min.js');
+//Templates
 copy(srcDir + '/templates/default.css', outputDir + '/templates/default.css');
 copy(srcDir + '/templates/default.js', outputDir + '/templates/default.js');
 copy(srcDir + '/templates/bootstrap.js', outputDir + '/templates/bootstrap.js');
 copy(srcDir + '/templates/minimal.js', outputDir + '/templates/minimal.js');
+
+//Modal adapters
+copy(srcDir + '/../lib/backbone.bootstrap-modal/src/backbone.bootstrap-modal.js', outputDir + '/adapters/backbone.bootstrap-modal.js');
+uglify(srcDir + '/../lib/backbone.bootstrap-modal/src/backbone.bootstrap-modal.js', outputDir + '/adapters/backbone.bootstrap-modal.min.js');
+
+//jQuery UI editors
+copy(srcDir + '/editors/jquery-ui.css', outputDir + '/editors/jquery-ui.css');
+copy(srcDir + '/editors/jquery-ui.js', outputDir + '/editors/jquery-ui.js');
+uglify(srcDir + '/editors/jquery-ui.js', outputDir + '/editors/jquery-ui.min.js');
