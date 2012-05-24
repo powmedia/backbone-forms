@@ -1079,7 +1079,7 @@ Form.editors = (function() {
       this.list = options.list;
       this.schema = options.schema || this.list.schema;
       this.value = options.value;
-      this.Editor = options.Editor;
+      this.Editor = options.Editor || editors.Text;
     },
 
     render: function() {

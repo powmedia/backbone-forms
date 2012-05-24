@@ -907,22 +907,38 @@ module('List', {
 });
 
 (function() {
-    var Editor = editors.List;
+    var List = editors.List;
 
     test('Default settings', function() {
-        var list = new Editor();
+        var list = new List();
 
-        same(list.schema.itemType, 'Text');
+        same(list.Editor, editors.Text);
+    });
+
+    test('Uses custom list editors if defined', function() {
+        var list = new List({
+            schema: { itemType: 'Object' }
+        });
+
+        same(list.Editor, editors.List.Object);
+    });
+
+    test('Uses regular editor if there is no list version', function() {
+        var list = new List({
+            schema: { itemType: 'Number' }
+        });
+
+        same(list.Editor, editors.Number);
     });
 
     test('Default value', function() {
-        var list = new Editor().render();
+        var list = new List().render();
 
         same(list.getValue(), []);
     });
 
     test('Custom value', function() {
-        var list = new Editor({
+        var list = new List({
             schema: { itemType: 'Number' },
             value: [1,2,3]
         }).render();
@@ -931,7 +947,7 @@ module('List', {
     });
 
     test('Value from model', function() {
-        var list = new Editor({
+        var list = new List({
             model: new Post,
             key: 'weapons'
         }).render();
@@ -940,7 +956,7 @@ module('List', {
     });
 
     test('setValue() - updates input value', function() {
-        var list = new Editor().render();
+        var list = new List().render();
 
         list.setValue(['a', 'b', 'c']);
 
@@ -948,7 +964,7 @@ module('List', {
     });
 
     test('validate() - returns validation errors', function() {
-        var list = new Editor({
+        var list = new List({
             schema: { validators: ['required', 'email'] },
             value: ['invalid', 'john@example.com', '', 'ok@example.com']
         }).render();
@@ -963,7 +979,7 @@ module('List', {
     });
 
     test('validate() - returns null if there are no errors', function() {
-        var list = new Editor({
+        var list = new List({
             schema: { validators: ['required', 'email'] },
             value: ['john@example.com', 'ok@example.com']
         }).render();
@@ -974,7 +990,7 @@ module('List', {
     });
 
     test('event: clicking something with data-action="add" adds an item', function() {
-        var list = new Editor().render();
+        var list = new List().render();
 
         same(list.items.length, 1);
 
@@ -991,7 +1007,7 @@ module('List', {
             list: '<ul class="customList">{{items}}</div>'
         });
 
-        var list = new Editor().render();
+        var list = new List().render();
 
         ok(list.$list.hasClass('customList'));
 
@@ -1000,7 +1016,7 @@ module('List', {
     });
 
     test('render() - creates items for each item in value array', function() {
-        var list = new Editor({
+        var list = new List({
             value: [1,2,3]
         });
 
@@ -1012,7 +1028,7 @@ module('List', {
     });
 
     test('render() - creates an initial empty item for empty array', function() {
-        var list = new Editor({
+        var list = new List({
             value: []
         });
 
@@ -1024,16 +1040,17 @@ module('List', {
     });
 
     test('addItem() - with no value', function() {
-        var list = new Editor().render();
+        var list = new List().render();
 
-        var spy = this.sinon.spy(Editor, 'Item');
+        var spy = this.sinon.spy(List, 'Item');
 
         list.addItem();
 
         var expectedOptions = {
             list: list,
             schema: list.schema,
-            value: undefined
+            value: undefined,
+            Editor: editors.Text
         }
 
         var actualOptions = spy.lastCall.args[0];
@@ -1045,16 +1062,17 @@ module('List', {
     });
 
     test('addItem() - with value', function() {
-        var list = new Editor().render();
+        var list = new List().render();
 
-        var spy = this.sinon.spy(Editor, 'Item');
+        var spy = this.sinon.spy(List, 'Item');
 
         list.addItem('foo');
 
         var expectedOptions = {
             list: list,
             schema: list.schema,
-            value: 'foo'
+            value: 'foo',
+            Editor: editors.Text
         }
 
         var actualOptions = spy.lastCall.args[0];
@@ -1066,7 +1084,7 @@ module('List', {
     });
 
     test('addItem() - adds the item to the DOM', function() {
-        var list = new Editor().render();
+        var list = new List().render();
 
         list.addItem('foo');
 
@@ -1076,7 +1094,7 @@ module('List', {
     });
 
     test('removeItem() - removes passed item from view and item array', function() {
-        var list = new Editor().render();
+        var list = new List().render();
 
         list.addItem();
 
@@ -1093,7 +1111,7 @@ module('List', {
     });
 
     test('removeItem() - adds an empty item if list is empty', function() {
-        var list = new Editor().render();
+        var list = new List().render();
 
         var spy = sinon.spy(list, 'addItem');
 
@@ -1109,7 +1127,7 @@ module('List', {
             return false;
         });
 
-        var list = new Editor({
+        var list = new List({
             schema: {
                 confirmDelete: 'You sure about this?'
             }
@@ -1135,7 +1153,7 @@ module('List', {
             return true;
         });
 
-        var list = new Editor({
+        var list = new List({
             schema: {
                 confirmDelete: 'You sure about this?'
             }
@@ -1168,7 +1186,7 @@ module('List.Item', {
     var List = editors.List;
 
     test('render() - creates the editor for the given listType', function() {
-        var spy = this.sinon.spy(Form.helpers, 'createEditor');
+        var spy = this.sinon.spy(editors, 'Number');
 
         var list = new List({
             schema: { itemType: 'Number' }
@@ -1176,14 +1194,13 @@ module('List.Item', {
 
         var item = new List.Item({
             list: list,
-            value: 123
+            value: 123,
+            Editor: editors.Number
         }).render();
 
         //Check created correct editor
-        var editorType = spy.lastCall.args[0],
-            editorOptions = spy.lastCall.args[1];
+        var editorOptions = spy.lastCall.args[0];
 
-        same(editorType, 'Number');
         same(editorOptions, {
             key: '',
             schema: item.schema,
