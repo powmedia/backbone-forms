@@ -28,7 +28,7 @@ _.templateSettings.interpolate = /\{\{(.+?)\}\}/g;
 
 //OPTIONS
 var options = {
-  uglify: false,
+  uglify: true,
 
   templateData: {
     version: '0.10.0'
@@ -127,7 +127,7 @@ build(fileList, outputDir + '/backbone-forms.js', {
 uglify(outputDir + '/backbone-forms.js', outputDir + '/backbone-forms.min.js');
 
 
-//File for AMD (requireJS)
+//File for AMD (RequireJS)
 build(fileList, outputDir + '/backbone-forms.amd.js', {
   template: templateDir + '/backbone-forms.amd.js',
   data: options.templateData
@@ -144,13 +144,22 @@ try {
   fs.mkdirSync(outputDir + '/editors');
 } catch (e) {}
 
+try {
+  fs.mkdirSync(outputDir + '/adapters');
+} catch (e) {}
+
 //Copy other files over to distribution
-copy(srcDir + '/editors/jquery-ui.css', outputDir + '/editors/jquery-ui.css');
-copy(srcDir + '/editors/jquery-ui.js', outputDir + '/editors/jquery-ui.js');
-uglify(srcDir + '/editors/jquery-ui.js', outputDir + '/editors/jquery-ui.min.js');
+//Templates
 copy(srcDir + '/templates/default.css', outputDir + '/templates/default.css');
 copy(srcDir + '/templates/default.js', outputDir + '/templates/default.js');
 copy(srcDir + '/templates/bootstrap.js', outputDir + '/templates/bootstrap.js');
 copy(srcDir + '/templates/minimal.js', outputDir + '/templates/minimal.js');
-copy(srcDir + '/../lib/backbone.bootstrap-modal/src/backbone.bootstrap-modal.js', outputDir + '/backbone.bootstrap-modal.js');
-uglify(srcDir + '/../lib/backbone.bootstrap-modal/src/backbone.bootstrap-modal.js', outputDir + '/backbone.bootstrap-modal.min.js');
+
+//Modal adapters
+copy(srcDir + '/../lib/backbone.bootstrap-modal/src/backbone.bootstrap-modal.js', outputDir + '/adapters/backbone.bootstrap-modal.js');
+uglify(srcDir + '/../lib/backbone.bootstrap-modal/src/backbone.bootstrap-modal.js', outputDir + '/adapters/backbone.bootstrap-modal.min.js');
+
+//jQuery UI editors
+copy(srcDir + '/editors/jquery-ui.css', outputDir + '/editors/jquery-ui.css');
+copy(srcDir + '/editors/jquery-ui.js', outputDir + '/editors/jquery-ui.js');
+uglify(srcDir + '/editors/jquery-ui.js', outputDir + '/editors/jquery-ui.min.js');
