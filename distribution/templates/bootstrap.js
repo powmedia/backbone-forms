@@ -51,6 +51,12 @@
         :\
         <select data-type="min" style="width: 4em">{{mins}}</select>\
       </p>\
+    ',
+
+    'list.Modal': '\
+      <div style="cursor: pointer; border: 1px solid #ccc; width: 208px; border-radius: 3px; padding: 4px; color: #555">\
+        {{summary}}\
+      </div>\
     '
   };
   
