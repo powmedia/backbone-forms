@@ -896,6 +896,264 @@ module('NestedModel');
 })();
 
 
+module('Date', {
+    setup: function() {
+        this.sinon = sinon.sandbox.create();
+    },
+
+    teardown: function() {
+        this.sinon.restore();
+    }
+});
+
+(function() {
+    var Editor = editors.Date;
+
+    test('initialize() - casts values to date', function() {
+        var date = new Date(2000, 0, 1);
+
+        var editor = new Editor({ value: date.toString() });
+
+        same(editor.value.constructor.name, 'Date');
+        same(editor.value.getTime(), date.getTime());
+    });
+
+    test('initialize() - default value - today', function() {
+        var editor = new Editor;
+
+        var today = new Date,
+            value = editor.value;
+
+        same(value.getFullYear(), today.getFullYear());
+        same(value.getMonth(), today.getMonth());
+        same(value.getDate(), today.getDate());
+    });
+
+    test('initialize() - default options and schema', function() {
+        var editor = new Editor();
+
+        var schema = editor.schema,
+            options = editor.options;
+
+        //Schema options
+        var today = new Date;
+        same(schema.yearStart, today.getFullYear() - 100);
+        same(schema.yearEnd, today.getFullYear());
+
+        //Options should default to those stored on the static class
+        same(editor.options.showMonthNames, Editor.showMonthNames);
+        same(editor.options.monthNames, Editor.monthNames);
+    });
+
+    test('render()', function() {
+        var date = new Date,
+            editor = new Editor({ value: date }),
+            spy = this.sinon.spy(editor, 'setValue');
+
+        editor.render();
+
+        //Test DOM elements
+        same(editor.$date.attr('data-type'), 'date');
+        same(editor.$date.find('option:first').val(), '1');
+        same(editor.$date.find('option:last').val(), '31');
+        same(editor.$date.find('option:first').html(), '1');
+        same(editor.$date.find('option:last').html(), '31');
+
+        same(editor.$month.attr('data-type'), 'month');
+        same(editor.$month.find('option:first').val(), '0');
+        same(editor.$month.find('option:last').val(), '11');
+        same(editor.$month.find('option:first').html(), 'January');
+        same(editor.$month.find('option:last').html(), 'December');
+
+        same(editor.$year.attr('data-type'), 'year');
+        same(editor.$year.find('option:first').val(), editor.schema.yearStart.toString());
+        same(editor.$year.find('option:last').val(), editor.schema.yearEnd.toString());
+        same(editor.$year.find('option:first').html(), editor.schema.yearStart.toString());
+        same(editor.$year.find('option:last').html(), editor.schema.yearEnd.toString());
+
+        ok(spy.calledWith(date), 'Called setValue');
+    });
+
+    test('render() - with showMonthNames false', function() {
+        var editor = new Editor({
+            showMonthNames: false
+        }).render();
+
+        same(editor.$month.attr('data-type'), 'month');
+        same(editor.$month.find('option:first').html(), '1');
+        same(editor.$month.find('option:last').html(), '12');
+    });
+
+    test('getValue() - returns a Date', function() {
+        var date = new Date(2010, 5, 5),
+            editor = new Editor({ value: date }).render();
+
+        var value = editor.getValue();
+
+        same(value.constructor.name, 'Date');
+        same(value.getTime(), date.getTime());
+    });
+
+    test('setValue()', function() {
+        var date = new Date(2015, 1, 4);
+        
+        var editor = new Editor({
+            schema: {
+                yearStart: 2000,
+                yearEnd: 2020
+            }
+        }).render();
+
+        editor.setValue(date);
+
+        same(editor.$date.val(), '4');
+        same(editor.$month.val(), '1');
+        same(editor.$year.val(), '2015');
+
+        same(editor.getValue().getTime(), date.getTime());
+    });
+})();
+
+
+
+module('DateTime', {
+    setup: function() {
+        this.sinon = sinon.sandbox.create();
+    },
+
+    teardown: function() {
+        this.sinon.restore();
+    }
+});
+
+(function() {
+    var DateEditor = editors.Date,
+        Editor = editors.DateTime;
+
+    test('initialize() - default value - now (to the hour)', function() {
+        var editor = new Editor;
+
+        var now = new Date,
+            value = editor.value;
+
+        same(value.getFullYear(), now.getFullYear());
+        same(value.getMonth(), now.getMonth());
+        same(value.getDate(), now.getDate());
+        same(value.getHours(), now.getHours());
+        same(value.getMinutes(), now.getMinutes());
+    });
+
+    test('initialize() - default options and schema', function() {
+        var editor = new Editor();
+
+        var schema = editor.schema,
+            options = editor.options;
+
+        //Options should default to those stored on the static class
+        same(editor.options.DateEditor, Editor.DateEditor);
+
+        //Schema options
+        same(schema.minsInterval, 15);
+    });
+
+    test('initialize() - creates a Date instance', function() {
+        var spy = this.sinon.spy(Editor, 'DateEditor');
+
+        var options = {},
+            editor = new Editor(options);
+
+        ok(editor.dateEditor instanceof Editor.DateEditor, 'Created instance of date editor');
+        same(spy.lastCall.args[0], options);
+    });
+
+    test('render() - calls setValue', function() {
+        var date = new Date,
+            editor = new Editor({ value: date }),
+            spy = this.sinon.spy(editor, 'setValue');
+
+        editor.render();
+
+        ok(spy.calledWith(date), 'Called setValue');
+    });
+
+    test('render() - creates hours and mins', function() {
+        var editor = new Editor().render();
+
+        //Test DOM elements
+        same(editor.$hour.attr('data-type'), 'hour');
+        same(editor.$hour.find('option').length, 24);
+        same(editor.$hour.find('option:first').val(), '0');
+        same(editor.$hour.find('option:last').val(), '23');
+        same(editor.$hour.find('option:first').html(), '00');
+        same(editor.$hour.find('option:last').html(), '23');
+
+        same(editor.$min.attr('data-type'), 'min');
+        same(editor.$min.find('option').length, 4);
+        same(editor.$min.find('option:first').val(), '0');
+        same(editor.$min.find('option:last').val(), '45');
+        same(editor.$min.find('option:first').html(), '00');
+        same(editor.$min.find('option:last').html(), '45');
+    });
+
+    test('render() - creates hours and mins - with custom minsInterval', function() {
+        var editor = new Editor({
+            schema: { minsInterval: 1 }
+        }).render();
+
+        same(editor.$min.attr('data-type'), 'min');
+        same(editor.$min.find('option').length, 60);
+        same(editor.$min.find('option:first').val(), '0');
+        same(editor.$min.find('option:last').val(), '59');
+        same(editor.$min.find('option:first').html(), '00');
+        same(editor.$min.find('option:last').html(), '59');
+    });
+
+    test('render() - adds date editor in {{date}} template tag', function() {
+        //Replace template
+        var _template = Form.templates.dateTime;
+
+        Form.setTemplates({
+            dateTime: '<div class="foo">{{date}}</div>'
+        });
+
+        //Create item
+        var editor = new Editor().render();
+
+        //Check editor placed in correct location
+        ok(editor.dateEditor.$el.parent().hasClass('foo'), 'Date el placed correctly');
+
+        //Restore template
+        Form.templates.dateTime = _template;
+    });
+
+    test('getValue() - returns a Date', function() {
+        var date = new Date(2010, 5, 5, 14, 30),
+            editor = new Editor({ value: date }).render();
+
+        var value = editor.getValue();
+
+        same(value.constructor.name, 'Date');
+        same(value.getTime(), date.getTime());
+    });
+
+    test('setValue()', function() {
+        var editor = new Editor().render();
+
+        var spy = this.sinon.spy(editor.dateEditor, 'setValue');
+        
+        var date = new Date(2005, 1, 4, 19, 45);
+        
+        editor.setValue(date);
+
+        //Should set value on date editor
+        same(spy.lastCall.args[0], date);
+
+        same(editor.getValue().getTime(), date.getTime());
+    });
+})();
+
+
+
 module('List', {
     setup: function() {
         this.sinon = sinon.sandbox.create();
@@ -1316,263 +1574,5 @@ module('List.Item', {
 
         same(item.$el.hasClass(Form.classNames.error), false, 'Error class is removed from element');
         same(item.$el.attr('title'), undefined);
-    });
-})();
-
-
-
-module('Date', {
-    setup: function() {
-        this.sinon = sinon.sandbox.create();
-    },
-
-    teardown: function() {
-        this.sinon.restore();
-    }
-});
-
-(function() {
-    var Editor = editors.Date;
-
-    test('initialize() - casts values to date', function() {
-        var date = new Date(2000, 0, 1);
-
-        var editor = new Editor({ value: date.toString() });
-
-        same(editor.value.constructor.name, 'Date');
-        same(editor.value.getTime(), date.getTime());
-    });
-
-    test('initialize() - default value - today', function() {
-        var editor = new Editor;
-
-        var today = new Date,
-            value = editor.value;
-
-        same(value.getFullYear(), today.getFullYear());
-        same(value.getMonth(), today.getMonth());
-        same(value.getDate(), today.getDate());
-    });
-
-    test('initialize() - default options and schema', function() {
-        var editor = new Editor();
-
-        var schema = editor.schema,
-            options = editor.options;
-
-        //Schema options
-        var today = new Date;
-        same(schema.yearStart, today.getFullYear() - 100);
-        same(schema.yearEnd, today.getFullYear());
-
-        //Options should default to those stored on the static class
-        same(editor.options.showMonthNames, Editor.showMonthNames);
-        same(editor.options.monthNames, Editor.monthNames);
-    });
-
-    test('render()', function() {
-        var date = new Date,
-            editor = new Editor({ value: date }),
-            spy = this.sinon.spy(editor, 'setValue');
-
-        editor.render();
-
-        //Test DOM elements
-        same(editor.$date.attr('data-type'), 'date');
-        same(editor.$date.find('option:first').val(), '1');
-        same(editor.$date.find('option:last').val(), '31');
-        same(editor.$date.find('option:first').html(), '1');
-        same(editor.$date.find('option:last').html(), '31');
-
-        same(editor.$month.attr('data-type'), 'month');
-        same(editor.$month.find('option:first').val(), '0');
-        same(editor.$month.find('option:last').val(), '11');
-        same(editor.$month.find('option:first').html(), 'January');
-        same(editor.$month.find('option:last').html(), 'December');
-
-        same(editor.$year.attr('data-type'), 'year');
-        same(editor.$year.find('option:first').val(), editor.schema.yearStart.toString());
-        same(editor.$year.find('option:last').val(), editor.schema.yearEnd.toString());
-        same(editor.$year.find('option:first').html(), editor.schema.yearStart.toString());
-        same(editor.$year.find('option:last').html(), editor.schema.yearEnd.toString());
-
-        ok(spy.calledWith(date), 'Called setValue');
-    });
-
-    test('render() - with showMonthNames false', function() {
-        var editor = new Editor({
-            showMonthNames: false
-        }).render();
-
-        same(editor.$month.attr('data-type'), 'month');
-        same(editor.$month.find('option:first').html(), '1');
-        same(editor.$month.find('option:last').html(), '12');
-    });
-
-    test('getValue() - returns a Date', function() {
-        var date = new Date(2010, 5, 5),
-            editor = new Editor({ value: date }).render();
-
-        var value = editor.getValue();
-
-        same(value.constructor.name, 'Date');
-        same(value.getTime(), date.getTime());
-    });
-
-    test('setValue()', function() {
-        var date = new Date(2015, 1, 4);
-        
-        var editor = new Editor({
-            schema: {
-                yearStart: 2000,
-                yearEnd: 2020
-            }
-        }).render();
-
-        editor.setValue(date);
-
-        same(editor.$date.val(), '4');
-        same(editor.$month.val(), '1');
-        same(editor.$year.val(), '2015');
-
-        same(editor.getValue().getTime(), date.getTime());
-    });
-})();
-
-
-
-module('DateTime', {
-    setup: function() {
-        this.sinon = sinon.sandbox.create();
-    },
-
-    teardown: function() {
-        this.sinon.restore();
-    }
-});
-
-(function() {
-    var DateEditor = editors.Date,
-        Editor = editors.DateTime;
-
-    test('initialize() - default value - now (to the hour)', function() {
-        var editor = new Editor;
-
-        var now = new Date,
-            value = editor.value;
-
-        same(value.getFullYear(), now.getFullYear());
-        same(value.getMonth(), now.getMonth());
-        same(value.getDate(), now.getDate());
-        same(value.getHours(), now.getHours());
-        same(value.getMinutes(), now.getMinutes());
-    });
-
-    test('initialize() - default options and schema', function() {
-        var editor = new Editor();
-
-        var schema = editor.schema,
-            options = editor.options;
-
-        //Options should default to those stored on the static class
-        same(editor.options.DateEditor, Editor.DateEditor);
-
-        //Schema options
-        same(schema.minsInterval, 15);
-    });
-
-    test('initialize() - creates a Date instance', function() {
-        var spy = this.sinon.spy(Editor, 'DateEditor');
-
-        var options = {},
-            editor = new Editor(options);
-
-        ok(editor.dateEditor instanceof Editor.DateEditor, 'Created instance of date editor');
-        same(spy.lastCall.args[0], options);
-    });
-
-    test('render() - calls setValue', function() {
-        var date = new Date,
-            editor = new Editor({ value: date }),
-            spy = this.sinon.spy(editor, 'setValue');
-
-        editor.render();
-
-        ok(spy.calledWith(date), 'Called setValue');
-    });
-
-    test('render() - creates hours and mins', function() {
-        var editor = new Editor().render();
-
-        //Test DOM elements
-        same(editor.$hour.attr('data-type'), 'hour');
-        same(editor.$hour.find('option').length, 24);
-        same(editor.$hour.find('option:first').val(), '0');
-        same(editor.$hour.find('option:last').val(), '23');
-        same(editor.$hour.find('option:first').html(), '00');
-        same(editor.$hour.find('option:last').html(), '23');
-
-        same(editor.$min.attr('data-type'), 'min');
-        same(editor.$min.find('option').length, 4);
-        same(editor.$min.find('option:first').val(), '0');
-        same(editor.$min.find('option:last').val(), '45');
-        same(editor.$min.find('option:first').html(), '00');
-        same(editor.$min.find('option:last').html(), '45');
-    });
-
-    test('render() - creates hours and mins - with custom minsInterval', function() {
-        var editor = new Editor({
-            schema: { minsInterval: 1 }
-        }).render();
-
-        same(editor.$min.attr('data-type'), 'min');
-        same(editor.$min.find('option').length, 60);
-        same(editor.$min.find('option:first').val(), '0');
-        same(editor.$min.find('option:last').val(), '59');
-        same(editor.$min.find('option:first').html(), '00');
-        same(editor.$min.find('option:last').html(), '59');
-    });
-
-    test('render() - adds date editor in {{date}} template tag', function() {
-        //Replace template
-        var _template = Form.templates.dateTime;
-
-        Form.setTemplates({
-            dateTime: '<div class="foo">{{date}}</div>'
-        });
-
-        //Create item
-        var editor = new Editor().render();
-
-        //Check editor placed in correct location
-        ok(editor.dateEditor.$el.parent().hasClass('foo'), 'Date el placed correctly');
-
-        //Restore template
-        Form.templates.dateTime = _template;
-    });
-
-    test('getValue() - returns a Date', function() {
-        var date = new Date(2010, 5, 5, 14, 30),
-            editor = new Editor({ value: date }).render();
-
-        var value = editor.getValue();
-
-        same(value.constructor.name, 'Date');
-        same(value.getTime(), date.getTime());
-    });
-
-    test('setValue()', function() {
-        var editor = new Editor().render();
-
-        var spy = this.sinon.spy(editor.dateEditor, 'setValue');
-        
-        var date = new Date(2005, 1, 4, 19, 45);
-        
-        editor.setValue(date);
-
-        //Should set value on date editor
-        same(spy.lastCall.args[0], date);
-
-        same(editor.getValue().getTime(), date.getTime());
     });
 })();

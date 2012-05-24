@@ -1162,7 +1162,7 @@ Form.editors = (function() {
 
   /**
    * Modal object editor for use with the List editor.
-   * To use it, set the 'itemType' property in a List schema to 'bootstrap.ListObject'
+   * To use it, set the 'itemType' property in a List schema to 'Object' or 'NestedModel'
    */
   editors.List.Modal = editors.List.Object = editors.List.NestedModel = editors.Base.extend({
     events: {
@@ -1181,7 +1181,7 @@ Form.editors = (function() {
       var schema = this.schema;
       
       //Dependencies
-      if (!Backbone.BootstrapModal) throw new Error('Backbone.BootstrapModal is required');
+      if (!editors.List.Modal.ModalAdapter) throw 'A ModalAdapter is required';
 
       //Get nested schema if Object
       if (schema.itemType == 'Object') {
@@ -1322,6 +1322,11 @@ Form.editors = (function() {
     }
   }, {
     //STATICS
+
+    //The modal adapter that creates and manages the modal dialog.
+    //Defaults to BootstrapModal (http://github.com/powmedia/backbone.bootstrap-modal)
+    //Can be replaced with another adapter that implements the same interface.
+    ModalAdapter: Backbone.BootstrapModal,
     
     //Make the wait list for the 'ready' event before adding the item to the list
     isAsync: true
