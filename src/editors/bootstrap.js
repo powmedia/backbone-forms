@@ -3,6 +3,14 @@
   var Form = Backbone.Form,
       editors = Form.editors;
 
+  Form.setTemplates({
+    'bootstrap.ListObject': '\
+      <div style="cursor: pointer; border: 1px solid #ccc; width: 208px; border-radius: 4px; padding: 2px 5px">\
+        {{summary}}\
+      </div>\
+    '
+  });
+
   /**
    * Modal object editor for use with the List editor.
    * To use it, set the 'listType' property in a List schema to 'bootstrap.ListObject'
@@ -44,7 +52,11 @@
      * Renders the list item representation
      */
     renderSummary: function() {
-      this.$el.html(this.getStringValue());
+      var template = Form.templates['bootstrap.ListObject'];
+
+      this.$el.html(template({
+        summary: this.getStringValue()
+      }));
     },
 
     /**
@@ -105,7 +117,8 @@
       });
 
       var modal = new Backbone.BootstrapModal({
-        content: form
+        content: form,
+        animate: true
       }).open();
 
       modal.on('ok', function() {
