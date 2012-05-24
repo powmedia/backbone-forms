@@ -52,8 +52,22 @@
      * Render the list item representation
      */
     render: function() {
-      //Actual rendering only takes place once the dialog has been OK'd
-      this.openEditor();
+      var self = this;
+
+      //New items in the list are only rendered when the editor has been OK'd
+      if (_.isEmpty(this.value)) {
+        this.openEditor();
+      }
+
+      //But items with values are added automatically
+      else {
+        console.log(this.value)
+        this.renderSummary();
+
+        setTimeout(function() {
+          self.trigger('readyToAdd');
+        }, 0);
+      }
 
       return this;
     },
@@ -107,7 +121,6 @@
       
       //Otherwise check if it's NestedModel with it's own toString() method
       if (schema.itemType == 'bootstrap.ListNestedModel') {
-        console.log('hi')
         return new (schema.model)(value).toString();
       }
       
