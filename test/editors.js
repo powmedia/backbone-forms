@@ -912,7 +912,7 @@ module('List', {
     test('Default settings', function() {
         var list = new Editor();
 
-        same(list.schema.listType, 'Text');
+        same(list.schema.itemType, 'Text');
     });
 
     test('Default value', function() {
@@ -923,7 +923,7 @@ module('List', {
 
     test('Custom value', function() {
         var list = new Editor({
-            schema: { listType: 'Number' },
+            schema: { itemType: 'Number' },
             value: [1,2,3]
         }).render();
 
@@ -1171,7 +1171,7 @@ module('List.Item', {
         var spy = this.sinon.spy(Form.helpers, 'createEditor');
 
         var list = new List({
-            schema: { listType: 'Number' }
+            schema: { itemType: 'Number' }
         }).render();
 
         var item = new List.Item({

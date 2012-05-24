@@ -850,7 +850,7 @@ Form.editors = (function() {
    */
   editors.List.Item = Backbone.View.extend({
     events: {
-      'click *[data-action="remove"]': function(event) {
+      'click [data-action="remove"]': function(event) {
         event.preventDefault();
         this.list.removeItem(this);
       }
@@ -938,8 +938,6 @@ Form.editors = (function() {
       this.$el.attr('title', null);
     }
   });
-
-  editors.List.Modal
 
 
   /**
