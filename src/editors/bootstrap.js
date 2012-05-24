@@ -5,7 +5,7 @@
 
   Form.setTemplates({
     'bootstrap.ListObject': '\
-      <div style="cursor: pointer; border: 1px solid #ccc; width: 208px; border-radius: 4px; padding: 2px 5px">\
+      <div style="cursor: pointer; border: 1px solid #ccc; width: 208px; border-radius: 3px; padding: 4px; color: #555">\
         {{summary}}\
       </div>\
     '
@@ -13,16 +13,18 @@
 
   /**
    * Modal object editor for use with the List editor.
-   * To use it, set the 'listType' property in a List schema to 'bootstrap.ListObject'
+   * To use it, set the 'itemType' property in a List schema to 'bootstrap.ListObject'
    */
-  editors['bootstrap.ListObject'] = editors.Base.extend({
+  editors['bootstrap.ListObject'] = editors['bootstrap.ListNestedModel'] = editors.Base.extend({
     events: {
       'click': 'openEditor'
     },
 
     /**
      * @param {Object} options
-     * @param {Form.editors.List} options.list    The list this editor appears in
+     * @param {String} [options.schema.itemType]    Item editor type: 'List.Object' | 'List.NestedModel'
+     * @param {Object} [options.schema.subSchema]   Schema for nested form,. Required when itemType is 'Object'
+     * @param {Function} [options.schema.model]     Model constructor function. Required when itemType is 'NestedModel'
      */
     initialize: function(options) {
       editors.Base.prototype.initialize.call(this, options);
@@ -30,12 +32,20 @@
       //Dependencies
       if (!Backbone.BootstrapModal) throw new Error('Backbone.BootstrapModal is required');
 
-      //Required options
-      if (!options.list) throw new Error('options.list is required');
-      this.list = options.list;
+      //Get nested schema if Object
+      if (this.schema.itemType == 'bootstrap.ListObject') {
+        if (!this.schema.subSchema) throw 'Missing required option "schema.subSchema"';
 
-      if (!options.item) throw new Error('options.item is required');
-      this.item = options.item;
+        this.nestedSchema = this.schema.subSchema;
+      }
+
+      //Get nested schema if NestedModel
+      if (this.schema.itemType == 'bootstrap.ListNestedModel') {
+        if (!this.schema.model) throw 'Missing required option "schema.model"';
+
+        this.nestedSchema = this.schema.model.prototype.schema;
+        if (_.isFunction(this.nestedSchema)) this.nestedSchema = this.nestedSchema();
+      }
     },
 
     /**
@@ -66,12 +76,12 @@
      * 
      * @return {String}
      */
-    objectToString: function(value) {
+    itemToString: function(value) {
       value = value || {};
 
       //Pretty print the object keys and values
       var parts = [];
-      _.each(this.schema.subSchema, function(schema, key) {
+      _.each(this.nestedSchema, function(schema, key) {
         var desc = schema.title ? schema.title : Form.helpers.keyToTitle(key),
             val = value[key];
 
@@ -95,24 +105,21 @@
       //If there's a specified toString use that
       if (schema.itemToString) return schema.itemToString(value);
       
-      /*
       //Otherwise check if it's NestedModel with it's own toString() method
-      if (this.schema.listType == 'NestedModel') {
-        var model = new (this.schema.model)(data);
-      
-        return model.toString();
+      if (schema.itemType == 'bootstrap.ListNestedModel') {
+        console.log('hi')
+        return new (schema.model)(value).toString();
       }
-      */
       
       //Otherwise use the generic method or custom overridden method
-      return this.objectToString(value);
+      return this.itemToString(value);
     },
 
     openEditor: function() {
       var self = this;
 
       var form = new Form({
-        schema: this.schema.subSchema,
+        schema: this.nestedSchema,
         data: this.value
       });
 

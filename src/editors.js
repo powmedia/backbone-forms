@@ -687,7 +687,7 @@ Form.editors = (function() {
    * An array editor. Creates a list of other editor items.
    *
    * Special options:
-   * @param {String} [options.schema.listType]          The editor type for each item in the list. Default: 'Text'
+   * @param {String} [options.schema.itemType]          The editor type for each item in the list. Default: 'Text'
    * @param {String} [options.schema.confirmDelete]     Text to display in a delete confirmation dialog. If falsey, will not ask for confirmation.
    */
   editors.List = editors.Base.extend({
@@ -697,14 +697,9 @@ Form.editors = (function() {
     className: 'bbf-list',
 
     events: {
-      'click *[data-action="add"]': function(event) {
+      'click [data-action="add"]': function(event) {
         event.preventDefault();
         this.addItem();
-      },
-
-      //TODO: Remove
-      'click': function() {
-        console.log(this.getValue())
       }
     },
 
@@ -713,9 +708,9 @@ Form.editors = (function() {
 
       if (!this.schema) throw "Missing required option 'schema'";
       
-      this.schema.listType = this.schema.listType || 'Text';
+      this.schema.itemType = this.schema.itemType || 'Text';
 
-      this.isAsyncEditor = Form.editors[this.schema.listType].isAsync;
+      this.isAsyncEditor = Form.editors[this.schema.itemType].isAsync;
 
       this.items = [];
     },
@@ -869,7 +864,7 @@ Form.editors = (function() {
 
     render: function() {
       //Create editor
-      this.editor = Form.helpers.createEditor(this.schema.listType, {
+      this.editor = Form.helpers.createEditor(this.schema.itemType, {
         key: '',
         schema: this.schema,
         value: this.value,
@@ -943,6 +938,8 @@ Form.editors = (function() {
       this.$el.attr('title', null);
     }
   });
+
+  editors.List.Modal
 
 
   /**
