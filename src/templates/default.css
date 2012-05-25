@@ -97,6 +97,17 @@
   clear: both;
 }
 
+/* List.Modal */
+.bbf-list-modal {
+  cursor: pointer;
+  border: 1px solid #ccc;
+  width: 208px;
+  border-radius: 3px;
+  padding: 4px;
+  color: #555;
+}
+
+
 
 /* Date */
 .bbf-date .bbf-date {
@@ -118,10 +129,6 @@
   margin-right: 1em;
 }
 
-.bbf-datetime .bbf-hour {
-  width: 4em;
-}
-
-.bbf-datetime .bbf-min {
+.bbf-datetime select {
   width: 4em;
 }
