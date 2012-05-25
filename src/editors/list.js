@@ -87,7 +87,8 @@
         list: this,
         schema: this.schema,
         value: value,
-        Editor: this.Editor
+        Editor: this.Editor,
+        key: this.key
       }).render();
 
       //Check if we need to wait for the item to complete before adding to the list
@@ -178,8 +179,10 @@
    * A single item in the list
    *
    * @param {editors.List} options.list The List editor instance this item belongs to
-   * @param {String|Function} options.type    Editor type
-   * @param {Mixed} options.value             Value
+   * @param {Function} options.Editor   Editor constructor function
+   * @param {String} options.key        Model key
+   * @param {Mixed} options.value       Value
+   * @param {Object} options.schema     Field schema
    */
   editors.List.Item = Backbone.View.extend({
     events: {
@@ -194,12 +197,13 @@
       this.schema = options.schema || this.list.schema;
       this.value = options.value;
       this.Editor = options.Editor || editors.Text;
+      this.key = options.key;
     },
 
     render: function() {
       //Create editor
       this.editor = new this.Editor({
-        key: '',
+        key: this.key,
         schema: this.schema,
         value: this.value,
         list: this.list,

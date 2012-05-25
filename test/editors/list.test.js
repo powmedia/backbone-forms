@@ -170,15 +170,18 @@ module('List', {
             list: list,
             schema: list.schema,
             value: undefined,
-            Editor: editors.Text
+            Editor: editors.Text,
+            key: list.key
         }
 
         var actualOptions = spy.lastCall.args[0];
 
         same(spy.callCount, 1);
-        same(actualOptions, expectedOptions);
         same(list.items.length, 2);
         same(_.last(list.items).value, undefined);
+
+        //Test options
+        same(actualOptions, expectedOptions);
     });
 
     test('addItem() - with value', function() {
@@ -192,7 +195,8 @@ module('List', {
             list: list,
             schema: list.schema,
             value: 'foo',
-            Editor: editors.Text
+            Editor: editors.Text,
+            key: list.key
         }
 
         var actualOptions = spy.lastCall.args[0];
@@ -326,7 +330,8 @@ module('List.Item', {
             schema: item.schema,
             value: 123,
             list: list,
-            item: item
+            item: item,
+            key: item.key
         });
     });
 

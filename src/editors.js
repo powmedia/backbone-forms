@@ -30,9 +30,8 @@ Form.editors = (function() {
         if (!options.key) throw "Missing option: 'key'";
 
         this.model = options.model;
-        this.key = options.key;
 
-        this.value = this.model.get(this.key);
+        this.value = this.model.get(options.key);
       }
       else if (options.value) {
         this.value = options.value;
@@ -40,6 +39,7 @@ Form.editors = (function() {
       
       if (this.value === undefined) this.value = this.defaultValue;
 
+      this.key = options.key;
       this.form = options.form;
       this.schema = options.schema || {};
       this.validators = options.validators || this.schema.validators;
@@ -818,8 +818,8 @@ Form.editors = (function() {
     //Whether to show month names instead of numbers
     showMonthNames: true,
 
-    //Month names to use if Date.showMonthNames is true
-    //Replace for localisation, e.g. Date.monthNames = ['Janvier', 'Fevrier'...]
+    //Month names to use if showMonthNames is true
+    //Replace for localisation, e.g. Form.editors.Date.monthNames = ['Janvier', 'Fevrier'...]
     monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
   });
 
