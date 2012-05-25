@@ -22,13 +22,17 @@
     ',
 
     nestedField: '\
-      <div title="{{title}}" class="input-xlarge">{{editor}}</div>\
-      <div class="help-block">{{help}}</div>\
+      <div>\
+        <div title="{{title}}" class="input-xlarge">{{editor}}</div>\
+        <div class="help-block">{{help}}</div>\
+      </div>\
     ',
 
     list: '\
-      <ul class="unstyled clearfix">{{items}}</ul>\
-      <button class="btn bbf-add" data-action="add">Add</div>\
+      <div class="bbf-list">\
+        <ul class="unstyled clearfix">{{items}}</ul>\
+        <button class="btn bbf-add" data-action="add">Add</div>\
+      </div>\
     ',
 
     listItem: '\
@@ -39,18 +43,22 @@
     ',
 
     date: '\
-      <select class="bbf-date" data-type="date">{{dates}}</select>\
-      <select class="bbf-month" data-type="month">{{months}}</select>\
-      <select class="bbf-year" data-type="year">{{years}}</select>\
+      <div class="bbf-date">\
+        <select data-type="date" class="bbf-date">{{dates}}</select>\
+        <select data-type="month" class="bbf-month">{{months}}</select>\
+        <select data-type="year" class="bbf-year">{{years}}</select>\
+      </div>\
     ',
 
     dateTime: '\
-      <p>{{date}}</p>\
-      <p>\
-        <select data-type="hour" style="width: 4em">{{hours}}</select>\
-        :\
-        <select data-type="min" style="width: 4em">{{mins}}</select>\
-      </p>\
+      <div class="bbf-datetime">\
+        <p>{{date}}</p>\
+        <p>\
+          <select data-type="hour" style="width: 4em">{{hours}}</select>\
+          :\
+          <select data-type="min" style="width: 4em">{{mins}}</select>\
+        </p>\
+      </div>\
     ',
 
     'list.Modal': '\
