@@ -13,11 +13,7 @@
    * @param {String} [options.schema.confirmDelete]     Text to display in a delete confirmation dialog. If falsey, will not ask for confirmation.
    */
   editors.List = editors.Base.extend({
-    //Prevent error classes being set on the main control; they are internally on the individual fields
-    //hasNestedForm: true,
-
-    className: 'bbf-list',
-
+    
     events: {
       'click [data-action="add"]': function(event) {
         event.preventDefault();
@@ -50,11 +46,10 @@
 
     render: function() {
       var self = this,
-          $el = this.$el,
           value = this.value || [];
 
       //Create main element
-      $el.html(Form.templates.list({
+      var $el = $(Form.templates.list({
         items: '<b class="bbf-tmp"></b>'
       }));
 
@@ -72,6 +67,10 @@
       else {
         if (!this.Editor.isAsync) this.addItem();
       }
+
+      this.setElement($el);
+      this.$el.attr('id', this.id);
+      this.$el.attr('name', this.key);
       
       return this;
     },

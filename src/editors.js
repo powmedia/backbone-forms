@@ -750,18 +750,22 @@ Form.editors = (function() {
       });
 
       //Render the selects
-      this.$el.html(Form.templates.date({
+      var $el = $(Form.templates.date({
         dates: datesOptions.join(''),
         months: monthsOptions.join(''),
         years: yearsOptions.join('')
       }));
 
       //Store references to selects
-      this.$date = this.$('[data-type="date"]');
-      this.$month = this.$('[data-type="month"]');
-      this.$year = this.$('[data-type="year"]');
+      this.$date = $el.find('[data-type="date"]');
+      this.$month = $el.find('[data-type="month"]');
+      this.$year = $el.find('[data-type="year"]');
 
       this.setValue(this.value);
+
+      this.setElement($el);
+      this.$el.attr('id', this.id);
+      this.$el.attr('name', this.key);
 
       return this;
     },
@@ -802,8 +806,6 @@ Form.editors = (function() {
    */
   editors.DateTime = editors.Base.extend({
 
-    className: 'bbf-datetime',
-
     initialize: function(options) {
       options = options || {};
 
@@ -842,21 +844,25 @@ Form.editors = (function() {
       });
 
       //Render time selects
-      this.$el.append(Form.templates.dateTime({
+      var $el = $(Form.templates.dateTime({
         date: '<b class="bbf-tmp"></b>',
         hours: hoursOptions.join(),
         mins: minsOptions.join()
       }));
 
       //Include the date editor
-      this.$('.bbf-tmp').replaceWith(this.dateEditor.render().el);
+      $el.find('.bbf-tmp').replaceWith(this.dateEditor.render().el);
 
       //Store references to selects
-      this.$hour = this.$('[data-type="hour"]');
-      this.$min = this.$('[data-type="min"]');
+      this.$hour = $el.find('[data-type="hour"]');
+      this.$min = $el.find('[data-type="min"]');
       
       //Set time
       this.setValue(this.value);
+
+      this.setElement($el);
+      this.$el.attr('id', this.id);
+      this.$el.attr('name', this.key);
 
       return this;
     },

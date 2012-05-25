@@ -28,8 +28,10 @@
     ',
 
     list: '\
-      <ul>{{items}}</ul>\
-      <div class="bbf-actions"><button data-action="add">Add</div>\
+      <div class="bbf-list">\
+        <ul>{{items}}</ul>\
+        <div class="bbf-actions"><button data-action="add">Add</div>\
+      </div>\
     ',
 
     listItem: '\
@@ -40,16 +42,20 @@
     ',
 
     date: '\
-      <select data-type="date" class="bbf-date">{{dates}}</select>\
-      <select data-type="month" class="bbf-month">{{months}}</select>\
-      <select data-type="year" class="bbf-year">{{years}}</select>\
+      <div class="bbf-date">\
+        <select data-type="date" class="bbf-date">{{dates}}</select>\
+        <select data-type="month" class="bbf-month">{{months}}</select>\
+        <select data-type="year" class="bbf-year">{{years}}</select>\
+      </div>\
     ',
 
     dateTime: '\
-      <div class="bbf-date-container">{{date}}</div>\
-      <select data-type="hour">{{hours}}</select>\
-      :\
-      <select data-type="min">{{mins}}</select>\
+      <div class="bbf-datetime">\
+        <div class="bbf-date-container">{{date}}</div>\
+        <select data-type="hour">{{hours}}</select>\
+        :\
+        <select data-type="min">{{mins}}</select>\
+      </div>\
     ',
 
     'list.Modal': '\
