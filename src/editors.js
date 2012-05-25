@@ -781,7 +781,13 @@ Form.editors = (function() {
     * @return {Date}   Selected date
     */
     getValue: function() {
-      return new Date(this.$year.val(), this.$month.val(), this.$date.val());
+      var year = this.$year.val(),
+          month = this.$month.val(),
+          date = this.$date.val();
+
+      if (!year || !month || !date) return null;
+
+      return new Date(year, month, date);
     },
     
     /**
@@ -899,8 +905,13 @@ Form.editors = (function() {
     getValue: function() {
       var date = this.dateEditor.getValue();
 
-      date.setHours(this.$hour.val());
-      date.setMinutes(this.$min.val());
+      var hour = this.$hour.val(),
+          min = this.$min.val();
+
+      if (!date || !hour || !min) return null;
+
+      date.setHours(hour);
+      date.setMinutes(min);
 
       return date;
     },
