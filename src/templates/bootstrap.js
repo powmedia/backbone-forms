@@ -28,20 +28,20 @@
 
     list: '\
       <ul class="unstyled clearfix">{{items}}</ul>\
-      <button class="btn" style="margin-top: -10px" data-action="add">Add</div>\
+      <button class="btn bbf-add" data-action="add">Add</div>\
     ',
 
     listItem: '\
-      <li class="clearfix" style="margin-bottom: 5px;">\
+      <li class="clearfix">\
         <div class="pull-left">{{editor}}</div>\
-        <button class="btn" style="margin-left: 4px" data-action="remove">x</button>\
+        <button class="btn bbf-del" data-action="remove">x</button>\
       </li>\
     ',
 
     date: '\
-      <select data-type="date" style="width: 4em">{{dates}}</select>\
-      <select data-type="month" style="width: 9em">{{months}}</select>\
-      <select data-type="year" style="width: 5em">{{years}}</select>\
+      <select class="bbf-date" data-type="date">{{dates}}</select>\
+      <select class="bbf-month" data-type="month">{{months}}</select>\
+      <select class="bbf-year" data-type="year">{{years}}</select>\
     ',
 
     dateTime: '\
@@ -54,7 +54,7 @@
     ',
 
     'list.Modal': '\
-      <div style="cursor: pointer; border: 1px solid #ccc; width: 208px; border-radius: 3px; padding: 4px; color: #555">\
+      <div class="bbf-list-modal">\
         {{summary}}\
       </div>\
     '

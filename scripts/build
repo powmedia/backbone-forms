@@ -152,6 +152,7 @@ try {
 //Templates
 copy(srcDir + '/templates/default.css', outputDir + '/templates/default.css');
 copy(srcDir + '/templates/default.js', outputDir + '/templates/default.js');
+copy(srcDir + '/templates/bootstrap.css', outputDir + '/templates/bootstrap.css');
 copy(srcDir + '/templates/bootstrap.js', outputDir + '/templates/bootstrap.js');
 copy(srcDir + '/templates/minimal.js', outputDir + '/templates/minimal.js');
 
