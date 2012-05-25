@@ -12,17 +12,17 @@
     ',
     
     field: '\
-      <li class="bbf-field bbf-field{{type}}">\
+      <li class="bbf-field">\
         <label for="{{id}}">{{title}}</label>\
-        <div class="bbf-editor bbf-editor{{type}}">{{editor}}</div>\
+        <div class="bbf-editor">{{editor}}</div>\
         <div class="bbf-help">{{help}}</div>\
       </li>\
     ',
 
     nestedField: '\
-      <li class="bbf-narrow-field bbf-field{{type}}" title="{{title}}">\
+      <li class="bbf-field" title="{{title}}">\
         <label for="{{id}}">{{title}}</label>\
-        <div class="bbf-editor bbf-editor{{type}}">{{editor}}</div>\
+        <div class="bbf-editor">{{editor}}</div>\
         <div class="bbf-help">{{help}}</div>\
       </li>\
     ',
@@ -34,7 +34,7 @@
 
     listItem: '\
       <li>\
-        <button data-action="remove" class="bbf-remove" >x</button>\
+        <button data-action="remove" class="bbf-remove">x</button>\
         <div class="bbf-editor-container">{{editor}}</div>\
       </li>\
     ',
@@ -47,13 +47,13 @@
 
     dateTime: '\
       <div class="bbf-date-container">{{date}}</div>\
-      <select data-type="hour" class="bbf-hour">{{hours}}</select>\
+      <select data-type="hour">{{hours}}</select>\
       :\
-      <select data-type="min" class="bbf-min">{{mins}}</select>\
+      <select data-type="min">{{mins}}</select>\
     ',
 
     'list.Modal': '\
-      <div style="cursor: pointer; border: 1px solid #ccc; width: 208px; border-radius: 3px; padding: 4px; color: #555">\
+      <div class="bbf-list-modal">\
         {{summary}}\
       </div>\
     '
