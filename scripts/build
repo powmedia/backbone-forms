@@ -155,6 +155,10 @@ copy(srcDir + '/templates/default.js', outputDir + '/templates/default.js');
 copy(srcDir + '/templates/bootstrap.js', outputDir + '/templates/bootstrap.js');
 copy(srcDir + '/templates/minimal.js', outputDir + '/templates/minimal.js');
 
+//Extra editors
+copy(srcDir + '/editors/list.js', outputDir + '/editors/list.js');
+uglify(srcDir + '/editors/list.js', outputDir + '/editors/list.min.js');
+
 //Modal adapters
 copy(srcDir + '/../lib/backbone.bootstrap-modal/src/backbone.bootstrap-modal.js', outputDir + '/adapters/backbone.bootstrap-modal.js');
 uglify(srcDir + '/../lib/backbone.bootstrap-modal/src/backbone.bootstrap-modal.js', outputDir + '/adapters/backbone.bootstrap-modal.min.js');
