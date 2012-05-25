@@ -175,7 +175,7 @@ Builder.prototype.save = function(path) {
 
   fs.writeFileSync(path, this.content);
 
-  if (!this.options.quiet) console.log('Wrote: ' + path);
+  if (!this.options.quiet) console.log(path);
 
   return this;
 };
