@@ -695,7 +695,9 @@ Form.editors = (function() {
    */
   editors.Date = editors.Base.extend({
 
-    className: 'bbf-date',
+    events: {
+      'change select': 'updateHidden'
+    },
 
     initialize: function(options) {
       options = options || {}
@@ -761,11 +763,16 @@ Form.editors = (function() {
       this.$month = $el.find('[data-type="month"]');
       this.$year = $el.find('[data-type="year"]');
 
+      //Create the hidden field to store values in case POSTed to server
+      this.$hidden = $('<input type="hidden" name="'+this.key+'" />');
+      $el.append(this.$hidden);
+
+      //Set value on this and hidden field
       this.setValue(this.value);
 
+      //Remove the wrapper tag
       this.setElement($el);
       this.$el.attr('id', this.id);
-      this.$el.attr('name', this.key);
 
       return this;
     },
@@ -784,6 +791,19 @@ Form.editors = (function() {
       this.$date.val(date.getDate());
       this.$month.val(date.getMonth());
       this.$year.val(date.getFullYear());
+
+      this.updateHidden();
+    },
+
+    /**
+     * Update the hidden input which is maintained for when submitting a form
+     * via a normal browser POST
+     */
+    updateHidden: function() {
+      var val = this.getValue();
+      if (_.isDate(val)) val = val.toISOString();
+
+      this.$hidden.val(val);
     }
 
   }, {
@@ -805,6 +825,10 @@ Form.editors = (function() {
    * @param {Number} [options.schema.minsInterval]  Interval between minutes. Default: 15
    */
   editors.DateTime = editors.Base.extend({
+
+    events: {
+      'change select': 'updateHidden'
+    },
 
     initialize: function(options) {
       options = options || {};
@@ -856,13 +880,15 @@ Form.editors = (function() {
       //Store references to selects
       this.$hour = $el.find('[data-type="hour"]');
       this.$min = $el.find('[data-type="min"]');
+
+      //Get the hidden date field to store values in case POSTed to server
+      this.$hidden = $el.find('input[type="hidden"]');
       
       //Set time
       this.setValue(this.value);
 
       this.setElement($el);
       this.$el.attr('id', this.id);
-      this.$el.attr('name', this.key);
 
       return this;
     },
@@ -884,6 +910,19 @@ Form.editors = (function() {
       
       this.$hour.val(date.getHours());
       this.$min.val(date.getMinutes());
+
+      this.updateHidden();
+    },
+
+    /**
+     * Update the hidden input which is maintained for when submitting a form
+     * via a normal browser POST
+     */
+    updateHidden: function() {
+      var val = this.getValue();
+      if (_.isDate(val)) val = val.toISOString();
+
+      this.$hidden.val(val);
     }
 
   }, {

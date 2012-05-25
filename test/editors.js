@@ -1012,6 +1012,30 @@ module('Date', {
 
         same(editor.getValue().getTime(), date.getTime());
     });
+
+    test('updates the hidden input when a value changes', function() {
+        var date = new Date(2012, 2, 5);
+
+        var editor = new Editor({
+            schema: {
+                yearStart: 2000,
+                yearEnd: 2020
+            },
+            value: date
+        }).render();
+
+        //Simulate changing the date manually
+        editor.$year.val(2020).trigger('change');
+        editor.$month.val(6).trigger('change');
+        editor.$date.val(13).trigger('change');
+
+        var hiddenVal = new Date(editor.$hidden.val());
+
+        same(editor.getValue().getTime(), hiddenVal.getTime());
+        same(hiddenVal.getFullYear(), 2020);
+        same(hiddenVal.getMonth(), 6);
+        same(hiddenVal.getDate(), 13);
+    });
 })();
 
 
@@ -1113,7 +1137,14 @@ module('DateTime', {
         var _template = Form.templates.dateTime;
 
         Form.setTemplates({
-            dateTime: '<div class="foo">{{date}}</div>'
+            dateTime: '\
+                <div>\
+                    <div class="foo">{{date}}</div>\
+                    <select data-type="hour">{{hours}}</select>\
+                    :\
+                    <select data-type="min">{{mins}}</select>\
+                </div>\
+            '
         });
 
         //Create item
@@ -1149,5 +1180,23 @@ module('DateTime', {
         same(spy.lastCall.args[0], date);
 
         same(editor.getValue().getTime(), date.getTime());
+    });
+
+    test('updates the hidden input when a value changes', function() {
+        var date = new Date();
+
+        var editor = new Editor({
+            value: date
+        }).render();
+
+        //Simulate changing the date manually
+        editor.$hour.val(5).trigger('change');
+        editor.$min.val(15).trigger('change');
+
+        var hiddenVal = new Date(editor.$hidden.val());
+
+        same(editor.getValue().getTime(), hiddenVal.getTime());
+        same(hiddenVal.getHours(), 5);
+        same(hiddenVal.getMinutes(), 15);
     });
 })();
