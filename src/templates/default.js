@@ -1,5 +1,8 @@
-;(function() {
-  var templates = {
+
+  //DEFAULT TEMPLATES
+  Form.setTemplates({
+    
+    //HTML
     form: '\
       <form class="bbf-form">{{fieldsets}}</form>\
     ',
@@ -63,11 +66,9 @@
         {{summary}}\
       </div>\
     '
-  };
-  
-  var classNames = {
-    error: 'bbf-error'
-  };
+  }, {
 
-  Backbone.Form.helpers.setTemplates(templates, classNames);
-})();
+    //CLASSNAMES
+    error: 'bbf-error'
+
+  });

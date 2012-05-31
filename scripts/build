@@ -1,170 +1,83 @@
 #!/usr/bin/env node
 
-/**
- * Builds the distribution files from /src
- * 
- * Includes code from Miller Medeiros, http://blog.millermedeiros.com/node-js-as-a-build-script/
- */
+var builder = require('buildify'),
+    path = require('path');
 
-// CONFIG
-var outputDir = __dirname + '/../distribution',
-    srcDir = __dirname + '/../src',
-    templateDir = __dirname + '/templates',
-    eol = '\n',
-    fileEncoding = 'utf-8';
-
-
-// DEPENDENCIES
-var fs = require('fs'),
-    util = require('util'),
-    _ = require('underscore'),
-    uglifyJS = require('uglify-js');
-
-
-// SETTINGS
-// Use mustache template tags
-_.templateSettings.interpolate = /\{\{(.+?)\}\}/g;
-
-
-//OPTIONS
-var options = {
-  uglify: true,
-
-  templateData: {
-    version: '0.10.0'
-  }
+var templateData = {
+  version: '0.10.0'
 };
 
+var baseDir = __dirname + '/..',
+    sourceDir = baseDir + '/src',
+    outputDir = baseDir + '/distribution';
 
-// TASKS
-/**
- * Build the output by concatenating files and optionally wrapping them in a template
- *
- * @param {String[]} fileList         File paths, relative to current directory
- * @param {String} outputPath         Relative path to output file
- * @param {Object} [options]
- *
- * @param {String} [options.template] Template for adding headers/footers etc. Content will inserted in place of a {{body}} tag
- * @param {Object} [options.data]     Date to populate template tags (in {{tag}} format)
- */
-function build(fileList, outputPath, options) {
-  var out = fileList.map(function(filePath) {
-    filePath = filePath;
-
-    return fs.readFileSync(filePath, fileEncoding);
-  });
-
-  var content = out.join(eol);
-
-  if (options && options.template) {
-    var data = _.extend(options.data, {
-      body: content
-    });
-
-    var templateString = fs.readFileSync(options.template, fileEncoding);
-
-    content = _.template(templateString, data);
-  }
-
-  fs.writeFileSync(outputPath, content);
-
-  console.log('READY: ' + outputPath);
-}
-
-/**
- * Minify files using UglifyJS
- * @param {String} srcPath          Relative path to source file
- * @param {outputPath} outputPath   Relative path to output file
- */
-function uglify(srcPath, outputPath) {
-  if (!options.uglify) return;
-
-  var parse = uglifyJS.parser.parse,
-      uglify = uglifyJS.uglify;
-
-  var output = parse(fs.readFileSync(srcPath, fileEncoding));
-
-  output = uglify.ast_mangle(output);
-  output = uglify.ast_squeeze(output);
-
-  fs.writeFileSync(outputPath, uglify.gen_code(output), fileEncoding);
-  
-  console.log('READY: ' + outputPath);
-}
-
-/**
- * Copy a file from one directory to another. Used for moving CSS and templates
- * etc. into the distribution directory
- *
- * @param {String} srcPath
- * @param {String} outputPath
- */
-function copy(srcPath, outputPath) {
-  var srcFile = fs.createReadStream(srcPath),
-      outputFile = fs.createWriteStream(outputPath);
-
-  util.pump(srcFile, outputFile);
-
-  console.log('READY: ' + outputPath);
-}
-
-
-// RUN
+//Files to concatenate into main file
 var fileList = [
-  srcDir + '/form.js',
-  srcDir + '/helpers.js',
-  srcDir + '/validators.js',
-  srcDir + '/field.js',
-  srcDir + '/editors.js',
-  srcDir + '/setup.js'
+  'form.js',
+  'helpers.js',
+  'validators.js',
+  'field.js',
+  'editors.js',
+  'setup.js',
+  'templates/default.js'
 ];
 
-//Main file
-build(fileList, outputDir + '/backbone-forms.js', {
-  template: templateDir + '/backbone-forms.js',
-  data: options.templateData
+//Concatenate the main files
+var mainContents = builder(sourceDir)
+  .concat(fileList)
+  .getContent();
+
+//Save regular dev and mini versions
+builder(baseDir)
+  .setContent(mainContents)
+  .wrap('scripts/build-templates/main.js', templateData)
+  .save('distribution/backbone-forms.js')
+  .uglify()
+  .save('distribution/backbone-forms.min.js');
+
+//Main AMD file (for RequireJS)
+builder(baseDir)
+  .setContent(mainContents)
+  .wrap('scripts/build-templates/main.amd.js', templateData)
+  .save('distribution/backbone-forms.amd.js')
+  .uglify()
+  .save('distribution/backbone-forms.amd.min.js');
+
+
+//Standalone template files
+['default', 'bootstrap'].forEach(function(template) {
+  //HTML
+  builder(baseDir)
+    .load('src/templates/'+template+'.js')
+    .wrap('scripts/build-templates/standalone-template.js')
+    .save('distribution/templates/'+template+'.js');
+
+  //CSS
+  builder(baseDir)
+    .load('src/templates/'+template+'.css')
+    .save('distribution/templates/'+template+'.css');
 });
-uglify(outputDir + '/backbone-forms.js', outputDir + '/backbone-forms.min.js');
 
-
-//File for AMD (RequireJS)
-build(fileList, outputDir + '/backbone-forms.amd.js', {
-  template: templateDir + '/backbone-forms.amd.js',
-  data: options.templateData
-});
-uglify(outputDir + '/backbone-forms.amd.js', outputDir + '/backbone-forms.amd.min.js');
-
-
-//Make folders if they don't exist
-try {
-  fs.mkdirSync(outputDir + '/templates');
-} catch (e) {}
-
-try {
-  fs.mkdirSync(outputDir + '/editors');
-} catch (e) {}
-
-try {
-  fs.mkdirSync(outputDir + '/adapters');
-} catch (e) {}
-
-//Copy other files over to distribution
-//Templates
-copy(srcDir + '/templates/default.css', outputDir + '/templates/default.css');
-copy(srcDir + '/templates/default.js', outputDir + '/templates/default.js');
-copy(srcDir + '/templates/bootstrap.css', outputDir + '/templates/bootstrap.css');
-copy(srcDir + '/templates/bootstrap.js', outputDir + '/templates/bootstrap.js');
-copy(srcDir + '/templates/minimal.js', outputDir + '/templates/minimal.js');
 
 //Extra editors
-copy(srcDir + '/editors/list.js', outputDir + '/editors/list.js');
-uglify(srcDir + '/editors/list.js', outputDir + '/editors/list.min.js');
+['list', 'jquery-ui'].forEach(function(name) {
+  builder(baseDir)
+    .load('src/editors/'+name+'.js')
+    .save('distribution/editors/'+name+'.js')
+    .uglify()
+    .save('distribution/editors/'+name+'.min.js');
+
+  if (path.existsSync(baseDir + '/src/editors/'+name+'.css')) {
+    builder(baseDir)
+      .load('src/editors/'+name+'.css')
+      .save('distribution/editors/'+name+'.css');
+  }
+});
+
 
 //Modal adapters
-copy(srcDir + '/../lib/backbone.bootstrap-modal/src/backbone.bootstrap-modal.js', outputDir + '/adapters/backbone.bootstrap-modal.js');
-uglify(srcDir + '/../lib/backbone.bootstrap-modal/src/backbone.bootstrap-modal.js', outputDir + '/adapters/backbone.bootstrap-modal.min.js');
-
-//jQuery UI editors
-copy(srcDir + '/editors/jquery-ui.css', outputDir + '/editors/jquery-ui.css');
-copy(srcDir + '/editors/jquery-ui.js', outputDir + '/editors/jquery-ui.js');
-uglify(srcDir + '/editors/jquery-ui.js', outputDir + '/editors/jquery-ui.min.js');
+builder(baseDir)
+  .load('lib/backbone.bootstrap-modal/src/backbone.bootstrap-modal.js')
+  .save('distribution/adapters/backbone.bootstrap-modal.js')
+  .uglify()
+  .save('distribution/adapters/backbone.bootstrap-modal.min.js');

@@ -1,5 +1,9 @@
-;(function() {
-  var templates = {
+  
+  //TWITTER BOOTSTRAP TEMPLATES
+  //Requires Bootstrap 2.x
+  Form.setTemplates({
+
+    //HTML
     form: '\
       <form class="form-horizontal">{{fieldsets}}</form>\
     ',
@@ -66,11 +70,8 @@
         {{summary}}\
       </div>\
     '
-  };
+  }, {
   
-  var classNames = {
-    error: 'error'
-  };
-
-  Backbone.Form.helpers.setTemplates(templates, classNames);
-})();
+    //CLASSNAMES
+    error: 'error' //Set on the field tag when validation fails
+  });
