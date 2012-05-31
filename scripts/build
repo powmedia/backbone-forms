@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var builder = require('./builder');
+var builder = require('buildify');
 
 var templateData = {
   version: '0.10.0'
@@ -22,14 +22,12 @@ var fileList = [
 ];
 
 //Concatenate the main files
-var mainContents = builder()
-  .setDir(sourceDir)
+var mainContents = builder(sourceDir)
   .concat(fileList)
   .getContent();
 
 //Save regular dev and mini versions
-builder()
-  .setDir(baseDir)
+builder(baseDir)
   .setContent(mainContents)
   .wrap('scripts/build-templates/main.js', templateData)
   .save('distribution/backbone-forms.js')
@@ -37,8 +35,7 @@ builder()
   .save('distribution/backbone-forms.min.js');
 
 //Main AMD file (for RequireJS)
-builder()
-  .setDir(baseDir)
+builder(baseDir)
   .setContent(mainContents)
   .wrap('scripts/build-templates/main.amd.js', templateData)
   .save('distribution/backbone-forms.amd.js')
@@ -49,15 +46,13 @@ builder()
 //Standalone template files
 ['default', 'bootstrap'].forEach(function(template) {
   //HTML
-  builder()
-    .setDir(baseDir)
+  builder(baseDir)
     .load('src/templates/'+template+'.js')
     .wrap('scripts/build-templates/standalone-template.js')
     .save('distribution/templates/'+template+'.js');
 
   //CSS
-  builder()
-    .setDir(baseDir)
+  builder(baseDir)
     .load('src/templates/'+template+'.css')
     .save('distribution/templates/'+template+'.css');
 });
@@ -65,8 +60,7 @@ builder()
 
 //Extra editors
 ['list'].forEach(function(name) {
-  builder()
-    .setDir(baseDir)
+  builder(baseDir)
     .load('src/editors/'+name+'.js')
     .save('distribution/editors/'+name+'.js')
     .uglify()

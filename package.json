@@ -9,6 +9,7 @@
     "backbone": ">=0.9.2"
   },
   "devDependencies": {
+    "buildify": "latest",
     "underscore": "latest",
     "uglify-js": "latest"
   },
