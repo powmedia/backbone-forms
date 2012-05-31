@@ -36,7 +36,6 @@ builder()
   .uglify()
   .save('distribution/backbone-forms.min.js');
 
-
 //Main AMD file (for RequireJS)
 builder()
   .setDir(baseDir)
@@ -47,4 +46,35 @@ builder()
   .save('distribution/backbone-forms.amd.min.js');
 
 
-//Templates
+//Standalone template files
+['default', 'bootstrap'].forEach(function(template) {
+  //HTML
+  builder()
+    .setDir(baseDir)
+    .load('src/templates/'+template+'.js')
+    .wrap('scripts/build-templates/standalone-template.js')
+    .save('distribution/templates/'+template+'.js');
+
+  //CSS
+  builder()
+    .setDir(baseDir)
+    .load('src/templates/'+template+'.css')
+    .save('distribution/templates/'+template+'.css');
+});
+
+
+//Extra editors
+['list'].forEach(function(name) {
+  builder()
+    .setDir(baseDir)
+    .load('src/editors/'+name+'.js')
+    .save('distribution/editors/'+name+'.js')
+    .uglify()
+    .save('distribution/editors/'+name+'.js');
+});
+
+
+//Modal adapters
+
+
+//jQuery UI edtiors
