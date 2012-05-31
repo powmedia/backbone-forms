@@ -12,6 +12,8 @@ builder()
 */
 
 var fs = require('fs'),
+    path = require('path'),
+    mkdirp = require('mkdirp'),
     _ = require('underscore'),
     uglifyJS = require('uglify-js');
 
@@ -33,7 +35,7 @@ function Builder(options) {
   _.templateSettings.interpolate = this.options.interpolate;
 
   //The current directory
-  this.dir = this.options.dir || __dirname;
+  this.setDir(this.options.dir || __dirname);
 
   //The content being acted on
   this.content = '';
@@ -42,10 +44,10 @@ function Builder(options) {
 /**
  * Set the current working directory
  *
- * @param {String} path     Absolute directory path
+ * @param {String} absolutePath     Absolute directory path
  */
-Builder.prototype.setDir = function(path) {
-  this.dir = path;
+Builder.prototype.setDir = function(absolutePath) {
+  this.dir = path.normalize(absolutePath);
 
   return this;
 };
@@ -53,10 +55,10 @@ Builder.prototype.setDir = function(path) {
 /**
  * Change the directory, relateive to the current working directory
  *
- * @param {String} path     Directory path, relative to the current directory
+ * @param {String} relativePath     Directory path, relative to the current directory
  */
-Builder.prototype.changeDir = function(path) {
-  this.dir = this.dir + '/' + path;
+Builder.prototype.changeDir = function(relativePath) {
+  this.setDir(this.dir + '/' + relativePath);
 
   return this;
 };
@@ -84,12 +86,12 @@ Builder.prototype.getContent = function() {
 /**
  * Load file contents
  *
- * @param {String} path     File path relative to current directory
+ * @param {String} file     File path relative to current directory
  */
-Builder.prototype.load = function(path) {
-  path = this.dir + '/' + path;
+Builder.prototype.load = function(file) {
+  file = path.normalize(this.dir + '/' + file);
 
-  this.content = fs.readFileSync(path, this.options.encoding);
+  this.content = fs.readFileSync(file, this.options.encoding);
 
   return this;
 };
@@ -97,21 +99,21 @@ Builder.prototype.load = function(path) {
 /**
  * Concatenate file contents
  * 
- * @param {String|String[]} paths   File path(s) relative to current directory
+ * @param {String|String[]} files   File path(s) relative to current directory
  * @param {String} [eol]            Join character. Default: '\n'
  */
-Builder.prototype.concat = function(paths, eol) {
+Builder.prototype.concat = function(files, eol) {
   eol = eol || this.options.eol;
 
-  if (!_.isArray(paths)) paths = [paths];
+  if (!_.isArray(files)) files = [files];
 
   var dir = this.dir,
       encoding = this.options.encoding;
 
-  var contents = paths.map(function(path) {
-    path = dir + '/' + path;
+  var contents = files.map(function(file) {
+    file = path.normalize(dir + '/' + file);
 
-    return fs.readFileSync(path, encoding);
+    return fs.readFileSync(file, encoding);
   });
 
   this.content = contents.join(eol);
@@ -122,11 +124,11 @@ Builder.prototype.concat = function(paths, eol) {
 /**
  * Wrap the contents in a template
  *
- * @param {String} template       Template file path, relative to current directory. Should have a {{body}} tag where content will go.
+ * @param {String} templatePath   Template file path, relative to current directory. Should have a {{body}} tag where content will go.
  * @param {Object} [templateData] Data to pass to template
  */
 Builder.prototype.wrap = function(templatePath, templateData) {
-  templatePath = this.dir + '/' + templatePath;
+  templatePath = path.normalize(this.dir + '/' + templatePath);
   templateData = templateData || {};
 
   var data = _.extend(templateData, {
@@ -162,28 +164,26 @@ Builder.prototype.uglify = function() {
 /**
  * Save the contents to disk
  *
- * @param {String} path         File path relative to current directory
+ * @param {String} file         File path relative to current directory
  */
-Builder.prototype.save = function(path) {
-  path = this.dir + '/' + path;
+Builder.prototype.save = function(file) {
+  file = path.normalize(this.dir + '/' + file);
 
-  //Create the directory if necessary
-  //TODO: Use recursive mkdir-p lib
-  try {
-    fs.mkdirSync(path);
-  } catch (e) {}
+  var dir = path.dirname(file);
 
-  fs.writeFileSync(path, this.content);
+  mkdirp.sync(dir);
+  
+  fs.writeFileSync(file, this.content);
 
-  if (!this.options.quiet) console.log(path);
+  if (!this.options.quiet) console.log(file);
 
   return this;
 };
 
 /**
- * Reset the contents
+ * Reset/clear the contents
  */
-Builder.prototype.reset = function() {
+Builder.prototype.clear = function() {
   this.content = '';
 
   return this;
