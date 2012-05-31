@@ -5,7 +5,7 @@
  * Requirements when customising templates:
  * - Each template must have one 'parent' element tag.
  * - "data-type" attributes are required.
- * - The main placeholder tags such as {{fieldsets}}, {{fields}}, {{editor}} are required.
+ * - The main placeholder tags such as the following are required: fieldsets, fields
  */
 ;(function() {
   var Form = Backbone.Form;
