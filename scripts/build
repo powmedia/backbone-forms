@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
-var builder = require('buildify');
+var builder = require('buildify'),
+    path = require('path');
 
 var templateData = {
   version: '0.10.0'
@@ -59,16 +60,24 @@ builder(baseDir)
 
 
 //Extra editors
-['list'].forEach(function(name) {
+['list', 'jquery-ui'].forEach(function(name) {
   builder(baseDir)
     .load('src/editors/'+name+'.js')
     .save('distribution/editors/'+name+'.js')
     .uglify()
-    .save('distribution/editors/'+name+'.js');
+    .save('distribution/editors/'+name+'.min.js');
+
+  if (path.existsSync(baseDir + '/src/editors/'+name+'.css')) {
+    builder(baseDir)
+      .load('src/editors/'+name+'.css')
+      .save('distribution/editors/'+name+'.css');
+  }
 });
 
 
 //Modal adapters
-
-
-//jQuery UI edtiors
+builder(baseDir)
+  .load('lib/backbone.bootstrap-modal/src/backbone.bootstrap-modal.js')
+  .save('distribution/adapters/backbone.bootstrap-modal.js')
+  .uglify()
+  .save('distribution/adapters/backbone.bootstrap-modal.min.js');
