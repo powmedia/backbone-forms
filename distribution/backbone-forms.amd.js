@@ -1290,8 +1290,7 @@ Form.editors = (function() {
       //Generate HTML
       _.each(array, function(option) {
         if (_.isObject(option)) {
-          var val = option.val ? option.val : '';
-          html.push('<option value="'+val+'">'+option.label+'</option>');
+          html.push('<option value="'+option.val+'">'+option.label+'</option>');
         }
         else {
           html.push('<option>'+option+'</option>');
