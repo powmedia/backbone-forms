@@ -1,16 +1,16 @@
 /**
- * Backbone Forms v0.9.0
+ * Backbone Forms v0.10.0
  *
  * NOTE:
  * This version is for use with RequireJS
  * If using regular <script> tags to include your files, use backbone-forms.min.js
  *
  * Copyright (c) 2012 Charles Davison, Pow Media Ltd
- *
+ * 
  * License and more information at:
  * http://github.com/powmedia/backbone-forms
  */
-define(['jquery', 'Backbone'], function($, Backbone) {
+define(['jquery', 'underscore', 'Backbone'], function($, _, Backbone) {
 
   
 //==================================================================================================
@@ -20,23 +20,26 @@ define(['jquery', 'Backbone'], function($, Backbone) {
 var Form = (function() {
 
   return Backbone.View.extend({
-    
-    //Field views
-    fields: null,
 
     /**
-     * @param {Object}  Options
-     *      Required:
-     *          schema  {Array}
-     *      Optional:
-     *          model   {Backbone.Model} : Use instead of data, and use commit().
-     *          data    {Array} : Pass this when not using a model. Use getValue() to get out value
-     *          fields  {Array} : Keys of fields to include in the form, in display order (default: all fields)
-     *          fieldsets {Array} : Allows choosing and ordering fields within fieldsets.
-     *          idPrefix {String} : Prefix for editor IDs. If undefined, the model's CID is used.
-     *          template {String} : Template to use. Default to 'form'.
+     * Creates a new form
+     *
+     * @param {Object} options
+     * @param {Model} [options.model]                 Model the form relates to. Required if options.data is not set
+     * @param {Object} [options.data]                 Date to populate the form. Required if options.model is not set
+     * @param {String[]} [options.fields]             Fields to include in the form, in order
+     * @param {String[]|Object[]} [options.fieldsets] How to divide the fields up by section. E.g. [{ legend: 'Title', fields: ['field1', 'field2'] }]        
+     * @param {String} [options.idPrefix]             Prefix for editor IDs. By default, the model's CID is used.
+     * @param {String} [options.template]             Form template key/name
+     * @param {String} [options.fieldsetTemplate]     Fieldset template key/name
+     * @param {String} [options.fieldTemplate]        Field template key/name
+     *
+     * @return {Form}
      */
     initialize: function(options) { 
+      //Check templates have been loaded
+      if (!Form.templates.form) throw new Error('Templates not loaded');
+
       //Get the schema
       this.schema = (function() {
         if (options.schema) return options.schema;
@@ -48,15 +51,25 @@ var Form = (function() {
       
         return model.schema;
       })();
+
+      //Option defaults
+      options = _.extend({
+        template: 'form',
+        fieldsetTemplate: 'fieldset',
+        fieldTemplate: 'field'
+      }, options);
+
+      //Determine fieldsets
+      if (!options.fieldsets) {
+        var fields = options.fields || _.keys(this.schema);
+
+        options.fieldsets = [{ fields: fields }];
+      }
       
-      //Handle other options
+      //Store main attributes
+      this.options = options;
       this.model = options.model;
       this.data = options.data;
-      this.fieldsToRender = options.fields || _.keys(this.schema);
-      this.fieldsets = options.fieldsets;
-      this.templateName = options.template || 'form';
-      
-      //Stores all Field views
       this.fields = {};
     },
 
@@ -65,65 +78,71 @@ var Form = (function() {
      */
     render: function() {
       var self = this,
-          fieldsets = this.fieldsets,
-          templates = Form.templates;
+          options = this.options,
+          template = Form.templates[options.template];
       
       //Create el from template
-      var $form = $(templates[this.templateName]({
-        fieldsets: '<div class="bbf-placeholder"></div>'
+      var $form = $(template({
+        fieldsets: '<b class="bbf-tmp"></b>'
       }));
 
-      //Get a reference to where fieldsets should go
-      var $fieldsetContainer = $('.bbf-placeholder', $form);
+      //Render fieldsets
+      var $fieldsetContainer = $('.bbf-tmp', $form);
 
-      if(!fieldsets) {
-        fieldsets = [{fields: this.fieldsToRender}]
-      }
-
-      //TODO: Update handling of fieldsets
-      _.each(fieldsets, function(fs) {
-        if (_(fs).isArray()) {
-          fs = {'fields': fs};
-        }
-
-        //Concatenating HTML as strings won't work so we need to insert field elements into a placeholder
-        var $fieldset = $(templates.fieldset(_.extend({}, fs, {
-          legend: (fs.legend) ? '<legend>' + fs.legend + '</legend>' : '',
-          fields: '<div class="bbf-placeholder"></div>'
-        })));
-
-        var $fieldsContainer = $('.bbf-placeholder', $fieldset);
-
-        self.renderFields(fs.fields, $fieldsContainer);
-
-        $fieldsContainer = $fieldsContainer.children().unwrap()
-
-        $fieldsetContainer.append($fieldset);
+      _.each(options.fieldsets, function(fieldset) {
+        $fieldsetContainer.append(self.renderFieldset(fieldset));
       });
 
-      $fieldsetContainer.children().unwrap()
+      $fieldsetContainer.children().unwrap();
 
+      //Set the template contents as the main element; removes the wrapper element
       this.setElement($form);
 
       return this;
     },
 
     /**
-     * Render a list of fields. Returns the rendered Field object.
-     * @param {Array}           Fields to render
-     * @param {jQuery}          Wrapped DOM element where field elemends will go
+     * Renders a fieldset and the fields within it
+     *
+     * Valid fieldset definitions:
+     * ['field1', 'field2']
+     * { legend: 'Some Fieldset', fields: ['field1', 'field2'] }
+     *
+     * @param {Object|Array} fieldset     A fieldset definition
+     * 
+     * @return {jQuery}                   The fieldset DOM element
      */
-    renderFields: function (fieldsToRender, $container) {
+    renderFieldset: function(fieldset) {
       var self = this,
+          template = Form.templates[this.options.fieldsetTemplate],
           schema = this.schema,
-          model = this.model,
-          data = this.data,
-          fields = this.fields,
           getNested = Form.helpers.getNested;
-      
-      //Create form fields
-      _.each(fieldsToRender, function(key) {
-        //Get nested schema
+
+      //Normalise to object
+      if (_.isArray(fieldset)) {
+        fieldset = { fields: fieldset };
+      }
+
+      //Concatenating HTML as strings won't work so we need to insert field elements into a placeholder
+      var $fieldset = $(template(_.extend({}, fieldset, {
+        legend: '<b class="bbf-tmp-legend"></b>',
+        fields: '<b class="bbf-tmp-fields"></b>'
+      })));
+
+      //Set legend
+      if (fieldset.legend) {
+        $fieldset.find('.bbf-tmp-legend').replaceWith(fieldset.legend);
+      }
+      //or remove the containing tag if there isn't a legend
+      else {
+        $fieldset.find('.bbf-tmp-legend').parent().remove();
+      }
+
+      var $fieldsContainer = $('.bbf-tmp-fields', $fieldset);
+
+      //Render fields
+      _.each(fieldset.fields, function(key) {
+        //Get the field schema
         var itemSchema = (function() {
           //Return a normal key or path key
           if (schema[key]) return schema[key];
@@ -135,32 +154,50 @@ var Form = (function() {
 
         if (!itemSchema) throw "Field '"+key+"' not found in schema";
 
-        var options = {
-          form: self,
-          key: key,
-          schema: itemSchema,
-          idPrefix: self.options.idPrefix
-        };
-
-        if (model) {
-          options.model = model;
-        } else if (data) {
-          options.value = data[key];
-        } else {
-          options.value = null;
-        }
-
-        var field = new Form.Field(options);
+        //Create the field
+        var field = self.fields[key] = self.createField(key, itemSchema);
 
         //Render the fields with editors, apart from Hidden fields
-        if (itemSchema.type == 'Hidden') {
+        if (schema.type == 'Hidden') {
           field.editor = Form.helpers.createEditor('Hidden', options);
         } else {
-          $container.append(field.render().el);
+          $fieldsContainer.append(field.render().el);
         }
-
-        fields[key] = field;
       });
+
+      $fieldsContainer = $fieldsContainer.children().unwrap()
+
+      return $fieldset;
+    },
+
+    /**
+     * Renders a field and returns it
+     *
+     * @param {String} key            The key for the field in the form schema
+     * @param {Object} schema         Field schema
+     *
+     * @return {Field}                The field view
+     */
+    createField: function(key, schema) {
+      schema.template = schema.template || this.options.fieldTemplate;
+
+      var options = {
+        form: this,
+        key: key,
+        schema: schema,
+        idPrefix: this.options.idPrefix,
+        template: this.options.fieldTemplate
+      };
+
+      if (this.model) {
+        options.model = this.model;
+      } else if (this.data) {
+        options.value = this.data[key];
+      } else {
+        options.value = null;
+      }
+
+      return new Form.Field(options);
     },
 
     /**
@@ -243,7 +280,7 @@ var Form = (function() {
      * Get all the field values as an object.
      * Use this method when passing data instead of objects
      * 
-     * @param {String}  To get a specific field value pass the key name
+     * @param {String} [key]    Specific field value to get
      */
     getValue: function(key) {
       //Return only given key if specified
@@ -260,7 +297,7 @@ var Form = (function() {
     
     /**
      * Update field values, referenced by key
-     * @param {Object}  New values to set
+     * @param {Object} data     New values to set
      */
     setValue: function(data) {
       for (var key in data) {
@@ -284,36 +321,6 @@ var Form = (function() {
 
 })();
 
-
-//==================================================================================================
-//TEMPLATES
-//==================================================================================================
-
-  var defaultTemplates = {
-    form: '\
-      <form class="bbf-form">{{fieldsets}}</form>\
-    ',
-    
-    fieldset: '\
-      <fieldset>\
-        {{legend}}\
-        <ul>{{fields}}</ul>\
-      </fieldset>\
-    ',
-    
-    field: '\
-    <li class="bbf-field bbf-field{{type}}">\
-      <label for="{{id}}">{{title}}</label>\
-      <div class="bbf-editor bbf-editor{{type}}">{{editor}}</div>\
-      <div class="bbf-help">{{help}}</div>\
-    </li>\
-    '
-  };
-
-  var defaultClassNames = {
-    error: 'bbf-error'
-  };
-  
 
 //==================================================================================================
 //HELPERS
@@ -655,26 +662,40 @@ Form.Field = (function() {
      *          model       {Backbone.Model} : Use instead of value, and use commit().
      *          idPrefix    {String} : Prefix to add to the editor DOM element's ID
      */
+    /**
+     * Creates a new field
+     * 
+     * @param {Object} options
+     * @param {Object} [options.schema]     Field schema. Defaults to { type: 'Text' }
+     * @param {Model} [options.model]       Model the field relates to. Required if options.data is not set.
+     * @param {String} [options.key]        Model key/attribute the field relates to.
+     * @param {Mixed} [options.value]       Field value. Required if options.model is not set.
+     * @param {String} [options.idPrefix]   Prefix for the editor ID. By default, the model's CID is used.
+     *
+     * @return {Field}
+     */
     initialize: function(options) {
+      options = options || {};
+
       this.form = options.form;
       this.key = options.key;
       this.value = options.value;
       this.model = options.model;
 
-      //Get schema
-      var schema = this.schema = (function() {
-        //Handle schema type shorthand where the editor name is passed instead of a schema config object
-        if (_.isString(options.schema)) return { type: options.schema };
-
-        return options.schema || {};
-      })();
+      //Turn schema shorthand notation (e.g. 'Text') into schema object
+      if (_.isString(options.schema)) options.schema = { type: options.schema };
       
       //Set schema defaults
-      if (!schema.type) schema.type = 'Text';
-      if (!schema.title) schema.title = helpers.keyToTitle(this.key);
-      if (!schema.template) schema.template = 'field';
+      this.schema = _.extend({
+        type: 'Text',
+        title: helpers.keyToTitle(this.key),
+        template: 'field'
+      }, options.schema);
     },
 
+    /**
+     * Renders the field
+     */
     render: function() {
       var schema = this.schema,
           templates = Form.templates;
@@ -689,10 +710,11 @@ Form.Field = (function() {
       };
 
       //Decide on data delivery type to pass to editors
-      if (this.model)
+      if (this.model) {
         options.model = this.model;
-      else
+      } else {
         options.value = this.value;
+      }
 
       //Decide on the editor to use
       var editor = this.editor = helpers.createEditor(schema.type, options);
@@ -703,17 +725,15 @@ Form.Field = (function() {
         title: schema.title,
         id: editor.id,
         type: schema.type,
-        editor: '<span class="bbf-placeholder-editor"></span>',
-        help: '<span class="bbf-placeholder-help"></span>'
+        editor: '<b class="bbf-tmp-editor"></b>',
+        help: '<b class="bbf-tmp-help"></b>'
       }));
       
       //Render editor
-      var $editorContainer = $('.bbf-placeholder-editor', $field)
-      $editorContainer.append(editor.render().el);
-      $editorContainer.children().unwrap();
+      $field.find('.bbf-tmp-editor').replaceWith(editor.render().el);
 
       //Set help text
-      this.$help = $('.bbf-placeholder-help', $field).parent();
+      this.$help = $('.bbf-tmp-help', $field).parent();
       this.$help.empty();
       if (this.schema.help) this.$help.html(this.schema.help);
       
@@ -723,6 +743,7 @@ Form.Field = (function() {
       //Add custom attributes
       if (this.schema.fieldAttrs) $field.attr(this.schema.fieldAttrs);
       
+      //Replace the generated wrapper tag
       this.setElement($field);
 
       return this;
@@ -732,15 +753,12 @@ Form.Field = (function() {
      * Creates the ID that will be assigned to the editor
      *
      * @return {String}
-     *
-     * @api private
      */
     getId: function() {
       var prefix = this.options.idPrefix,
           id = this.key;
 
       //Replace periods with underscores (e.g. for when using paths)
-      //id = id.replace(new RegExp('\\.', 'g'), '_');
       id = id.replace(/\./g, '_');
 
       //If a specific ID prefix is set, use it
@@ -755,6 +773,7 @@ Form.Field = (function() {
     
     /**
      * Check the validity of the field
+     *
      * @return {String}
      */
     validate: function() {
@@ -772,9 +791,9 @@ Form.Field = (function() {
     /**
      * Set the field into an error state, adding the error class and setting the error message
      *
-     * @param {String} errMsg
+     * @param {String} msg     Error message
      */
-    setError: function(errMsg) {
+    setError: function(msg) {
       //Object and NestedModel types set their own errors internally
       if (this.editor.hasNestedForm) return;
       
@@ -782,7 +801,7 @@ Form.Field = (function() {
 
       this.$el.addClass(errClass);
       
-      if (this.$help) this.$help.html(errMsg);
+      if (this.$help) this.$help.html(msg);
     },
     
     /**
@@ -812,6 +831,7 @@ Form.Field = (function() {
 
     /**
      * Get the value from the editor
+     *
      * @return {Mixed}
      */
     getValue: function() {
@@ -820,17 +840,16 @@ Form.Field = (function() {
     
     /**
      * Set/change the value of the editor
+     *
+     * @param {Mixed} value
      */
     setValue: function(value) {
       this.editor.setValue(value);
     },
 
-    logValue: function() {
-      if (!console || !console.log) return;
-      
-      console.log(this.getValue());
-    },
-
+    /**
+     * Remove the field and editor views
+     */
     remove: function() {
       this.editor.remove();
 
@@ -846,6 +865,8 @@ Form.Field = (function() {
 //========================================================================
 
 Form.editors = (function() {
+
+  var helpers = Form.helpers;
 
   var editors = {};
 
@@ -870,9 +891,8 @@ Form.editors = (function() {
         if (!options.key) throw "Missing option: 'key'";
 
         this.model = options.model;
-        this.key = options.key;
 
-        this.value = this.model.get(this.key);
+        this.value = this.model.get(options.key);
       }
       else if (options.value) {
         this.value = options.value;
@@ -880,6 +900,7 @@ Form.editors = (function() {
       
       if (this.value === undefined) this.value = this.defaultValue;
 
+      this.key = options.key;
       this.form = options.form;
       this.schema = options.schema || {};
       this.validators = options.validators || this.schema.validators;
@@ -950,10 +971,11 @@ Form.editors = (function() {
           getValidator = Form.helpers.getValidator;
 
       if (validators) {
-        _.each(validators, function(validator) {
-          if (!error) {
-            error = getValidator(validator)(value, formValues);
-          }
+        //Run through validators until an error is found
+        _.every(validators, function(validator) {
+          error = getValidator(validator)(value, formValues);
+
+          return continueLoop = error ? false : true;
         });
       }
 
@@ -1051,7 +1073,15 @@ Form.editors = (function() {
     },
     
     setValue: function(value) {
-      value = value === null ? null : parseFloat(value, 10);
+      value = (function() {
+        if (_.isNumber(value)) return value;
+
+        if (_.isString(value) && value !== '') return parseFloat(value, 10);
+
+        return null;
+      })();
+
+      if (_.isNaN(value)) value = null;
       
       editors.Text.prototype.setValue.call(this, value);
     }
@@ -1394,9 +1424,9 @@ Form.editors = (function() {
    * 
    * Creates a child form. For editing Javascript objects
    * 
-   * Special options:
-   *   schema.subSchema:    Subschema for object.
-   *   idPrefix, 
+   * @param {Object} options
+   * @param {Object} options.schema             The schema for the object
+   * @param {Object} options.schema.subSchema   The schema for the nested form
    */
   editors.Object = editors.Base.extend({
     //Prevent error classes being set on the main control; they are internally on the individual fields
@@ -1404,36 +1434,35 @@ Form.editors = (function() {
 
     className: 'bbf-object',
 
-    defaultValue: {},
-
     initialize: function(options) {
+      //Set default value for the instance so it's not a shared object
+      this.value = {};
+
+      //Init
       editors.Base.prototype.initialize.call(this, options);
 
-      if (!this.schema.subSchema)
-        throw "Missing required 'schema.subSchema' option for Object editor";
+      //Check required options
+      if (!this.schema.subSchema) throw new Error("Missing required 'schema.subSchema' option for Object editor");
     },
 
     render: function() {
-      var $el = this.$el,
-          data = this.value || {},
-          key = this.key,
-          schema = this.schema,
-          objSchema = schema.subSchema;
-
+      //Create the nested form
       this.form = new Form({
-        schema: objSchema,
-        data: data,
-        idPrefix: this.id + '_'
+        schema: this.schema.subSchema,
+        data: this.value,
+        idPrefix: this.id + '_',
+        fieldTemplate: 'nestedField'
       });
 
-      //Render form
-      $el.html(this.form.render().el);
+      this.$el.html(this.form.render().el);
 
       return this;
     },
 
     getValue: function() {
-      return this.form.getValue();
+      if (this.form) return this.form.getValue();
+
+      return this.value;
     },
     
     setValue: function(value) {
@@ -1484,7 +1513,8 @@ Form.editors = (function() {
       this.form = new Form({
         schema: nestedModelSchema,
         model: new nestedModel(data),
-        idPrefix: this.id + '_'
+        idPrefix: this.id + '_',
+        fieldTemplate: 'nestedField'
       });
 
       //Render form
@@ -1512,17 +1542,355 @@ Form.editors = (function() {
   });
 
 
+
+  /**
+   * DATE
+   *
+   * Schema options
+   * @param {Number|String} [options.schema.yearStart]  First year in list. Default: 100 years ago
+   * @param {Number|String} [options.schema.yearEnd]    Last year in list. Default: current year
+   *
+   * Config options (if not set, defaults to options stored on the main Date class)
+   * @param {Boolean} [options.showMonthNames]  Use month names instead of numbers. Default: true
+   * @param {String[]} [options.monthNames]     Month names. Default: Full English names
+   */
+  editors.Date = editors.Base.extend({
+
+    events: {
+      'change select': 'updateHidden'
+    },
+
+    initialize: function(options) {
+      options = options || {}
+
+      editors.Base.prototype.initialize.call(this, options);
+
+      var Self = editors.Date,
+          today = new Date;
+
+      //Option defaults
+      this.options = _.extend({
+        monthNames: Self.monthNames,
+        showMonthNames: Self.showMonthNames
+      }, options);
+
+      //Schema defaults
+      this.schema = _.extend({
+        yearStart: today.getFullYear() - 100,
+        yearEnd: today.getFullYear()
+      }, options.schema || {});
+            
+      //Cast to Date
+      if (this.value && !_.isDate(this.value)) {
+        this.value = new Date(this.value);
+      }
+      
+      //Set default date
+      if (!this.value) {
+        var date = new Date();
+        date.setSeconds(0);
+        date.setMilliseconds(0);
+        
+        this.value = date;
+      }
+    },
+
+    render: function() {
+      var options = this.options,
+          schema = this.schema;
+
+      var datesOptions = _.map(_.range(1, 32), function(date) {
+        return '<option value="'+date+'">' + date + '</option>';
+      });
+
+      var monthsOptions = _.map(_.range(0, 12), function(month) {
+        var value = options.showMonthNames ? options.monthNames[month] : (month + 1);
+        return '<option value="'+month+'">' + value + '</option>';
+      });
+
+      var yearsOptions = _.map(_.range(schema.yearStart, schema.yearEnd + 1), function(year) {
+        return '<option value="'+year+'">' + year + '</option>';
+      });
+
+      //Render the selects
+      var $el = $(Form.templates.date({
+        dates: datesOptions.join(''),
+        months: monthsOptions.join(''),
+        years: yearsOptions.join('')
+      }));
+
+      //Store references to selects
+      this.$date = $el.find('[data-type="date"]');
+      this.$month = $el.find('[data-type="month"]');
+      this.$year = $el.find('[data-type="year"]');
+
+      //Create the hidden field to store values in case POSTed to server
+      this.$hidden = $('<input type="hidden" name="'+this.key+'" />');
+      $el.append(this.$hidden);
+
+      //Set value on this and hidden field
+      this.setValue(this.value);
+
+      //Remove the wrapper tag
+      this.setElement($el);
+      this.$el.attr('id', this.id);
+
+      return this;
+    },
+
+    /**
+    * @return {Date}   Selected date
+    */
+    getValue: function() {
+      var year = this.$year.val(),
+          month = this.$month.val(),
+          date = this.$date.val();
+
+      if (!year || !month || !date) return null;
+
+      return new Date(year, month, date);
+    },
+    
+    /**
+     * @param {Date} date
+     */
+    setValue: function(date) {
+      this.$date.val(date.getDate());
+      this.$month.val(date.getMonth());
+      this.$year.val(date.getFullYear());
+
+      this.updateHidden();
+    },
+
+    /**
+     * Update the hidden input which is maintained for when submitting a form
+     * via a normal browser POST
+     */
+    updateHidden: function() {
+      var val = this.getValue();
+      if (_.isDate(val)) val = val.toISOString();
+
+      this.$hidden.val(val);
+    }
+
+  }, {
+    //STATICS
+
+    //Whether to show month names instead of numbers
+    showMonthNames: true,
+
+    //Month names to use if showMonthNames is true
+    //Replace for localisation, e.g. Form.editors.Date.monthNames = ['Janvier', 'Fevrier'...]
+    monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+  });
+
+
+  /**
+   * DATETIME
+   * 
+   * @param {Editor} [options.DateEditor]           Date editor view to use (not definition)
+   * @param {Number} [options.schema.minsInterval]  Interval between minutes. Default: 15
+   */
+  editors.DateTime = editors.Base.extend({
+
+    events: {
+      'change select': 'updateHidden'
+    },
+
+    initialize: function(options) {
+      options = options || {};
+
+      editors.Base.prototype.initialize.call(this, options);
+
+      //Option defaults
+      this.options = _.extend({
+        DateEditor: editors.DateTime.DateEditor
+      }, options);
+
+      //Schema defaults
+      this.schema = _.extend({
+        minsInterval: 15
+      }, options.schema || {});
+
+      //Create embedded date editor
+      this.dateEditor = new this.options.DateEditor(options);
+
+      this.value = this.dateEditor.value;
+    },
+
+    render: function() {
+      function pad(n) {
+        return n < 10 ? '0' + n : n
+      }
+
+      var schema = this.schema;
+
+      //Create options
+      var hoursOptions = _.map(_.range(0, 24), function(hour) {
+        return '<option value="'+hour+'">' + pad(hour) + '</option>';
+      });
+
+      var minsOptions = _.map(_.range(0, 60, schema.minsInterval), function(min) {
+        return '<option value="'+min+'">' + pad(min) + '</option>';
+      });
+
+      //Render time selects
+      var $el = $(Form.templates.dateTime({
+        date: '<b class="bbf-tmp"></b>',
+        hours: hoursOptions.join(),
+        mins: minsOptions.join()
+      }));
+
+      //Include the date editor
+      $el.find('.bbf-tmp').replaceWith(this.dateEditor.render().el);
+
+      //Store references to selects
+      this.$hour = $el.find('[data-type="hour"]');
+      this.$min = $el.find('[data-type="min"]');
+
+      //Get the hidden date field to store values in case POSTed to server
+      this.$hidden = $el.find('input[type="hidden"]');
+      
+      //Set time
+      this.setValue(this.value);
+
+      this.setElement($el);
+      this.$el.attr('id', this.id);
+
+      return this;
+    },
+
+    /**
+    * @return {Date}   Selected datetime
+    */
+    getValue: function() {
+      var date = this.dateEditor.getValue();
+
+      var hour = this.$hour.val(),
+          min = this.$min.val();
+
+      if (!date || !hour || !min) return null;
+
+      date.setHours(hour);
+      date.setMinutes(min);
+
+      return date;
+    },
+    
+    setValue: function(date) {
+      this.dateEditor.setValue(date);
+      
+      this.$hour.val(date.getHours());
+      this.$min.val(date.getMinutes());
+
+      this.updateHidden();
+    },
+
+    /**
+     * Update the hidden input which is maintained for when submitting a form
+     * via a normal browser POST
+     */
+    updateHidden: function() {
+      var val = this.getValue();
+      if (_.isDate(val)) val = val.toISOString();
+
+      this.$hidden.val(val);
+    }
+
+  }, {
+    //STATICS
+
+    //The date editor to use (constructor function, not instance)
+    DateEditor: editors.Date
+  });
+
   return editors;
 
 })();
 
 
+  //SETUP
+  
   //Add function shortcuts
   Form.setTemplates = Form.helpers.setTemplates;
   Form.setTemplateCompiler = Form.helpers.setTemplateCompiler;
-  
-  //Make default templates active
-  Form.setTemplates(defaultTemplates, defaultClassNames);
+
+  Form.templates = {};
+
+
+  //DEFAULT TEMPLATES
+  Form.setTemplates({
+    
+    //HTML
+    form: '\
+      <form class="bbf-form">{{fieldsets}}</form>\
+    ',
+    
+    fieldset: '\
+      <fieldset>\
+        <legend>{{legend}}</legend>\
+        <ul>{{fields}}</ul>\
+      </fieldset>\
+    ',
+    
+    field: '\
+      <li class="bbf-field">\
+        <label for="{{id}}">{{title}}</label>\
+        <div class="bbf-editor">{{editor}}</div>\
+        <div class="bbf-help">{{help}}</div>\
+      </li>\
+    ',
+
+    nestedField: '\
+      <li class="bbf-field" title="{{title}}">\
+        <label for="{{id}}">{{title}}</label>\
+        <div class="bbf-editor">{{editor}}</div>\
+        <div class="bbf-help">{{help}}</div>\
+      </li>\
+    ',
+
+    list: '\
+      <div class="bbf-list">\
+        <ul>{{items}}</ul>\
+        <div class="bbf-actions"><button data-action="add">Add</div>\
+      </div>\
+    ',
+
+    listItem: '\
+      <li>\
+        <button data-action="remove" class="bbf-remove">x</button>\
+        <div class="bbf-editor-container">{{editor}}</div>\
+      </li>\
+    ',
+
+    date: '\
+      <div class="bbf-date">\
+        <select data-type="date" class="bbf-date">{{dates}}</select>\
+        <select data-type="month" class="bbf-month">{{months}}</select>\
+        <select data-type="year" class="bbf-year">{{years}}</select>\
+      </div>\
+    ',
+
+    dateTime: '\
+      <div class="bbf-datetime">\
+        <div class="bbf-date-container">{{date}}</div>\
+        <select data-type="hour">{{hours}}</select>\
+        :\
+        <select data-type="min">{{mins}}</select>\
+      </div>\
+    ',
+
+    'list.Modal': '\
+      <div class="bbf-list-modal">\
+        {{summary}}\
+      </div>\
+    '
+  }, {
+
+    //CLASSNAMES
+    error: 'bbf-error'
+
+  });
 
 
 

@@ -10,51 +10,49 @@
 ;(function() {
   var Form = Backbone.Form;
 
-    
-  //TWITTER BOOTSTRAP TEMPLATES
-  //Requires Bootstrap 2.x
+  
+  //DEFAULT TEMPLATES
   Form.setTemplates({
-
+    
     //HTML
     form: '\
-      <form class="form-horizontal">{{fieldsets}}</form>\
+      <form class="bbf-form">{{fieldsets}}</form>\
     ',
-
+    
     fieldset: '\
       <fieldset>\
         <legend>{{legend}}</legend>\
-        {{fields}}\
+        <ul>{{fields}}</ul>\
       </fieldset>\
     ',
-
+    
     field: '\
-      <div class="control-group">\
-        <label class="control-label" for="{{id}}">{{title}}</label>\
-        <div class="controls">\
-          <div class="input-xlarge">{{editor}}</div>\
-          <div class="help-block">{{help}}</div>\
-        </div>\
-      </div>\
+      <li class="bbf-field">\
+        <label for="{{id}}">{{title}}</label>\
+        <div class="bbf-editor">{{editor}}</div>\
+        <div class="bbf-help">{{help}}</div>\
+      </li>\
     ',
 
     nestedField: '\
-      <div>\
-        <div title="{{title}}" class="input-xlarge">{{editor}}</div>\
-        <div class="help-block">{{help}}</div>\
-      </div>\
+      <li class="bbf-field" title="{{title}}">\
+        <label for="{{id}}">{{title}}</label>\
+        <div class="bbf-editor">{{editor}}</div>\
+        <div class="bbf-help">{{help}}</div>\
+      </li>\
     ',
 
     list: '\
       <div class="bbf-list">\
-        <ul class="unstyled clearfix">{{items}}</ul>\
-        <button class="btn bbf-add" data-action="add">Add</div>\
+        <ul>{{items}}</ul>\
+        <div class="bbf-actions"><button data-action="add">Add</div>\
       </div>\
     ',
 
     listItem: '\
-      <li class="clearfix">\
-        <div class="pull-left">{{editor}}</div>\
-        <button class="btn bbf-del" data-action="remove">x</button>\
+      <li>\
+        <button data-action="remove" class="bbf-remove">x</button>\
+        <div class="bbf-editor-container">{{editor}}</div>\
       </li>\
     ',
 
@@ -68,12 +66,10 @@
 
     dateTime: '\
       <div class="bbf-datetime">\
-        <p>{{date}}</p>\
-        <p>\
-          <select data-type="hour" style="width: 4em">{{hours}}</select>\
-          :\
-          <select data-type="min" style="width: 4em">{{mins}}</select>\
-        </p>\
+        <div class="bbf-date-container">{{date}}</div>\
+        <select data-type="hour">{{hours}}</select>\
+        :\
+        <select data-type="min">{{mins}}</select>\
       </div>\
     ',
 
@@ -83,9 +79,10 @@
       </div>\
     '
   }, {
-  
+
     //CLASSNAMES
-    error: 'error' //Set on the field tag when validation fails
+    error: 'bbf-error'
+
   });
 
 

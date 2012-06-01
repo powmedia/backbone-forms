@@ -5,6 +5,8 @@
 
 Form.editors = (function() {
 
+  var helpers = Form.helpers;
+
   var editors = {};
 
   /**
@@ -28,9 +30,8 @@ Form.editors = (function() {
         if (!options.key) throw "Missing option: 'key'";
 
         this.model = options.model;
-        this.key = options.key;
 
-        this.value = this.model.get(this.key);
+        this.value = this.model.get(options.key);
       }
       else if (options.value) {
         this.value = options.value;
@@ -38,6 +39,7 @@ Form.editors = (function() {
       
       if (this.value === undefined) this.value = this.defaultValue;
 
+      this.key = options.key;
       this.form = options.form;
       this.schema = options.schema || {};
       this.validators = options.validators || this.schema.validators;
@@ -108,10 +110,11 @@ Form.editors = (function() {
           getValidator = Form.helpers.getValidator;
 
       if (validators) {
-        _.each(validators, function(validator) {
-          if (!error) {
-            error = getValidator(validator)(value, formValues);
-          }
+        //Run through validators until an error is found
+        _.every(validators, function(validator) {
+          error = getValidator(validator)(value, formValues);
+
+          return continueLoop = error ? false : true;
         });
       }
 
@@ -560,9 +563,9 @@ Form.editors = (function() {
    * 
    * Creates a child form. For editing Javascript objects
    * 
-   * Special options:
-   *   schema.subSchema:    Subschema for object.
-   *   idPrefix, 
+   * @param {Object} options
+   * @param {Object} options.schema             The schema for the object
+   * @param {Object} options.schema.subSchema   The schema for the nested form
    */
   editors.Object = editors.Base.extend({
     //Prevent error classes being set on the main control; they are internally on the individual fields
@@ -570,36 +573,35 @@ Form.editors = (function() {
 
     className: 'bbf-object',
 
-    defaultValue: {},
-
     initialize: function(options) {
+      //Set default value for the instance so it's not a shared object
+      this.value = {};
+
+      //Init
       editors.Base.prototype.initialize.call(this, options);
 
-      if (!this.schema.subSchema)
-        throw "Missing required 'schema.subSchema' option for Object editor";
+      //Check required options
+      if (!this.schema.subSchema) throw new Error("Missing required 'schema.subSchema' option for Object editor");
     },
 
     render: function() {
-      var $el = this.$el,
-          data = this.value || {},
-          key = this.key,
-          schema = this.schema,
-          objSchema = schema.subSchema;
-
+      //Create the nested form
       this.form = new Form({
-        schema: objSchema,
-        data: data,
-        idPrefix: this.id + '_'
+        schema: this.schema.subSchema,
+        data: this.value,
+        idPrefix: this.id + '_',
+        fieldTemplate: 'nestedField'
       });
 
-      //Render form
-      $el.html(this.form.render().el);
+      this.$el.html(this.form.render().el);
 
       return this;
     },
 
     getValue: function() {
-      return this.form.getValue();
+      if (this.form) return this.form.getValue();
+
+      return this.value;
     },
     
     setValue: function(value) {
@@ -650,7 +652,8 @@ Form.editors = (function() {
       this.form = new Form({
         schema: nestedModelSchema,
         model: new nestedModel(data),
-        idPrefix: this.id + '_'
+        idPrefix: this.id + '_',
+        fieldTemplate: 'nestedField'
       });
 
       //Render form
@@ -677,6 +680,268 @@ Form.editors = (function() {
 
   });
 
+
+
+  /**
+   * DATE
+   *
+   * Schema options
+   * @param {Number|String} [options.schema.yearStart]  First year in list. Default: 100 years ago
+   * @param {Number|String} [options.schema.yearEnd]    Last year in list. Default: current year
+   *
+   * Config options (if not set, defaults to options stored on the main Date class)
+   * @param {Boolean} [options.showMonthNames]  Use month names instead of numbers. Default: true
+   * @param {String[]} [options.monthNames]     Month names. Default: Full English names
+   */
+  editors.Date = editors.Base.extend({
+
+    events: {
+      'change select': 'updateHidden'
+    },
+
+    initialize: function(options) {
+      options = options || {}
+
+      editors.Base.prototype.initialize.call(this, options);
+
+      var Self = editors.Date,
+          today = new Date;
+
+      //Option defaults
+      this.options = _.extend({
+        monthNames: Self.monthNames,
+        showMonthNames: Self.showMonthNames
+      }, options);
+
+      //Schema defaults
+      this.schema = _.extend({
+        yearStart: today.getFullYear() - 100,
+        yearEnd: today.getFullYear()
+      }, options.schema || {});
+            
+      //Cast to Date
+      if (this.value && !_.isDate(this.value)) {
+        this.value = new Date(this.value);
+      }
+      
+      //Set default date
+      if (!this.value) {
+        var date = new Date();
+        date.setSeconds(0);
+        date.setMilliseconds(0);
+        
+        this.value = date;
+      }
+    },
+
+    render: function() {
+      var options = this.options,
+          schema = this.schema;
+
+      var datesOptions = _.map(_.range(1, 32), function(date) {
+        return '<option value="'+date+'">' + date + '</option>';
+      });
+
+      var monthsOptions = _.map(_.range(0, 12), function(month) {
+        var value = options.showMonthNames ? options.monthNames[month] : (month + 1);
+        return '<option value="'+month+'">' + value + '</option>';
+      });
+
+      var yearsOptions = _.map(_.range(schema.yearStart, schema.yearEnd + 1), function(year) {
+        return '<option value="'+year+'">' + year + '</option>';
+      });
+
+      //Render the selects
+      var $el = $(Form.templates.date({
+        dates: datesOptions.join(''),
+        months: monthsOptions.join(''),
+        years: yearsOptions.join('')
+      }));
+
+      //Store references to selects
+      this.$date = $el.find('[data-type="date"]');
+      this.$month = $el.find('[data-type="month"]');
+      this.$year = $el.find('[data-type="year"]');
+
+      //Create the hidden field to store values in case POSTed to server
+      this.$hidden = $('<input type="hidden" name="'+this.key+'" />');
+      $el.append(this.$hidden);
+
+      //Set value on this and hidden field
+      this.setValue(this.value);
+
+      //Remove the wrapper tag
+      this.setElement($el);
+      this.$el.attr('id', this.id);
+
+      return this;
+    },
+
+    /**
+    * @return {Date}   Selected date
+    */
+    getValue: function() {
+      var year = this.$year.val(),
+          month = this.$month.val(),
+          date = this.$date.val();
+
+      if (!year || !month || !date) return null;
+
+      return new Date(year, month, date);
+    },
+    
+    /**
+     * @param {Date} date
+     */
+    setValue: function(date) {
+      this.$date.val(date.getDate());
+      this.$month.val(date.getMonth());
+      this.$year.val(date.getFullYear());
+
+      this.updateHidden();
+    },
+
+    /**
+     * Update the hidden input which is maintained for when submitting a form
+     * via a normal browser POST
+     */
+    updateHidden: function() {
+      var val = this.getValue();
+      if (_.isDate(val)) val = val.toISOString();
+
+      this.$hidden.val(val);
+    }
+
+  }, {
+    //STATICS
+
+    //Whether to show month names instead of numbers
+    showMonthNames: true,
+
+    //Month names to use if showMonthNames is true
+    //Replace for localisation, e.g. Form.editors.Date.monthNames = ['Janvier', 'Fevrier'...]
+    monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+  });
+
+
+  /**
+   * DATETIME
+   * 
+   * @param {Editor} [options.DateEditor]           Date editor view to use (not definition)
+   * @param {Number} [options.schema.minsInterval]  Interval between minutes. Default: 15
+   */
+  editors.DateTime = editors.Base.extend({
+
+    events: {
+      'change select': 'updateHidden'
+    },
+
+    initialize: function(options) {
+      options = options || {};
+
+      editors.Base.prototype.initialize.call(this, options);
+
+      //Option defaults
+      this.options = _.extend({
+        DateEditor: editors.DateTime.DateEditor
+      }, options);
+
+      //Schema defaults
+      this.schema = _.extend({
+        minsInterval: 15
+      }, options.schema || {});
+
+      //Create embedded date editor
+      this.dateEditor = new this.options.DateEditor(options);
+
+      this.value = this.dateEditor.value;
+    },
+
+    render: function() {
+      function pad(n) {
+        return n < 10 ? '0' + n : n
+      }
+
+      var schema = this.schema;
+
+      //Create options
+      var hoursOptions = _.map(_.range(0, 24), function(hour) {
+        return '<option value="'+hour+'">' + pad(hour) + '</option>';
+      });
+
+      var minsOptions = _.map(_.range(0, 60, schema.minsInterval), function(min) {
+        return '<option value="'+min+'">' + pad(min) + '</option>';
+      });
+
+      //Render time selects
+      var $el = $(Form.templates.dateTime({
+        date: '<b class="bbf-tmp"></b>',
+        hours: hoursOptions.join(),
+        mins: minsOptions.join()
+      }));
+
+      //Include the date editor
+      $el.find('.bbf-tmp').replaceWith(this.dateEditor.render().el);
+
+      //Store references to selects
+      this.$hour = $el.find('[data-type="hour"]');
+      this.$min = $el.find('[data-type="min"]');
+
+      //Get the hidden date field to store values in case POSTed to server
+      this.$hidden = $el.find('input[type="hidden"]');
+      
+      //Set time
+      this.setValue(this.value);
+
+      this.setElement($el);
+      this.$el.attr('id', this.id);
+
+      return this;
+    },
+
+    /**
+    * @return {Date}   Selected datetime
+    */
+    getValue: function() {
+      var date = this.dateEditor.getValue();
+
+      var hour = this.$hour.val(),
+          min = this.$min.val();
+
+      if (!date || !hour || !min) return null;
+
+      date.setHours(hour);
+      date.setMinutes(min);
+
+      return date;
+    },
+    
+    setValue: function(date) {
+      this.dateEditor.setValue(date);
+      
+      this.$hour.val(date.getHours());
+      this.$min.val(date.getMinutes());
+
+      this.updateHidden();
+    },
+
+    /**
+     * Update the hidden input which is maintained for when submitting a form
+     * via a normal browser POST
+     */
+    updateHidden: function() {
+      var val = this.getValue();
+      if (_.isDate(val)) val = val.toISOString();
+
+      this.$hidden.val(val);
+    }
+
+  }, {
+    //STATICS
+
+    //The date editor to use (constructor function, not instance)
+    DateEditor: editors.Date
+  });
 
   return editors;
 

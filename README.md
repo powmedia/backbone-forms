@@ -1,31 +1,47 @@
 #backbone-forms
 
-A flexible, customisable form framework for Backbone.JS applications. Includes validation, nested models and custom editors.
+A flexible, customisable form framework for Backbone.JS applications.
 
-Simply define a schema on your models and the forms will be auto-generated for you:
+- Simple schema definition to auto-generate forms
+- Validation
+- Nested forms
+- Advanced and custom editors (e.g. NestedModel, List, Date, DateTime)
+- Custom HTML templates
+
+
+###Example
 
     var User = Backbone.Model.extend({
         schema: {
+            title:      { type: 'Select', options: ['Mr', 'Mrs', 'Ms'] },
             name:       'Text',
-            email:      { dataType: 'email', validators: ['required', 'email'] },
-            start:      { type: 'DateTime' },
-            contact:    { type: 'Object', subSchema: {
-                            name: { validators: ['required'] },
-                            phone: {}
-                        }},
+            email:      { validators: ['required', 'email'] },
+            birthday:   'Date',
+            password:   'Password',
             address:    { type: 'NestedModel', model: Address },
-            notes:      { type: 'List', help: 'Helpful notes' }
+            notes:      { type: 'List', listType: 'Text' }
         }
     });
     
-The schema above will automatically create a form similar to this:
+    var user = new User();
+    
+    var form = new Backbone.Form({
+        model: user
+    }).render();
+    
+    $('body').append(form.el);
 
-![Example form](http://i56.tinypic.com/a3zfyt.png)
+
+###Live editable demos
+- [User form](http://jsfiddle.net/evilcelery/VkUFu/)
+- [Form with Bootstrap templates and a List of NestedModels using the Bootstrap Modal adapter](http://jsfiddle.net/evilcelery/4XZMb/)
 
 
 
 <a name="top"/>
-##Table of Contents:
+##Guide
+
+###Table of Contents:
 - [Installation](#installation)
 - [Usage](#usage)
 - [Schema Definition](#schema-definition)
@@ -50,26 +66,27 @@ The schema above will automatically create a form similar to this:
 
 
 <a name="installation"/>
-#Installation
+##Installation
 
 Dependencies:
-- [Backbone 0.9.1](http://documentcloud.github.com/backbone/)
+- [Backbone 0.9.2](http://documentcloud.github.com/backbone/)
 
 
 Include backbone-forms.js and backbone-forms.css:
 
-    <link href="backbone-forms/distribution/backbone-forms.css" rel="stylesheet" type="text/css"/> 
     <script src="backbone-forms/distribution/backbone-forms.min.js"></script>
+    <link href="backbone-forms/distribution/templates/default.css" rel="stylesheet" />
 
-Optionally, you can include the extra editors, for example those that require jQuery UI:
+Optionally, you can include the extra editors, for example the List editor:
 
-    <script src="backbone-forms/distribution/editors/jquery-ui.min.js"></script>
+    <script src="backbone-forms/distribution/editors/list.min.js"></script>
     
-To use a custom template pack, e.g. Bootstrap, include the relevant file after backbone-forms.js:
+To use a custom template pack, e.g. Bootstrap, include the relevants file after backbone-forms.js. You can remove `templates/default.css` and replace it with `templates/bootstrap.css`.
 
     <script src="backbone-forms/distribution/templates/bootstrap.js"></script>
+    <link href="backbone-forms/distribution/templates/bootstrap.css" rel="stylesheet" />
 
-If you use BackboneJS with node.js, you can just `require('backbone-forms');` in your index file.
+If you use Backbone with node.js, you can just `require('backbone-forms');` in your index file.
 
 Note there is also a distribution file for RequireJS / AMD.
 
@@ -78,40 +95,30 @@ Note there is also a distribution file for RequireJS / AMD.
 
 
 <a name="usage"/>
-#Usage
+##Usage
 
 Define a 'schema' attribute on your Backbone models. The schema keys should match the attributes that get set on the model. `type` defaults to `Text`.  When you don't need to specify any options you can use the shorthand by passing the editor name as a string.
 See [schema definition](#schema-definition) for more information.
 
     var User = Backbone.Model.extend({
         schema: {
+            title:      { type: 'Select', options: ['Mr', 'Mrs', 'Ms'] },
             name:       'Text',
-            email:      { dataType: 'email', validators: ['required', 'email'] },
-            start:      { type: 'DateTime' },
-            contact:    { type: 'Object', subSchema: {
-                            name: 'Text',
-                            phone: {}
-                        }},
+            email:      { validators: ['required', 'email'] },
+            birthday:   'Date',
+            password:   'Password',
             address:    { type: 'NestedModel', model: Address },
-            notes:      { type: 'List' }
+            notes:      { type: 'List', listType: 'Text' }
         }
     });
     
     var user = new User();
     
-    var formView = Backbone.View.extend({
-        render: function() {
-            var form = new Backbone.Form({
-                model: user
-            }).render();
-            
-            $(this.el).append(form.el);
-            
-            return this;
-        }
-    });
+    var form = new Backbone.Form({
+        model: user
+    }).render();
     
-    $('body').append(formView.el);
+    $('body').append(form.el);
 
 
 Once the user is done with the form, call commit() to apply the updated values to the model. If there are validation errors they will be returned. See [validation](#validation) for more information.
@@ -121,20 +128,27 @@ Once the user is done with the form, call commit() to apply the updated values t
 To update a field after the form has been rendered, use `setValue`:
 
     model.bind('change:name', function(model, name) {
-        form.fields.name.setValue(name);
+        form.setValue({ name: name });
     });
 
 
-##Usage without models
+###Usage without models
 
 You can create a form without tying it to a model. For example, to create a form for a simple object of data:
 
     var form = new Backbone.Form({
-        data: { id: 123, name: 'Rod Kimble', password: 'cool beans' }, //Data to populate the form with
+        //Data to populate the form with
+        data: {
+          id: 123,
+          name: 'Rod Kimble',
+          password: 'cool beans'
+        },
+        
+        //Schema
         schema: {
-            id:         { type: 'Number' },
-            name:       {},
-            password:   { type: 'Password' }
+            id:         'Number',
+            name:       'Text',
+            password:   'Password'
         }
     }).render();
 
@@ -143,15 +157,12 @@ Then instead of form.commit(), do:
     var data = form.getValue(); //Returns object with new form values
 
 
-##Initial data
+###Initial data
 If a form has a model attached to it, the initial values are taken from the model's defaults. Otherwise, you may pass default values using the `schema.data`.
-
-[Back to top](#top)
-
 
 
 <a name="schema-definition"/>
-#Schema definition
+##Schema definition
 
 The schema defined on your model can be the schema object itself, or a function that returns a schema object. This can be useful if you're referencing variables that haven't been initialized yet.
 
@@ -168,12 +179,15 @@ The following default editors are included:
 - [Radio](#editor-radio)
 - [Object](#editor-object)
 - [NestedModel](#editor-nestedmodel)
-
-In addition there is a separate file with editors that depend on jQuery UI:
-
 - [Date](#editor-date)
 - [DateTime](#editor-datetime)
-- [List](#editor-list) (Editable and sortable. Can use any of the other editors for each item)
+- [List](#editor-list) An editable list of items (included in a separate file: distribution/editors/list.min.js)
+
+
+The old jQuery editors are still included but may be moved to another repository:
+- [jqueryui.List](#editor-jui-list)
+- jqueryui.Date (uses the jQuery UI popup calendar)
+- jqueryui.DateTime
 
 
 
@@ -318,16 +332,65 @@ Examples:
     };
     
 
+
+<a name="editor-date"/>
+##Date
+
+Creates `<select>`s for date, month and year.
+
+**`yearStart`**
+- First year in the list. Default: 100 years ago
+
+**`yearEnd`**
+- Last year in the list. Default: current year
+
+
+####Extra options
+You can customise the way this editor behaves, throughout your app:
+
+    var editors = Backbone.Form.editors;
+    
+    editors.Date.showMonthNames = false; //Defaults to true
+    editors.Date.monthNames = ['Jan', 'Feb', ...] //Defaults to full month names in English
+
+
+<a name="editor-datetime"/>
+##DateTime
+
+Creates a Date editor and adds `<select>`s for time (hours and minutes).
+
+**`minsInterval`**
+
+- Optional. Controls the numbers in the minutes dropdown.
+- Defaults to 15, so it is populated with 0, 15, 30, and 45 minutes.
+
+
 <a name="editor-list"/>
 ##List
 
-Creates a sortable and editable list of items, which can be any of the above schema types, e.g. Object, Number, Text etc. Currently requires jQuery UI for creating dialogs etc.
+Creates a list of items that can be added, removed and edited. Used to manage arrays of data.
 
-**`listType`**
+This is a special editor which is in **a separate file and must be included**:
+
+    <script src="backbone-forms/distribution/editors/list.min.js" />
+
+**If using the `Object` or `NestedModel` listType**, you will need to include a modal adapter on the page. [Backbone.BootstrapModal](http://github.com/powmedia/backbone.bootstrap-modal) is provided for this purpose. It must be included on the page:
+
+    <script src="backbone-forms/distribution/adapters/backbone.bootstrap-modal.min.js" />
+
+*This list replaces the old jQueryUI list, but may need some upgrade work. The old jQueryUI List editor is still included in a separate file.*
+
+
+####Schema options
+**`itemType`**
 
 - Defines the editor that will be used for each item in the list.
 - Similar in use to the main 'type' schema attribute.
-- Defaults to 'Text'
+- Defaults to 'Text'.
+
+**`confirmDelete`**
+
+- Optional. Text to display in a delete confirmation dialog. If falsey, will not ask for confirmation.
 
 **`itemToString`**
 
@@ -335,78 +398,21 @@ Creates a sortable and editable list of items, which can be any of the above sch
 - A function that returns a string representing how the object should be displayed in a list item.
 - When listType is 'NestedModel', the model's `toString()` method will be used, unless a specific `itemToString()` function is defined on the schema.
 
-**`sortable`**
-
-- Optional. Set to false to disable drag and drop sorting
-
-**`confirmDelete`**
-
-- Optional. Whether to prompt the user before removing an item. Defaults to false.
-
-**`confirmDeleteMsg`**
-
-- Optional. Message to display to the user before deleting an item.
-
 
 Examples:
     
-    var schema = {
-        users: { type: 'List', listType: 'Object', itemToString: function(user) {
-                return user.firstName + ' ' + user.lastName;
-            }
-        }
-    };
-
-
-**Events**
-
-The following events are fired when the user actions an item:
-
-- `addItem`
-- `editItem`
-- `removeItem` 
-
-Each event callback receives the relevant item value as an object, and a 'next' callback. To cancel the event and prevent the default action, do not run the callback.
-
-This allows you to run asynchronous code, for example to check with the database that a username is available before adding a someone to the list:
-
-    var form = new Backbone.Form({ model: this.model }),
-        list = form.fields.list.editor;
+    function userToName(user) {
+        return user.firstName + ' ' + user.lastName;
+    }
     
-    //Only add the item if the username is available
-    list.bind('addItem', function(item, next) {
-        database.getUser(item.username, function(user) {
-            if (user) {
-                //Item will not be added to the list because we don't call next();
-                alert('The username is already taken');
-            }
-            else {
-                //Username available; add the item to the list:
-                next();
-            }
-        });
-    });
-
-
-<a name="editor-date"/>
-##Date
-
-Creates a jQuery UI datepicker
-
-
-<a name="editor-datetime"/>
-##DateTime
-
-Creates a jQuery UI datepicker and time select field.
-
-**`minsInterval`**
-
-- Optional. Controls the numbers in the minutes dropdown. Defaults to 15, so it is populated with 0, 15, 30, and 45 minutes;
+    var schema = {
+        users: { type: 'List', itemType: 'Object', itemToString: userToName }
+    };
 
 
 
 <a name="form-options"/>
-#Form options
+##Form options
 
 **`model`**
 
@@ -454,12 +460,12 @@ The template name to use for generating the form. E.g.:
 
 
 <a name="validation"/>
-#Validation
+##Validation
 
 There are 2 levels of validation: schema validators and the regular built-in Backbone model validation. Backbone Forms will run both when either `form.commit()` or `form.validate()` are called.
 
 
-##Schema validation
+###Schema validation
 
 Validators can be defined in several ways:
 
@@ -522,7 +528,7 @@ Validation runs when `form.commit()` or `form.validate()` are called.  If valida
 - **regexp**: Runs a regular expression. Requires the `regexp` option, which takes a compiled regular expression.
 
 
-##Customising error messages
+###Customising error messages
 
 After including the Backbone Forms file, you can override the default error messages.
 
@@ -537,7 +543,7 @@ After including the Backbone Forms file, you can override the default error mess
 You can also override the error message on a field by field basis by passing the `message` option in the validator config.
 
 
-##Model validation
+###Model validation
 
 If your models have a `validate()` method the errors will be added to the error object.  To make the most of the validation system, the method should return an error object, keyed by the field object. If an unrecognised field is added, or just a string is returned, it will be added to the `_others` array of errors:
 
@@ -554,7 +560,7 @@ If your models have a `validate()` method the errors will be added to the error 
 
 
 
-##Schema validators
+###Schema validators
 Forms provide a `validate` method, which returns a dictionary of errors, or `null`. Validation is determined using the `validators` attribute on the schema (see above).
 
 If you model provides a `validate` method, then this will be called when you call `Form.validate`. Forms are also validated when you call `commit`. See the Backbone documentation for more details on model validation.
@@ -573,7 +579,7 @@ Example:
 
 
 <a name="customising-templates"/>
-#Customising templates
+##Customising templates
 
 Backbone-Forms comes with a few options for rendering HTML. To use another template pack, such as for [Bootstrap](http://twitter.github.com/bootstrap/), just include the .js file from the `templates` folder, after including `backbone-forms.js`.
 
@@ -609,7 +615,7 @@ Example:
 
 
 <a name="changing-template-compiler"/>
-#Changing template compiler
+###Changing template compiler
 
 You can use your own custom template compiler, like [Handlebars](http://handlebarsjs.com/) by passing a reference to the function into `Backbone.Form.setTemplateCompiler()`.
 
@@ -622,10 +628,10 @@ Example:
 
 
 <a name="more"/>
-#More
+##More
 
 <a name="editors-without-forms"/>
-##Editors without forms
+###Editors without forms
 
 You can add editors by themselves, without being part of a form. For example: 
 
@@ -640,7 +646,7 @@ You can add editors by themselves, without being part of a form. For example:
 
 
 <a name="nested-fields"/>
-##Using nested fields
+###Using nested fields
 
 If you are using a schema with nested attributes (using the `Object` type), you may want to include only some of the nested fields in a form. This can be accomplished by using 'path' syntax as in the example below.
 
@@ -680,7 +686,7 @@ The following shorthand is also valid:
 
 
 <a name="custom-editors"/>
-##Custom editors
+###Custom editors
 
 Writing a custom editor is simple. They must extend from Backbone.Form.editors.Base.
     
@@ -729,9 +735,26 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 <a name="changelog"/>
 ##Changelog
 
-###0.9.1 (in development on master)
+###0.10.0
+- Refactor rendering.
+    - <legend> tags are now defined in the template.
+    - Where a template is used, (e.g. advanced editors, field etc.), the entirety of the HTML is now defined in the template to make custom templating easier.
+    - All templates must now have a main 'parent' element.
+- Create new List, Date and DateTime editors that don't rely on jQuery UI.
+    - You will still need to use jQuery UI editors for the calendar.
+    - For list items of type `Object` and `NestedModel` you must include a modal adapter, such as the included Bootstrap Modal one. Should create one for jQuery UI.
+- Improve the way dependencies are defined and module is exported for browser & CommonJS
+- Add underscore dependency to AMD version
+- Use [buildify](http://github.com/powmedia/buildify) for building distribution files.
+- Rename jQuery UI editors to jqueryui.List, jqueryui.Date, jqueryui.DateTime. These may be moved to a separate repository soon.
+- Fix #65 Number editor Firefox NaN bug
 - Fix bug with hidden fields (jeffutter)
 - Fix AMD distribution bug (ikr)
+
+####Required changes when upgrading:
+- List editor:
+    - Change 'listType' to 'itemType' in schema definition.
+    - Make sure you have a modal adapter included if using Object and NestedModel itemTypes. See the List editor section.
 
 ###0.9.0
 - Added ability to use a custom template compiler (geowa4)

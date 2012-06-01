@@ -11,9 +11,9 @@
    */
   
   //DATE
-  exports.Date = Base.extend({
+  exports['jqueryui.Date'] = Base.extend({
 
-    className: 'bbf-date',
+    className: 'bbf-jui-date',
     
     initialize: function(options) {
       Base.prototype.initialize.call(this, options);
@@ -46,7 +46,7 @@
       });
 
       //Make sure setValue of this object is called, not of any objects extending it (e.g. DateTime)
-      exports.Date.prototype.setValue.call(this, this.value);
+      exports['jqueryui.Date'].prototype.setValue.call(this, this.value);
 
       return this;
     },
@@ -69,9 +69,9 @@
 
 
   //DATETIME
-  exports.DateTime = exports.Date.extend({
+  exports['jqueryui.DateTime'] = exports['jqueryui.Date'].extend({
 
-    className: 'bbf-datetime',
+    className: 'bbf-jui-datetime',
 
     template: createTemplate('<select>{{hours}}</select> : <select>{{mins}}</select>'),
 
@@ -81,7 +81,7 @@
       }
 
       //Render the date element first
-      exports.Date.prototype.render.call(this);
+      exports['jqueryui.Date'].prototype.render.call(this);
 
       //Setup hour options
       var hours = _.range(0, 24),
@@ -131,7 +131,7 @@
     },
     
     setValue: function(date) {
-      exports.Date.prototype.setValue.call(this, date);
+      exports['jqueryui.Date'].prototype.setValue.call(this, date);
       
       this.$hours.val(date.getHours());
       this.$mins.val(date.getMinutes());
@@ -141,9 +141,9 @@
 
 
   //LIST
-  exports.List = Base.extend({
+  exports['jqueryui.List'] = Base.extend({
 
-    className: 'bbf-list',
+    className: 'bbf-jui-list',
 
     //Note: The extra div around the <ul> is used to limit the drag area
     template: createTemplate('\
