@@ -32,6 +32,10 @@ A flexible, customisable form framework for Backbone.JS applications.
     $('body').append(form.el);
 
 
+###Live demos
+- [User form](http://jsfiddle.net/evilcelery/VkUFu/)
+
+
 
 <a name="top"/>
 ##Guide
