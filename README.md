@@ -362,13 +362,28 @@ Creates a Date editor and adds `<select>`s for time (hours and minutes).
 <a name="editor-list"/>
 ##List
 
-Creates a sortable and editable list of items, which can be any of the above schema types, e.g. Object, Number, Text etc. Currently requires jQuery UI for creating dialogs etc.
+Creates a list of items that can be added, removed and edited. Used to manage arrays of data.
 
-**`listType`**
+####Note when using Object or NestedModel as the itemType
+You will need to include a modal adapter on the page. [Backbone.BootstrapModal](http://github.com/powmedia/backbone.bootstrap-modal) is included for this purpose. It must be included on the page:
+
+    <script src="backbone-forms/distribution/adapters/backbone.bootstrap-modal.min.js" />
+
+This is used to open a modal form when a user edits or creates an item in the list.
+
+####Note on upgrading from 0.9.0:
+This list replaces the old jQueryUI list, but may need some upgrade work. The old jQueryUI List editor is still included in a separate file.
+
+
+**`itemType`**
 
 - Defines the editor that will be used for each item in the list.
 - Similar in use to the main 'type' schema attribute.
-- Defaults to 'Text'
+- Defaults to 'Text'.
+
+**`confirmDelete`**
+
+- Optional. Text to display in a delete confirmation dialog. If falsey, will not ask for confirmation.
 
 **`itemToString`**
 
@@ -376,57 +391,16 @@ Creates a sortable and editable list of items, which can be any of the above sch
 - A function that returns a string representing how the object should be displayed in a list item.
 - When listType is 'NestedModel', the model's `toString()` method will be used, unless a specific `itemToString()` function is defined on the schema.
 
-**`sortable`**
-
-- Optional. Set to false to disable drag and drop sorting
-
-**`confirmDelete`**
-
-- Optional. Whether to prompt the user before removing an item. Defaults to false.
-
-**`confirmDeleteMsg`**
-
-- Optional. Message to display to the user before deleting an item.
-
 
 Examples:
     
-    var schema = {
-        users: { type: 'List', listType: 'Object', itemToString: function(user) {
-                return user.firstName + ' ' + user.lastName;
-            }
-        }
-    };
-
-
-**Events**
-
-The following events are fired when the user actions an item:
-
-- `addItem`
-- `editItem`
-- `removeItem` 
-
-Each event callback receives the relevant item value as an object, and a 'next' callback. To cancel the event and prevent the default action, do not run the callback.
-
-This allows you to run asynchronous code, for example to check with the database that a username is available before adding a someone to the list:
-
-    var form = new Backbone.Form({ model: this.model }),
-        list = form.fields.list.editor;
+    function userToName(user) {
+        return user.firstName + ' ' + user.lastName;
+    }
     
-    //Only add the item if the username is available
-    list.bind('addItem', function(item, next) {
-        database.getUser(item.username, function(user) {
-            if (user) {
-                //Item will not be added to the list because we don't call next();
-                alert('The username is already taken');
-            }
-            else {
-                //Username available; add the item to the list:
-                next();
-            }
-        });
-    });
+    var schema = {
+        users: { type: 'List', itemType: 'Object', itemToString: userToName }
+    };
 
 
 
