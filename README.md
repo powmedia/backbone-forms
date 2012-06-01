@@ -735,10 +735,20 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
     - Where a template is used, (e.g. advanced editors, field etc.), the entirety of the HTML is now defined in the template to make custom templating easier.
     - All templates must now have a main 'parent' element.
 - Create new List, Date and DateTime editors that don't rely on jQuery UI.
+    - You will still need to use jQuery UI editors for the calendar.
+    - For list items of type `Object` and `NestedModel` you must include a modal adapter, such as the included Bootstrap Modal one. Should create one for jQuery UI.
+- Improve the way dependencies are defined and module is exported for browser & CommonJS
+- Add underscore dependency to AMD version
+- Use [buildify](http://github.com/powmedia/buildify) for building distribution files.
 - Rename jQuery UI editors to jqueryui.List, jqueryui.Date, jqueryui.DateTime. These may be moved to a separate repository soon.
 - Fix #65 Number editor Firefox NaN bug
 - Fix bug with hidden fields (jeffutter)
 - Fix AMD distribution bug (ikr)
+
+####Required changes when upgrading:
+- List editor:
+    - Change 'listType' to 'itemType' in schema definition.
+    - Make sure you have a modal adapter included if using Object and NestedModel itemTypes. See the List editor section.
 
 ###0.9.0
 - Added ability to use a custom template compiler (geowa4)
