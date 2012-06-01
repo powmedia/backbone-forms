@@ -1,5 +1,20 @@
+/**
+ * Include this file _after_ the main backbone-forms file to override the default templates.
+ * You only need to include templates you want to override.
+ * 
+ * Requirements when customising templates:
+ * - Each template must have one 'parent' element tag.
+ * - "data-type" attributes are required.
+ * - The main placeholder tags such as the following are required: fieldsets, fields
+ */
 ;(function() {
-  var templates = {
+  var Form = Backbone.Form;
+
+  
+  //DEFAULT TEMPLATES
+  Form.setTemplates({
+    
+    //HTML
     form: '\
       <form class="bbf-form">{{fieldsets}}</form>\
     ',
@@ -28,8 +43,10 @@
     ',
 
     list: '\
-      <ul>{{items}}</ul>\
-      <div class="bbf-actions"><button data-action="add">Add</div>\
+      <div class="bbf-list">\
+        <ul>{{items}}</ul>\
+        <div class="bbf-actions"><button data-action="add">Add</div>\
+      </div>\
     ',
 
     listItem: '\
@@ -40,16 +57,20 @@
     ',
 
     date: '\
-      <select data-type="date" class="bbf-date">{{dates}}</select>\
-      <select data-type="month" class="bbf-month">{{months}}</select>\
-      <select data-type="year" class="bbf-year">{{years}}</select>\
+      <div class="bbf-date">\
+        <select data-type="date" class="bbf-date">{{dates}}</select>\
+        <select data-type="month" class="bbf-month">{{months}}</select>\
+        <select data-type="year" class="bbf-year">{{years}}</select>\
+      </div>\
     ',
 
     dateTime: '\
-      <div class="bbf-date-container">{{date}}</div>\
-      <select data-type="hour">{{hours}}</select>\
-      :\
-      <select data-type="min">{{mins}}</select>\
+      <div class="bbf-datetime">\
+        <div class="bbf-date-container">{{date}}</div>\
+        <select data-type="hour">{{hours}}</select>\
+        :\
+        <select data-type="min">{{mins}}</select>\
+      </div>\
     ',
 
     'list.Modal': '\
@@ -57,11 +78,12 @@
         {{summary}}\
       </div>\
     '
-  };
-  
-  var classNames = {
-    error: 'bbf-error'
-  };
+  }, {
 
-  Backbone.Form.helpers.setTemplates(templates, classNames);
+    //CLASSNAMES
+    error: 'bbf-error'
+
+  });
+
+
 })();

@@ -6,11 +6,11 @@
  * If using regular <script> tags to include your files, use backbone-forms.min.js
  *
  * Copyright (c) 2012 Charles Davison, Pow Media Ltd
- *
+ * 
  * License and more information at:
  * http://github.com/powmedia/backbone-forms
  */
-define(['jquery', 'Backbone'], function($, Backbone) {
+define(['jquery', 'underscore', 'Backbone'], function($, _, Backbone) {
 
   
 //==================================================================================================
@@ -891,9 +891,8 @@ Form.editors = (function() {
         if (!options.key) throw "Missing option: 'key'";
 
         this.model = options.model;
-        this.key = options.key;
 
-        this.value = this.model.get(this.key);
+        this.value = this.model.get(options.key);
       }
       else if (options.value) {
         this.value = options.value;
@@ -901,6 +900,7 @@ Form.editors = (function() {
       
       if (this.value === undefined) this.value = this.defaultValue;
 
+      this.key = options.key;
       this.form = options.form;
       this.schema = options.schema || {};
       this.validators = options.validators || this.schema.validators;
@@ -1556,7 +1556,9 @@ Form.editors = (function() {
    */
   editors.Date = editors.Base.extend({
 
-    className: 'bbf-date',
+    events: {
+      'change select': 'updateHidden'
+    },
 
     initialize: function(options) {
       options = options || {}
@@ -1611,18 +1613,27 @@ Form.editors = (function() {
       });
 
       //Render the selects
-      this.$el.html(Form.templates.date({
+      var $el = $(Form.templates.date({
         dates: datesOptions.join(''),
         months: monthsOptions.join(''),
         years: yearsOptions.join('')
       }));
 
       //Store references to selects
-      this.$date = this.$('[data-type="date"]');
-      this.$month = this.$('[data-type="month"]');
-      this.$year = this.$('[data-type="year"]');
+      this.$date = $el.find('[data-type="date"]');
+      this.$month = $el.find('[data-type="month"]');
+      this.$year = $el.find('[data-type="year"]');
 
+      //Create the hidden field to store values in case POSTed to server
+      this.$hidden = $('<input type="hidden" name="'+this.key+'" />');
+      $el.append(this.$hidden);
+
+      //Set value on this and hidden field
       this.setValue(this.value);
+
+      //Remove the wrapper tag
+      this.setElement($el);
+      this.$el.attr('id', this.id);
 
       return this;
     },
@@ -1631,7 +1642,13 @@ Form.editors = (function() {
     * @return {Date}   Selected date
     */
     getValue: function() {
-      return new Date(this.$year.val(), this.$month.val(), this.$date.val());
+      var year = this.$year.val(),
+          month = this.$month.val(),
+          date = this.$date.val();
+
+      if (!year || !month || !date) return null;
+
+      return new Date(year, month, date);
     },
     
     /**
@@ -1641,6 +1658,19 @@ Form.editors = (function() {
       this.$date.val(date.getDate());
       this.$month.val(date.getMonth());
       this.$year.val(date.getFullYear());
+
+      this.updateHidden();
+    },
+
+    /**
+     * Update the hidden input which is maintained for when submitting a form
+     * via a normal browser POST
+     */
+    updateHidden: function() {
+      var val = this.getValue();
+      if (_.isDate(val)) val = val.toISOString();
+
+      this.$hidden.val(val);
     }
 
   }, {
@@ -1649,8 +1679,8 @@ Form.editors = (function() {
     //Whether to show month names instead of numbers
     showMonthNames: true,
 
-    //Month names to use if Date.showMonthNames is true
-    //Replace for localisation, e.g. Date.monthNames = ['Janvier', 'Fevrier'...]
+    //Month names to use if showMonthNames is true
+    //Replace for localisation, e.g. Form.editors.Date.monthNames = ['Janvier', 'Fevrier'...]
     monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
   });
 
@@ -1663,7 +1693,9 @@ Form.editors = (function() {
    */
   editors.DateTime = editors.Base.extend({
 
-    className: 'bbf-datetime',
+    events: {
+      'change select': 'updateHidden'
+    },
 
     initialize: function(options) {
       options = options || {};
@@ -1703,21 +1735,27 @@ Form.editors = (function() {
       });
 
       //Render time selects
-      this.$el.append(Form.templates.dateTime({
+      var $el = $(Form.templates.dateTime({
         date: '<b class="bbf-tmp"></b>',
         hours: hoursOptions.join(),
         mins: minsOptions.join()
       }));
 
       //Include the date editor
-      this.$('.bbf-tmp').replaceWith(this.dateEditor.render().el);
+      $el.find('.bbf-tmp').replaceWith(this.dateEditor.render().el);
 
       //Store references to selects
-      this.$hour = this.$('[data-type="hour"]');
-      this.$min = this.$('[data-type="min"]');
+      this.$hour = $el.find('[data-type="hour"]');
+      this.$min = $el.find('[data-type="min"]');
+
+      //Get the hidden date field to store values in case POSTed to server
+      this.$hidden = $el.find('input[type="hidden"]');
       
       //Set time
       this.setValue(this.value);
+
+      this.setElement($el);
+      this.$el.attr('id', this.id);
 
       return this;
     },
@@ -1728,8 +1766,13 @@ Form.editors = (function() {
     getValue: function() {
       var date = this.dateEditor.getValue();
 
-      date.setHours(this.$hour.val());
-      date.setMinutes(this.$min.val());
+      var hour = this.$hour.val(),
+          min = this.$min.val();
+
+      if (!date || !hour || !min) return null;
+
+      date.setHours(hour);
+      date.setMinutes(min);
 
       return date;
     },
@@ -1739,6 +1782,19 @@ Form.editors = (function() {
       
       this.$hour.val(date.getHours());
       this.$min.val(date.getMinutes());
+
+      this.updateHidden();
+    },
+
+    /**
+     * Update the hidden input which is maintained for when submitting a form
+     * via a normal browser POST
+     */
+    updateHidden: function() {
+      var val = this.getValue();
+      if (_.isDate(val)) val = val.toISOString();
+
+      this.$hidden.val(val);
     }
 
   }, {
@@ -1753,11 +1809,88 @@ Form.editors = (function() {
 })();
 
 
+  //SETUP
+  
   //Add function shortcuts
   Form.setTemplates = Form.helpers.setTemplates;
   Form.setTemplateCompiler = Form.helpers.setTemplateCompiler;
 
   Form.templates = {};
+
+
+  //DEFAULT TEMPLATES
+  Form.setTemplates({
+    
+    //HTML
+    form: '\
+      <form class="bbf-form">{{fieldsets}}</form>\
+    ',
+    
+    fieldset: '\
+      <fieldset>\
+        <legend>{{legend}}</legend>\
+        <ul>{{fields}}</ul>\
+      </fieldset>\
+    ',
+    
+    field: '\
+      <li class="bbf-field">\
+        <label for="{{id}}">{{title}}</label>\
+        <div class="bbf-editor">{{editor}}</div>\
+        <div class="bbf-help">{{help}}</div>\
+      </li>\
+    ',
+
+    nestedField: '\
+      <li class="bbf-field" title="{{title}}">\
+        <label for="{{id}}">{{title}}</label>\
+        <div class="bbf-editor">{{editor}}</div>\
+        <div class="bbf-help">{{help}}</div>\
+      </li>\
+    ',
+
+    list: '\
+      <div class="bbf-list">\
+        <ul>{{items}}</ul>\
+        <div class="bbf-actions"><button data-action="add">Add</div>\
+      </div>\
+    ',
+
+    listItem: '\
+      <li>\
+        <button data-action="remove" class="bbf-remove">x</button>\
+        <div class="bbf-editor-container">{{editor}}</div>\
+      </li>\
+    ',
+
+    date: '\
+      <div class="bbf-date">\
+        <select data-type="date" class="bbf-date">{{dates}}</select>\
+        <select data-type="month" class="bbf-month">{{months}}</select>\
+        <select data-type="year" class="bbf-year">{{years}}</select>\
+      </div>\
+    ',
+
+    dateTime: '\
+      <div class="bbf-datetime">\
+        <div class="bbf-date-container">{{date}}</div>\
+        <select data-type="hour">{{hours}}</select>\
+        :\
+        <select data-type="min">{{mins}}</select>\
+      </div>\
+    ',
+
+    'list.Modal': '\
+      <div class="bbf-list-modal">\
+        {{summary}}\
+      </div>\
+    '
+  }, {
+
+    //CLASSNAMES
+    error: 'bbf-error'
+
+  });
 
 
 

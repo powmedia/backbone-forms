@@ -13,11 +13,7 @@
    * @param {String} [options.schema.confirmDelete]     Text to display in a delete confirmation dialog. If falsey, will not ask for confirmation.
    */
   editors.List = editors.Base.extend({
-    //Prevent error classes being set on the main control; they are internally on the individual fields
-    //hasNestedForm: true,
-
-    className: 'bbf-list',
-
+    
     events: {
       'click [data-action="add"]': function(event) {
         event.preventDefault();
@@ -50,11 +46,10 @@
 
     render: function() {
       var self = this,
-          $el = this.$el,
           value = this.value || [];
 
       //Create main element
-      $el.html(Form.templates.list({
+      var $el = $(Form.templates.list({
         items: '<b class="bbf-tmp"></b>'
       }));
 
@@ -72,6 +67,10 @@
       else {
         if (!this.Editor.isAsync) this.addItem();
       }
+
+      this.setElement($el);
+      this.$el.attr('id', this.id);
+      this.$el.attr('name', this.key);
       
       return this;
     },
@@ -88,7 +87,8 @@
         list: this,
         schema: this.schema,
         value: value,
-        Editor: this.Editor
+        Editor: this.Editor,
+        key: this.key
       }).render();
 
       //Check if we need to wait for the item to complete before adding to the list
@@ -179,8 +179,10 @@
    * A single item in the list
    *
    * @param {editors.List} options.list The List editor instance this item belongs to
-   * @param {String|Function} options.type    Editor type
-   * @param {Mixed} options.value             Value
+   * @param {Function} options.Editor   Editor constructor function
+   * @param {String} options.key        Model key
+   * @param {Mixed} options.value       Value
+   * @param {Object} options.schema     Field schema
    */
   editors.List.Item = Backbone.View.extend({
     events: {
@@ -195,12 +197,13 @@
       this.schema = options.schema || this.list.schema;
       this.value = options.value;
       this.Editor = options.Editor || editors.Text;
+      this.key = options.key;
     },
 
     render: function() {
       //Create editor
       this.editor = new this.Editor({
-        key: '',
+        key: this.key,
         schema: this.schema,
         value: this.value,
         list: this.list,
