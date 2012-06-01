@@ -364,14 +364,18 @@ Creates a Date editor and adds `<select>`s for time (hours and minutes).
 
 Creates a list of items that can be added, removed and edited. Used to manage arrays of data.
 
-####Note when using Object or NestedModel as the itemType
-You will need to include a modal adapter on the page. [Backbone.BootstrapModal](http://github.com/powmedia/backbone.bootstrap-modal) is included for this purpose. It must be included on the page:
+This is a special editor which is in a separate file and must be included:
+
+    <script src="backbone-forms/distribution/editors/list.min.js" />
+
+*Note when using Object or NestedModel as the itemType*
+You will need to include a modal adapter on the page. [Backbone.BootstrapModal](http://github.com/powmedia/backbone.bootstrap-modal) is provided for this purpose. It must be included on the page:
 
     <script src="backbone-forms/distribution/adapters/backbone.bootstrap-modal.min.js" />
 
 This is used to open a modal form when a user edits or creates an item in the list.
 
-####Note on upgrading from 0.9.0:
+*Note on upgrading from 0.9.0*
 This list replaces the old jQueryUI list, but may need some upgrade work. The old jQueryUI List editor is still included in a separate file.
 
 
