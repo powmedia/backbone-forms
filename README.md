@@ -173,16 +173,19 @@ The following default editors are included:
 - [Radio](#editor-radio)
 - [Object](#editor-object)
 - [NestedModel](#editor-nestedmodel)
-
-In addition there is a separate file with editors that depend on jQuery UI:
-
 - [Date](#editor-date)
 - [DateTime](#editor-datetime)
-- [List](#editor-list) (Editable and sortable. Can use any of the other editors for each item)
+- [List](#editor-list) An editable list of items (included in a separate file: distribution/editors/list.min.js)
+
+
+The old jQuery editors are still included but may be moved to another repository:
+- [jqueryui.List](#editor-jui-list)
+- jqueryui.Date (uses the jQuery UI popup calendar)
+- jqueryui.DateTime
 
 
 
-###Main attributes
+##Main attributes
 
 For each field definition in the schema you can use the following optional attributes:
 
@@ -229,7 +232,7 @@ For each field definition in the schema you can use the following optional attri
 
 
 <a name="editor-text"/>
-###Text
+##Text
 
 Creates a normal text input.
 
@@ -239,7 +242,7 @@ Creates a normal text input.
 
 
 <a name="editor-select"/>
-###Select
+##Select
 
 Creates and populates a &lt;select&gt; element.
 
@@ -275,19 +278,19 @@ If there are no models in the collection, it will be `fetch()`ed.
 
 
 <a name="editor-radio"/>
-###Radio
+##Radio
 
 Creates and populates a list of radio inputs. Behaves the same way and has the same options as a `Select`.
 
 
 <a name="editor-checkboxes"/>
-###Checkboxes
+##Checkboxes
 
 Creates and populates a list of checkbox inputs. Behaves the same way and has the same options as a `Select`. To set defaults for this editor, use an array of values.
 
 
 <a name="editor-object"/>
-###Object
+##Object
 
 The Object editor creates an embedded child form representing a Javascript object.
 
@@ -307,7 +310,7 @@ Examples:
 
 
 <a name="editor-nestedmodel"/>
-###NestedModel
+##NestedModel
 
 Used to embed models within models.  Similar to the Object editor, but adds validation of the child form (if it is defined on the model), and keeps your schema cleaner.
 
@@ -323,8 +326,41 @@ Examples:
     };
     
 
+
+<a name="editor-date"/>
+##Date
+
+Creates `<select>`s for date, month and year.
+
+**`yearStart`**
+- First year in the list. Default: 100 years ago
+
+**`yearEnd`**
+- Last year in the list. Default: current year
+
+
+####Extra options
+You can customise the way this editor behaves, throughout your app:
+
+    var editors = Backbone.Form.editors;
+    
+    editors.Date.showMonthNames = false; //Defaults to true
+    editors.Date.monthNames = ['Jan', 'Feb', ...] //Defaults to full month names in English
+
+
+<a name="editor-datetime"/>
+##DateTime
+
+Creates a Date editor and adds `<select>`s for time (hours and minutes).
+
+**`minsInterval`**
+
+- Optional. Controls the numbers in the minutes dropdown.
+- Defaults to 15, so it is populated with 0, 15, 30, and 45 minutes.
+
+
 <a name="editor-list"/>
-###List
+##List
 
 Creates a sortable and editable list of items, which can be any of the above schema types, e.g. Object, Number, Text etc. Currently requires jQuery UI for creating dialogs etc.
 
@@ -391,22 +427,6 @@ This allows you to run asynchronous code, for example to check with the database
             }
         });
     });
-
-
-<a name="editor-date"/>
-###Date
-
-Creates a jQuery UI datepicker
-
-
-<a name="editor-datetime"/>
-###DateTime
-
-Creates a jQuery UI datepicker and time select field.
-
-**`minsInterval`**
-
-- Optional. Controls the numbers in the minutes dropdown. Defaults to 15, so it is populated with 0, 15, 30, and 45 minutes;
 
 
 
