@@ -34,6 +34,7 @@ A flexible, customisable form framework for Backbone.JS applications.
 
 ###Live editable demos
 - [User form](http://jsfiddle.net/evilcelery/VkUFu/)
+- [Form with Bootstrap templates and a List of NestedModels using the Bootstrap Modal adapter](http://jsfiddle.net/evilcelery/4XZMb/)
 
 
 
