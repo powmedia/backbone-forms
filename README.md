@@ -1,27 +1,12 @@
 #backbone-forms
 
-A flexible, customisable form framework for Backbone.JS applications. Includes validation, nested models and custom editors.
+A flexible, customisable form framework for Backbone.JS applications.
 
-Simply define a schema on your models and the forms will be auto-generated for you:
-
-    var User = Backbone.Model.extend({
-        schema: {
-            name:       'Text',
-            email:      { dataType: 'email', validators: ['required', 'email'] },
-            start:      { type: 'DateTime' },
-            contact:    { type: 'Object', subSchema: {
-                            name: { validators: ['required'] },
-                            phone: {}
-                        }},
-            address:    { type: 'NestedModel', model: Address },
-            notes:      { type: 'List', help: 'Helpful notes' }
-        }
-    });
-    
-The schema above will automatically create a form similar to this:
-
-![Example form](http://i56.tinypic.com/a3zfyt.png)
-
+Features:
+- Simple schema definition to auto-generate forms
+- Validation
+- Advanced and custom editors (e.g. NestedModel, List, Date, DateTime)
+- Custom HTML templates
 
 
 <a name="top"/>
@@ -53,7 +38,7 @@ The schema above will automatically create a form similar to this:
 #Installation
 
 Dependencies:
-- [Backbone 0.9.1](http://documentcloud.github.com/backbone/)
+- [Backbone 0.9.2](http://documentcloud.github.com/backbone/)
 
 
 Include backbone-forms.js and backbone-forms.css:
@@ -61,15 +46,15 @@ Include backbone-forms.js and backbone-forms.css:
     <link href="backbone-forms/distribution/backbone-forms.css" rel="stylesheet" type="text/css"/> 
     <script src="backbone-forms/distribution/backbone-forms.min.js"></script>
 
-Optionally, you can include the extra editors, for example those that require jQuery UI:
+Optionally, you can include the extra editors, for example the List editor:
 
-    <script src="backbone-forms/distribution/editors/jquery-ui.min.js"></script>
+    <script src="backbone-forms/distribution/editors/list.min.js"></script>
     
 To use a custom template pack, e.g. Bootstrap, include the relevant file after backbone-forms.js:
 
     <script src="backbone-forms/distribution/templates/bootstrap.js"></script>
 
-If you use BackboneJS with node.js, you can just `require('backbone-forms');` in your index file.
+If you use Backbone with node.js, you can just `require('backbone-forms');` in your index file.
 
 Note there is also a distribution file for RequireJS / AMD.
 
