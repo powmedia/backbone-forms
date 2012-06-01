@@ -32,7 +32,7 @@ A flexible, customisable form framework for Backbone.JS applications.
     $('body').append(form.el);
 
 
-###Live demos
+###Live editable demos
 - [User form](http://jsfiddle.net/evilcelery/VkUFu/)
 
 
