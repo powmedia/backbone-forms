@@ -9,6 +9,74 @@ A flexible, customisable form framework for Backbone.JS applications.
 - Custom HTML templates
 
 
+#Usage
+
+Define a 'schema' attribute on your Backbone models. The schema keys should match the attributes that get set on the model. `type` defaults to `Text`.  When you don't need to specify any options you can use the shorthand by passing the editor name as a string.
+See [schema definition](#schema-definition) for more information.
+
+    var User = Backbone.Model.extend({
+        schema: {
+            title:      { type: 'Select', options: ['Mr', 'Mrs', 'Ms'] },
+            name:       'Text',
+            email:      { validators: ['required', 'email'] },
+            birthday:   'Date',
+            password:   'Password',
+            address:    { type: 'NestedModel', model: Address },
+            notes:      { type: 'List', listType: 'Text' }
+        }
+    });
+    
+    var user = new User();
+    
+    var form = new Backbone.Form({
+        model: user
+    }).render();
+    
+    $('body').append(form.el);
+
+
+Once the user is done with the form, call commit() to apply the updated values to the model. If there are validation errors they will be returned. See [validation](#validation) for more information.
+
+    var errors = form.commit();
+
+To update a field after the form has been rendered, use `setValue`:
+
+    model.bind('change:name', function(model, name) {
+        form.setValue({ name: name });
+    });
+
+
+###Usage without models
+
+You can create a form without tying it to a model. For example, to create a form for a simple object of data:
+
+    var form = new Backbone.Form({
+        //Data to populate the form with
+        data: {
+          id: 123,
+          name: 'Rod Kimble',
+          password: 'cool beans'
+        },
+        
+        //Schema
+        schema: {
+            id:         'Number',
+            name:       'Text',
+            password:   'Password'
+        }
+    }).render();
+
+Then instead of form.commit(), do:
+    
+    var data = form.getValue(); //Returns object with new form values
+
+
+###Initial data
+If a form has a model attached to it, the initial values are taken from the model's defaults. Otherwise, you may pass default values using the `schema.data`.
+
+
+#Guide
+
 <a name="top"/>
 ##Table of Contents:
 - [Installation](#installation)
@@ -63,70 +131,6 @@ Note there is also a distribution file for RequireJS / AMD.
 
 
 <a name="usage"/>
-#Usage
-
-Define a 'schema' attribute on your Backbone models. The schema keys should match the attributes that get set on the model. `type` defaults to `Text`.  When you don't need to specify any options you can use the shorthand by passing the editor name as a string.
-See [schema definition](#schema-definition) for more information.
-
-    var User = Backbone.Model.extend({
-        schema: {
-            title:      { type: 'Select', options: ['Mr', 'Mrs', 'Ms'] },
-            name:       'Text',
-            email:      { validators: ['required', 'email'] },
-            birthday:   'Date',
-            password:   'Password',
-            address:    { type: 'NestedModel', model: Address },
-            notes:      { type: 'List', listType: 'Text' }
-        }
-    });
-    
-    var user = new User();
-    
-    var form = new Backbone.Form({
-        model: user
-    }).render();
-    
-    $('body').append(form.el);
-
-
-Once the user is done with the form, call commit() to apply the updated values to the model. If there are validation errors they will be returned. See [validation](#validation) for more information.
-
-    var errors = form.commit();
-
-To update a field after the form has been rendered, use `setValue`:
-
-    model.bind('change:name', function(model, name) {
-        form.setValue({ name: name });
-    });
-
-
-##Usage without models
-
-You can create a form without tying it to a model. For example, to create a form for a simple object of data:
-
-    var form = new Backbone.Form({
-        //Data to populate the form with
-        data: {
-          id: 123,
-          name: 'Rod Kimble',
-          password: 'cool beans'
-        },
-        
-        //Schema
-        schema: {
-            id:         'Number',
-            name:       'Text',
-            password:   'Password'
-        }
-    }).render();
-
-Then instead of form.commit(), do:
-    
-    var data = form.getValue(); //Returns object with new form values
-
-
-##Initial data
-If a form has a model attached to it, the initial values are taken from the model's defaults. Otherwise, you may pass default values using the `schema.data`.
 
 [Back to top](#top)
 
