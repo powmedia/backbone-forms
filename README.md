@@ -2,9 +2,9 @@
 
 A flexible, customisable form framework for Backbone.JS applications.
 
-Features:
 - Simple schema definition to auto-generate forms
 - Validation
+- Nested forms
 - Advanced and custom editors (e.g. NestedModel, List, Date, DateTime)
 - Custom HTML templates
 
@@ -70,33 +70,23 @@ See [schema definition](#schema-definition) for more information.
 
     var User = Backbone.Model.extend({
         schema: {
+            title:      { type: 'Select', options: ['Mr', 'Mrs', 'Ms'] },
             name:       'Text',
-            email:      { dataType: 'email', validators: ['required', 'email'] },
-            start:      { type: 'DateTime' },
-            contact:    { type: 'Object', subSchema: {
-                            name: 'Text',
-                            phone: {}
-                        }},
+            email:      { validators: ['required', 'email'] },
+            birthday:   'Date',
+            password:   'Password',
             address:    { type: 'NestedModel', model: Address },
-            notes:      { type: 'List' }
+            notes:      { type: 'List', listType: 'Text' }
         }
     });
     
     var user = new User();
     
-    var formView = Backbone.View.extend({
-        render: function() {
-            var form = new Backbone.Form({
-                model: user
-            }).render();
-            
-            $(this.el).append(form.el);
-            
-            return this;
-        }
-    });
+    var form = new Backbone.Form({
+        model: user
+    }).render();
     
-    $('body').append(formView.el);
+    $('body').append(form.el);
 
 
 Once the user is done with the form, call commit() to apply the updated values to the model. If there are validation errors they will be returned. See [validation](#validation) for more information.
@@ -106,7 +96,7 @@ Once the user is done with the form, call commit() to apply the updated values t
 To update a field after the form has been rendered, use `setValue`:
 
     model.bind('change:name', function(model, name) {
-        form.fields.name.setValue(name);
+        form.setValue({ name: name });
     });
 
 
@@ -115,11 +105,18 @@ To update a field after the form has been rendered, use `setValue`:
 You can create a form without tying it to a model. For example, to create a form for a simple object of data:
 
     var form = new Backbone.Form({
-        data: { id: 123, name: 'Rod Kimble', password: 'cool beans' }, //Data to populate the form with
+        //Data to populate the form with
+        data: {
+          id: 123,
+          name: 'Rod Kimble',
+          password: 'cool beans'
+        },
+        
+        //Schema
         schema: {
-            id:         { type: 'Number' },
-            name:       {},
-            password:   { type: 'Password' }
+            id:         'Number',
+            name:       'Text',
+            password:   'Password'
         }
     }).render();
 
