@@ -6,26 +6,42 @@
  * License and more information at:
  * http://github.com/powmedia/backbone-forms
  */
-;(function($, _, Backbone) {
+;(function() {
 
+  //DEPENDENCIES
+  //Global object (window in the browser)
+  var root = this;
+
+  var $, _, Backbone;
+
+  //CommonJS
+  if (typeof require !== 'undefined') {
+    $ = require('jquery');
+    _ = require('underscore');
+    Backbone = require('backbone');
+  }
+
+  //Browser
+  else {
+    $ = root.jQuery;
+    _ = root._;
+    Backbone = root.Backbone;
+  }
+
+
+  //SOURCE
   {{body}}
 
+
   //EXPORTS
-  //Add to the Backbone namespace if available, for use via <script> tags
-  Backbone.Form = Backbone.Form || Form;
-
-  //AMD (RequireJS) - For exporting as a module when Backbone and jQuery are on the page
-  //If using RequireJS to load Backbone, Underscore and jQuery, use the AMD-specific file
-  if (typeof define === 'function' && define.amd) {
-    return define(function() {
-      return Form;
-    });
-  }
-
-  //CommonJS (NodeJS)
-  if (typeof module === 'object' && typeof module.exports === 'object') {
+  //CommonJS
+  if (typeof module == 'object' && module.exports) {
     module.exports = Form;
-    return;
   }
 
-}(jQuery, _, Backbone));
+  //Browser
+  else {
+    Backbone.Form = Form;
+  }
+
+}).call(this);

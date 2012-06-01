@@ -10,7 +10,7 @@
  * License and more information at:
  * http://github.com/powmedia/backbone-forms
  */
-define(['jquery', 'Backbone'], function($, Backbone) {
+define(['jquery', 'underscore', 'Backbone'], function($, _, Backbone) {
 
   {{body}}
 
