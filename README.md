@@ -9,7 +9,7 @@ A flexible, customisable form framework for Backbone.JS applications.
 - Custom HTML templates
 
 
-##Example
+###Example
 
     var User = Backbone.Model.extend({
         schema: {
