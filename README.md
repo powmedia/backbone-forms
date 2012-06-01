@@ -69,16 +69,17 @@ Dependencies:
 
 Include backbone-forms.js and backbone-forms.css:
 
-    <link href="backbone-forms/distribution/backbone-forms.css" rel="stylesheet" type="text/css"/> 
     <script src="backbone-forms/distribution/backbone-forms.min.js"></script>
+    <link href="backbone-forms/distribution/templates/default.css" rel="stylesheet" />
 
 Optionally, you can include the extra editors, for example the List editor:
 
     <script src="backbone-forms/distribution/editors/list.min.js"></script>
     
-To use a custom template pack, e.g. Bootstrap, include the relevant file after backbone-forms.js:
+To use a custom template pack, e.g. Bootstrap, include the relevants file after backbone-forms.js. You can remove `templates/default.css` and replace it with `templates/bootstrap.css`.
 
     <script src="backbone-forms/distribution/templates/bootstrap.js"></script>
+    <link href="backbone-forms/distribution/templates/bootstrap.css" rel="stylesheet" />
 
 If you use Backbone with node.js, you can just `require('backbone-forms');` in your index file.
 
