@@ -9,7 +9,7 @@ A flexible, customisable form framework for Backbone.JS applications.
 - Custom HTML templates
 
 
-#Usage
+##Usage
 
 Define a 'schema' attribute on your Backbone models. The schema keys should match the attributes that get set on the model. `type` defaults to `Text`.  When you don't need to specify any options you can use the shorthand by passing the editor name as a string.
 See [schema definition](#schema-definition) for more information.
@@ -75,12 +75,11 @@ Then instead of form.commit(), do:
 If a form has a model attached to it, the initial values are taken from the model's defaults. Otherwise, you may pass default values using the `schema.data`.
 
 
-#Guide
-
 <a name="top"/>
-##Table of Contents:
+##Guide
+
+###Table of Contents:
 - [Installation](#installation)
-- [Usage](#usage)
 - [Schema Definition](#schema-definition)
   - [Text](#editor-text)
   - [Checkboxes](#editor-checkboxes)
@@ -103,7 +102,7 @@ If a form has a model attached to it, the initial values are taken from the mode
 
 
 <a name="installation"/>
-#Installation
+##Installation
 
 Dependencies:
 - [Backbone 0.9.2](http://documentcloud.github.com/backbone/)
@@ -130,14 +129,8 @@ Note there is also a distribution file for RequireJS / AMD.
 
 
 
-<a name="usage"/>
-
-[Back to top](#top)
-
-
-
 <a name="schema-definition"/>
-#Schema definition
+##Schema definition
 
 The schema defined on your model can be the schema object itself, or a function that returns a schema object. This can be useful if you're referencing variables that haven't been initialized yet.
 
@@ -163,7 +156,7 @@ In addition there is a separate file with editors that depend on jQuery UI:
 
 
 
-##Main attributes
+###Main attributes
 
 For each field definition in the schema you can use the following optional attributes:
 
@@ -210,7 +203,7 @@ For each field definition in the schema you can use the following optional attri
 
 
 <a name="editor-text"/>
-##Text
+###Text
 
 Creates a normal text input.
 
@@ -220,7 +213,7 @@ Creates a normal text input.
 
 
 <a name="editor-select"/>
-##Select
+###Select
 
 Creates and populates a &lt;select&gt; element.
 
@@ -256,19 +249,19 @@ If there are no models in the collection, it will be `fetch()`ed.
 
 
 <a name="editor-radio"/>
-##Radio
+###Radio
 
 Creates and populates a list of radio inputs. Behaves the same way and has the same options as a `Select`.
 
 
 <a name="editor-checkboxes"/>
-##Checkboxes
+###Checkboxes
 
 Creates and populates a list of checkbox inputs. Behaves the same way and has the same options as a `Select`. To set defaults for this editor, use an array of values.
 
 
 <a name="editor-object"/>
-##Object
+###Object
 
 The Object editor creates an embedded child form representing a Javascript object.
 
@@ -288,7 +281,7 @@ Examples:
 
 
 <a name="editor-nestedmodel"/>
-##NestedModel
+###NestedModel
 
 Used to embed models within models.  Similar to the Object editor, but adds validation of the child form (if it is defined on the model), and keeps your schema cleaner.
 
@@ -305,7 +298,7 @@ Examples:
     
 
 <a name="editor-list"/>
-##List
+###List
 
 Creates a sortable and editable list of items, which can be any of the above schema types, e.g. Object, Number, Text etc. Currently requires jQuery UI for creating dialogs etc.
 
@@ -375,13 +368,13 @@ This allows you to run asynchronous code, for example to check with the database
 
 
 <a name="editor-date"/>
-##Date
+###Date
 
 Creates a jQuery UI datepicker
 
 
 <a name="editor-datetime"/>
-##DateTime
+###DateTime
 
 Creates a jQuery UI datepicker and time select field.
 
@@ -392,7 +385,7 @@ Creates a jQuery UI datepicker and time select field.
 
 
 <a name="form-options"/>
-#Form options
+##Form options
 
 **`model`**
 
@@ -440,12 +433,12 @@ The template name to use for generating the form. E.g.:
 
 
 <a name="validation"/>
-#Validation
+##Validation
 
 There are 2 levels of validation: schema validators and the regular built-in Backbone model validation. Backbone Forms will run both when either `form.commit()` or `form.validate()` are called.
 
 
-##Schema validation
+###Schema validation
 
 Validators can be defined in several ways:
 
@@ -508,7 +501,7 @@ Validation runs when `form.commit()` or `form.validate()` are called.  If valida
 - **regexp**: Runs a regular expression. Requires the `regexp` option, which takes a compiled regular expression.
 
 
-##Customising error messages
+###Customising error messages
 
 After including the Backbone Forms file, you can override the default error messages.
 
@@ -523,7 +516,7 @@ After including the Backbone Forms file, you can override the default error mess
 You can also override the error message on a field by field basis by passing the `message` option in the validator config.
 
 
-##Model validation
+###Model validation
 
 If your models have a `validate()` method the errors will be added to the error object.  To make the most of the validation system, the method should return an error object, keyed by the field object. If an unrecognised field is added, or just a string is returned, it will be added to the `_others` array of errors:
 
@@ -540,7 +533,7 @@ If your models have a `validate()` method the errors will be added to the error 
 
 
 
-##Schema validators
+###Schema validators
 Forms provide a `validate` method, which returns a dictionary of errors, or `null`. Validation is determined using the `validators` attribute on the schema (see above).
 
 If you model provides a `validate` method, then this will be called when you call `Form.validate`. Forms are also validated when you call `commit`. See the Backbone documentation for more details on model validation.
@@ -559,7 +552,7 @@ Example:
 
 
 <a name="customising-templates"/>
-#Customising templates
+##Customising templates
 
 Backbone-Forms comes with a few options for rendering HTML. To use another template pack, such as for [Bootstrap](http://twitter.github.com/bootstrap/), just include the .js file from the `templates` folder, after including `backbone-forms.js`.
 
@@ -595,7 +588,7 @@ Example:
 
 
 <a name="changing-template-compiler"/>
-#Changing template compiler
+###Changing template compiler
 
 You can use your own custom template compiler, like [Handlebars](http://handlebarsjs.com/) by passing a reference to the function into `Backbone.Form.setTemplateCompiler()`.
 
@@ -608,10 +601,10 @@ Example:
 
 
 <a name="more"/>
-#More
+##More
 
 <a name="editors-without-forms"/>
-##Editors without forms
+###Editors without forms
 
 You can add editors by themselves, without being part of a form. For example: 
 
@@ -626,7 +619,7 @@ You can add editors by themselves, without being part of a form. For example:
 
 
 <a name="nested-fields"/>
-##Using nested fields
+###Using nested fields
 
 If you are using a schema with nested attributes (using the `Object` type), you may want to include only some of the nested fields in a form. This can be accomplished by using 'path' syntax as in the example below.
 
@@ -666,7 +659,7 @@ The following shorthand is also valid:
 
 
 <a name="custom-editors"/>
-##Custom editors
+###Custom editors
 
 Writing a custom editor is simple. They must extend from Backbone.Form.editors.Base.
     
