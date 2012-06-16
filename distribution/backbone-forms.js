@@ -176,10 +176,9 @@ var Form = (function() {
         var field = self.fields[key] = self.createField(key, itemSchema);
 
         //Render the fields with editors, apart from Hidden fields
-        if (schema.type == 'Hidden') {
-          field.editor = Form.helpers.createEditor('Hidden', options);
-        } else {
-          $fieldsContainer.append(field.render().el);
+        var fieldEl = field.render().el;
+        if (itemSchema.type != 'Hidden') {
+          $fieldsContainer.append(fieldEl);
         }
       });
 
