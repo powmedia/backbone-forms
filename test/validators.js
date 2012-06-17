@@ -97,6 +97,7 @@
     equal(fn('john.smith@example.com'), undefined)
     equal(fn('john.smith@example.co.uk'), undefined)
     equal(fn('john-smith@example.com'), undefined)
+    equal(fn('john+smith@example.com'), undefined)
   })
   
 })();

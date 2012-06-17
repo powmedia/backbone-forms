@@ -7,6 +7,8 @@
  * @author Charles Davison <charlie@powmedia.co.uk>
  *
  * Events:
+ * shown: Fired when the modal has finished animating in
+ * hidden: Fired when the modal has finished animating out
  * cancel: The user dismissed the modal
  * ok: The user clicked OK
  */
@@ -126,7 +128,8 @@
     open: function() {
       if (!this.isRendered) this.render();
 
-      var $el = this.$el;
+      var self = this,
+          $el = this.$el;
 
       //Create it
       $el.modal({
@@ -135,9 +138,10 @@
       });
 
       //Focus OK button
-      $el.on('shown', function() {
+      $el.one('shown', function() {
         $el.find('.btn.ok').focus();
-        $el.off('shown', this);
+
+        self.trigger('shown');
       });
 
       //Adjust the modal and backdrop z-index; for dealing with multiple modals
@@ -169,7 +173,11 @@
 
       $el.modal('hide');
 
-      $el.one('hidden', _.bind(this.remove, this));
+      $el.one('hidden', function() {
+        self.remove();
+
+        self.trigger('hidden');
+      });
 
       Modal.count--;
     },
