@@ -735,6 +735,9 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 <a name="changelog"/>
 ##Changelog
 
+###master
+- Email validator should accept "+" sign (#70)
+
 ###0.10.0
 - Refactor rendering.
     - <legend> tags are now defined in the template.
