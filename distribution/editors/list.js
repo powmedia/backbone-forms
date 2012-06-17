@@ -289,9 +289,10 @@
 
     /**
      * @param {Object} options
-     * @param {String} [options.schema.itemType]    Editor type e.g. 'Text', 'Object'.
-     * @param {Object} [options.schema.subSchema]   Schema for nested form,. Required when itemType is 'Object'
-     * @param {Function} [options.schema.model]     Model constructor function. Required when itemType is 'NestedModel'
+     * @param {Function} [options.schema.itemToString]  Function to transform the value for display in the list.
+     * @param {String} [options.schema.itemType]        Editor type e.g. 'Text', 'Object'.
+     * @param {Object} [options.schema.subSchema]       Schema for nested form,. Required when itemType is 'Object'
+     * @param {Function} [options.schema.model]         Model constructor function. Required when itemType is 'NestedModel'
      */
     initialize: function(options) {
       editors.Base.prototype.initialize.call(this, options);
