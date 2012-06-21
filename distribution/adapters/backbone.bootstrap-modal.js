@@ -33,7 +33,9 @@
     <div class="modal-body"><p>{{content}}</p></div>\
     <div class="modal-footer">\
       <% if (allowCancel) { %>\
-        <a href="#" class="btn cancel">{{cancelText}}</a>\
+        <% if (cancelText) { %>\
+          <a href="#" class="btn cancel">{{cancelText}}</a>\
+        <% } %>\
       <% } %>\
       <a href="#" class="btn ok btn-primary">{{okText}}</a>\
     </div>\
@@ -77,7 +79,7 @@
      * @param {String|View} [options.content] Modal content. Default: none
      * @param {String} [options.title]        Title. Default: none
      * @param {String} [options.okText]       Text for the OK button. Default: 'OK'
-     * @param {String} [options.cancelText]   Text for the cancel button. Default: 'Cancel'
+     * @param {String} [options.cancelText]   Text for the cancel button. Default: 'Cancel'. If passed a falsey value, the button will be removed
      * @param {Boolean} [options.allowCancel  Whether the modal can be closed, other than by pressing OK. Default: true
      * @param {Boolean} [options.escape]      Whether the 'esc' key can dismiss the modal. Default: true, but false if options.cancellable is true
      * @param {Boolean} [options.animate]     Whether to animate in/out. Default: false
