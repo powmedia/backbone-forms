@@ -1796,6 +1796,8 @@ Form.editors = (function() {
     },
     
     setValue: function(date) {
+      if (!_.isDate(date)) date = new Date(date);
+      
       this.dateEditor.setValue(date);
       
       this.$hour.val(date.getHours());
