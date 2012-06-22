@@ -737,7 +737,9 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 
 ###master
 - Email validator should accept "+" sign (#70)
-- Convert strings to dates in DateTime editor
+- DateTime editor:
+    - Convert strings to dates
+    - Remove built-in Date editor before removing self
 
 ###0.10.0
 - Refactor rendering.

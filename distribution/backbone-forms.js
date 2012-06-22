@@ -1815,6 +1815,15 @@ Form.editors = (function() {
       if (_.isDate(val)) val = val.toISOString();
 
       this.$hidden.val(val);
+    },
+
+    /**
+     * Remove the Date editor before removing self
+     */
+    remove: function() {
+      this.dateEditor.remove();
+
+      editors.Base.prototype.remove.call(this);
     }
 
   }, {

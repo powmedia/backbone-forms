@@ -1199,4 +1199,16 @@ module('DateTime', {
         same(hiddenVal.getHours(), 5);
         same(hiddenVal.getMinutes(), 15);
     });
+
+    test('remove() - removes the date editor and self', function() {
+        this.sinon.spy(DateEditor.prototype, 'remove');
+        this.sinon.spy(editors.Base.prototype, 'remove');
+
+        var editor = new Editor().render();
+
+        editor.remove();
+
+        ok(DateEditor.prototype.remove.calledOnce);
+        ok(editors.Base.prototype.remove.calledOnce);
+    });
 })();
