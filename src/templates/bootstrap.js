@@ -42,7 +42,7 @@
     listItem: '\
       <li class="clearfix">\
         <div class="pull-left">{{editor}}</div>\
-        <button class="btn bbf-del" data-action="remove">x</button>\
+        <button class="btn bbf-del" data-action="remove">&times;</button>\
       </li>\
     ',
 

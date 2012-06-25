@@ -39,7 +39,7 @@
 
     listItem: '\
       <li>\
-        <button data-action="remove" class="bbf-remove">x</button>\
+        <button data-action="remove" class="bbf-remove">&times;</button>\
         <div class="bbf-editor-container">{{editor}}</div>\
       </li>\
     ',
