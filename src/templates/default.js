@@ -15,7 +15,7 @@
     ',
     
     field: '\
-      <li class="bbf-field">\
+      <li class="bbf-field field-{{key}}">\
         <label for="{{id}}">{{title}}</label>\
         <div class="bbf-editor">{{editor}}</div>\
         <div class="bbf-help">{{help}}</div>\
@@ -23,7 +23,7 @@
     ',
 
     nestedField: '\
-      <li class="bbf-field" title="{{title}}">\
+      <li class="bbf-field bbf-nested-field field-{{key}}" title="{{title}}">\
         <label for="{{id}}">{{title}}</label>\
         <div class="bbf-editor">{{editor}}</div>\
         <div class="bbf-help">{{help}}</div>\
