@@ -398,6 +398,10 @@ This is a special editor which is in **a separate file and must be included**:
 - A function that returns a string representing how the object should be displayed in a list item.
 - When listType is 'NestedModel', the model's `toString()` method will be used, unless a specific `itemToString()` function is defined on the schema.
 
+**`listTemplate`**
+
+- Name of the template to hold the list. Edit if you want to customize the 'Add' button, for instance.
+- Optional, defaults to 'list'
 
 Examples:
     

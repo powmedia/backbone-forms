@@ -27,6 +27,11 @@
       var schema = this.schema;
       if (!schema) throw "Missing required option 'schema'";
 
+      //List schema defaults
+      this.schema = _.extend({
+        listTemplate: 'list'
+      }, schema);
+
       //Determine the editor to use
       this.Editor = (function() {
         var type = schema.itemType;
@@ -49,7 +54,7 @@
           value = this.value || [];
 
       //Create main element
-      var $el = $(Form.templates.list({
+      var $el = $(Form.templates[this.schema.listTemplate]({
         items: '<b class="bbf-tmp"></b>'
       }));
 
