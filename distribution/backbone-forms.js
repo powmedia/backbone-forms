@@ -1862,7 +1862,7 @@ Form.editors = (function() {
     ',
     
     field: '\
-      <li class="bbf-field">\
+      <li class="bbf-field field-{{key}}">\
         <label for="{{id}}">{{title}}</label>\
         <div class="bbf-editor">{{editor}}</div>\
         <div class="bbf-help">{{help}}</div>\
@@ -1870,7 +1870,7 @@ Form.editors = (function() {
     ',
 
     nestedField: '\
-      <li class="bbf-field" title="{{title}}">\
+      <li class="bbf-field bbf-nested-field field-{{key}}" title="{{title}}">\
         <label for="{{id}}">{{title}}</label>\
         <div class="bbf-editor">{{editor}}</div>\
         <div class="bbf-help">{{help}}</div>\
@@ -1886,7 +1886,7 @@ Form.editors = (function() {
 
     listItem: '\
       <li>\
-        <button data-action="remove" class="bbf-remove">x</button>\
+        <button data-action="remove" class="bbf-remove">&times;</button>\
         <div class="bbf-editor-container">{{editor}}</div>\
       </li>\
     ',

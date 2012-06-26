@@ -740,6 +740,7 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 ##Changelog
 
 ###master
+- Customization of List Template & Tweaked default templates (philfreo)
 - Fix not rendering of hidden fields (#75) (DouweM)
 - DateTime editor:
     - Convert strings to dates
