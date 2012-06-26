@@ -16,7 +16,7 @@
     ',
 
     field: '\
-      <div class="control-group">\
+      <div class="control-group field-{{key}}">\
         <label class="control-label" for="{{id}}">{{title}}</label>\
         <div class="controls">\
           <div class="input-xlarge">{{editor}}</div>\
@@ -26,7 +26,7 @@
     ',
 
     nestedField: '\
-      <div>\
+      <div class="field-{{key}}">\
         <div title="{{title}}" class="input-xlarge">{{editor}}</div>\
         <div class="help-block">{{help}}</div>\
       </div>\
@@ -42,7 +42,7 @@
     listItem: '\
       <li class="clearfix">\
         <div class="pull-left">{{editor}}</div>\
-        <button class="btn bbf-del" data-action="remove">x</button>\
+        <button class="btn bbf-del" data-action="remove">&times;</button>\
       </li>\
     ',
 
