@@ -32,15 +32,7 @@
   Form.VERSION = '{{version}}';
 
 
-  //EXPORTS
-  //CommonJS
-  if (typeof module == 'object' && module.exports) {
-    module.exports = Form;
-  }
-
-  //Browser
-  else {
-    Backbone.Form = Form;
-  }
+  //Exports
+  Backbone.Form = Form;
 
 })(this);

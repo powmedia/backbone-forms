@@ -1,5 +1,5 @@
 /**
- * Backbone Forms v0.10.0
+ * Backbone Forms v0.10.1
  *
  * NOTE:
  * This version is for use with RequireJS
@@ -10,7 +10,7 @@
  * License and more information at:
  * http://github.com/powmedia/backbone-forms
  */
-define(['jquery', 'underscore', 'Backbone'], function($, _, Backbone) {
+define(['jquery', 'underscore', 'backbone'], function($, _, Backbone) {
 
   
 //==================================================================================================
@@ -1905,10 +1905,9 @@ Form.editors = (function() {
 
 
   //Metadata
-  Form.VERSION = '0.10.0';
-
+  Form.VERSION = '0.10.1';
 
   //Exports
-  return Form;
+  Backbone.Form = Form;
 
 });

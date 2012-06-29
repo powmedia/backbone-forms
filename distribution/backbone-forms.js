@@ -1,5 +1,5 @@
 /**
- * Backbone Forms v0.10.0
+ * Backbone Forms v0.10.1
  *
  * Copyright (c) 2012 Charles Davison, Pow Media Ltd
  *
@@ -1918,18 +1918,10 @@ Form.editors = (function() {
 
 
   //Metadata
-  Form.VERSION = '0.10.0';
+  Form.VERSION = '0.10.1';
 
 
-  //EXPORTS
-  //CommonJS
-  if (typeof module == 'object' && module.exports) {
-    module.exports = Form;
-  }
-
-  //Browser
-  else {
-    Backbone.Form = Form;
-  }
+  //Exports
+  Backbone.Form = Form;
 
 })(this);
