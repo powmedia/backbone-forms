@@ -15,6 +15,10 @@ define(['jquery', 'underscore', 'Backbone'], function($, _, Backbone) {
   {{body}}
 
 
+  //Metadata
+  Form.VERSION = '{{version}}';
+
+
   //Exports
   return Form;
 
