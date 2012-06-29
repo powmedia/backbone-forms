@@ -1904,6 +1904,10 @@ Form.editors = (function() {
 
 
 
+  //Metadata
+  Form.VERSION = '0.10.0';
+
+
   //Exports
   return Form;
 
