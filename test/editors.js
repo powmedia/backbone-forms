@@ -1,4 +1,6 @@
-var same = deepEqual;
+;(function(Form, Field, editors) {
+
+
 
 (function() {
   module('Base');
@@ -1212,3 +1214,7 @@ module('DateTime', {
         ok(editors.Base.prototype.remove.calledOnce);
     });
 })();
+
+
+
+})(Backbone.Form, Backbone.Form.Field, Backbone.Form.editors);

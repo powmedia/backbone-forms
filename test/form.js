@@ -1,3 +1,7 @@
+;(function(Form, Field, editors) {
+
+
+
 module("Form");
 
 test("'schema' option - Schema object is used to create the form", function() {
@@ -340,3 +344,7 @@ test("Supports picking nested fields from within Objects", function() {
     ok(form.fields['author.id'].editor instanceof Form.editors.Number);
     ok(form.fields['author.name.last'].editor instanceof Form.editors.Text);
 });
+
+
+
+})(Backbone.Form, Backbone.Form.Field, Backbone.Form.editors);

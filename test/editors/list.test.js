@@ -1,3 +1,7 @@
+;(function(Form, Field, editors) {
+
+    
+
 module('List', {
     setup: function() {
         this.sinon = sinon.sandbox.create();
@@ -443,3 +447,7 @@ module('List.Item', {
         same(item.$el.attr('title'), undefined);
     });
 })();
+
+
+
+})(Backbone.Form, Backbone.Form.Field, Backbone.Form.editors);
