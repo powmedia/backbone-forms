@@ -194,6 +194,12 @@
       'click [data-action="remove"]': function(event) {
         event.preventDefault();
         this.list.removeItem(this);
+      },
+      'keydown input[type=text]': function(event) {
+        if(event.keyCode != 13) return;
+        event.preventDefault();
+        this.list.addItem();
+        this.list.$list.find("> li:last input").focus();
       }
     },
 

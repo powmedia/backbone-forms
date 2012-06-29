@@ -1875,13 +1875,13 @@ Form.editors = (function() {
     list: '\
       <div class="bbf-list">\
         <ul>{{items}}</ul>\
-        <div class="bbf-actions"><button data-action="add">Add</div>\
+        <div class="bbf-actions"><button type="button" data-action="add">Add</div>\
       </div>\
     ',
 
     listItem: '\
       <li>\
-        <button data-action="remove" class="bbf-remove">&times;</button>\
+        <button type="button" data-action="remove" class="bbf-remove">&times;</button>\
         <div class="bbf-editor-container">{{editor}}</div>\
       </li>\
     ',

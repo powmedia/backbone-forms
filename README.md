@@ -740,6 +740,8 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 ##Changelog
 
 ###master
+- Fix: #72 Hitting 'Enter' being focused on any text field in examples deletes nested "notes"
+- Pressing enter in a list now adds a new item to the bottom of the list (Juice10)
 - Customization of List Template & Tweaked default templates (philfreo)
 - Fix not rendering of hidden fields (#75) (DouweM)
 - DateTime editor:
