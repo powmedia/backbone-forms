@@ -35,14 +35,14 @@
     list: '\
       <div class="bbf-list">\
         <ul class="unstyled clearfix">{{items}}</ul>\
-        <button class="btn bbf-add" data-action="add">Add</div>\
+        <button type="button" class="btn bbf-add" data-action="add">Add</div>\
       </div>\
     ',
 
     listItem: '\
       <li class="clearfix">\
         <div class="pull-left">{{editor}}</div>\
-        <button class="btn bbf-del" data-action="remove">&times;</button>\
+        <button type="button" class="btn bbf-del" data-action="remove">&times;</button>\
       </li>\
     ',
 
