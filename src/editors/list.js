@@ -17,7 +17,7 @@
     events: {
       'click [data-action="add"]': function(event) {
         event.preventDefault();
-        this.addItem();
+        this.addItem(null, true);
       }
     },
 
@@ -83,9 +83,9 @@
     /**
      * Add a new item to the list
      * @param {Mixed} [value]     Value for the new item editor
+     * @param {Boolean} [userInitiated]     Did the user initiate adding this new item? (default=no)
      */
-    addItem: function(value) {
-      var self = this;
+    addItem: function(value, userInitiated) {
 
       //Create the item
       var item = new editors.List.Item({
@@ -96,18 +96,23 @@
         key: this.key
       }).render();
 
+      function _addItem() {
+        this.items.push(item);
+        this.$list.append(item.el);
+        item.editor.trigger('added');
+        if (userInitiated) {
+          item.editor.trigger('userAdded');
+        }
+      }
+
       //Check if we need to wait for the item to complete before adding to the list
       if (this.Editor.isAsync) {
-        item.editor.on('readyToAdd', function() {
-          self.items.push(item);
-          self.$list.append(item.el);
-        });
+        item.editor.on('readyToAdd', _addItem, this);
       }
 
       //Most editors can be added automatically
       else {
-        this.items.push(item);
-        this.$list.append(item.el);
+        _addItem()
       }
     },
 
