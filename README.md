@@ -403,6 +403,11 @@ This is a special editor which is in **a separate file and must be included**:
 - Name of the template to hold the list. Edit if you want to customize the 'Add' button, for instance.
 - Optional, defaults to 'list'
 
+**`listItemTemplate`**
+
+- Name of the template to hold the list item (including the remove item button).
+- Optional, defaults to 'listItem'
+
 Examples:
     
     function userToName(user) {
