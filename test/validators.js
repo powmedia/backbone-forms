@@ -1,3 +1,7 @@
+;(function(Form, Field, editors) {
+
+
+
 ;(function() {
 
   module('general')
@@ -170,3 +174,7 @@
     equal(err.message, 'Must match field "confirm"')
   })
 })();
+
+
+
+})(Backbone.Form, Backbone.Form.Field, Backbone.Form.editors);

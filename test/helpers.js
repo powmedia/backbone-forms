@@ -1,3 +1,7 @@
+;(function(Form, Field, editors) {
+
+
+
 module('keyToTitle');
 
 test('Transforms camelCased string to words', function() {
@@ -307,3 +311,6 @@ module('triggerCancellableEvent');
 
 })();
 
+
+
+})(Backbone.Form, Backbone.Form.Field, Backbone.Form.editors);
