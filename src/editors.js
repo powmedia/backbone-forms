@@ -1,4 +1,3 @@
-
 //========================================================================
 //EDITORS
 //========================================================================
@@ -680,7 +679,62 @@ Form.editors = (function() {
 
   });
 
+  /**
+   * ReadOnlyDate
+   * @param {String} [options.dateFormat] Accepts a format string that will format using the following keys: 
+   *        dd - the date, mm|mmmm the month, yyyy - the full year. Alternatively 
+   *        will use cold fusion style formatting if steven levithan's (http://blog.stevenlevithan.com/archives/date-time-format) plugin is installed
+   *        Defaults to dd/mm/yyyy. Only supports date, month and year. (or any other format plugin registered at Date.format that accepts a format string)
+   */
+  editors.ReadOnlyDate = editors.Text.extend({
+    
+    monthNames: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+    render: function() {
+      var format = this.options.schema.dateFormat ? this.options.schema.dateFormat : "dd/mm/yyyy";
+      var displayValue = "";
+      if(this.value.format){
+          displayValue = this.value.format(format);
+      }
+      else{
+          var spl = format.match(/[a-zA-Z]+/g);
+          for(i=0; i < spl.length; i++){
+              switch (spl[i]){
+                  case "dd":
+                    var d = this.value.getDate();
+                    displayValue += d < 10 ? "0" + d : d;
+                    break;
+                  case "mm":
+                    var m = this.value.getMonth() + 1;
+                    displayValue += m < 10 ? "0" + m : m;
+                    break;
+                  case "mmmm":
+                    var m = this.value.getMonth();
+                    displayValue += this.monthNames[m];
+                    break;
+                  case "yyyy":
+                    displayValue += this.value.getFullYear();
+                    break; 
+              }
+              if(i == 0){
+                  displayValue += format.charAt(2);
+              }
+              else if(i==1){
+                  displayValue += format.charAt(3 + spl[i].length);
+              }
+          }
+      }
+       
+      
+      this.setValue(displayValue);
+      this.$el.attr('readonly', true);
 
+      return this;
+    },
+    
+    getValue: function() {
+      return this.value;
+    }
+  });
 
   /**
    * DATE
