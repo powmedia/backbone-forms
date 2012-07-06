@@ -695,6 +695,7 @@ Form.editors = (function() {
       if(!this.value || this.value == ""){
         this.setValue(displayValue);
         this.$el.attr('readonly', true);
+        return this;
       }
       
       if(this.value.format){
