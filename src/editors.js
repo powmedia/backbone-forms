@@ -463,7 +463,7 @@ Form.editors = (function() {
     },
 
     setValue: function(value) {
-      this.$el.find('input[type=radio][value='+value+']').attr('checked', true);
+      this.$el.find('input[type=radio][value="'+value+'"]').attr('checked', true);
     },
 
     /**
