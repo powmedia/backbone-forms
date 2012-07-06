@@ -285,8 +285,11 @@ var Form = (function() {
      * @param {Object} data     New values to set
      */
     setValue: function(data) {
-      for (var key in data) {
-        this.fields[key].setValue(data[key]);
+      var key;
+      for (key in this.schema) {
+        if (data[key] !== undefined) {
+          this.fields[key].setValue(data[key]);
+        }
       }
     },
 
