@@ -282,6 +282,20 @@ test("setValue() - updates form field values", function() {
     equal(form.fields.author.getValue(), 'Sterling Archer');
 });
 
+test("setValue() - updates only field from schema", function() {
+    var form = new Form({
+        model: new Post
+    }).render();
+    
+    form.setValue({
+        title: 'Danger Zone 2',
+        fakeField: 'FakeTest'
+    });
+    
+    // Check undefined schema field
+    equal(typeof form.fields.fakeField, 'undefined');
+});
+
 test("remove() - removes all child views and itself", function() {
     var counter = 0;
     
