@@ -692,6 +692,11 @@ Form.editors = (function() {
     render: function() {
       var format = this.options.schema.dateFormat ? this.options.schema.dateFormat : "dd/mm/yyyy";
       var displayValue = "";
+      if(!this.value || this.value == ""){
+        this.setValue(displayValue);
+        this.$el.attr('readonly', true);
+      }
+      
       if(this.value.format){
           displayValue = this.value.format(format);
       }
