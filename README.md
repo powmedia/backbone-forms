@@ -363,7 +363,7 @@ Used to embed models within models.  Similar to the Object editor, but adds vali
 
 ###Events
 
-**`item:<event>`**
+**`<key>:<event>`**
   
 - Events fired by editors within this NestedModel editor will bubble up and be fired as `<key>:<event>`.
 
