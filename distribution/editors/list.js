@@ -198,7 +198,7 @@
     focus: function() {
       if (this.hasFocus) return;
 
-      if (this.items.length > 0) this.items[0].editor.focus();
+      if (this.items[0]) this.items[0].editor.focus();
     },
     
     blur: function() {

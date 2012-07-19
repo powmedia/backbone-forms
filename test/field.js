@@ -393,7 +393,7 @@ test("keys can be paths to nested objects if using DeepModel", function() {
 
   field.setValue('foo');
 
-  var $input = field.$el.find('#user_name_first');
+  var $input = field.$('#user_name_first');
 
   equal(field.getValue(), 'foo');
   equal($input.val(), 'foo');

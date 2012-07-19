@@ -1075,7 +1075,7 @@ module('Radio', {
         field.focus();
         
         ok(field.hasFocus);
-        ok(field.$el.find('input[type=radio]').first().is(':focus'));
+        ok(field.$('input[type=radio]').first().is(':focus'));
         
         field.blur();
         
@@ -1088,14 +1088,14 @@ module('Radio', {
     test("focus() - gives focus to editor and its checked radiobutton when a radiobutton is checked", function() {
         var field = window.form.fields.radio.editor;
         
-        field.$el.find('input[type=radio]').val([field.$el.find('input[type=radio]').eq(1).val()]);
+        field.$('input[type=radio]').val([field.$('input[type=radio]').eq(1).val()]);
 
         field.focus();
         
         ok(field.hasFocus);
-        ok(field.$el.find('input[type=radio]').eq(1).is(':focus'));
+        ok(field.$('input[type=radio]').eq(1).is(':focus'));
         
-        field.$el.find('input[type=radio]').val([null]);
+        field.$('input[type=radio]').val([null]);
         
         field.blur();
         
@@ -1137,7 +1137,7 @@ module('Radio', {
         stop();
         setTimeout(function() {
           ok(!field.hasFocus);
-          ok(!field.$el.find('input[type=radio]').first().is(':focus'));
+          ok(!field.$('input[type=radio]').first().is(':focus'));
 
           start();
         }, 0);
@@ -1170,12 +1170,12 @@ module('Radio', {
 
         field.on('change', spy);
         
-        field.$el.find("input[type=radio]:not(:checked)").first().click();
+        field.$("input[type=radio]:not(:checked)").first().click();
 
         ok(spy.called);
         ok(spy.calledWith(field));
         
-        field.$el.find("input[type=radio]").val([null]);
+        field.$("input[type=radio]").val([null]);
     });
 
     test("'focus' event - bubbles up from radiobutton when editor doesn't have focus", function() {
@@ -1185,7 +1185,7 @@ module('Radio', {
 
         field.on('focus', spy);
 
-        field.$el.find("input[type=radio]").first().focus();
+        field.$("input[type=radio]").first().focus();
 
         ok(spy.called);
         ok(spy.calledWith(field));
@@ -1207,7 +1207,7 @@ module('Radio', {
 
         field.on('focus', spy);
 
-        field.$el.find("input[type=radio]").focus();
+        field.$("input[type=radio]").focus();
 
         ok(!spy.called);
         
@@ -1228,7 +1228,7 @@ module('Radio', {
 
         field.on('blur', spy);
 
-        field.$el.find("input[type=radio]").first().blur();
+        field.$("input[type=radio]").first().blur();
 
         stop();
         setTimeout(function() {
@@ -1248,8 +1248,8 @@ module('Radio', {
 
         field.on('blur', spy);
 
-        field.$el.find("input[type=radio]:eq(0)").blur();
-        field.$el.find("input[type=radio]:eq(1)").focus();
+        field.$("input[type=radio]:eq(0)").blur();
+        field.$("input[type=radio]:eq(1)").focus();
 
         stop();
         setTimeout(function() {
@@ -1270,7 +1270,7 @@ module('Radio', {
 
         field.on('blur', spy);
 
-        field.$el.find("input[type=radio]").blur();
+        field.$("input[type=radio]").blur();
 
         stop();
         setTimeout(function() {
@@ -1363,7 +1363,7 @@ module('Checkboxes', {
         field.focus();
         
         ok(field.hasFocus);
-        ok(field.$el.find('input[type=checkbox]').first().is(':focus'));
+        ok(field.$('input[type=checkbox]').first().is(':focus'));
         
         field.blur();
         
@@ -1405,7 +1405,7 @@ module('Checkboxes', {
         stop();
         setTimeout(function() {
           ok(!field.hasFocus);
-          ok(!field.$el.find('input[type=checkbox]').first().is(':focus'));
+          ok(!field.$('input[type=checkbox]').first().is(':focus'));
 
           start();
         }, 0);
@@ -1438,12 +1438,12 @@ module('Checkboxes', {
 
         field.on('change', spy);
         
-        field.$el.find("input[type=checkbox]").first().click();
+        field.$("input[type=checkbox]").first().click();
 
         ok(spy.called);
         ok(spy.calledWith(field));
         
-        field.$el.find("input[type=checkbox]").val([null]);
+        field.$("input[type=checkbox]").val([null]);
     });
 
     test("'focus' event - bubbles up from checkbox when editor doesn't have focus", function() {
@@ -1453,7 +1453,7 @@ module('Checkboxes', {
 
         field.on('focus', spy);
 
-        field.$el.find("input[type=checkbox]").first().focus();
+        field.$("input[type=checkbox]").first().focus();
 
         ok(spy.called);
         ok(spy.calledWith(field));
@@ -1475,7 +1475,7 @@ module('Checkboxes', {
 
         field.on('focus', spy);
 
-        field.$el.find("input[type=checkbox]").focus();
+        field.$("input[type=checkbox]").focus();
 
         ok(!spy.called);
         
@@ -1496,7 +1496,7 @@ module('Checkboxes', {
 
         field.on('blur', spy);
 
-        field.$el.find("input[type=checkbox]").first().blur();
+        field.$("input[type=checkbox]").first().blur();
 
         stop();
         setTimeout(function() {
@@ -1516,8 +1516,8 @@ module('Checkboxes', {
 
         field.on('blur', spy);
 
-        field.$el.find("input[type=checkbox]:eq(0)").blur();
-        field.$el.find("input[type=checkbox]:eq(1)").focus();
+        field.$("input[type=checkbox]:eq(0)").blur();
+        field.$("input[type=checkbox]:eq(1)").focus();
 
         stop();
         setTimeout(function() {
@@ -1538,7 +1538,7 @@ module('Checkboxes', {
 
         field.on('blur', spy);
 
-        field.$el.find("input[type=checkbox]").blur();
+        field.$("input[type=checkbox]").blur();
 
         stop();
         setTimeout(function() {
@@ -2090,7 +2090,7 @@ module('Date', {
         field.focus();
         
         ok(field.hasFocus);
-        ok(field.$el.find('select').first().is(':focus'));
+        ok(field.$('select').first().is(':focus'));
         
         field.blur();
         
@@ -2132,7 +2132,7 @@ module('Date', {
         stop();
         setTimeout(function() {
           ok(!field.hasFocus);
-          ok(!field.$el.find('input[type=selectbox]').first().is(':focus'));
+          ok(!field.$('input[type=selectbox]').first().is(':focus'));
 
           start();
         }, 0);
@@ -2165,8 +2165,8 @@ module('Date', {
 
         field.on('change', spy);
         
-        field.$el.find("select").first().val('31');
-        field.$el.find("select").first().change();
+        field.$("select").first().val('31');
+        field.$("select").first().change();
 
         ok(spy.called);
         ok(spy.calledWith(field));
@@ -2179,7 +2179,7 @@ module('Date', {
 
         field.on('focus', spy);
 
-        field.$el.find("select").first().focus();
+        field.$("select").first().focus();
 
         ok(spy.called);
         ok(spy.calledWith(field));
@@ -2201,7 +2201,7 @@ module('Date', {
 
         field.on('focus', spy);
 
-        field.$el.find("select").focus();
+        field.$("select").focus();
 
         ok(!spy.called);
         
@@ -2222,7 +2222,7 @@ module('Date', {
 
         field.on('blur', spy);
 
-        field.$el.find("select").first().blur();
+        field.$("select").first().blur();
 
         stop();
         setTimeout(function() {
@@ -2242,8 +2242,8 @@ module('Date', {
 
         field.on('blur', spy);
 
-        field.$el.find("select:eq(0)").blur();
-        field.$el.find("select:eq(1)").focus();
+        field.$("select:eq(0)").blur();
+        field.$("select:eq(1)").focus();
 
         stop();
         setTimeout(function() {
@@ -2264,7 +2264,7 @@ module('Date', {
 
         field.on('blur', spy);
 
-        field.$el.find("select").blur();
+        field.$("select").blur();
 
         stop();
         setTimeout(function() {
@@ -2456,7 +2456,7 @@ module('DateTime', {
         field.focus();
         
         ok(field.hasFocus);
-        ok(field.$el.find('select').first().is(':focus'));
+        ok(field.$('select').first().is(':focus'));
         
         field.blur();
         
@@ -2498,7 +2498,7 @@ module('DateTime', {
         stop();
         setTimeout(function() {
           ok(!field.hasFocus);
-          ok(!field.$el.find('input[type=selectbox]').first().is(':focus'));
+          ok(!field.$('input[type=selectbox]').first().is(':focus'));
 
           start();
         }, 0);
@@ -2531,8 +2531,8 @@ module('DateTime', {
 
         field.on('change', spy);
         
-        field.$el.find("select").first().val('31');
-        field.$el.find("select").first().change();
+        field.$("select").first().val('31');
+        field.$("select").first().change();
 
         ok(spy.called);
         ok(spy.calledWith(field));
@@ -2545,7 +2545,7 @@ module('DateTime', {
 
         field.on('focus', spy);
 
-        field.$el.find("select").first().focus();
+        field.$("select").first().focus();
 
         ok(spy.called);
         ok(spy.calledWith(field));
@@ -2567,7 +2567,7 @@ module('DateTime', {
 
         field.on('focus', spy);
 
-        field.$el.find("select").focus();
+        field.$("select").focus();
 
         ok(!spy.called);
         
@@ -2588,7 +2588,7 @@ module('DateTime', {
 
         field.on('blur', spy);
 
-        field.$el.find("select").first().blur();
+        field.$("select").first().blur();
 
         stop();
         setTimeout(function() {
@@ -2608,8 +2608,8 @@ module('DateTime', {
 
         field.on('blur', spy);
 
-        field.$el.find("select:eq(0)").blur();
-        field.$el.find("select:eq(1)").focus();
+        field.$("select:eq(0)").blur();
+        field.$("select:eq(1)").focus();
 
         stop();
         setTimeout(function() {
@@ -2630,7 +2630,7 @@ module('DateTime', {
 
         field.on('blur', spy);
 
-        field.$el.find("select").blur();
+        field.$("select").blur();
 
         stop();
         setTimeout(function() {

@@ -604,36 +604,36 @@ Form.editors = (function() {
         if (!this.hasFocus) return;
         var self = this;
         setTimeout(function() {
-          if (self.$el.find('input[type=radio]:focus').length > 0) return;
+          if (self.$('input[type=radio]:focus')[0]) return;
           self.trigger('blur', self);
         }, 0);
       }
     },
 
     getValue: function() {
-      return this.$el.find('input[type=radio]:checked').val();
+      return this.$('input[type=radio]:checked').val();
     },
 
     setValue: function(value) {
-      this.$el.find('input[type=radio]').val([value]);
+      this.$('input[type=radio]').val([value]);
     },
     
     focus: function() {
       if (this.hasFocus) return;
       
-      var checked = this.$el.find('input[type=radio]:checked');
-      if (checked.length > 0) {
+      var checked = this.$('input[type=radio]:checked');
+      if (checked[0]) {
         checked.focus();
         return;
       }
       
-      this.$el.find('input[type=radio]').first().focus();
+      this.$('input[type=radio]').first().focus();
     },
     
     blur: function() {
       if (!this.hasFocus) return;
       
-      this.$el.find('input[type=radio]:focus').blur();
+      this.$('input[type=radio]:focus').blur();
     },
 
     /**
@@ -693,7 +693,7 @@ Form.editors = (function() {
         if (!this.hasFocus) return;
         var self = this;
         setTimeout(function() {
-          if (self.$el.find('input[type=checkbox]:focus').length > 0) return;
+          if (self.$('input[type=checkbox]:focus')[0]) return;
           self.trigger('blur', self);
         }, 0);
       }
@@ -701,7 +701,7 @@ Form.editors = (function() {
 
     getValue: function() {
       var values = [];
-      this.$el.find('input[type=checkbox]:checked').each(function() {
+      this.$('input[type=checkbox]:checked').each(function() {
         values.push($(this).val());
       });
       return values;
@@ -709,19 +709,19 @@ Form.editors = (function() {
 
     setValue: function(values) {
       if (!_.isArray(values)) values = [values];
-      this.$el.find('input[type=checkbox]').val(values);
+      this.$('input[type=checkbox]').val(values);
     },
     
     focus: function() {
       if (this.hasFocus) return;
       
-      this.$el.find('input[type=checkbox]').first().focus();
+      this.$('input[type=checkbox]').first().focus();
     },
     
     blur: function() {
       if (!this.hasFocus) return;
       
-      this.$el.find('input[type=checkbox]:focus').blur();
+      this.$('input[type=checkbox]:focus').blur();
     },
 
     /**
@@ -937,7 +937,7 @@ Form.editors = (function() {
         if (!this.hasFocus) return;
         var self = this;
         setTimeout(function() {
-          if (self.$el.find('select:focus').length > 0) return;
+          if (self.$('select:focus')[0]) return;
           self.trigger('blur', self);
         }, 0);
       }
@@ -1050,13 +1050,13 @@ Form.editors = (function() {
     focus: function() {
       if (this.hasFocus) return;
       
-      this.$el.find('select').first().focus();
+      this.$('select').first().focus();
     },
     
     blur: function() {
       if (!this.hasFocus) return;
       
-      this.$el.find('select:focus').blur();
+      this.$('select:focus').blur();
     },
 
     /**
@@ -1103,7 +1103,7 @@ Form.editors = (function() {
         if (!this.hasFocus) return;
         var self = this;
         setTimeout(function() {
-          if (self.$el.find('select:focus').length > 0) return;
+          if (self.$('select:focus')[0]) return;
           self.trigger('blur', self);
         }, 0);
       }
@@ -1205,13 +1205,13 @@ Form.editors = (function() {
     focus: function() {
       if (this.hasFocus) return;
       
-      this.$el.find('select').first().focus();
+      this.$('select').first().focus();
     },
     
     blur: function() {
       if (!this.hasFocus) return;
       
-      this.$el.find('select:focus').blur();
+      this.$('select:focus').blur();
     },
 
     /**

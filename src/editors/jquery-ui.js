@@ -70,25 +70,25 @@
     focus: function() {
       if (this.hasFocus) return;
       
-      this.$el.find('input').datepicker('show');
+      this.$('input').datepicker('show');
     },
     
     blur: function() {
       if (!this.hasFocus) return;
       
-      this.$el.find('input').datepicker('hide');
+      this.$('input').datepicker('hide');
     },
     
     _observeDatepickerEvents: function() {
       var self = this;
-      this.$el.find('input').datepicker('option', 'onSelect', function() {
+      this.$('input').datepicker('option', 'onSelect', function() {
         self.trigger('change', self);
       })
-      this.$el.find('input').datepicker('option', 'onClose', function() {
+      this.$('input').datepicker('option', 'onClose', function() {
         if (!self.hasFocus) return;
         self.trigger('blur', self);
       });
-      this.$el.find('input').datepicker('option', 'beforeShow', function() {
+      this.$('input').datepicker('option', 'beforeShow', function() {
         if (self.hasFocus) return {};
         self.trigger('focus', self);
         
@@ -476,7 +476,7 @@
     focus: function() {
       if (this.hasFocus) return;
       
-      var item = this.$el.find('li .bbf-list-edit').first();
+      var item = this.$('li .bbf-list-edit').first();
       if (item.length > 0) {
         item.click();
       }

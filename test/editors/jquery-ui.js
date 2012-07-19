@@ -15,7 +15,7 @@ module('jqueryui.Date', {
         field.focus();
         
         ok(field.hasFocus);
-        ok(field.$el.find('input').datepicker('widget').is(':visible'));
+        ok(field.$('input').datepicker('widget').is(':visible'));
         
         field.blur();
         
@@ -48,7 +48,7 @@ module('jqueryui.Date', {
         field.blur();
         
         ok(!field.hasFocus);
-        ok(!field.$el.find('input').datepicker('widget').is(':visible'));
+        ok(!field.$('input').datepicker('widget').is(':visible'));
     });
 
     test("blur() - triggers the 'blur' event", function() {
@@ -75,7 +75,7 @@ module('jqueryui.Date', {
 
         field.on('change', spy);
         
-        field.$el.find('input').datepicker('widget').find('td').first().click();
+        field.$('input').datepicker('widget').find('td').first().click();
 
         ok(spy.called);
         ok(spy.calledWith(field));
@@ -88,7 +88,7 @@ module('jqueryui.Date', {
 
         field.on('focus', spy);
 
-        field.$el.find("input").first().focus();
+        field.$("input").first().focus();
 
         ok(spy.called);
         ok(spy.calledWith(field));
@@ -105,7 +105,7 @@ module('jqueryui.Date', {
 
         field.on('blur', spy);
 
-        field.$el.find('input').datepicker('widget').find('td').first().click();
+        field.$('input').datepicker('widget').find('td').first().click();
 
         ok(spy.called);
         ok(spy.calledWith(field));
@@ -131,7 +131,7 @@ module('jqueryui.DateTime', {
         field.focus();
         
         ok(field.hasFocus);
-        ok(field.$el.find('input').datepicker('widget').is(':visible'));
+        ok(field.$('input').datepicker('widget').is(':visible'));
         
         field.blur();
         
@@ -164,7 +164,7 @@ module('jqueryui.DateTime', {
         field.blur();
         
         ok(!field.hasFocus);
-        ok(!field.$el.find('input').datepicker('widget').is(':visible'));
+        ok(!field.$('input').datepicker('widget').is(':visible'));
     });
 
     test("blur() - triggers the 'blur' event", function() {
@@ -191,7 +191,7 @@ module('jqueryui.DateTime', {
 
         field.on('change', spy);
         
-        field.$el.find('input').datepicker('widget').find('td').first().click();
+        field.$('input').datepicker('widget').find('td').first().click();
 
         ok(spy.called);
         ok(spy.calledWith(field));
@@ -204,7 +204,7 @@ module('jqueryui.DateTime', {
 
         field.on('focus', spy);
 
-        field.$el.find("input").first().focus();
+        field.$("input").first().focus();
 
         ok(spy.called);
         ok(spy.calledWith(field));
@@ -221,7 +221,7 @@ module('jqueryui.DateTime', {
 
         field.on('blur', spy);
 
-        field.$el.find('input').datepicker('widget').find('td').first().click();
+        field.$('input').datepicker('widget').find('td').first().click();
 
         ok(spy.called);
         ok(spy.calledWith(field));
@@ -294,7 +294,7 @@ module('jqueryui.List', {
     test("'change' and 'item:change' events - are triggered when the item's editor dialog is submitted after editing an item", function() {
         var field = window.form.fields.jqueryList.editor;
         
-        field.$el.find('li .bbf-list-edit').first().click();
+        field.$('li .bbf-list-edit').first().click();
 
         var spy1 = this.sinon.spy();
         var spy2 = this.sinon.spy();
@@ -335,7 +335,7 @@ module('jqueryui.List', {
 
         field.on('change', spy);
 
-        field.$el.find('li .bbf-list-del').first().click();
+        field.$('li .bbf-list-del').first().click();
 
         ok(spy.called);
         ok(spy.calledWith(field));
@@ -352,7 +352,7 @@ module('jqueryui.List', {
         field.on('item:focus', spy2);
         field.on('item:open', spy3);
 
-        field.$el.find('li .bbf-list-edit').first().click();
+        field.$('li .bbf-list-edit').first().click();
 
         ok(spy1.called);
         ok(spy1.calledWith(field));
@@ -367,7 +367,7 @@ module('jqueryui.List', {
     test("'blur', 'item:blur' and 'item:close' events - are triggered when an item's editor dialog is closed", function() {
         var field = window.form.fields.jqueryList.editor;
 
-        field.$el.find('li .bbf-list-edit').first().click();
+        field.$('li .bbf-list-edit').first().click();
 
         var spy1 = this.sinon.spy();
         var spy2 = this.sinon.spy();
@@ -407,7 +407,7 @@ module('jqueryui.List', {
     test("'remove' event - is triggered when an item is removed", function() {
         var field = window.form.fields.jqueryList.editor;
         
-        var item = field.$el.find('li').first();
+        var item = field.$('li').first();
         var value = item.data('data')
 
         var spy = this.sinon.spy();

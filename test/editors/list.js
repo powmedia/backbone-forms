@@ -114,7 +114,7 @@ module('List', {
 
         same(list.items.length, 1);
 
-        list.$el.find('[data-action="add"]').click();
+        list.$('[data-action="add"]').click();
         
         same(list.items.length, 2);
     });
