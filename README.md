@@ -44,6 +44,7 @@ A flexible, customisable form framework for Backbone.JS applications.
 ###Table of Contents:
 - [Installation](#installation)
 - [Usage](#usage)
+- [Backbone.Form](#form)  
 - [Schema Definition](#schema-definition)
   - [Text](#editor-text)
   - [Checkboxes](#editor-checkboxes)
@@ -54,7 +55,6 @@ A flexible, customisable form framework for Backbone.JS applications.
   - [Date](#editor-date)
   - [DateTime](#editor-datetime)
   - [List](#editor-list)
-- [Backbone.Form](#form)  
 - [Validation](#validation)  
 - [Customising templates](#customising-templates)
 - [More](#more)
@@ -161,6 +161,80 @@ Then instead of `form.commit()`, do:
 
 ###Initial data
 If a form has a model attached to it, the initial values are taken from the model's defaults. Otherwise, you may pass default values using the `schema.data`.
+
+[Back to top](#top)
+
+
+<a name="form"/>
+##Backbone.Form
+
+###Options
+
+**`model`**
+
+The model to tie the form to. Calling `form.commit()` will update the model with new values.
+
+**`data`**
+
+If not using the `model` option, pass a native object through the `data` option. Then use `form.getValue()` to get the new values.
+
+**`schema`**
+
+The schema to use to create the form. Pass it in if you don't want to store the schema on the model, or to override the model schema.
+
+**`fieldsets`**
+
+An array of fieldsets descriptions. A fieldset is either a list of field names, or an object with `legend` and `fields` attributes. The `legend` will be inserted at the top of the fieldset inside a `<legend>` tag; the list of fields will be treated as `fields` is below.
+
+`fieldsets` takes priority over `fields`.
+
+**`fields`**
+
+An array of field names (keys). Only the fields defined here will be added to the form. You can also use this to re-order the fields.
+
+**`idPrefix`**
+
+A string that will be prefixed to the form DOM element IDs. Useful if you will have multiple forms on the same page. E.g. `idPrefix: 'user-'` will result in IDs like 'user-name', 'user-email', etc.
+
+If not defined, the model's CID will be used as a prefix to avoid conflicts when there are multiple instances of the form on the page. To override this behaviour, pass a null value to `idPrefix`.
+
+**`template`**
+
+The template name to use for generating the form. E.g.:
+
+    Backbone.Form.setTemplates({
+      customForm: '<form class="custom-form">{{fieldsets}}</form>'
+    });
+    
+    var form = new Backbone.Form({
+      model: user,
+      template: 'customForm'
+    });
+    
+    
+###Events
+
+`Backbone.Form` fires the following events:
+
+**`change`**
+
+- This event is triggered whenever something happens that affects the result of `form.getValue()`.
+
+**`focus`**
+
+- This event is triggered whenever this form gains focus, i.e. when the input of an editor within this form becomes the `document.activeElement`.
+
+**`blur`**
+
+- This event is triggered whenever this form loses focus, i.e. when the input of an editor within this form stops being the `document.activeElement`.
+
+**`<key>:<event>`**
+  
+- Events fired by editors within this form will bubble up and be fired as `<key>:<event>`.
+
+    form.on('title:change', function(form, titleEditor) { 
+        console.log('Title changed to "' + titleEditor.getValue() + '".');
+    });
 
 [Back to top](#top)
 
@@ -485,80 +559,6 @@ Examples:
         console.log('Last name for user "' + itemEditor.getValue().firstName + '" changed to "' + lastNameEditor.getValue() +'".');
     });
     
-[Back to top](#top)
-
-
-<a name="form"/>
-##Backbone.Form
-
-###Options
-
-**`model`**
-
-The model to tie the form to. Calling `form.commit()` will update the model with new values.
-
-**`data`**
-
-If not using the `model` option, pass a native object through the `data` option. Then use `form.getValue()` to get the new values.
-
-**`schema`**
-
-The schema to use to create the form. Pass it in if you don't want to store the schema on the model, or to override the model schema.
-
-**`fieldsets`**
-
-An array of fieldsets descriptions. A fieldset is either a list of field names, or an object with `legend` and `fields` attributes. The `legend` will be inserted at the top of the fieldset inside a `<legend>` tag; the list of fields will be treated as `fields` is below.
-
-`fieldsets` takes priority over `fields`.
-
-**`fields`**
-
-An array of field names (keys). Only the fields defined here will be added to the form. You can also use this to re-order the fields.
-
-**`idPrefix`**
-
-A string that will be prefixed to the form DOM element IDs. Useful if you will have multiple forms on the same page. E.g. `idPrefix: 'user-'` will result in IDs like 'user-name', 'user-email', etc.
-
-If not defined, the model's CID will be used as a prefix to avoid conflicts when there are multiple instances of the form on the page. To override this behaviour, pass a null value to `idPrefix`.
-
-**`template`**
-
-The template name to use for generating the form. E.g.:
-
-    Backbone.Form.setTemplates({
-      customForm: '<form class="custom-form">{{fieldsets}}</form>'
-    });
-    
-    var form = new Backbone.Form({
-      model: user,
-      template: 'customForm'
-    });
-    
-    
-###Events
-
-`Backbone.Form` fires the following events:
-
-**`change`**
-
-- This event is triggered whenever something happens that affects the result of `form.getValue()`.
-
-**`focus`**
-
-- This event is triggered whenever this form gains focus, i.e. when the input of an editor within this form becomes the `document.activeElement`.
-
-**`blur`**
-
-- This event is triggered whenever this form loses focus, i.e. when the input of an editor within this form stops being the `document.activeElement`.
-
-**`<key>:<event>`**
-  
-- Events fired by editors within this form will bubble up and be fired as `<key>:<event>`.
-
-    form.on('title:change', function(form, titleEditor) { 
-        console.log('Title changed to "' + titleEditor.getValue() + '".');
-    });
-
 [Back to top](#top)
 
 
