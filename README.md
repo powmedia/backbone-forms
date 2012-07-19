@@ -477,6 +477,10 @@ Examples:
         console.log('User with first name "' + itemEditor.getValue().firstName + '" added.');
     });
     
+    listEditor.on('item:focus', function(listEditor, itemEditor) {
+        console.log('User "' + userToName(itemEditor.getValue()) + '" has been given focus.');
+    });
+    
     listEditor.on('item:lastName:change', function(listEditor, itemEditor, lastNameEditor) {
         console.log('Last name for user "' + itemEditor.getValue().firstName + '" changed to "' + lastNameEditor.getValue() +'".');
     });
@@ -547,7 +551,9 @@ The template name to use for generating the form. E.g.:
 
 - This event is triggered whenever this form loses focus, i.e. when the input of an editor within this form stops being the `document.activeElement`.
 
-Moreover, any event fired by any editor will bubble up to its form and be fired as `<key>:<event>`. 
+**`<key>:<event>`**
+  
+- Events fired by editors within this form will bubble up and be fired as `<key>:<event>`.
 
     form.on('title:change', function(form, titleEditor) { 
         console.log('Title changed to "' + titleEditor.getValue() + '".');
@@ -839,8 +845,9 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
             
             // This method call should result in an input within this edior
             // becoming the `document.activeElement`.
-            // This, in turn, should result in `this.trigger('event')` being
-            // called. See above for more detail.
+            // This, in turn, should result in this editor's `focus` event
+            // being triggered, setting `this.hasFocus` to `true`. 
+            // See above for more detail.
             this.$el.focus();
         },
         
@@ -855,8 +862,8 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 
 - The editor must implement `getValue()`, `setValue()`, `focus()` and `blur()` methods.
 - The editor must fire `change`, `focus` and `blur` events.
-- The original value is available through this.value.
-- The field schema can be accessed via this.schema. This allows you to pass in custom parameters.
+- The original value is available through `this.value`.
+- The field schema can be accessed via `this.schema`. This allows you to pass in custom parameters.
 
 
 
