@@ -292,6 +292,285 @@ module('List', {
         //And item was removed
         same(list.items.length, 1, 'Removed item');
     });
+    
+    test("focus() - gives focus to editor and its first item's editor", function() {
+        var field = new List({
+            model: new Post,
+            key: 'weapons'
+        }).render();
+
+        field.focus();
+
+        stop();
+        setTimeout(function() {
+          ok(field.items[0].editor.hasFocus);
+          ok(field.hasFocus);
+
+          start();
+        }, 0);
+    });
+
+    test("focus() - triggers the 'focus' event", function() {
+        var field = new List({
+            model: new Post,
+            key: 'weapons'
+        }).render();
+
+        var spy = this.sinon.spy();
+
+        field.on('focus', spy);
+
+        field.focus();
+
+        stop();
+        setTimeout(function() {
+          ok(spy.called);
+          ok(spy.calledWith(field));
+
+          start();
+        }, 0);
+    });
+
+    test("blur() - removes focus from the editor and its first item's editor", function() {
+        var field = new List({
+            model: new Post,
+            key: 'weapons'
+        }).render();
+
+        field.focus();
+
+        field.blur();
+
+        stop();
+        setTimeout(function() {
+          ok(!field.items[0].editor.hasFocus);
+          ok(!field.hasFocus);
+
+          start();
+        }, 0);
+    });
+
+    test("blur() - triggers the 'blur' event", function() {
+        var field = new List({
+            model: new Post,
+            key: 'weapons'
+        }).render();
+
+        field.focus();
+
+        var spy = this.sinon.spy();
+
+        field.on('blur', spy);
+
+        field.blur();
+
+        stop();
+        setTimeout(function() {
+          ok(spy.called);
+          ok(spy.calledWith(field));
+
+          start();
+        }, 0);
+    });
+
+    test("'change' event - bubbles up from item's editor", function() {
+        var field = new List({
+            model: new Post,
+            key: 'weapons'
+        }).render();
+
+        var spy = this.sinon.spy();
+
+        field.on('change', spy);
+
+        field.items[0].editor.trigger('change', field.items[0].editor);
+
+        ok(spy.called);
+        ok(spy.calledWith(field));
+    });
+    
+    test("'change' event - is triggered when an item is added", function() {
+        var field = new List({
+            model: new Post,
+            key: 'weapons'
+        }).render();
+
+        var spy = this.sinon.spy();
+        
+        field.on('change', spy);
+
+        var item = field.addItem(null, true);
+
+        ok(spy.called);
+        ok(spy.calledWith(field));
+    });
+    
+    test("'change' event - is triggered when an item is removed", function() {
+        var field = new List({
+            model: new Post,
+            key: 'weapons'
+        }).render();
+
+        var spy = this.sinon.spy();
+        
+        item = field.items[0];
+
+        field.on('change', spy);
+
+        field.removeItem(item);
+
+        ok(spy.called);
+        ok(spy.calledWith(field));
+    });
+
+    test("'focus' event - bubbles up from item's editor when editor doesn't have focus", function() {
+        var field = new List({
+            model: new Post,
+            key: 'weapons'
+        }).render();
+
+        var spy = this.sinon.spy();
+
+        field.on('focus', spy);
+
+        field.items[0].editor.focus();
+
+        ok(spy.called);
+        ok(spy.calledWith(field));
+    });
+
+    test("'focus' event - doesn't bubble up from item's editor when editor already has focus", function() {
+        var field = new List({
+            model: new Post,
+            key: 'weapons'
+        }).render();
+
+        field.focus();
+
+        var spy = this.sinon.spy();
+
+        field.on('focus', spy);
+
+        field.items[0].editor.focus();
+
+        ok(!spy.called);
+    });
+
+    test("'blur' event - bubbles up from item's editor when editor has focus and we're not focusing on another one of the editor's item's editors", function() {
+        var field = new List({
+            model: new Post,
+            key: 'weapons'
+        }).render();
+
+        field.focus();
+
+        var spy = this.sinon.spy();
+
+        field.on('blur', spy);
+
+        field.items[0].editor.blur();
+
+        stop();
+        setTimeout(function() {
+            ok(spy.called);
+            ok(spy.calledWith(field));
+
+            start();
+        }, 0);
+    });
+
+    test("'blur' event - doesn't bubble up from item's editor when editor has focus and we're focusing on another one of the editor's item's editors", function() {
+        var field = new List({
+            model: new Post,
+            key: 'weapons'
+        }).render();
+
+        field.focus();
+
+        var spy = this.sinon.spy();
+
+        field.on('blur', spy);
+
+        field.items[0].editor.blur();
+        field.items[1].editor.focus();
+
+        stop();
+        setTimeout(function() {
+            ok(!spy.called);
+
+            start();
+        }, 0);
+    });
+
+    test("'blur' event - doesn't bubble up from item's editor when editor doesn't have focus", function() {
+        var field = new List({
+            model: new Post,
+            key: 'weapons'
+        }).render();
+
+        var spy = this.sinon.spy();
+
+        field.on('blur', spy);
+
+        field.items[0].editor.blur();
+
+        stop();
+        setTimeout(function() {
+            ok(!spy.called);
+
+            start();
+        }, 0);
+    });
+    
+    test("'add' event - is triggered when an item is added", function() {
+        var field = new List({
+            model: new Post,
+            key: 'weapons'
+        }).render();
+
+        var spy = this.sinon.spy();
+        
+        field.on('add', spy);
+
+        var item = field.addItem(null, true);
+
+        ok(spy.called);
+        ok(spy.calledWith(field, item.editor));
+    });
+    
+    test("'remove' event - is triggered when an item is removed", function() {
+        var field = new List({
+            model: new Post,
+            key: 'weapons'
+        }).render();
+
+        var item = field.items[0];
+
+        var spy = this.sinon.spy();
+
+        field.on('remove', spy);
+
+        field.removeItem(item);
+
+        ok(spy.called);
+        ok(spy.calledWith(field, item.editor));
+    });
+
+    test("Events bubbling up from item's editors", function() {
+        var field = new List({
+            model: new Post,
+            key: 'weapons'
+        }).render();
+
+        var spy = this.sinon.spy();
+
+        field.on('item:whatever', spy);
+
+        field.items[0].editor.trigger('whatever', field.items[0].editor);
+
+        ok(spy.called);
+        ok(spy.calledWith(field, field.items[0].editor));
+    });
 })();
 
 
@@ -443,3 +722,168 @@ module('List.Item', {
         same(item.$el.attr('title'), undefined);
     });
 })();
+
+// Needs a editors.List.Modal.ModalAdapter that isn't dependent on Bootstrap.
+
+// module('List.Modal', {
+//     setup: function() {
+//         this.sinon = sinon.sandbox.create();
+//     },
+// 
+//     teardown: function() {
+//         this.sinon.restore();
+//     }
+// });
+// 
+// (function() {
+// 
+//   var editor = editors.List.Modal,
+//       schema = {
+//           itemType: "Object",
+//           subSchema: {
+//               id: { type: 'Number' },
+//               name: { }
+//           }
+//       };
+//   
+//   test("focus() - gives focus to the editor and opens the modal", function() {
+//       var field = new editor({
+//           schema: schema
+//       }).render();
+// 
+//       field.focus();
+// 
+//       ok(field.modal);
+//       ok(field.hasFocus);
+//   });
+// 
+//   test("focus() - triggers the 'focus' event", function() {
+//       var field = new editor({
+//           schema: schema
+//       }).render();
+// 
+//       var spy = this.sinon.spy();
+// 
+//       field.on('focus', spy);
+// 
+//       field.focus();
+//       
+//       ok(spy.called);
+//       ok(spy.calledWith(field));
+//   });
+//   
+//   test("blur() - removes focus from the editor and closes the modal", function() {
+//       var field = new editor({
+//           schema: schema
+//       }).render();
+// 
+//       field.focus();
+//       
+//       field.blur()
+// 
+//       ok(!field.modal);
+//       ok(!field.hasFocus);
+//   });
+//   
+//   test("blur() - triggers the 'blur' event", function() {
+//       var field = new editor({
+//           schema: schema
+//       }).render();
+//       
+//       field.focus();
+// 
+//       var spy = this.sinon.spy();
+// 
+//       field.on('blur', spy);
+// 
+//       field.blur();
+//       
+//       ok(spy.called);
+//       ok(spy.calledWith(field));
+//   });
+//   
+//   test("'change' event - is triggered when the modal is submitted", function() {
+//       var field = new editor({
+//           schema: schema
+//       }).render();
+//       
+//       field.openEditor();
+// 
+//       var spy = this.sinon.spy();
+//       
+//       field.on('blur', spy);
+//       
+//       field.modal.trigger('ok');
+//       field.modal.close();
+//       
+//       ok(spy.calledOnce);
+//       ok(spy.alwaysCalledWith(field));
+//   });
+//   
+//   test("'focus' event - is triggered when the modal is opened", function() {
+//       var field = new editor({
+//           schema: schema
+//       }).render();
+//       
+//       var spy = this.sinon.spy();
+//       
+//       field.on('focus', spy);
+//       
+//       field.openEditor();
+//       
+//       ok(spy.calledOnce);
+//       ok(spy.alwaysCalledWith(field));
+//   });
+//   
+//   test("'blur' event - is triggered when the modal is closed", function() {
+//       var field = new editor({
+//           schema: schema
+//       }).render();
+//       
+//       field.openEditor();
+// 
+//       var spy = this.sinon.spy();
+//       
+//       field.on('blur', spy);
+//       
+//       field.modal.trigger('cancel');
+//       field.modal.close();
+//       
+//       ok(spy.calledOnce);
+//       ok(spy.alwaysCalledWith(field));
+//   });
+//   
+//   test("'open' event - is triggered when the modal is opened", function() {
+//       var field = new editor({
+//           schema: schema
+//       }).render();
+//       
+//       var spy = this.sinon.spy();
+//       
+//       field.on('open', spy);
+//       
+//       field.openEditor();
+//       
+//       ok(spy.calledOnce);
+//       ok(spy.alwaysCalledWith(field));
+//   });
+//   
+//   test("'close' event - is triggered when the modal is closed", function() {
+//       var field = new editor({
+//           schema: schema
+//       }).render();
+//       
+//       field.openEditor();
+// 
+//       var spy = this.sinon.spy();
+//       
+//       field.on('close', spy);
+//       
+//       field.modal.trigger('cancel');
+//       field.modal.close();
+//       
+//       ok(spy.calledOnce);
+//       ok(spy.alwaysCalledWith(field));
+//   });
+//   
+// })();

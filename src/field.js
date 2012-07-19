@@ -204,6 +204,14 @@ Form.Field = (function() {
     setValue: function(value) {
       this.editor.setValue(value);
     },
+    
+    focus: function() {
+      this.editor.focus();
+    },
+    
+    blur: function() {
+      this.editor.blur();
+    },
 
     /**
      * Remove the field and editor views

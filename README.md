@@ -54,6 +54,7 @@ A flexible, customisable form framework for Backbone.JS applications.
   - [Date](#editor-date)
   - [DateTime](#editor-datetime)
   - [List](#editor-list)
+- [Backbone.Form](#form)  
 - [Validation](#validation)  
 - [Customising templates](#customising-templates)
 - [More](#more)
@@ -97,7 +98,7 @@ Note there is also a distribution file for RequireJS / AMD.
 <a name="usage"/>
 ##Usage
 
-Define a 'schema' attribute on your Backbone models. The schema keys should match the attributes that get set on the model. `type` defaults to `Text`.  When you don't need to specify any options you can use the shorthand by passing the editor name as a string.
+Define a `schema` attribute on your Backbone models. The schema keys should match the attributes that get set on the model. `type` defaults to `Text`.  When you don't need to specify any options you can use the shorthand by passing the editor name as a string.
 See [schema definition](#schema-definition) for more information.
 
     var User = Backbone.Model.extend({
@@ -121,11 +122,12 @@ See [schema definition](#schema-definition) for more information.
     $('body').append(form.el);
 
 
-Once the user is done with the form, call commit() to apply the updated values to the model. If there are validation errors they will be returned. See [validation](#validation) for more information.
+Once the user is done with the form, call `form.commit()` to apply the updated values to the model. If there are validation errors they will be returned. 
+See [validation](#validation) for more information.
 
     var errors = form.commit();
 
-To update a field after the form has been rendered, use `setValue`:
+To update a field after the form has been rendered, use `form.setValue`:
 
     model.bind('change:name', function(model, name) {
         form.setValue({ name: name });
@@ -152,13 +154,15 @@ You can create a form without tying it to a model. For example, to create a form
         }
     }).render();
 
-Then instead of form.commit(), do:
+Then instead of `form.commit()`, do:
     
     var data = form.getValue(); //Returns object with new form values
 
 
 ###Initial data
 If a form has a model attached to it, the initial values are taken from the model's defaults. Otherwise, you may pass default values using the `schema.data`.
+
+[Back to top](#top)
 
 
 <a name="schema-definition"/>
@@ -181,31 +185,31 @@ The following default editors are included:
 - [NestedModel](#editor-nestedmodel)
 - [Date](#editor-date)
 - [DateTime](#editor-datetime)
-- [List](#editor-list) An editable list of items (included in a separate file: distribution/editors/list.min.js)
+- [List](#editor-list) An editable list of items (included in a separate file: `distribution/editors/list.min.js`)
 
 
 The old jQuery editors are still included but may be moved to another repository:
-- [jqueryui.List](#editor-jui-list)
-- jqueryui.Date (uses the jQuery UI popup calendar)
+- jqueryui.List
+- jqueryui.Date (uses the jQuery UI popup datepicker)
 - jqueryui.DateTime
 
 
 
-##Main attributes
+###Main attributes
 
 For each field definition in the schema you can use the following optional attributes:
 
 **`type`**
 
 - The editor to use in the field
-- Can be a string for any editor that has been added to Backbone.Form.editors, such as the built-in editors. E.g.: `{ type: 'TextArea' }`
+- Can be a string for any editor that has been added to `Backbone.Form.editors`, such as the built-in editors. E.g.: `{ type: 'TextArea' }`
 - Or can be a constructor function, e.g. for a custom editor: `{ type: MyEditor }`
 - If not defined, defaults to 'Text'
 
 **`title`**
 
 - Defines the text that appears in a form field's &lt;label&gt;
-- If not defined, defaults to a formatted version of the camelCased field key. E.g. `firstName` becomes `First Name`. This behaviour can be changed by assigning your own function to Backbone.Form.helpers.keyToTitle.
+- If not defined, defaults to a formatted version of the camelCased field key. E.g. `firstName` becomes `First Name`. This behaviour can be changed by assigning your own function to `Backbone.Form.helpers.keyToTitle`.
 
 **`validators`**
 
@@ -235,7 +239,25 @@ For each field definition in the schema you can use the following optional attri
 
 - Name of the template to use for this field. See [Customising templates](#customising-templates) for more information.
 
+###Main events
 
+Every editor fires the following events:
+
+**`change`**
+
+- This event is triggered whenever something happens that affects the result of `editor.getValue()`.
+
+**`focus`**
+
+- This event is triggered whenever this editor gains focus, i.e. when an input within this editor becomes the `document.activeElement`.
+
+**`blur`**
+
+- This event is triggered whenever this editor loses focus, i.e. when an input within this editor stops being the `document.activeElement`.
+
+Besides these three, editors can implement custom events.
+
+[Back to top](#top)
 
 <a name="editor-text"/>
 ##Text
@@ -300,9 +322,17 @@ Creates and populates a list of checkbox inputs. Behaves the same way and has th
 
 The Object editor creates an embedded child form representing a Javascript object.
 
+###Attributes
+
 **`subSchema`**
 
 - A schema object which defines the field schema for each attribute in the object
+
+###Events
+
+**`<key>:<event>`**
+  
+- Events fired by editors within this Object editor will bubble up and be fired as `<key>:<event>`.
 
 Examples:
 
@@ -313,6 +343,10 @@ Examples:
             country: { 'Select', options: countries }
         }}
     };
+    
+    addressEditor.on('zip:change', function(addressEditor, zipEditor) {
+        console.log('Zip changed to "' + zipEditor.getValue() + '".');
+    });
 
 
 <a name="editor-nestedmodel"/>
@@ -320,16 +354,28 @@ Examples:
 
 Used to embed models within models.  Similar to the Object editor, but adds validation of the child form (if it is defined on the model), and keeps your schema cleaner.
 
+###Attributes
+
 **`model`**
 
 - A reference to the constructor function for your nested model
 - The referenced model must have it's own `schema` attribute
+
+###Events
+
+**`item:<event>`**
+  
+- Events fired by editors within this NestedModel editor will bubble up and be fired as `<key>:<event>`.
 
 Examples:
 
     var schema = {
         address: { type: 'NestedModel', model: Address }
     };
+    
+    addressEditor.on('zip:change', function(addressEditor, zipEditor) {
+        console.log('Zip changed to "' + zipEditor.getValue() + '".');
+    });
     
 
 
@@ -380,8 +426,8 @@ This is a special editor which is in **a separate file and must be included**:
 
 *This list replaces the old jQueryUI list, but may need some upgrade work. The old jQueryUI List editor is still included in a separate file.*
 
+###Attributes
 
-####Schema options
 **`itemType`**
 
 - Defines the editor that will be used for each item in the list.
@@ -403,6 +449,20 @@ This is a special editor which is in **a separate file and must be included**:
 - Name of the template to hold the list. Edit if you want to customize the 'Add' button, for instance.
 - Optional, defaults to 'list'
 
+###Events
+
+**`add`**
+
+- This event is triggered when a new item is added to the list.
+
+**`remove`**
+
+- This event is triggered when an existing item is removed from the list.
+
+**`item:<event>`**
+  
+- Events fired by any item's editor will bubble up and be fired as `item:<event>`.
+
 Examples:
     
     function userToName(user) {
@@ -412,11 +472,22 @@ Examples:
     var schema = {
         users: { type: 'List', itemType: 'Object', itemToString: userToName }
     };
+    
+    listEditor.on('add', function(listEditor, itemEditor) {
+        console.log('User with first name "' + itemEditor.getValue().firstName + '" added.');
+    });
+    
+    listEditor.on('item:lastName:change', function(listEditor, itemEditor, lastNameEditor) {
+        console.log('Last name for user "' + itemEditor.getValue().firstName + '" changed to "' + lastNameEditor.getValue() +'".');
+    });
+    
+[Back to top](#top)
 
 
+<a name="form"/>
+##Backbone.Form
 
-<a name="form-options"/>
-##Form options
+###Options
 
 **`model`**
 
@@ -457,6 +528,29 @@ The template name to use for generating the form. E.g.:
     var form = new Backbone.Form({
       model: user,
       template: 'customForm'
+    });
+    
+    
+###Events
+
+`Backbone.Form` fires the following events:
+
+**`change`**
+
+- This event is triggered whenever something happens that affects the result of `form.getValue()`.
+
+**`focus`**
+
+- This event is triggered whenever this form gains focus, i.e. when the input of an editor within this form becomes the `document.activeElement`.
+
+**`blur`**
+
+- This event is triggered whenever this form loses focus, i.e. when the input of an editor within this form stops being the `document.activeElement`.
+
+Moreover, any event fired by any editor will bubble up to its form and be fired as `<key>:<event>`. 
+
+    form.on('title:change', function(form, titleEditor) { 
+        console.log('Title changed to "' + titleEditor.getValue() + '".');
     });
 
 [Back to top](#top)
@@ -698,11 +792,31 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
         
         tagName: 'input',
         
+        events: {
+            'change': function() {
+                // The 'change' event should be triggered whenever something happens
+                // that affects the result of `this.getValue()`.
+                this.trigger('change', this);
+            },
+            'focus': function() {
+                // The 'focus' event should be triggered whenever an input within
+                // this editor becomes the `document.activeElement`.
+                this.trigger('focus', this);
+                // This call automatically sets `this.hasFocus` to `true`.
+            },
+            'blur': function() {
+                // The 'blur' event should be triggered whenever an input within
+                // this editor stops being the `document.activeElement`.
+                this.trigger('blur', this);
+                // This call automatically sets `this.hasFocus` to `false`.
+            }
+        },
+        
         initialize: function(options) {
-            //Call parent constructor
+            // Call parent constructor
             Backbone.Form.editors.Base.prototype.initialize.call(this, options);
             
-            //Custom setup code.
+            // Custom setup code.
             if (this.schema.customParam) this.doSomething();
         },
         
@@ -713,18 +827,34 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
         },
         
         getValue: function() {
-            return $(this.el).val();
+            return this.$el.val();
         },
         
         setValue: function(value) {
-            $(this.el).val(this.value);
-        }
+            this.$el.val(value);
+        },
         
+        focus: function() {
+            if (this.hasFocus) return;
+            
+            // This method call should result in an input within this edior
+            // becoming the `document.activeElement`.
+            // This, in turn, should result in `this.trigger('event')` being
+            // called. See above for more detail.
+            this.$el.focus();
+        },
+        
+        blur: function() {
+            if (!this.hasFocus) return;
+
+            this.$el.blur();
+        }
     });
 
 **Notes:**
 
-- The editor must implement a getValue() and setValue().
+- The editor must implement `getValue()`, `setValue()`, `focus()` and `blur()` methods.
+- The editor must fire `change`, `focus` and `blur` events.
 - The original value is available through this.value.
 - The field schema can be accessed via this.schema. This allows you to pass in custom parameters.
 

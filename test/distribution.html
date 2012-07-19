@@ -48,9 +48,8 @@
     <script src="field.js"></script>
     <script src="editors.js"></script>
     <script src="validators.js"></script>
-    <script src="editors/list.test.js"></script>
-    
-    
+    <script src="editors/list.js"></script>
+    <script src="editors/jquery-ui.js"></script>
     
     
     <div id="uiTest">
@@ -83,6 +82,7 @@
                     number:     { type: 'Number', validators: [/[0-9]+(?:\.[0-9]*)?/] },
                     checkbox:   { type: 'Checkbox' },
                     radio:      { type: 'Radio', options: ['Opt 1', 'Opt 2'] },
+                    select:     { type: 'Select', options: ['Opt 1', 'Opt 2'] },
                     checkboxes: { type: 'Checkboxes', options: ['Sterling', 'Lana', 'Cyril', 'Cheryl', 'Pam'] },
                     object:     { type: 'Object', subSchema: {
                       name: {},
@@ -119,7 +119,7 @@
             var form = new Backbone.Form({
                 model: model,
                 fieldsets: [
-                    ['email', 'tel', 'number', 'checkbox', 'radio', 'checkboxes', 'customTemplate', 'shorthand', 'date', 'dateTime'],
+                    ['email', 'tel', 'number', 'checkbox', 'radio', 'select', 'checkboxes', 'customTemplate', 'shorthand', 'date', 'dateTime'],
                     { legend: 'Lists', fields: ['textList', 'objList'] },
                     { legend: 'jQuery UI editors', fields: ['jqueryDate', 'jqueryDateTime', 'jqueryList'] },
                     { legend: 'Nested editors', fields: ['object', 'nestedModel'] }
