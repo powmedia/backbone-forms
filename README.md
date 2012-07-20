@@ -170,71 +170,69 @@ If a form has a model attached to it, the initial values are taken from the mode
 
 ###Options
 
-**`model`**
+- **`model`**
 
-The model to tie the form to. Calling `form.commit()` will update the model with new values.
+  The model to tie the form to. Calling `form.commit()` will update the model with new values.
 
-**`data`**
+- **`data`**
 
-If not using the `model` option, pass a native object through the `data` option. Then use `form.getValue()` to get the new values.
+  If not using the `model` option, pass a native object through the `data` option. Then use `form.getValue()` to get the new values.
 
-**`schema`**
+- **`schema`**
 
-The schema to use to create the form. Pass it in if you don't want to store the schema on the model, or to override the model schema.
+  The schema to use to create the form. Pass it in if you don't want to store the schema on the model, or to override the model schema.
 
-**`fieldsets`**
+- **`fieldsets`**
 
-An array of fieldsets descriptions. A fieldset is either a list of field names, or an object with `legend` and `fields` attributes. The `legend` will be inserted at the top of the fieldset inside a `<legend>` tag; the list of fields will be treated as `fields` is below.
+  An array of fieldsets descriptions. A fieldset is either a list of field names, or an object with `legend` and `fields` attributes. The `legend` will be inserted at the top of the fieldset inside a `<legend>` tag; the list of fields will be treated as `fields` is below. `fieldsets` takes priority over `fields`.
 
-`fieldsets` takes priority over `fields`.
+- **`fields`**
 
-**`fields`**
+  An array of field names (keys). Only the fields defined here will be added to the form. You can also use this to re-order the fields.
 
-An array of field names (keys). Only the fields defined here will be added to the form. You can also use this to re-order the fields.
+- **`idPrefix`**
 
-**`idPrefix`**
+  A string that will be prefixed to the form DOM element IDs. Useful if you will have multiple forms on the same page. E.g. `idPrefix: 'user-'` will result in IDs like 'user-name', 'user-email', etc.
 
-A string that will be prefixed to the form DOM element IDs. Useful if you will have multiple forms on the same page. E.g. `idPrefix: 'user-'` will result in IDs like 'user-name', 'user-email', etc.
+  If not defined, the model's CID will be used as a prefix to avoid conflicts when there are multiple instances of the form on the page. To override this behaviour, pass a null value to `idPrefix`.
 
-If not defined, the model's CID will be used as a prefix to avoid conflicts when there are multiple instances of the form on the page. To override this behaviour, pass a null value to `idPrefix`.
+- **`template`**
 
-**`template`**
+  The template name to use for generating the form. E.g.:
 
-The template name to use for generating the form. E.g.:
-
-    Backbone.Form.setTemplates({
-      customForm: '<form class="custom-form">{{fieldsets}}</form>'
-    });
+        Backbone.Form.setTemplates({
+            customForm: '<form class="custom-form">{{fieldsets}}</form>'
+        });
     
-    var form = new Backbone.Form({
-      model: user,
-      template: 'customForm'
-    });
+        var form = new Backbone.Form({
+            model: user,
+            template: 'customForm'
+        });
     
     
 ###Events
 
 `Backbone.Form` fires the following events:
 
-**`change`**
+- **`change`**
 
-- This event is triggered whenever something happens that affects the result of `form.getValue()`.
+  This event is triggered whenever something happens that affects the result of `form.getValue()`.
 
-**`focus`**
+- **`focus`**
 
-- This event is triggered whenever this form gains focus, i.e. when the input of an editor within this form becomes the `document.activeElement`.
+  This event is triggered whenever this form gains focus, i.e. when the input of an editor within this form becomes the `document.activeElement`.
 
-**`blur`**
+- **`blur`**
 
-- This event is triggered whenever this form loses focus, i.e. when the input of an editor within this form stops being the `document.activeElement`.
+  This event is triggered whenever this form loses focus, i.e. when the input of an editor within this form stops being the `document.activeElement`.
 
-**`<key>:<event>`**
+- **`<key>:<event>`**
   
-- Events fired by editors within this form will bubble up and be fired as `<key>:<event>`.
+  Events fired by editors within this form will bubble up and be fired as `<key>:<event>`.
 
-    form.on('title:change', function(form, titleEditor) { 
-        console.log('Title changed to "' + titleEditor.getValue() + '".');
-    });
+        form.on('title:change', function(form, titleEditor) { 
+            console.log('Title changed to "' + titleEditor.getValue() + '".');
+        });
 
 [Back to top](#top)
 
@@ -273,63 +271,61 @@ The old jQuery editors are still included but may be moved to another repository
 
 For each field definition in the schema you can use the following optional attributes:
 
-**`type`**
+- **`type`**
 
-- The editor to use in the field
-- Can be a string for any editor that has been added to `Backbone.Form.editors`, such as the built-in editors. E.g.: `{ type: 'TextArea' }`
-- Or can be a constructor function, e.g. for a custom editor: `{ type: MyEditor }`
-- If not defined, defaults to 'Text'
+  The editor to use in the field. Can be a string for any editor that has been added to `Backbone.Form.editors`, such as the built-in editors (e.g. `{ type: 'TextArea' }`), or can be a constructor function for a custom editor (e.g. : `{ type: MyEditor }`).
 
-**`title`**
+  If not defined, defaults to 'Text'.
 
-- Defines the text that appears in a form field's &lt;label&gt;
-- If not defined, defaults to a formatted version of the camelCased field key. E.g. `firstName` becomes `First Name`. This behaviour can be changed by assigning your own function to `Backbone.Form.helpers.keyToTitle`.
+- **`title`**
 
-**`validators`**
+  Defines the text that appears in a form field's `<label>`. If not defined, defaults to a formatted version of the camelCased field key. E.g. `firstName` becomes `First Name`. This behaviour can be changed by assigning your own function to `Backbone.Form.helpers.keyToTitle`.
 
-- A list of validators. See [Validation](#validation) for more information
+- **`validators`**
 
-**`help`**
+  A list of validators. See [Validation](#validation) for more information
 
-- Help text to add next to the editor.
+- **`help`**
 
-**`editorClass`**
+  Help text to add next to the editor.
 
-- String of CSS class name(s) to add to the editor
+- **`editorClass`**
 
-**`editorAttrs`**
+  String of CSS class name(s) to add to the editor
 
-- A map of attributes to add to the editor, e.g. `{ maxlength: 30, title: 'Tooltip help' }`
+- **`editorAttrs`**
 
-**`fieldClass`**
+  A map of attributes to add to the editor, e.g. `{ maxlength: 30, title: 'Tooltip help' }`
 
-- String of CSS class name(s) to add to the field
+- **`fieldClass`**
 
-**`fieldAttrs`**
+  String of CSS class name(s) to add to the field
 
-- A map of attributes to add to the field, e.g. `{ style: 'background: red', title: 'Tooltip help' }`
+- **`fieldAttrs`**
 
-**`template`**
+  A map of attributes to add to the field, e.g. `{ style: 'background: red', title: 'Tooltip help' }`
 
-- Name of the template to use for this field. See [Customising templates](#customising-templates) for more information.
+- **`template`**
+
+  Name of the template to use for this field. See [Customising templates](#customising-templates) for more information.
 
 ###Main events
 
 Every editor fires the following events:
 
-**`change`**
+- **`change`**
 
-- This event is triggered whenever something happens that affects the result of `editor.getValue()`.
+  This event is triggered whenever something happens that affects the result of `editor.getValue()`.
 
-**`focus`**
+- **`focus`**
 
-- This event is triggered whenever this editor gains focus, i.e. when an input within this editor becomes the `document.activeElement`.
+  This event is triggered whenever this editor gains focus, i.e. when an input within this editor becomes the `document.activeElement`.
 
-**`blur`**
+- **`blur`**
 
-- This event is triggered whenever this editor loses focus, i.e. when an input within this editor stops being the `document.activeElement`.
+  This event is triggered whenever this editor loses focus, i.e. when an input within this editor stops being the `document.activeElement`.
 
-Besides these three, editors can implement custom events.
+Besides these three, editors can implement custom events, which are described below.
 
 [Back to top](#top)
 
@@ -338,27 +334,34 @@ Besides these three, editors can implement custom events.
 
 Creates a normal text input.
 
-**`dataType`**
+- **`dataType`**
 
-- Changes the type="text" attribute. Used for HTML5 form inputs such as `url`, `tel`, `email`.  When viewing on a mobile device e.g. iOS, this will change the type of keyboard that is opened. For example, `tel` opens a numeric keypad.
+  Changes the `type="text"` attribute. Used for HTML5 form inputs such as `url`, `tel`, `email`.  When viewing on a mobile device e.g. iOS, this will change the type of keyboard that is opened. For example, `tel` opens a numeric keypad.
 
 
 <a name="editor-select"/>
 ##Select
 
-Creates and populates a &lt;select&gt; element.
+Creates and populates a `<select>` element.
 
-**`options`**
+- **`options`**
 
-- Options to populate the &lt;select&gt;
-- Can be either:
-    - String of HTML &lt;option&gt;`s
+  Options to populate the `<select>`.
+
+  Can be either:
+    - String of HTML `<option>`s
     - Array of strings/numbers
     - Array of objects in the form `{ val: 123, label: 'Text' }`
     - A Backbone collection
     - A function that calls back with one of the above 
 
-Examples:
+  **Backbone collection notes**
+
+  If using a Backbone collection as the `options` attribute, models in the collection must implement a `toString()` method. This populates the label of the `<option>`. The ID of the model populates the `value` attribute.
+
+  If there are no models in the collection, it will be `fetch()`ed.
+
+####Examples
     
     var schema = {
         country: { type: 'Select', options: new CountryCollection() }
@@ -371,12 +374,6 @@ Examples:
             callback(users);
         }}
     }
-
-**Backbone collection notes**
-
-If using a Backbone collection as the `option` attribute, models in the collection must implement a `toString()` method. This populates the label of the &lt;option&gt;. The ID of the model populates the `value` attribute.
-
-If there are no models in the collection, it will be `fetch()`ed.
 
 
 <a name="editor-radio"/>
@@ -398,17 +395,17 @@ The Object editor creates an embedded child form representing a Javascript objec
 
 ###Attributes
 
-**`subSchema`**
+- **`subSchema`**
 
-- A schema object which defines the field schema for each attribute in the object
+  A schema object which defines the field schema for each attribute in the object
 
 ###Events
 
-**`<key>:<event>`**
+- **`<key>:<event>`**
   
-- Events fired by editors within this Object editor will bubble up and be fired as `<key>:<event>`.
+  Events fired by editors within this Object editor will bubble up and be fired as `<key>:<event>`.
 
-Examples:
+####Examples
 
     var schema = {
         address: { type: 'Object', subSchema: {
@@ -430,18 +427,17 @@ Used to embed models within models.  Similar to the Object editor, but adds vali
 
 ###Attributes
 
-**`model`**
+- **`model`**
 
-- A reference to the constructor function for your nested model
-- The referenced model must have it's own `schema` attribute
+  A reference to the constructor function for your nested model. The referenced model must have it's own `schema` attribute
 
 ###Events
 
-**`<key>:<event>`**
+- **`<key>:<event>`**
   
-- Events fired by editors within this NestedModel editor will bubble up and be fired as `<key>:<event>`.
+  Events fired by editors within this NestedModel editor will bubble up and be fired as `<key>:<event>`.
 
-Examples:
+####Examples
 
     var schema = {
         address: { type: 'NestedModel', model: Address }
@@ -458,11 +454,13 @@ Examples:
 
 Creates `<select>`s for date, month and year.
 
-**`yearStart`**
-- First year in the list. Default: 100 years ago
+- **`yearStart`**
 
-**`yearEnd`**
-- Last year in the list. Default: current year
+  First year in the list. Default: 100 years ago
+
+- **`yearEnd`**
+
+  Last year in the list. Default: current year
 
 
 ####Extra options
@@ -479,10 +477,9 @@ You can customise the way this editor behaves, throughout your app:
 
 Creates a Date editor and adds `<select>`s for time (hours and minutes).
 
-**`minsInterval`**
+- **`minsInterval`**
 
-- Optional. Controls the numbers in the minutes dropdown.
-- Defaults to 15, so it is populated with 0, 15, 30, and 45 minutes.
+  Optional. Controls the numbers in the minutes dropdown. Defaults to 15, so it is populated with 0, 15, 30, and 45 minutes.
 
 
 <a name="editor-list"/>
@@ -502,42 +499,39 @@ This is a special editor which is in **a separate file and must be included**:
 
 ###Attributes
 
-**`itemType`**
+- **`itemType`**
 
-- Defines the editor that will be used for each item in the list.
-- Similar in use to the main 'type' schema attribute.
-- Defaults to 'Text'.
+  Defines the editor that will be used for each item in the list. Similar in use to the main 'type' schema attribute. Defaults to 'Text'.
 
-**`confirmDelete`**
+- **`confirmDelete`**
 
-- Optional. Text to display in a delete confirmation dialog. If falsey, will not ask for confirmation.
+  Optional. Text to display in a delete confirmation dialog. If falsey, will not ask for confirmation.
 
-**`itemToString`**
+- **`itemToString`**
 
-- Optional, but recommended when using listType 'Object'
-- A function that returns a string representing how the object should be displayed in a list item.
-- When listType is 'NestedModel', the model's `toString()` method will be used, unless a specific `itemToString()` function is defined on the schema.
+  A function that returns a string representing how the object should be displayed in a list item.
 
-**`listTemplate`**
+  Optional, but recommended when using listType 'Object'. When listType is 'NestedModel', the model's `toString()` method will be used, unless a specific `itemToString()` function is defined on the schema.
 
-- Name of the template to hold the list. Edit if you want to customize the 'Add' button, for instance.
-- Optional, defaults to 'list'
+- **`listTemplate`**
+
+  Name of the template to hold the list. Edit if you want to customize the 'Add' button, for instance. Optional, defaults to 'list'.
 
 ###Events
 
-**`add`**
+- **`add`**
 
-- This event is triggered when a new item is added to the list.
+  This event is triggered when a new item is added to the list.
 
-**`remove`**
+- **`remove`**
 
-- This event is triggered when an existing item is removed from the list.
+  This event is triggered when an existing item is removed from the list.
 
-**`item:<event>`**
+- **`item:<event>`**
   
-- Events fired by any item's editor will bubble up and be fired as `item:<event>`.
+  Events fired by any item's editor will bubble up and be fired as `item:<event>`.
 
-Examples:
+####Examples
     
     function userToName(user) {
         return user.firstName + ' ' + user.lastName;
@@ -578,7 +572,15 @@ Validators can be defined in several ways:
 - **As a function** - Runs a custom validation function. Each validator the following arguments: `value` and `formValues`
 - **As a regular expression** - Runs the built-in `regexp` validator with a custom regular expresssion.
 
-###Examples
+###Built-in validators
+
+- **required**: Checks the field has been filled in
+- **email**: Checks it is a valid email address
+- **url**: Checks it is a valid URL
+- **match**: Checks that the field matches another. The other field name must be set in the `field` option.
+- **regexp**: Runs a regular expression. Requires the `regexp` option, which takes a compiled regular expression.
+
+####Examples
 
     var schema = {
         //Built-in validator
@@ -623,15 +625,6 @@ Validation runs when `form.commit()` or `form.validate()` are called.  If valida
     }
 
 
-###Built-in validators
-
-- **required**: Checks the field has been filled in
-- **email**: Checks it is a valid email address
-- **url**: Checks it is a valid URL
-- **match**: Checks that the field matches another. The other field name must be set in the `field` option.
-- **regexp**: Runs a regular expression. Requires the `regexp` option, which takes a compiled regular expression.
-
-
 ###Customising error messages
 
 After including the Backbone Forms file, you can override the default error messages.
@@ -669,7 +662,7 @@ Forms provide a `validate` method, which returns a dictionary of errors, or `nul
 
 If you model provides a `validate` method, then this will be called when you call `Form.validate`. Forms are also validated when you call `commit`. See the Backbone documentation for more details on model validation.
 
-Example:
+####Example
 
     //Schema definition:
     var schema = {
@@ -691,7 +684,7 @@ You can use your own custom templates by passing your templates (in Mustache syn
 
 You can include different field templates and then use them on a field-by-field basis by passing the `template` option in the field schema.
 
-Example: 
+####Example
 
     var templates = {
       //field is the default template used
@@ -723,7 +716,7 @@ Example:
 
 You can use your own custom template compiler, like [Handlebars](http://handlebarsjs.com/) by passing a reference to the function into `Backbone.Form.setTemplateCompiler()`.
 
-Example:
+####Example
 
     Backbone.Form.setTemplateCompiler(Handlebars.compile);
 
