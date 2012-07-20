@@ -216,6 +216,22 @@ module('Text', {
         ok(spy.calledWith(field));
     });
     
+    test("select() - triggers the 'select' event", function() {
+        var field = new editor({
+            model: new Post,
+            key: 'title'
+        }).render();
+        
+        var spy = this.sinon.spy();
+
+        field.on('select', spy);
+
+        field.select();
+        
+        ok(spy.called);
+        ok(spy.calledWith(field));
+    });
+    
     test("'change' event - is triggered when value of input changes", function() {
         var field = new editor({
             model: new Post,
@@ -306,6 +322,23 @@ module('Text', {
         field.on('blur', spy);
         
         field.$el.blur();
+
+        ok(spy.calledOnce);
+        ok(spy.alwaysCalledWith(field));
+    });
+
+    test("'select' event - bubbles up from the input", function() {
+        var field = new editor({
+            model: new Post,
+            key: 'title'
+        }).render();
+
+
+        var spy = this.sinon.spy();
+        
+        field.on('select', spy);
+        
+        field.$el.select();
 
         ok(spy.calledOnce);
         ok(spy.alwaysCalledWith(field));

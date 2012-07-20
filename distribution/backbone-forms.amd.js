@@ -1100,6 +1100,9 @@ Form.editors = (function() {
           self.determineChange();
         }, 0);
       },
+      'select':   function(event) {
+        this.trigger('select', this);
+      },
       'focus':    function(event) {
         this.trigger('focus', this);
       },
@@ -1168,6 +1171,10 @@ Form.editors = (function() {
       if (!this.hasFocus) return;
 
       this.$el.blur();
+    },
+    
+    select: function() {
+      this.$el.select();
     }
 
   });
