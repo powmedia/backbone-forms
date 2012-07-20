@@ -44,6 +44,8 @@
         dateFormat: 'dd/mm/yy',
         showButtonPanel: true
       });
+      
+      this._observeDatepickerEvents();
 
       //Make sure setValue of this object is called, not of any objects extending it (e.g. DateTime)
       exports['jqueryui.Date'].prototype.setValue.call(this, this.value);
@@ -63,6 +65,35 @@
     
     setValue: function(value) {
       $('input', this.el).datepicker('setDate', value);
+    },
+    
+    focus: function() {
+      if (this.hasFocus) return;
+      
+      this.$('input').datepicker('show');
+    },
+    
+    blur: function() {
+      if (!this.hasFocus) return;
+      
+      this.$('input').datepicker('hide');
+    },
+    
+    _observeDatepickerEvents: function() {
+      var self = this;
+      this.$('input').datepicker('option', 'onSelect', function() {
+        self.trigger('change', self);
+      })
+      this.$('input').datepicker('option', 'onClose', function() {
+        if (!self.hasFocus) return;
+        self.trigger('blur', self);
+      });
+      this.$('input').datepicker('option', 'beforeShow', function() {
+        if (self.hasFocus) return {};
+        self.trigger('focus', self);
+        
+        return {};
+      });
     }
 
   });
@@ -105,6 +136,8 @@
         hours: hoursOptions.join(),
         mins: minsOptions.join()
       }));
+      
+      this._observeDatepickerEvents();
 
       //Store references to selects
       this.$hours = $('select:eq(0)', this.el);
@@ -237,6 +270,8 @@
         text: false,
         icons: { primary: 'ui-icon-trash' }
       });
+      
+      if (this.hasFocus) this.trigger('blur', this);
 
       return this;
     },
@@ -269,13 +304,13 @@
      * Add a new item to the list if it is completed in the editor
      */
     addNewItem: function(event) {
-      event.preventDefault();
+      if (event) event.preventDefault();
                
       var self = this;
 
-      this.openEditor(null, function(value) {
+      this.openEditor(null, function(value, editor) {
         //Fire 'addItem' cancellable event
-        triggerCancellableEvent(self, 'addItem', [value], function() {
+        triggerCancellableEvent(self, 'addItem', [value, editor], function() {
           var text = self.itemToString(value);
 
           //Create DOM element
@@ -298,6 +333,10 @@
             text: false,
             icons: { primary: 'ui-icon-trash' }
           });
+          
+          self.trigger('add', self, value);
+          self.trigger('item:change', self, editor);
+          self.trigger('change', self);
         });
       });
     },
@@ -312,14 +351,17 @@
           li = $(event.target).closest('li'),
           originalValue = $.data(li[0], 'data');
 
-      this.openEditor(originalValue, function(newValue) {
+      this.openEditor(originalValue, function(newValue, editor) {
         //Fire 'editItem' cancellable event
-        triggerCancellableEvent(self, 'editItem', [newValue], function() {
+        triggerCancellableEvent(self, 'editItem', [newValue, editor], function() {
           //Update display
           $('.bbf-list-text', li).html(self.itemToString(newValue));
 
           //Store data
           $.data(li[0], 'data', newValue);
+
+          self.trigger('item:change', self, editor);
+          self.trigger('change', self);
         });
       });
     },
@@ -337,6 +379,9 @@
       function remove() {
         triggerCancellableEvent(self, 'removeItem', [data], function() {
           li.remove();
+          
+          self.trigger('remove', self, data);
+          self.trigger('change', self);
         });
       }
       
@@ -363,24 +408,15 @@
         value: data
       }).render();
       
-      var container = $(this.editorTemplate());
+      var container = this.editorContainer = $(this.editorTemplate());
       $('.bbf-list-editor', container).html(editor.el);
-      
-      var close = function() {
-        $(document).unbind('keydown', handleEnterPressed);
-        
-        container.dialog('close');
-
-        editor.remove();
-        container.remove();
-      };
       
       var saveAndClose = function() {        
         var errs = editor.validate();
         if (errs) return;
         
-        callback(editor.getValue());
-        close();
+        callback(editor.getValue(), editor);
+        container.dialog('close');
       }
       
       var handleEnterPressed = function(event) {
@@ -396,9 +432,27 @@
         title:      data ? 'Edit item' : 'New item',
         buttons: {
           'OK': saveAndClose, 
-          'Cancel': close
+          'Cancel': function() {
+            container.dialog('close');
+          }
+        },
+        close: function() {
+          self.editorContainer = null;
+          
+          $(document).unbind('keydown', handleEnterPressed);
+
+          editor.remove();
+          container.remove();
+          
+          self.trigger('item:close', self, editor);
+          self.trigger('item:blur', self, editor);
+          self.trigger('blur', self);
         }
       });
+      
+      this.trigger('item:open', this, editor);
+      this.trigger('item:focus', this, editor);
+      this.trigger('focus', this);
 
       //Save and close dialog on Enter keypress
       $(document).bind('keydown', handleEnterPressed);
@@ -417,6 +471,24 @@
     setValue: function(value) {
       this.value = value;
       this.render();
+    },
+    
+    focus: function() {
+      if (this.hasFocus) return;
+      
+      var item = this.$('li .bbf-list-edit').first();
+      if (item.length > 0) {
+        item.click();
+      }
+      else {
+        this.addNewItem();
+      }
+    },
+    
+    blur: function() {
+      if (!this.hasFocus) return;
+      
+      if (this.editorContainer) this.editorContainer.dialog('close');
     }
 
   });

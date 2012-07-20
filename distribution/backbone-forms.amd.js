@@ -20,6 +20,8 @@ define(['jquery', 'underscore', 'Backbone'], function($, _, Backbone) {
 var Form = (function() {
 
   return Backbone.View.extend({
+    
+    hasFocus: false,
 
     /**
      * Creates a new form
@@ -97,6 +99,8 @@ var Form = (function() {
 
       //Set the template contents as the main element; removes the wrapper element
       this.setElement($form);
+      
+      if (this.hasFocus) this.trigger('blur', this);
 
       return this;
     },
@@ -159,6 +163,34 @@ var Form = (function() {
 
         //Render the fields with editors, apart from Hidden fields
         var fieldEl = field.render().el;
+        
+        field.editor.on('all', function(event) {
+          // args = ["change", editor]
+          args = _.toArray(arguments);
+          args[0] = key + ':' + event;
+          args.splice(1, 0, this);
+          // args = ["key:change", this=form, editor]
+
+          this.trigger.apply(this, args)
+        }, self);
+        
+        field.editor.on('change', function() {
+          this.trigger('change', self);
+        }, self);
+
+        field.editor.on('focus', function() {
+          if (this.hasFocus) return;
+          this.trigger('focus', this);
+        }, self);
+        field.editor.on('blur', function() {
+          if (!this.hasFocus) return;
+          var self = this;
+          setTimeout(function() {
+            if (_.find(self.fields, function(field) { return field.editor.hasFocus; })) return;
+            self.trigger('blur', self);
+          }, 0);
+        }, self);
+        
         if (itemSchema.type != 'Hidden') {
           $fieldsContainer.append(fieldEl);
         }
@@ -303,6 +335,32 @@ var Form = (function() {
         this.fields[key].setValue(data[key]);
       }
     },
+    
+    focus: function() {
+      if (this.hasFocus) return;
+      
+      var fieldset = this.options.fieldsets[0];
+      if (fieldset) {
+        var field;
+        if (_.isArray(fieldset)) {
+          field = fieldset[0];
+        }
+        else {
+          field = fieldset.fields[0];
+        }
+        if (field) {
+          this.fields[field].editor.focus();
+        }
+      }
+    },
+    
+    blur: function() {
+      if (!this.hasFocus) return;
+      
+      focusedField = _.find(this.fields, function(field) { return field.editor.hasFocus; });
+      
+      if (focusedField) focusedField.editor.blur();
+    },
 
     /**
      * Override default remove function in order to remove embedded views
@@ -315,6 +373,18 @@ var Form = (function() {
       }
 
       Backbone.View.prototype.remove.call(this);
+    },
+    
+    
+    trigger: function(event) {
+      if (event == 'focus') {
+        this.hasFocus = true;
+      }
+      else if (event == 'blur') {
+        this.hasFocus = false;
+      }
+      
+      return Backbone.View.prototype.trigger.apply(this, arguments);
     }
   });
 
@@ -845,6 +915,14 @@ Form.Field = (function() {
     setValue: function(value) {
       this.editor.setValue(value);
     },
+    
+    focus: function() {
+      this.editor.focus();
+    },
+    
+    blur: function() {
+      this.editor.blur();
+    },
 
     /**
      * Remove the field and editor views
@@ -882,6 +960,8 @@ Form.editors = (function() {
   editors.Base = Backbone.View.extend({
 
     defaultValue: null,
+    
+    hasFocus: false,
 
     initialize: function(options) {
       var options = options || {};
@@ -919,6 +999,14 @@ Form.editors = (function() {
     },
     
     setValue: function() {
+      throw 'Not implemented. Extend and override this method.';
+    },
+    
+    focus: function() {
+      throw 'Not implemented. Extend and override this method.';
+    },
+    
+    blur: function() {
       throw 'Not implemented. Extend and override this method.';
     },
 
@@ -979,6 +1067,18 @@ Form.editors = (function() {
       }
 
       return error;
+    },
+    
+    
+    trigger: function(event) {
+      if (event == 'focus') {
+        this.hasFocus = true;
+      }
+      else if (event == 'blur') {
+        this.hasFocus = false;
+      }
+      
+      return Backbone.View.prototype.trigger.apply(this, arguments);
     }
   });
 
@@ -989,6 +1089,27 @@ Form.editors = (function() {
     tagName: 'input',
     
     defaultValue: '',
+    
+    previousValue: '',
+    
+    events: {
+      'keyup':    'determineChange',
+      'keypress': function(event) {
+        var self = this;
+        setTimeout(function() {
+          self.determineChange();
+        }, 0);
+      },
+      'select':   function(event) {
+        this.trigger('select', this);
+      },
+      'focus':    function(event) {
+        this.trigger('focus', this);
+      },
+      'blur':     function(event) {
+        this.trigger('blur', this);
+      }
+    },
     
     initialize: function(options) {
       editors.Base.prototype.initialize.call(this, options);
@@ -1012,6 +1133,17 @@ Form.editors = (function() {
 
       return this;
     },
+    
+    determineChange: function(event) {
+      var currentValue = this.$el.val();
+      var changed = (currentValue != this.previousValue);
+      
+      if (changed) {
+        this.previousValue = currentValue;
+        
+        this.trigger('change', this);
+      }
+    },
 
     /**
      * Returns the current editor value
@@ -1027,6 +1159,22 @@ Form.editors = (function() {
      */
     setValue: function(value) { 
       this.$el.val(value);
+    },
+    
+    focus: function() {
+      if (this.hasFocus) return;
+
+      this.$el.focus();
+    },
+    
+    blur: function() {
+      if (!this.hasFocus) return;
+
+      this.$el.blur();
+    },
+    
+    select: function() {
+      this.$el.select();
     }
 
   });
@@ -1040,9 +1188,9 @@ Form.editors = (function() {
 
     defaultValue: 0,
 
-    events: {
+    events: _.extend({}, editors.Text.prototype.events, {
       'keypress': 'onKeyPress'
-    },
+    }),
 
     initialize: function(options) {
       editors.Text.prototype.initialize.call(this, options);
@@ -1054,15 +1202,30 @@ Form.editors = (function() {
      * Check value is numeric
      */
     onKeyPress: function(event) {
+      var self = this,
+          delayedDetermineChange = function() {
+            setTimeout(function() {
+              self.determineChange();
+            }, 0);
+          }
+          
       //Allow backspace
-      if (event.charCode == 0) return;
+      if (event.charCode == 0) {
+        delayedDetermineChange();
+        return;
+      }
       
       //Get the whole new value so that we can prevent things like double decimals points etc.
       var newVal = this.$el.val() + String.fromCharCode(event.charCode);
 
       var numeric = /^[0-9]*\.?[0-9]*?$/.test(newVal);
 
-      if (!numeric) event.preventDefault();
+      if (numeric) {
+        delayedDetermineChange();
+      }
+      else {
+        event.preventDefault();
+      }
     },
 
     getValue: function() {        
@@ -1115,6 +1278,18 @@ Form.editors = (function() {
     
     tagName: 'input',
     
+    events: {
+      'click':  function(event) {
+        this.trigger('change', this);
+      },
+      'focus':  function(event) {
+        this.trigger('focus', this);
+      },
+      'blur':   function(event) {
+        this.trigger('blur', this);
+      }
+    },
+    
     initialize: function(options) {
       editors.Base.prototype.initialize.call(this, options);
       
@@ -1131,13 +1306,25 @@ Form.editors = (function() {
     },
     
     getValue: function() {
-      return this.$el.attr('checked') ? true : false;
+      return this.$el.prop('checked');
     },
     
     setValue: function(value) {
       if (value) {
-        this.$el.attr('checked', true);
+        this.$el.prop('checked', true);
       }
+    },
+    
+    focus: function() {
+      if (this.hasFocus) return;
+
+      this.$el.focus();
+    },
+    
+    blur: function() {
+      if (!this.hasFocus) return;
+
+      this.$el.blur();
     }
     
   });
@@ -1160,6 +1347,14 @@ Form.editors = (function() {
     
     setValue: function(value) {
       this.value = value;
+    },
+    
+    focus: function() {
+      
+    },
+    
+    blur: function() {
+      
     }
 
   });
@@ -1177,6 +1372,18 @@ Form.editors = (function() {
   editors.Select = editors.Base.extend({
 
     tagName: 'select',
+    
+    events: {
+      'change': function(event) {
+        this.trigger('change', this);
+      },
+      'focus':  function(event) {
+        this.trigger('focus', this);
+      },
+      'blur':   function(event) {
+        this.trigger('blur', this);
+      }
+    },
 
     initialize: function(options) {
       editors.Base.prototype.initialize.call(this, options);
@@ -1194,7 +1401,7 @@ Form.editors = (function() {
 
         //Don't do the fetch if it's already populated
         if (collection.length > 0) {
-          self.renderOptions(options);
+          this.renderOptions(options);
         } else {
           collection.fetch({
             success: function(collection) {
@@ -1213,7 +1420,7 @@ Form.editors = (function() {
 
       //Otherwise, ready to go straight to renderOptions
       else {
-        self.renderOptions(options);
+        this.renderOptions(options);
       }
 
       return this;
@@ -1257,6 +1464,18 @@ Form.editors = (function() {
     
     setValue: function(value) {
       this.$el.val(value);
+    },
+    
+    focus: function() {
+      if (this.hasFocus) return;
+
+      this.$el.focus();
+    },
+    
+    blur: function() {
+      if (!this.hasFocus) return;
+
+      this.$el.blur();
     },
 
     /**
@@ -1317,13 +1536,49 @@ Form.editors = (function() {
 
     tagName: 'ul',
     className: 'bbf-radio',
+    
+    events: {
+      'click input[type=radio]:not(:checked)': function() {
+        this.trigger('change', this)
+      },
+      'focus input[type=radio]': function() {
+        if (this.hasFocus) return;
+        this.trigger('focus', this);
+      },
+      'blur input[type=radio]': function() {
+        if (!this.hasFocus) return;
+        var self = this;
+        setTimeout(function() {
+          if (self.$('input[type=radio]:focus')[0]) return;
+          self.trigger('blur', self);
+        }, 0);
+      }
+    },
 
     getValue: function() {
-      return this.$el.find('input[type=radio]:checked').val();
+      return this.$('input[type=radio]:checked').val();
     },
 
     setValue: function(value) {
-      this.$el.find('input[type=radio][value='+value+']').attr('checked', true);
+      this.$('input[type=radio]').val([value]);
+    },
+    
+    focus: function() {
+      if (this.hasFocus) return;
+      
+      var checked = this.$('input[type=radio]:checked');
+      if (checked[0]) {
+        checked.focus();
+        return;
+      }
+      
+      this.$('input[type=radio]').first().focus();
+    },
+    
+    blur: function() {
+      if (!this.hasFocus) return;
+      
+      this.$('input[type=radio]:focus').blur();
     },
 
     /**
@@ -1370,20 +1625,48 @@ Form.editors = (function() {
 
     tagName: 'ul',
     className: 'bbf-checkboxes',
+    
+    events: {
+      'click input[type=checkbox]': function() {
+        this.trigger('change', this)
+      },
+      'focus input[type=checkbox]': function() {
+        if (this.hasFocus) return;
+        this.trigger('focus', this);
+      },
+      'blur input[type=checkbox]':  function() {
+        if (!this.hasFocus) return;
+        var self = this;
+        setTimeout(function() {
+          if (self.$('input[type=checkbox]:focus')[0]) return;
+          self.trigger('blur', self);
+        }, 0);
+      }
+    },
 
     getValue: function() {
       var values = [];
-      this.$el.find('input[type=checkbox]:checked').each(function() {
+      this.$('input[type=checkbox]:checked').each(function() {
         values.push($(this).val());
       });
       return values;
     },
 
-    setValue: function(value) {
-      var self = this;
-      _.each(value, function(val) {
-        self.$el.find('input[type=checkbox][value="'+val+'"]').attr('checked', true);
-      });
+    setValue: function(values) {
+      if (!_.isArray(values)) values = [values];
+      this.$('input[type=checkbox]').val(values);
+    },
+    
+    focus: function() {
+      if (this.hasFocus) return;
+      
+      this.$('input[type=checkbox]').first().focus();
+    },
+    
+    blur: function() {
+      if (!this.hasFocus) return;
+      
+      this.$('input[type=checkbox]:focus').blur();
     },
 
     /**
@@ -1444,7 +1727,7 @@ Form.editors = (function() {
       if (!this.schema.subSchema) throw new Error("Missing required 'schema.subSchema' option for Object editor");
     },
 
-    render: function() {
+    render: function() {      
       //Create the nested form
       this.form = new Form({
         schema: this.schema.subSchema,
@@ -1453,8 +1736,12 @@ Form.editors = (function() {
         fieldTemplate: 'nestedField'
       });
 
-      this.$el.html(this.form.render().el);
+      this._observeFormEvents();
 
+      this.$el.html(this.form.render().el);
+      
+      if (this.hasFocus) this.trigger('blur', this);
+      
       return this;
     },
 
@@ -1469,6 +1756,18 @@ Form.editors = (function() {
       
       this.render();
     },
+    
+    focus: function() {
+      if (this.hasFocus) return;
+      
+      this.form.focus();
+    },
+    
+    blur: function() {
+      if (!this.hasFocus) return;
+      
+      this.form.blur();
+    },
 
     remove: function() {
       this.form.remove();
@@ -1478,6 +1777,17 @@ Form.editors = (function() {
     
     validate: function() {
       return this.form.validate();
+    },
+    
+    _observeFormEvents: function() {
+      this.form.on('all', function() {
+        // args = ["key:change", form, fieldEditor]
+        args = _.toArray(arguments);
+        args[1] = this;
+        // args = ["key:change", this=objectEditor, fieldEditor]
+        
+        this.trigger.apply(this, args)
+      }, this);
     }
 
   });
@@ -1516,8 +1826,12 @@ Form.editors = (function() {
         fieldTemplate: 'nestedField'
       });
 
+      this._observeFormEvents();
+
       //Render form
       this.$el.html(this.form.render().el);
+      
+      if (this.hasFocus) this.trigger('blur', this);
 
       return this;
     },
@@ -1556,7 +1870,22 @@ Form.editors = (function() {
   editors.Date = editors.Base.extend({
 
     events: {
-      'change select': 'updateHidden'
+      'change select':  function() {
+        this.updateHidden();
+        this.trigger('change', this);
+      },
+      'focus select':   function() {
+        if (this.hasFocus) return;
+        this.trigger('focus', this);
+      },
+      'blur select':    function() {
+        if (!this.hasFocus) return;
+        var self = this;
+        setTimeout(function() {
+          if (self.$('select:focus')[0]) return;
+          self.trigger('blur', self);
+        }, 0);
+      }
     },
 
     initialize: function(options) {
@@ -1619,9 +1948,9 @@ Form.editors = (function() {
       }));
 
       //Store references to selects
-      this.$date = $el.find('[data-type="date"]');
-      this.$month = $el.find('[data-type="month"]');
-      this.$year = $el.find('[data-type="year"]');
+      this.$date = $el.find('select[data-type="date"]');
+      this.$month = $el.find('select[data-type="month"]');
+      this.$year = $el.find('select[data-type="year"]');
 
       //Create the hidden field to store values in case POSTed to server
       this.$hidden = $('<input type="hidden" name="'+this.key+'" />');
@@ -1633,6 +1962,8 @@ Form.editors = (function() {
       //Remove the wrapper tag
       this.setElement($el);
       this.$el.attr('id', this.id);
+      
+      if (this.hasFocus) this.trigger('blur', this);
 
       return this;
     },
@@ -1659,6 +1990,18 @@ Form.editors = (function() {
       this.$year.val(date.getFullYear());
 
       this.updateHidden();
+    },
+    
+    focus: function() {
+      if (this.hasFocus) return;
+      
+      this.$('select').first().focus();
+    },
+    
+    blur: function() {
+      if (!this.hasFocus) return;
+      
+      this.$('select:focus').blur();
     },
 
     /**
@@ -1693,7 +2036,22 @@ Form.editors = (function() {
   editors.DateTime = editors.Base.extend({
 
     events: {
-      'change select': 'updateHidden'
+      'change select':  function() {
+        this.updateHidden();
+        this.trigger('change', this);
+      },
+      'focus select':   function() {
+        if (this.hasFocus) return;
+        this.trigger('focus', this);
+      },
+      'blur select':    function() {
+        if (!this.hasFocus) return;
+        var self = this;
+        setTimeout(function() {
+          if (self.$('select:focus')[0]) return;
+          self.trigger('blur', self);
+        }, 0);
+      }
     },
 
     initialize: function(options) {
@@ -1744,8 +2102,8 @@ Form.editors = (function() {
       $el.find('.bbf-tmp').replaceWith(this.dateEditor.render().el);
 
       //Store references to selects
-      this.$hour = $el.find('[data-type="hour"]');
-      this.$min = $el.find('[data-type="min"]');
+      this.$hour = $el.find('select[data-type="hour"]');
+      this.$min = $el.find('select[data-type="min"]');
 
       //Get the hidden date field to store values in case POSTed to server
       this.$hidden = $el.find('input[type="hidden"]');
@@ -1755,6 +2113,8 @@ Form.editors = (function() {
 
       this.setElement($el);
       this.$el.attr('id', this.id);
+      
+      if (this.hasFocus) this.trigger('blur', this);
 
       return this;
     },
@@ -1785,6 +2145,18 @@ Form.editors = (function() {
       this.$min.val(date.getMinutes());
 
       this.updateHidden();
+    },
+    
+    focus: function() {
+      if (this.hasFocus) return;
+      
+      this.$('select').first().focus();
+    },
+    
+    blur: function() {
+      if (!this.hasFocus) return;
+      
+      this.$('select:focus').blur();
     },
 
     /**
