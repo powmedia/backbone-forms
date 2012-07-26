@@ -1,3 +1,7 @@
+;(function(Form, Field, editors) {
+
+    
+
 module('List', {
     setup: function() {
         this.sinon = sinon.sandbox.create();
@@ -723,6 +727,8 @@ module('List.Item', {
     });
 })();
 
+
+
 // Needs a editors.List.Modal.ModalAdapter that isn't dependent on Bootstrap.
 
 // module('List.Modal', {
@@ -887,3 +893,5 @@ module('List.Item', {
 //   });
 //   
 // })();
+
+})(Backbone.Form, Backbone.Form.Field, Backbone.Form.editors);

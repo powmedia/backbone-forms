@@ -6,26 +6,21 @@
  * License and more information at:
  * http://github.com/powmedia/backbone-forms
  */
-;(function() {
+;(function(root) {
 
   //DEPENDENCIES
-  //Global object (window in the browser)
-  var root = this;
-
-  var $, _, Backbone;
-
   //CommonJS
-  if (typeof require !== 'undefined') {
-    $ = require('jquery');
-    _ = require('underscore');
-    Backbone = require('backbone');
+  if (typeof exports !== 'undefined' && typeof require !== 'undefined') {
+    var $ = root.jQuery || root.Zepto || root.ender || require('jquery'),
+        _ = root._ || require('underscore'),
+        Backbone = root.Backbone || require('backbone');
   }
 
   //Browser
   else {
-    $ = root.jQuery;
-    _ = root._;
-    Backbone = root.Backbone;
+    var $ = root.jQuery,
+        _ = root._,
+        Backbone = root.Backbone;
   }
 
 
@@ -33,15 +28,11 @@
   {{body}}
 
 
-  //EXPORTS
-  //CommonJS
-  if (typeof module == 'object' && module.exports) {
-    module.exports = Form;
-  }
+  //Metadata
+  Form.VERSION = '{{version}}';
 
-  //Browser
-  else {
-    Backbone.Form = Form;
-  }
 
-}).call(this);
+  //Exports
+  Backbone.Form = Form;
+
+})(this);

@@ -1,3 +1,7 @@
+;(function(Form, Field, editors) {
+
+
+
 module('Field');
 
 test("'schema' option - can be a string representing the type", function() {
@@ -403,3 +407,7 @@ test("keys can be paths to nested objects if using DeepModel", function() {
   field.commit();
   equal(model.attributes.user.name.first, 'foo');
 });
+
+
+
+})(Backbone.Form, Backbone.Form.Field, Backbone.Form.editors);

@@ -141,6 +141,10 @@
             });
             
             $('#uiTest button.validate').click(function() { form.validate() });
+
+
+            //Check leaks
+            if (window.Form) console.warn('Form has leaked onto global scope');
         });
     </script>
 </body>

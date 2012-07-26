@@ -1,3 +1,6 @@
+;(function(Form, Field, editors) {
+
+
 module("Form", {
     setup: function() {
         this.sinon = sinon.sandbox.create();
@@ -548,3 +551,7 @@ test("Supports picking nested fields from within Objects", function() {
     ok(form.fields['author.id'].editor instanceof Form.editors.Number);
     ok(form.fields['author.name.last'].editor instanceof Form.editors.Text);
 });
+
+
+
+})(Backbone.Form, Backbone.Form.Field, Backbone.Form.editors);
