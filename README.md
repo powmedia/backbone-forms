@@ -870,6 +870,7 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 ##Changelog
 
 ###master
+- Add 'change', 'focus' and 'blur' events (DouweM)
 - Fix: #72 Hitting 'Enter' being focused on any text field in examples deletes nested "notes"
 - Pressing enter in a list now adds a new item to the bottom of the list (Juice10)
 - Customization of List Template & Tweaked default templates (philfreo)
