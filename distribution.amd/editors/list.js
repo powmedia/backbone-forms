@@ -78,6 +78,8 @@ define(['jquery', 'underscore', 'backbone'], function($, _, Backbone) {
       this.setElement($el);
       this.$el.attr('id', this.id);
       this.$el.attr('name', this.key);
+            
+      if (this.hasFocus) this.trigger('blur', this);
       
       return this;
     },
@@ -86,7 +88,7 @@ define(['jquery', 'underscore', 'backbone'], function($, _, Backbone) {
      * Add a new item to the list
      * @param {Mixed} [value]     Value for the new item editor
      */
-    addItem: function(value) {
+    addItem: function(value, userInitiated) {
       var self = this;
 
       //Create the item
@@ -97,20 +99,66 @@ define(['jquery', 'underscore', 'backbone'], function($, _, Backbone) {
         Editor: this.Editor,
         key: this.key
       }).render();
+      
+      var _addItem = function() {
+        self.items.push(item);
+        self.$list.append(item.el);
+        
+        item.editor.on('all', function(event) {
+          if (event == 'change') return;
+
+          // args = ["key:change", itemEditor, fieldEditor]
+          args = _.toArray(arguments);
+          args[0] = 'item:' + event;
+          args.splice(1, 0, self);
+          // args = ["item:key:change", this=listEditor, itemEditor, fieldEditor]
+
+          editors.List.prototype.trigger.apply(this, args)
+        }, self);
+
+        item.editor.on('change', function() {
+          if (!item.addEventTriggered) {
+            item.addEventTriggered = true;
+            this.trigger('add', this, item.editor);
+          }
+          this.trigger('item:change', this, item.editor);
+          this.trigger('change', this);
+        }, self);
+
+        item.editor.on('focus', function() {
+          if (this.hasFocus) return;
+          this.trigger('focus', this);
+        }, self);
+        item.editor.on('blur', function() {
+          if (!this.hasFocus) return;
+          var self = this;
+          setTimeout(function() {
+            if (_.find(self.items, function(item) { return item.editor.hasFocus; })) return;
+            self.trigger('blur', self);
+          }, 0);
+        }, self);
+        
+        if (userInitiated || value) {
+          item.addEventTriggered = true;
+        }
+        
+        if (userInitiated) {
+          self.trigger('add', self, item.editor);
+          self.trigger('change', self);
+        }
+      }
 
       //Check if we need to wait for the item to complete before adding to the list
       if (this.Editor.isAsync) {
-        item.editor.on('readyToAdd', function() {
-          self.items.push(item);
-          self.$list.append(item.el);
-        });
+        item.editor.on('readyToAdd', _addItem, this);
       }
 
       //Most editors can be added automatically
       else {
-        this.items.push(item);
-        this.$list.append(item.el);
+        _addItem();
       }
+      
+      return item;
     },
 
     /**
@@ -126,6 +174,11 @@ define(['jquery', 'underscore', 'backbone'], function($, _, Backbone) {
 
       this.items[index].remove();
       this.items.splice(index, 1);
+      
+      if (item.addEventTriggered) {
+        this.trigger('remove', this, item.editor);
+        this.trigger('change', this);
+      }
 
       if (!this.items.length && !this.Editor.isAsync) this.addItem();
     },
@@ -142,6 +195,20 @@ define(['jquery', 'underscore', 'backbone'], function($, _, Backbone) {
     setValue: function(value) {
       this.value = value;
       this.render();
+    },
+    
+    focus: function() {
+      if (this.hasFocus) return;
+
+      if (this.items[0]) this.items[0].editor.focus();
+    },
+    
+    blur: function() {
+      if (!this.hasFocus) return;
+
+      focusedItem = _.find(this.items, function(item) { return item.editor.hasFocus; });
+      
+      if (focusedItem) focusedItem.editor.blur();
     },
 
     /**
@@ -242,6 +309,14 @@ define(['jquery', 'underscore', 'backbone'], function($, _, Backbone) {
 
     setValue: function(value) {
       this.editor.setValue(value);
+    },
+    
+    focus: function() {
+      this.editor.focus();
+    },
+    
+    blur: function() {
+      this.editor.blur();
     },
 
     remove: function() {
@@ -351,6 +426,8 @@ define(['jquery', 'underscore', 'backbone'], function($, _, Backbone) {
         }, 0);
       }
 
+      if (this.hasFocus) this.trigger('blur', this);
+
       return this;
     },
 
@@ -418,11 +495,19 @@ define(['jquery', 'underscore', 'backbone'], function($, _, Backbone) {
         data: this.value
       });
 
-      var modal = new Backbone.BootstrapModal({
+      var modal = this.modal = new Backbone.BootstrapModal({
         content: form,
         animate: true
       }).open();
+      this.trigger('open', this);
+      this.trigger('focus', this);
 
+      model.on('cancel', function() {
+        this.modal = null;
+
+        this.trigger('close', this);
+        this.trigger('blur', this);
+      }, this);
       modal.on('ok', _.bind(this.onModalSubmitted, this, form, modal));
     },
 
@@ -431,11 +516,12 @@ define(['jquery', 'underscore', 'backbone'], function($, _, Backbone) {
      * Runs validation and tells the list when ready to add the item
      */
     onModalSubmitted: function(form, modal) {
-      var isNew = _.isEmpty(this.value);
+      var isNew = !this.value;
 
       //Stop if there are validation errors
       var error = form.validate();
       if (error) return modal.preventClose();
+      this.modal = null;
 
       //If OK, render the list item
       this.value = form.getValue();
@@ -443,6 +529,11 @@ define(['jquery', 'underscore', 'backbone'], function($, _, Backbone) {
       this.renderSummary();
 
       if (isNew) this.trigger('readyToAdd');
+      
+      this.trigger('change', this);
+      
+      this.trigger('close', this);
+      this.trigger('blur', this);
     },
 
     getValue: function() {
@@ -451,6 +542,21 @@ define(['jquery', 'underscore', 'backbone'], function($, _, Backbone) {
 
     setValue: function(value) {
       this.value = value;
+    },
+    
+    focus: function() {
+      if (this.hasFocus) return;
+
+      this.openEditor();
+    },
+    
+    blur: function() {
+      if (!this.hasFocus) return;
+      
+      if (this.modal) {
+        this.modal.trigger('cancel');
+        this.modal.close();
+      }
     }
   }, {
     //STATICS

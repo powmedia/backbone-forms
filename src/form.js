@@ -6,6 +6,8 @@
 var Form = (function() {
 
   return Backbone.View.extend({
+    
+    hasFocus: false,
 
     /**
      * Creates a new form
@@ -83,6 +85,8 @@ var Form = (function() {
 
       //Set the template contents as the main element; removes the wrapper element
       this.setElement($form);
+      
+      if (this.hasFocus) this.trigger('blur', this);
 
       return this;
     },
@@ -145,6 +149,34 @@ var Form = (function() {
 
         //Render the fields with editors, apart from Hidden fields
         var fieldEl = field.render().el;
+        
+        field.editor.on('all', function(event) {
+          // args = ["change", editor]
+          args = _.toArray(arguments);
+          args[0] = key + ':' + event;
+          args.splice(1, 0, this);
+          // args = ["key:change", this=form, editor]
+
+          this.trigger.apply(this, args)
+        }, self);
+        
+        field.editor.on('change', function() {
+          this.trigger('change', self);
+        }, self);
+
+        field.editor.on('focus', function() {
+          if (this.hasFocus) return;
+          this.trigger('focus', this);
+        }, self);
+        field.editor.on('blur', function() {
+          if (!this.hasFocus) return;
+          var self = this;
+          setTimeout(function() {
+            if (_.find(self.fields, function(field) { return field.editor.hasFocus; })) return;
+            self.trigger('blur', self);
+          }, 0);
+        }, self);
+        
         if (itemSchema.type != 'Hidden') {
           $fieldsContainer.append(fieldEl);
         }
@@ -289,6 +321,32 @@ var Form = (function() {
         this.fields[key].setValue(data[key]);
       }
     },
+    
+    focus: function() {
+      if (this.hasFocus) return;
+      
+      var fieldset = this.options.fieldsets[0];
+      if (fieldset) {
+        var field;
+        if (_.isArray(fieldset)) {
+          field = fieldset[0];
+        }
+        else {
+          field = fieldset.fields[0];
+        }
+        if (field) {
+          this.fields[field].editor.focus();
+        }
+      }
+    },
+    
+    blur: function() {
+      if (!this.hasFocus) return;
+      
+      focusedField = _.find(this.fields, function(field) { return field.editor.hasFocus; });
+      
+      if (focusedField) focusedField.editor.blur();
+    },
 
     /**
      * Override default remove function in order to remove embedded views
@@ -301,6 +359,18 @@ var Form = (function() {
       }
 
       Backbone.View.prototype.remove.call(this);
+    },
+    
+    
+    trigger: function(event) {
+      if (event == 'focus') {
+        this.hasFocus = true;
+      }
+      else if (event == 'blur') {
+        this.hasFocus = false;
+      }
+      
+      return Backbone.View.prototype.trigger.apply(this, arguments);
     }
   });
 

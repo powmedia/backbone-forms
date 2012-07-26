@@ -1,8 +1,15 @@
 ;(function(Form, Field, editors) {
 
 
+module("Form", {
+    setup: function() {
+        this.sinon = sinon.sandbox.create();
+    },
 
-module("Form");
+    teardown: function() {
+        this.sinon.restore();
+    }
+});
 
 test("'schema' option - Schema object is used to create the form", function() {
     var post = new Post(),
@@ -286,6 +293,82 @@ test("setValue() - updates form field values", function() {
     equal(form.fields.author.getValue(), 'Sterling Archer');
 });
 
+test("focus() - gives focus to form and its first editor", function() {
+    var form = new Form({
+        model: new Post
+    }).render();
+    
+    form.focus();
+    
+    stop();
+    setTimeout(function() {
+      ok(form.fields.title.editor.hasFocus);
+      ok(form.hasFocus);
+      
+      start();
+    }, 0);
+});
+
+test("focus() - triggers the 'focus' event", function() {
+    var form = new Form({
+        model: new Post
+    }).render();
+    
+    var spy = this.sinon.spy();
+    
+    form.on('focus', spy);
+    
+    form.focus();
+    
+    stop();
+    setTimeout(function() {
+      ok(spy.called);
+      ok(spy.calledWith(form));
+      
+      start();
+    }, 0);
+});
+
+test("blur() - removes focus from the form and its first editor", function() {
+    var form = new Form({
+        model: new Post
+    }).render();
+    
+    form.focus();
+    
+    form.blur();
+    
+    stop();
+    setTimeout(function() {
+      ok(!form.fields.title.editor.hasFocus);
+      ok(!form.hasFocus);
+      
+      start();
+    }, 0);
+});
+
+test("blur() - triggers the 'blur' event", function() {
+    var form = new Form({
+        model: new Post
+    }).render();
+
+    form.focus();
+    
+    var spy = this.sinon.spy();
+    
+    form.on('blur', spy);
+    
+    form.blur();
+    
+    stop();
+    setTimeout(function() {
+      ok(spy.called);
+      ok(spy.calledWith(form));
+      
+      start();
+    }, 0);
+});
+
 test("remove() - removes all child views and itself", function() {
     var counter = 0;
     
@@ -308,6 +391,130 @@ test("remove() - removes all child views and itself", function() {
     
     //Restore remove method
     Backbone.View.prototype.remove = _remove;
+});
+
+test("'change' event - bubbles up from editor", function() {
+    var form = new Form({
+        model: new Post
+    }).render();
+    
+    var spy = this.sinon.spy();
+        
+    form.on('change', spy);
+    
+    form.fields.title.editor.trigger('change', form.fields.title.editor);
+    
+    ok(spy.called);
+    ok(spy.calledWith(form));
+});
+
+test("'focus' event - bubbles up from editor when form doesn't have focus", function() {
+    var form = new Form({
+        model: new Post
+    }).render();
+    
+    var spy = this.sinon.spy();
+    
+    form.on('focus', spy);
+    
+    form.fields.title.editor.focus();
+    
+    ok(spy.called);
+    ok(spy.calledWith(form));
+});
+
+test("'focus' event - doesn't bubble up from editor when form already has focus", function() {
+    var form = new Form({
+        model: new Post
+    }).render();
+    
+    form.focus();
+    
+    var spy = this.sinon.spy();
+    
+    form.on('focus', spy);
+    
+    form.fields.title.editor.focus();
+    
+    ok(!spy.called);
+});
+
+test("'blur' event - bubbles up from editor when form has focus and we're not focusing on another one of the form's editors", function() {
+    var form = new Form({
+        model: new Post
+    }).render();
+    
+    form.focus();
+    
+    var spy = this.sinon.spy();
+    
+    form.on('blur', spy);
+    
+    form.fields.title.editor.blur();
+    
+    stop();
+    setTimeout(function() {
+        ok(spy.called);
+        ok(spy.calledWith(form));
+        
+        start();
+    }, 0);
+});
+
+test("'blur' event - doesn't bubble up from editor when form has focus and we're focusing on another one of the form's editors", function() {
+    var form = new Form({
+        model: new Post
+    }).render();
+    
+    form.focus();
+    
+    var spy = this.sinon.spy();
+    
+    form.on('blur', spy);
+    
+    form.fields.title.editor.blur();
+    form.fields.author.editor.focus();
+    
+    stop();
+    setTimeout(function() {
+        ok(!spy.called);
+        
+        start();
+    }, 0);
+});
+
+test("'blur' event - doesn't bubble up from editor when form doesn't have focus", function() {
+    var form = new Form({
+        model: new Post
+    }).render();
+    
+    var spy = this.sinon.spy();
+    
+    form.on('blur', spy);
+    
+    form.fields.title.editor.blur();
+    
+    stop();
+    setTimeout(function() {
+        ok(!spy.called);
+        
+        start();
+    }, 0);
+});
+
+test("Events bubbling up from editors", function() {
+    var form = new Form({
+        model: new Post
+    }).render();
+    
+    var spy = this.sinon.spy();
+    
+    form.on('title:whatever', spy);
+    
+    form.fields.title.editor.trigger('whatever', form.fields.title.editor);
+    
+    ok(spy.called);
+    ok(spy.calledWith(form, form.fields.title.editor));
 });
 
 test('Allows access to field views', function() {
