@@ -870,6 +870,7 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 ##Changelog
 
 ###master
+- Add Select.setOptions() method to change options on demand
 - AMD improvements (see issue #77)
 - Add 'change', 'focus' and 'blur' events (DouweM)
 - Fix: #72 Hitting 'Enter' being focused on any text field in examples deletes nested "notes"

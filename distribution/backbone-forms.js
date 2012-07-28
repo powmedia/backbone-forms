@@ -1405,8 +1405,18 @@ Form.editors = (function() {
     },
 
     render: function() {
-      var options = this.schema.options,
-          self = this;
+      this.setOptions(this.schema.options);
+
+      return this;
+    },
+
+    /**
+     * Sets the options that populate the <select>
+     *
+     * @param {Mixed} options
+     */
+    setOptions: function(options) {
+      var self = this;
 
       //If a collection was passed, check if it needs fetching
       if (options instanceof Backbone.Collection) {
@@ -1435,8 +1445,6 @@ Form.editors = (function() {
       else {
         this.renderOptions(options);
       }
-
-      return this;
     },
 
     /**

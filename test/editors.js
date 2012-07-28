@@ -901,6 +901,20 @@ module('Select', {
         
         equal($(field.el).get(0).tagName, 'SELECT');
     });
+
+    test('setOptions() - updates the options on a rendered select', function() {
+        var field = new editor({
+            schema: schema
+        }).render();
+
+        field.setOptions([1,2,3]);
+
+        var newOptions = field.$el.find('option');
+
+        equal(newOptions.length, 3);
+        equal(newOptions.first().html(), 1);
+        equal(newOptions.last().html(), 3);
+    });
     
     test('TODO: Options as array of items', function() {
 
