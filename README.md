@@ -361,6 +361,15 @@ Creates and populates a `<select>` element.
 
   If there are no models in the collection, it will be `fetch()`ed.
 
+
+####Methods
+
+- **`setOptions()`**
+
+  Update the options in the select. Accepts any of the types that can be set in the schema `options`
+
+
+
 ####Examples
     
     var schema = {
