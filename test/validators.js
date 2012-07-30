@@ -38,7 +38,7 @@
   })
 
   test('ok if field is number 0', function() {
-    equal(required(1), undefined)
+    equal(required(0), undefined)
   })
 
   test('ok if field is true', function() {
