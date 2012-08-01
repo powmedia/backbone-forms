@@ -1,3 +1,4 @@
+/*
 module('jqueryui.Date', {
     setup: function() {
         this.sinon = sinon.sandbox.create();
@@ -420,3 +421,4 @@ module('jqueryui.List', {
         ok(spy.calledWith(field, value));
     });
 })();
+*/
