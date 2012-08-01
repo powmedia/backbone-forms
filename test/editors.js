@@ -1903,6 +1903,10 @@ module('NestedModel');
         schema: {
             id: { type: 'Number' },
             name: {}
+        },
+        defaults: {
+            id: 8,
+            name: 'Marklar'
         }
     });
     
@@ -1910,13 +1914,11 @@ module('NestedModel');
         schema = { model: ChildModel };
     
     test('Default value', function() {
-        /*
         var field = new editor({
             schema: schema
         }).render();
         
-        deepEqual(field.getValue(), { id: 0, name: '' });
-        */
+        deepEqual(field.getValue(), { id: 8, name: 'Marklar' });
     });
 
     test('Custom value', function() {
@@ -1929,6 +1931,38 @@ module('NestedModel');
         }).render();
 
         deepEqual(field.getValue(), { id: 42, name: "Krieger" });
+    });
+
+    test('Custom value overrides default value (issue #99)', function() {
+        var Person = Backbone.Model.extend({
+            schema: { firstName: 'Text', lastName: 'Text' },
+            defaults: { firstName: '', lastName: '' }
+        });
+
+        var Duo = Backbone.Model.extend({
+            schema: {
+                name: { type: 'Text' },
+                hero: { type: 'NestedModel', model: Person },
+                sidekick: { type: 'NestedModel', model: Person}
+            }
+        });
+
+        var batman = new Person({ firstName: 'Bruce', lastName: 'Wayne' });
+        var robin = new Person({ firstName: 'Dick', lastName: 'Grayson' });
+
+        var duo = new Duo({
+            name: "The Dynamic Duo", 
+            hero: batman, 
+            sidekick: robin
+        });
+
+        var duoForm = new Backbone.Form({ model: duo }).render();
+        var batmanForm = new Backbone.Form({ model: batman }).render();
+
+        same(duoForm.getValue().hero, {
+            firstName: 'Bruce', 
+            lastName: 'Wayne'
+        });
     });
 
     test('Value from model', function() {

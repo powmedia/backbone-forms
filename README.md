@@ -879,6 +879,7 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 ##Changelog
 
 ###master
+- Fix NestedModel values being overridden by defaults (#99)
 - Add Select.setOptions() method to change options on demand
 - AMD improvements (see issue #77)
 - Add 'change', 'focus' and 'blur' events (DouweM)

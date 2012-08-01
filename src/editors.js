@@ -883,15 +883,15 @@ Form.editors = (function() {
     render: function() {
       var data = this.value || {},
           key = this.key,
-          nestedModel = this.schema.model,
-          nestedModelSchema = (nestedModel).prototype.schema;
+          nestedModel = this.schema.model;
 
-      //Handle schema functions
-      if (_.isFunction(nestedModelSchema)) nestedModelSchema = nestedModelSchema();
+      //Wrap the data in a model if it isn't already a model instance
+      var modelInstance = (data.constructor == nestedModel)
+        ? data
+        : new nestedModel(data);
 
       this.form = new Form({
-        schema: nestedModelSchema,
-        model: new nestedModel(data),
+        model: modelInstance,
         idPrefix: this.id + '_',
         fieldTemplate: 'nestedField'
       });
