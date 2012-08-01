@@ -499,15 +499,17 @@ define(['jquery', 'underscore', 'backbone'], function($, _, Backbone) {
         content: form,
         animate: true
       }).open();
+
       this.trigger('open', this);
       this.trigger('focus', this);
 
-      model.on('cancel', function() {
+      modal.on('cancel', function() {
         this.modal = null;
 
         this.trigger('close', this);
         this.trigger('blur', this);
       }, this);
+      
       modal.on('ok', _.bind(this.onModalSubmitted, this, form, modal));
     },
 
