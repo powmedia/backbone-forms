@@ -22,7 +22,7 @@ Form.helpers = (function() {
       result = result[fields[i]];
     }
     return result;
-  }
+  };
   
   /**
    * This function is used to transform the key from a schema into the title used in a label.
@@ -63,7 +63,7 @@ Form.helpers = (function() {
       _.templateSettings.interpolate = _interpolateBackup;
 
       return template;
-  }
+  };
 
   /**
    * Helper to create a template with the {{mustache}} style tags.
@@ -89,7 +89,7 @@ Form.helpers = (function() {
    */
   helpers.setTemplateCompiler = function(compiler) {
     helpers.compileTemplate = compiler;
-  }
+  };
   
   
   /**
@@ -169,7 +169,7 @@ Form.helpers = (function() {
     args.push(callback);
     
     fn.apply(context, args);
-  }
+  };
   
   /**
    * Returns a validation function based on the type defined in the schema
