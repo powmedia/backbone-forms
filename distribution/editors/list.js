@@ -103,15 +103,15 @@
         self.$list.append(item.el);
         
         item.editor.on('all', function(event) {
-          if (event == 'change') return;
+          if (event === 'change') return;
 
           // args = ["key:change", itemEditor, fieldEditor]
-          args = _.toArray(arguments);
+          var args = _.toArray(arguments);
           args[0] = 'item:' + event;
           args.splice(1, 0, self);
           // args = ["item:key:change", this=listEditor, itemEditor, fieldEditor]
 
-          editors.List.prototype.trigger.apply(this, args)
+          editors.List.prototype.trigger.apply(this, args);
         }, self);
 
         item.editor.on('change', function() {
@@ -144,7 +144,7 @@
           self.trigger('add', self, item.editor);
           self.trigger('change', self);
         }
-      }
+      };
 
       //Check if we need to wait for the item to complete before adding to the list
       if (this.Editor.isAsync) {
@@ -204,7 +204,7 @@
     blur: function() {
       if (!this.hasFocus) return;
 
-      focusedItem = _.find(this.items, function(item) { return item.editor.hasFocus; });
+      var focusedItem = _.find(this.items, function(item) { return item.editor.hasFocus; });
       
       if (focusedItem) focusedItem.editor.blur();
     },
@@ -263,7 +263,7 @@
         this.list.removeItem(this);
       },
       'keydown input[type=text]': function(event) {
-        if(event.keyCode != 13) return;
+        if(event.keyCode !== 13) return;
         event.preventDefault();
         this.list.addItem();
         this.list.$list.find("> li:last input").focus();
@@ -336,11 +336,15 @@
       _.every(validators, function(validator) {
         error = getValidator(validator)(value, formValues);
 
-        return continueLoop = error ? false : true;
+        return error ? false : true;
       });
 
       //Show/hide error
-      error ? this.setError(error) : this.clearError();
+      if (error){
+        this.setError(error);
+      } else {
+        this.clearError();
+      }
 
       //Return error to be aggregated by list
       return error ? error : null;
@@ -389,14 +393,14 @@
       if (!editors.List.Modal.ModalAdapter) throw 'A ModalAdapter is required';
 
       //Get nested schema if Object
-      if (schema.itemType == 'Object') {
+      if (schema.itemType === 'Object') {
         if (!schema.subSchema) throw 'Missing required option "schema.subSchema"';
 
         this.nestedSchema = schema.subSchema;
       }
 
       //Get nested schema if NestedModel
-      if (schema.itemType == 'NestedModel') {
+      if (schema.itemType === 'NestedModel') {
         if (!schema.model) throw 'Missing required option "schema.model"';
 
         this.nestedSchema = schema.model.prototype.schema;
@@ -477,7 +481,7 @@
       if (schema.itemToString) return schema.itemToString(value);
       
       //Otherwise check if it's NestedModel with it's own toString() method
-      if (schema.itemType == 'NestedModel') {
+      if (schema.itemType === 'NestedModel') {
         return new (schema.model)(value).toString();
       }
       

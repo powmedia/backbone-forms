@@ -124,7 +124,7 @@ Form.editors = (function() {
         _.every(validators, function(validator) {
           error = getValidator(validator)(value, formValues);
 
-          return continueLoop = error ? false : true;
+          return error ? false : true;
         });
       }
 
