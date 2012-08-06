@@ -152,12 +152,12 @@ var Form = (function() {
         
         field.editor.on('all', function(event) {
           // args = ["change", editor]
-          args = _.toArray(arguments);
+          var args = _.toArray(arguments);
           args[0] = key + ':' + event;
           args.splice(1, 0, this);
           // args = ["key:change", this=form, editor]
 
-          this.trigger.apply(this, args)
+          this.trigger.apply(this, args);
         }, self);
         
         field.editor.on('change', function() {
@@ -177,12 +177,12 @@ var Form = (function() {
           }, 0);
         }, self);
         
-        if (itemSchema.type != 'Hidden') {
+        if (itemSchema.type !== 'Hidden') {
           $fieldsContainer.append(fieldEl);
         }
       });
 
-      $fieldsContainer = $fieldsContainer.children().unwrap()
+      $fieldsContainer = $fieldsContainer.children().unwrap();
 
       return $fieldset;
     },
@@ -343,7 +343,7 @@ var Form = (function() {
     blur: function() {
       if (!this.hasFocus) return;
       
-      focusedField = _.find(this.fields, function(field) { return field.editor.hasFocus; });
+      var focusedField = _.find(this.fields, function(field) { return field.editor.hasFocus; });
       
       if (focusedField) focusedField.editor.blur();
     },
@@ -363,10 +363,10 @@ var Form = (function() {
     
     
     trigger: function(event) {
-      if (event == 'focus') {
+      if (event === 'focus') {
         this.hasFocus = true;
       }
-      else if (event == 'blur') {
+      else if (event === 'blur') {
         this.hasFocus = false;
       }
       
