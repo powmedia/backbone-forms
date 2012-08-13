@@ -293,6 +293,23 @@ test("setValue() - updates form field values", function() {
     equal(form.fields.author.getValue(), 'Sterling Archer');
 });
 
+test("setValue() - ignore attributes not in form", function() {
+    var form = new Form({
+        model: new Post
+    }).render();
+    
+    form.setValue({
+      title: 'Danger Zone 3',
+      notInForm: 'Not in my form you don\'t'
+    });
+    
+    //Check changed fields
+    equal(form.fields.title.getValue(), 'Danger Zone 3');
+    
+    //Check fields that shouldn't have changed
+    equal(form.fields.author.getValue(), 'Sterling Archer');
+});
+
 test("focus() - gives focus to form and its first editor", function() {
     var form = new Form({
         model: new Post
