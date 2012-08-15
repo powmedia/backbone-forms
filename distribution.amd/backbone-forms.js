@@ -332,7 +332,9 @@ var Form = (function() {
      */
     setValue: function(data) {
       for (var key in data) {
-        this.fields[key].setValue(data[key]);
+        if (_.has(this.fields, key)) {
+          this.fields[key].setValue(data[key]);
+        }
       }
     },
     

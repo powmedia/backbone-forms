@@ -17,7 +17,7 @@
     events: {
       'click [data-action="add"]': function(event) {
         event.preventDefault();
-        this.addItem();
+        this.addItem(null, true);
       }
     },
 
@@ -29,7 +29,8 @@
 
       //List schema defaults
       this.schema = _.extend({
-        listTemplate: 'list'
+        listTemplate: 'list',
+        listItemTemplate: 'listItem'
       }, schema);
 
       //Determine the editor to use
@@ -84,7 +85,8 @@
 
     /**
      * Add a new item to the list
-     * @param {Mixed} [value]     Value for the new item editor
+     * @param {Mixed} [value]           Value for the new item editor
+     * @param {Boolean} [userInitiated] If the item was added by the user clicking 'add'
      */
     addItem: function(value, userInitiated) {
       var self = this;
@@ -111,7 +113,7 @@
           args.splice(1, 0, self);
           // args = ["item:key:change", this=listEditor, itemEditor, fieldEditor]
 
-          editors.List.prototype.trigger.apply(this, args)
+          editors.List.prototype.trigger.apply(this, args);
         }, self);
 
         item.editor.on('change', function() {
@@ -144,7 +146,7 @@
           self.trigger('add', self, item.editor);
           self.trigger('change', self);
         }
-      }
+      };
 
       //Check if we need to wait for the item to complete before adding to the list
       if (this.Editor.isAsync) {
@@ -289,7 +291,7 @@
       }).render();
 
       //Create main element
-      var $el = $(Form.templates.listItem({
+      var $el = $(Form.templates[this.schema.listItemTemplate]({
         editor: '<b class="bbf-tmp"></b>'
       }));
 
