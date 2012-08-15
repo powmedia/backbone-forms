@@ -29,7 +29,8 @@
 
       //List schema defaults
       this.schema = _.extend({
-        listTemplate: 'list'
+        listTemplate: 'list',
+        listItemTemplate: 'listItem'
       }, schema);
 
       //Determine the editor to use
@@ -289,7 +290,7 @@
       }).render();
 
       //Create main element
-      var $el = $(Form.templates.listItem({
+      var $el = $(Form.templates[this.schema.listItemTemplate]({
         editor: '<b class="bbf-tmp"></b>'
       }));
 

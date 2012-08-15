@@ -527,6 +527,14 @@ This is a special editor which is in **a separate file and must be included**:
 
   Name of the template to hold the list. Edit if you want to customize the 'Add' button, for instance. Optional, defaults to 'list'.
 
+
+- **`listItemTemplate`**
+
+  Name of the template to hold the list item (including the remove item button).
+  
+  Optional, defaults to 'listItem'
+
+
 ###Events
 
 - **`add`**
@@ -880,6 +888,8 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 ##Changelog
 
 ###master
+- Skip undefined properties when setting form value from model.toJSON() (jgarbers)
+- Add listItemTemplate option to list editors (philfreo)
 - Fix NestedModel values being overridden by defaults (#99)
 - Add Select.setOptions() method to change options on demand
 - AMD improvements (see issue #77)
