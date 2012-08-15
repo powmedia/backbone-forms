@@ -19,7 +19,7 @@ define(['jquery', 'underscore', 'backbone'], function($, _, Backbone) {
     events: {
       'click [data-action="add"]': function(event) {
         event.preventDefault();
-        this.addItem();
+        this.addItem(null, true);
       }
     },
 
@@ -113,7 +113,7 @@ define(['jquery', 'underscore', 'backbone'], function($, _, Backbone) {
           args.splice(1, 0, self);
           // args = ["item:key:change", this=listEditor, itemEditor, fieldEditor]
 
-          editors.List.prototype.trigger.apply(this, args)
+          editors.List.prototype.trigger.apply(this, args);
         }, self);
 
         item.editor.on('change', function() {
@@ -146,7 +146,7 @@ define(['jquery', 'underscore', 'backbone'], function($, _, Backbone) {
           self.trigger('add', self, item.editor);
           self.trigger('change', self);
         }
-      }
+      };
 
       //Check if we need to wait for the item to complete before adding to the list
       if (this.Editor.isAsync) {
