@@ -1,4 +1,3 @@
-
 //========================================================================
 //EDITORS
 //========================================================================
@@ -888,7 +887,7 @@ Form.editors = (function() {
       //Wrap the data in a model if it isn't already a model instance
       var modelInstance = (data.constructor == nestedModel)
         ? data
-        : new nestedModel(data);
+        : new (this._findNestedModel(nestedModel))(data);
 
       this.form = new Form({
         model: modelInstance,
@@ -920,6 +919,33 @@ Form.editors = (function() {
       }
 
       return editors.Object.prototype.commit.call(this);
+    },
+    
+    /**
+     * Allow a nested model to be specified as a Model or as a string
+     * so that class definitions may be order independent
+     */
+    _findNestedModel: function(value) {
+      return _.isString(value) ? this._stringToFunction(value) : value;
+    },
+    
+    /**
+     * Helper function to create a namespaced class object from a string value
+     * e.g. "App.Models.SuperDuper"
+     */
+    _stringToFunction: function(str) {
+      var arr = str.split(".");
+
+      var fn = (window || this);
+      for (var i = 0, len = arr.length; i < len; i++) {
+        fn = fn[arr[i]];
+      }
+
+      if (typeof fn !== "function") {
+        throw "Schema Model not found";
+      }
+
+      return  fn;
     }
 
   });
