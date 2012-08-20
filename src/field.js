@@ -79,6 +79,7 @@ Form.Field = (function() {
       
       //Create the element
       var $field = $(templates[schema.template]({
+        field: this,
         key: this.key,
         title: schema.title,
         id: editor.id,
