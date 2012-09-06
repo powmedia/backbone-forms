@@ -905,6 +905,7 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 
 
 ###0.10.0
+- Update backbone.bootstrap-modal adapter
 - Refactor rendering.
     - <legend> tags are now defined in the template.
     - Where a template is used, (e.g. advanced editors, field etc.), the entirety of the HTML is now defined in the template to make custom templating easier.

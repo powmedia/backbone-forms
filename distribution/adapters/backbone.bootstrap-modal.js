@@ -30,7 +30,7 @@
         <h3>{{title}}</h3>\
       </div>\
     <% } %>\
-    <div class="modal-body"><p>{{content}}</p></div>\
+    <div class="modal-body">{{content}}</div>\
     <div class="modal-footer">\
       <% if (allowCancel) { %>\
         <% if (cancelText) { %>\
@@ -54,13 +54,11 @@
         event.preventDefault();
 
         this.trigger('cancel');
-        this.close();
       },
       'click .cancel': function(event) {
         event.preventDefault();
 
         this.trigger('cancel');
-        this.close();
       },
       'click .ok': function(event) {
         event.preventDefault();
@@ -110,11 +108,11 @@
       //Create the modal container
       $el.html(options.template(options));
 
-      var $content = this.$content = $el.find('.modal-body p')
+      var $content = this.$content = $el.find('.modal-body')
 
       //Insert the main content if it's a view
       if (content.$el) {
-        $el.find('.modal-body p').html(content.render().$el);
+        $el.find('.modal-body').html(content.render().$el);
       }
 
       if (options.animate) $el.addClass('fade');
@@ -126,8 +124,10 @@
 
     /**
      * Renders and shows the modal
+     *
+     * @param {Function} [cb]     Optional callback that runs only when OK is pressed.
      */
-    open: function() {
+    open: function(cb) {
       if (!this.isRendered) this.render();
 
       var self = this,
@@ -155,7 +155,26 @@
       $backdrop.css('z-index', backdropIndex + numModals);
       this.$el.css('z-index', elIndex + numModals);
 
+      if (this.options.allowCancel) {
+        $backdrop.one('click', function() {
+          self.trigger('cancel');
+        });
+        
+        $(document).one('keyup.dismiss.modal', function (e) {
+          e.which == 27 && self.trigger('cancel');
+        });
+      }
+
+      this.on('cancel', function() {
+        self.close();
+      });
+
       Modal.count++;
+
+      //Run callback on OK if provided
+      if (cb) {
+        self.on('ok', cb);
+      }
       
       return this;
     },
@@ -201,14 +220,14 @@
 
   //EXPORTS
   //CommonJS
-  if (typeof require == 'function' && module && exports) {
+  if (typeof require == 'function' && typeof module !== 'undefined' && exports) {
     module.exports = Modal;
   }
 
   //AMD / RequireJS
   if (typeof define === 'function' && define.amd) {
     return define(function() {
-      return Modal;
+      Backbone.BootstrapModal = Modal;
     })
   }
 
