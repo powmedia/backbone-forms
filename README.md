@@ -888,6 +888,7 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 ##Changelog
 
 ###master
+- Fix AMD editors that must have backbone forms (philfreo)
 - Skip undefined properties when setting form value from model.toJSON() (jgarbers)
 - Add listItemTemplate option to list editors (philfreo)
 - Fix NestedModel values being overridden by defaults (#99)
