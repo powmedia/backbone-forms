@@ -578,7 +578,7 @@ Form.editors = (function() {
       //Generate HTML
       _.each(array, function(option) {
         if (_.isObject(option)) {
-          var val = option.val ? option.val : '';
+          var val = (option.val || option.val === 0) ? option.val : '';
           html.push('<option value="'+val+'">'+option.label+'</option>');
         }
         else {
@@ -664,7 +664,7 @@ Form.editors = (function() {
       _.each(array, function(option, index) {
         var itemHtml = '<li>';
         if (_.isObject(option)) {
-          var val = option.val ? option.val : '';
+          var val = (option.val || option.val === 0) ? option.val : '';
           itemHtml += ('<input type="radio" name="'+self.id+'" value="'+val+'" id="'+self.id+'-'+index+'" />')
           itemHtml += ('<label for="'+self.id+'-'+index+'">'+option.label+'</label>')
         }
@@ -752,7 +752,7 @@ Form.editors = (function() {
       _.each(array, function(option, index) {
         var itemHtml = '<li>';
         if (_.isObject(option)) {
-          var val = option.val ? option.val : '';
+          var val = (option.val || option.val === 0) ? option.val : '';
           itemHtml += ('<input type="checkbox" name="'+self.id+'" value="'+val+'" id="'+self.id+'-'+index+'" />')
           itemHtml += ('<label for="'+self.id+'-'+index+'">'+option.label+'</label>')
         }
