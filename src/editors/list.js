@@ -352,16 +352,26 @@
      * Show a validation error
      */
     setError: function(err) {
-      this.$el.addClass(Form.classNames.error);
-      this.$el.attr('title', err.message);
+      if (_.isFunction(this.editor.setError)) {
+        this.editor.setError(err);
+      } else {
+        this.$el.addClass(Form.classNames.error);
+        this.$el.attr('title', err.message);
+      }
     },
 
     /**
      * Hide validation errors
      */
     clearError: function() {
-      this.$el.removeClass(Form.classNames.error);
-      this.$el.attr('title', null);
+      if (_.isFunction(this.editor.setError)) {
+        if (_.isFunction(this.editor.clearError)) {
+          this.editor.clearError();
+        }
+      } else {
+        this.$el.removeClass(Form.classNames.error);
+        this.$el.attr('title', null);
+      }
     }
   });
 
