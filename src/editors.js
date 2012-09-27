@@ -1006,7 +1006,10 @@ Form.editors = (function() {
         return '<option value="'+month+'">' + value + '</option>';
       });
 
-      var yearsOptions = _.map(_.range(schema.yearStart, schema.yearEnd + 1), function(year) {
+      var yearRange = schema.yearStart < schema.yearEnd ? 
+        _.range(schema.yearStart, schema.yearEnd + 1) :
+        _.range(schema.yearStart, schema.yearEnd - 1, -1);
+      var yearsOptions = _.map(yearRange, function(year) {
         return '<option value="'+year+'">' + year + '</option>';
       });
 
