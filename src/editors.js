@@ -395,6 +395,8 @@ Form.editors = (function() {
   //HIDDEN
   editors.Hidden = editors.Base.extend({
     
+    tagName: 'input'
+    
     defaultValue: '',
 
     initialize: function(options) {
