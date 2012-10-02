@@ -422,7 +422,7 @@ test("'change' event - bubbles up from editor", function() {
     form.fields.title.editor.trigger('change', form.fields.title.editor);
     
     ok(spy.called);
-    ok(spy.calledWith(form));
+    ok(spy.calledWith(form, form.fields.title));
 });
 
 test("'focus' event - bubbles up from editor when form doesn't have focus", function() {
@@ -437,7 +437,7 @@ test("'focus' event - bubbles up from editor when form doesn't have focus", func
     form.fields.title.editor.focus();
     
     ok(spy.called);
-    ok(spy.calledWith(form));
+    ok(spy.calledWith(form, form.fields.title));
 });
 
 test("'focus' event - doesn't bubble up from editor when form already has focus", function() {
@@ -472,7 +472,7 @@ test("'blur' event - bubbles up from editor when form has focus and we're not fo
     stop();
     setTimeout(function() {
         ok(spy.called);
-        ok(spy.calledWith(form));
+        ok(spy.calledWith(form, form.fields.title));
         
         start();
     }, 0);
