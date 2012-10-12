@@ -725,6 +725,10 @@ You can include different field templates and then use them on a field-by-field 
       name: { template: 'altField' } //Uses the 'altField' template
     };
 
+
+####Using custom variables in templates
+You can pass your own template data into templates by overriding the Form.Field.renderingContext method with your own locals.
+
 [Back to top](#top)
 
 
@@ -888,6 +892,8 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 ##Changelog
 
 ###master
+- Make Form.Field template rendering context overrideable (drd)
+- Fix a mismatched button element in the bootstrap.js template file. (there4)
 - Fix AMD editors that must have backbone forms (philfreo)
 - Skip undefined properties when setting form value from model.toJSON() (jgarbers)
 - Add listItemTemplate option to list editors (philfreo)

@@ -764,6 +764,23 @@ Form.Field = (function() {
       }, options.schema);
     },
 
+
+    /**
+     * Provides the context for rendering the field
+     * Override this to extend the default context
+     */
+    renderingContext: function(schema, editor) {
+      return {
+        key: this.key,
+        title: schema.title,
+        id: editor.id,
+        type: schema.type,
+        editor: '<b class="bbf-tmp-editor"></b>',
+        help: '<b class="bbf-tmp-help"></b>'
+      };
+    },
+
+
     /**
      * Renders the field
      */
@@ -791,14 +808,7 @@ Form.Field = (function() {
       var editor = this.editor = helpers.createEditor(schema.type, options);
       
       //Create the element
-      var $field = $(templates[schema.template]({
-        key: this.key,
-        title: schema.title,
-        id: editor.id,
-        type: schema.type,
-        editor: '<b class="bbf-tmp-editor"></b>',
-        help: '<b class="bbf-tmp-help"></b>'
-      }));
+      var $field = $(templates[schema.template](this.renderingContext(schema, editor)));
       
       //Render editor
       $field.find('.bbf-tmp-editor').replaceWith(editor.render().el);
