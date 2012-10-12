@@ -78,7 +78,7 @@
             var Model = Backbone.Model.extend({
                 schema: {
                     email:      { dataType: 'email', validators: ['required', 'email'] },
-                    tel:        { type: 'Text', dataType: 'tel', validators: ['required'] },
+                    tel:        { type: 'Text', dataType: 'tel', validators: ['required'], help: 'Include area code' },
                     number:     { type: 'Number', validators: [/[0-9]+(?:\.[0-9]*)?/] },
                     checkbox:   { type: 'Checkbox' },
                     radio:      { type: 'Radio', options: ['Opt 1', 'Opt 2'] },
