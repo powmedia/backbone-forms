@@ -68,7 +68,8 @@ Form.Field = (function() {
         id: editor.id,
         type: schema.type,
         editor: '<b class="bbf-tmp-editor"></b>',
-        help: '<b class="bbf-tmp-help"></b>'
+        help: '<b class="bbf-tmp-help"></b>',
+        error: '<b class="bbf-tmp-error"></b>'
       };
     },
 
@@ -109,7 +110,11 @@ Form.Field = (function() {
       this.$help = $('.bbf-tmp-help', $field).parent();
       this.$help.empty();
       if (this.schema.help) this.$help.html(this.schema.help);
-      
+
+      //Create error container
+      this.$error = $($('.bbf-tmp-error', $field).parent()[0]);
+      if (this.$error) this.$error.empty();
+
       //Add custom CSS class names
       if (this.schema.fieldClass) $field.addClass(this.schema.fieldClass);
       
@@ -174,7 +179,11 @@ Form.Field = (function() {
 
       this.$el.addClass(errClass);
       
-      if (this.$help) this.$help.html(msg);
+      if (this.$error) {
+        this.$error.html(msg);
+      } else if (this.$help) {
+        this.$help.html(msg);
+      }
     },
     
     /**
@@ -186,7 +195,9 @@ Form.Field = (function() {
       this.$el.removeClass(errClass);
       
       // some fields (e.g., Hidden), may not have a help el
-      if (this.$help) {
+      if (this.$error) {
+        this.$error.empty();
+      } else if (this.$help) {
         this.$help.empty();
       
         //Reset help text if available
