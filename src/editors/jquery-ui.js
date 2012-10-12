@@ -83,7 +83,7 @@
       var self = this;
       this.$('input').datepicker('option', 'onSelect', function() {
         self.trigger('change', self);
-      })
+      });
       this.$('input').datepicker('option', 'onClose', function() {
         if (!self.hasFocus) return;
         self.trigger('blur', self);
@@ -108,7 +108,7 @@
 
     render: function() {
       function pad(n) {
-        return n < 10 ? '0' + n : n
+        return n < 10 ? '0' + n : n;
       }
 
       //Render the date element first
@@ -213,7 +213,7 @@
       
       this.schema.listType = this.schema.listType || 'Text';
       
-      if (this.schema.listType == 'NestedModel' && !this.schema.model)
+      if (this.schema.listType === 'NestedModel' && !this.schema.model)
           throw "Missing required option 'schema.model'";
     },
 
@@ -290,7 +290,7 @@
       if (schema.itemToString) return schema.itemToString(data);
       
       //Otherwise check if it's NestedModel with it's own toString() method
-      if (this.schema.listType == 'NestedModel') {
+      if (this.schema.listType === 'NestedModel') {
         var model = new (this.schema.model)(data);
       
         return model.toString();
@@ -417,13 +417,13 @@
         
         callback(editor.getValue(), editor);
         container.dialog('close');
-      }
+      };
       
       var handleEnterPressed = function(event) {
-        if (event.keyCode != 13) return;
+        if (event.keyCode !== 13) return;
         
         saveAndClose();
-      }
+      };
 
       $(container).dialog({
         resizable:  false,

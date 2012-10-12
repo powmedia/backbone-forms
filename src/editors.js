@@ -83,7 +83,7 @@ Form.editors = (function() {
       var key = this.key || '';
 
       //Replace periods with underscores (e.g. for when using paths)
-      return key.replace(/\./g, '_')
+      return key.replace(/\./g, '_');
     },
     
     /**
@@ -124,7 +124,7 @@ Form.editors = (function() {
         _.every(validators, function(validator) {
           error = getValidator(validator)(value, formValues);
 
-          return continueLoop = error ? false : true;
+          return error ? false : true;
         });
       }
 
@@ -133,10 +133,10 @@ Form.editors = (function() {
     
     
     trigger: function(event) {
-      if (event == 'focus') {
+      if (event === 'focus') {
         this.hasFocus = true;
       }
-      else if (event == 'blur') {
+      else if (event === 'blur') {
         this.hasFocus = false;
       }
       
@@ -198,7 +198,7 @@ Form.editors = (function() {
     
     determineChange: function(event) {
       var currentValue = this.$el.val();
-      var changed = (currentValue != this.previousValue);
+      var changed = (currentValue !== this.previousValue);
       
       if (changed) {
         this.previousValue = currentValue;
@@ -270,10 +270,10 @@ Form.editors = (function() {
             setTimeout(function() {
               self.determineChange();
             }, 0);
-          }
+          };
           
       //Allow backspace
-      if (event.charCode == 0) {
+      if (event.charCode === 0) {
         delayedDetermineChange();
         return;
       }
@@ -519,7 +519,7 @@ Form.editors = (function() {
 
       //Or Backbone collection
       else if (options instanceof Backbone.Collection) {
-        html = this._collectionToHtml(options)
+        html = this._collectionToHtml(options);
       }
 
       //Insert options
@@ -610,7 +610,7 @@ Form.editors = (function() {
     
     events: {
       'click input[type=radio]:not(:checked)': function() {
-        this.trigger('change', this)
+        this.trigger('change', this);
       },
       'focus input[type=radio]': function() {
         if (this.hasFocus) return;
@@ -666,12 +666,12 @@ Form.editors = (function() {
         var itemHtml = '<li>';
         if (_.isObject(option)) {
           var val = (option.val || option.val === 0) ? option.val : '';
-          itemHtml += ('<input type="radio" name="'+self.id+'" value="'+val+'" id="'+self.id+'-'+index+'" />')
-          itemHtml += ('<label for="'+self.id+'-'+index+'">'+option.label+'</label>')
+          itemHtml += ('<input type="radio" name="'+self.id+'" value="'+val+'" id="'+self.id+'-'+index+'" />');
+          itemHtml += ('<label for="'+self.id+'-'+index+'">'+option.label+'</label>');
         }
         else {
-          itemHtml += ('<input type="radio" name="'+self.id+'" value="'+option+'" id="'+self.id+'-'+index+'" />')
-          itemHtml += ('<label for="'+self.id+'-'+index+'">'+option+'</label>')
+          itemHtml += ('<input type="radio" name="'+self.id+'" value="'+option+'" id="'+self.id+'-'+index+'" />');
+          itemHtml += ('<label for="'+self.id+'-'+index+'">'+option+'</label>');
         }
         itemHtml += '</li>';
         html.push(itemHtml);
@@ -699,7 +699,7 @@ Form.editors = (function() {
     
     events: {
       'click input[type=checkbox]': function() {
-        this.trigger('change', this)
+        this.trigger('change', this);
       },
       'focus input[type=checkbox]': function() {
         if (this.hasFocus) return;
@@ -754,12 +754,12 @@ Form.editors = (function() {
         var itemHtml = '<li>';
         if (_.isObject(option)) {
           var val = (option.val || option.val === 0) ? option.val : '';
-          itemHtml += ('<input type="checkbox" name="'+self.id+'" value="'+val+'" id="'+self.id+'-'+index+'" />')
-          itemHtml += ('<label for="'+self.id+'-'+index+'">'+option.label+'</label>')
+          itemHtml += ('<input type="checkbox" name="'+self.id+'" value="'+val+'" id="'+self.id+'-'+index+'" />');
+          itemHtml += ('<label for="'+self.id+'-'+index+'">'+option.label+'</label>');
         }
         else {
-          itemHtml += ('<input type="checkbox" name="'+self.id+'" value="'+option+'" id="'+self.id+'-'+index+'" />')
-          itemHtml += ('<label for="'+self.id+'-'+index+'">'+option+'</label>')
+          itemHtml += ('<input type="checkbox" name="'+self.id+'" value="'+option+'" id="'+self.id+'-'+index+'" />');
+          itemHtml += ('<label for="'+self.id+'-'+index+'">'+option+'</label>');
         }
         itemHtml += '</li>';
         html.push(itemHtml);
@@ -853,11 +853,11 @@ Form.editors = (function() {
     _observeFormEvents: function() {
       this.form.on('all', function() {
         // args = ["key:change", form, fieldEditor]
-        args = _.toArray(arguments);
+        var args = _.toArray(arguments);
         args[1] = this;
         // args = ["key:change", this=objectEditor, fieldEditor]
         
-        this.trigger.apply(this, args)
+        this.trigger.apply(this, args);
       }, this);
     }
 
@@ -887,9 +887,7 @@ Form.editors = (function() {
           nestedModel = this.schema.model;
 
       //Wrap the data in a model if it isn't already a model instance
-      var modelInstance = (data.constructor == nestedModel)
-        ? data
-        : new nestedModel(data);
+      var modelInstance = (data.constructor === nestedModel) ? data : new nestedModel(data);
 
       this.form = new Form({
         model: modelInstance,
@@ -960,12 +958,12 @@ Form.editors = (function() {
     },
 
     initialize: function(options) {
-      options = options || {}
+      options = options || {};
 
       editors.Base.prototype.initialize.call(this, options);
 
       var Self = editors.Date,
-          today = new Date;
+          today = new Date();
 
       //Option defaults
       this.options = _.extend({
@@ -1151,7 +1149,7 @@ Form.editors = (function() {
 
     render: function() {
       function pad(n) {
-        return n < 10 ? '0' + n : n
+        return n < 10 ? '0' + n : n;
       }
 
       var schema = this.schema;

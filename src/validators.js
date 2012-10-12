@@ -13,7 +13,7 @@ Form.validators = (function() {
     email: 'Invalid email address',
     url: 'Invalid URL',
     match: 'Must match field "{{field}}"'
-  }
+  };
   
   validators.required = function(options) {
     options = _.extend({
@@ -70,7 +70,7 @@ Form.validators = (function() {
     options = _.extend({
       type: 'url',
       message: this.errMessages.url,
-      regexp: /^(http|https):\/\/(([A-Z0-9][A-Z0-9_-]*)(\.[A-Z0-9][A-Z0-9_-]*)+)(:(\d+))?\/?/i
+      regexp: /^(http|https):\/\/(([A-Z0-9][A-Z0-9_\-]*)(\.[A-Z0-9][A-Z0-9_\-]*)+)(:(\d+))?\/?/i
     }, options);
     
     return validators.regexp(options);
@@ -95,8 +95,8 @@ Form.validators = (function() {
       //Don't check empty values (add a 'required' validator for this)
       if (value === null || value === undefined || value === '') return;
       
-      if (value != attrs[options.field]) return err;
-    }
+      if (value !== attrs[options.field]) return err;
+    };
   };
 
 
