@@ -108,7 +108,7 @@ Form.Field = (function() {
       //Set help text
       this.$help = $('.bbf-tmp-help', $field).parent();
       this.$help.empty();
-      if (this.schema.help) this.$help.html(this.schema.help);
+      if (this.schema.help) this.form.options.htmlHelp ? this.$help.html(this.schema.help) : this.$help.text(this.schema.help);
       
       //Add custom CSS class names
       if (this.schema.fieldClass) $field.addClass(this.schema.fieldClass);
@@ -174,7 +174,7 @@ Form.Field = (function() {
 
       this.$el.addClass(errClass);
       
-      if (this.$help) this.$help.html(msg);
+      if (helpMsg) this.form.options.htmlHelp ? this.$help.html(helpMsg) : this.$help.text(helpMsg);
     },
     
     /**
@@ -191,7 +191,7 @@ Form.Field = (function() {
       
         //Reset help text if available
         var helpMsg = this.schema.help;
-        if (helpMsg) this.$help.html(helpMsg);
+        if (helpMsg) this.form.options.htmlHelp ? this.$help.html(helpMsg) : this.$help.text(helpMsg);
       }
     },
 
