@@ -296,7 +296,7 @@ test('setError() - sets field error class name and error message', function() {
   
   field.setError('foo');
   ok($(field.el).hasClass(errorClass));
-  equal(field.$help.html(), 'foo');
+  equal(field.$error.html(), 'foo');
 });
 
 test('setError() - returns if the editor is a "nested" type', function() {
