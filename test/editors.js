@@ -2113,6 +2113,20 @@ module('Date', {
         same(editor.$month.find('option:last').html(), '12');
     });
 
+    test('render() - with yearStart after yearEnd', function() {
+        var editor = new Editor({
+            schema: {
+                yearStart: 2000,
+                yearEnd: 1990
+            }
+        }).render();
+
+        same(editor.$year.find('option:first').val(), editor.schema.yearStart.toString());
+        same(editor.$year.find('option:last').val(), editor.schema.yearEnd.toString());
+        same(editor.$year.find('option:first').html(), editor.schema.yearStart.toString());
+        same(editor.$year.find('option:last').html(), editor.schema.yearEnd.toString());
+    });
+
     test('getValue() - returns a Date', function() {
         var date = new Date(2010, 5, 5),
             editor = new Editor({ value: date }).render();
