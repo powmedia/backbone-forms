@@ -781,6 +781,11 @@ Form.Field = (function() {
     /**
      * Provides the context for rendering the field
      * Override this to extend the default context
+     *
+     * @param {Object} schema
+     * @param {View} editor
+     *
+     * @return {Object}     Locals passed to the template
      */
     renderingContext: function(schema, editor) {
       return {
@@ -1331,7 +1336,7 @@ Form.editors = (function() {
     },
     
     getValue: function() {
-      return this.$el.prop('checked');
+      return this.$el.prop('checked') || undefined;
     },
     
     setValue: function(value) {

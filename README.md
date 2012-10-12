@@ -892,6 +892,7 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 ##Changelog
 
 ###master
+- Allow use of required validator with checkbox fields (lennym)
 - Make Form.Field template rendering context overrideable (drd)
 - Fix a mismatched button element in the bootstrap.js template file. (there4)
 - Fix AMD editors that must have backbone forms (philfreo)
