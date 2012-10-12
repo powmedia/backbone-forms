@@ -255,6 +255,7 @@ var Form = (function() {
               //Set error on field if there isn't one already
               if (self.fields[key] && !errors[key]) {
                 self.fields[key].setError(val);
+                errors[key] = val;
               }
               
               else {
