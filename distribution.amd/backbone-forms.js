@@ -328,9 +328,16 @@ var Form = (function() {
     
     /**
      * Update field values, referenced by key
-     * @param {Object} data     New values to set
+     * @param {Object|String} key     New values to set, or property to set
+     * @param val                     Value to set
      */
-    setValue: function(data) {
+    setValue: function(prop, val) {
+      var data = {};
+      if (typeof prop === 'string') {
+        data[prop] = val;
+      } else {
+        data = prop;
+      }
       for (var key in data) {
         if (_.has(this.fields, key)) {
           this.fields[key].setValue(data[key]);
@@ -1962,7 +1969,10 @@ Form.editors = (function() {
         return '<option value="'+month+'">' + value + '</option>';
       });
 
-      var yearsOptions = _.map(_.range(schema.yearStart, schema.yearEnd + 1), function(year) {
+      var yearRange = schema.yearStart < schema.yearEnd ? 
+        _.range(schema.yearStart, schema.yearEnd + 1) :
+        _.range(schema.yearStart, schema.yearEnd - 1, -1);
+      var yearsOptions = _.map(yearRange, function(year) {
         return '<option value="'+year+'">' + year + '</option>';
       });
 
