@@ -2332,4 +2332,5 @@ Form.editors = (function() {
   //Exports
   Backbone.Form = Form;
 
+  return Form;
 });

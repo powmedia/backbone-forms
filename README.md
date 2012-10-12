@@ -917,6 +917,7 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 
 
 ###0.10.0
+- update build scripts & package.json for jam packaging (dstendardi)
 - Fields with options, such as Select, should handle 0 as value (torbjorntorbjorn)
 - Update backbone.bootstrap-modal adapter
 - Refactor rendering.
