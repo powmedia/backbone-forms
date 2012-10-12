@@ -892,6 +892,7 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 ##Changelog
 
 ###master
+- Some smaller optimisation and fixes according to jsHint (MarcelloDiSimone)
 - Add Form.setValue(key, val) option for arguments (lennym)
 - Support ordering years in descending order in Date field (lennym)
 - Allow the Number field type to accept decimal values (philfreo)
