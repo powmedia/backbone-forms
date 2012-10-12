@@ -338,8 +338,10 @@ var Form = (function() {
       } else {
         data = prop;
       }
-      for (var key in data) {
-        if (_.has(this.fields, key)) {
+      
+      var key;
+      for (key in this.schema) {
+        if (data[key] !== undefined) {
           this.fields[key].setValue(data[key]);
         }
       }
