@@ -44,7 +44,7 @@ define(['jquery', 'underscore', 'backbone'], function($, _, Backbone) {
     list: '\
       <div class="bbf-list">\
         <ul class="unstyled clearfix">{{items}}</ul>\
-        <button type="button" class="btn bbf-add" data-action="add">Add</div>\
+        <button class="btn bbf-add" data-action="add">Add</button>\
       </div>\
     ',
 
