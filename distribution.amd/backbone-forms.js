@@ -1213,6 +1213,7 @@ Form.editors = (function() {
       editors.Text.prototype.initialize.call(this, options);
 
       this.$el.attr('type', 'number');
+      this.$el.attr('step', 'any');
     },
 
     /**

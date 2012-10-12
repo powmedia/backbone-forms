@@ -892,6 +892,7 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 ##Changelog
 
 ###master
+- Allow the Number field type to accept decimal values (philfreo)
 - Added 'backbone-forms' as a dependency to the AMD wrapper for templates. (seanparmelee)
 - Allow use of required validator with checkbox fields (lennym)
 - Make Form.Field template rendering context overrideable (drd)
