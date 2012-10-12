@@ -28,6 +28,7 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
         <label for="{{id}}">{{title}}</label>\
         <div class="bbf-editor">{{editor}}</div>\
         <div class="bbf-help">{{help}}</div>\
+        <div class="bbf-error">{{error}}</div>\
       </li>\
     ',
 
@@ -36,6 +37,7 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
         <label for="{{id}}">{{title}}</label>\
         <div class="bbf-editor">{{editor}}</div>\
         <div class="bbf-help">{{help}}</div>\
+        <div class="bbf-error">{{error}}</div>\
       </li>\
     ',
 

@@ -34,6 +34,12 @@
     color: #999;
   }
 
+  .bbf-field .bbf-error {
+    margin-left: 25%;
+    width: 74%;
+    color: red;
+  }
+
   .bbf-field.bbf-error .bbf-editor {
     outline: 1px solid red;
   }
