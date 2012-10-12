@@ -920,8 +920,34 @@ module('Select', {
 
     });
     
-    test('TODO: Options as array of objects', function() {
+    test('Options as array of objects', function() {
+        var field = new editor({
+            schema: schema
+        }).render();
 
+        field.setOptions([
+            {
+                val: 0,
+                label: "Option 1"
+            },
+            {
+                val: 1,
+                label: "Option 2"
+            },
+            {
+                val: 2,
+                label: "Option 3"
+            }
+        ]);
+
+        var newOptions = field.$el.find('option');
+
+        equal(newOptions.length, 3);
+        equal(newOptions.first().html(), "Option 1");
+        equal(newOptions.last().html(), "Option 3");
+
+        equal(newOptions.first().val(), "0");
+        equal(newOptions.last().val(), "2");
     });
 
     test('TODO: Options as function that calls back with options', function() {
@@ -1077,6 +1103,39 @@ module('Radio', {
         schema = {
             options: ['Sterling', 'Lana', 'Cyril', 'Cheryl', 'Pam']
         };
+
+    test('Options as array of objects', function() {
+        var field = new editor({
+            schema: {
+                options: [
+                    {
+                        val: 0,
+                        label: "Option 1"
+                    },
+                    {
+                        val: 1,
+                        label: "Option 2"
+                    },
+                    {
+                        val: 2,
+                        label: "Option 3"
+                    }
+                ]
+            }
+        }).render();
+
+        var radios = field.$el.find("input[type=radio]");
+        var labels = field.$el.find("label");
+
+        equal(radios.length, 3);
+        equal(radios.length, labels.length);
+
+        equal(labels.first().html(), "Option 1");
+        equal(labels.last().html(), "Option 3");
+
+        equal(radios.first().val(), "0");
+        equal(radios.last().val(), "2");
+    });
 
     test('Default value', function() {
         var field = new editor({
@@ -1347,6 +1406,39 @@ module('Checkboxes', {
         schema = {
             options: ['Sterling', 'Lana', 'Cyril', 'Cheryl', 'Pam', 'Doctor Krieger']
         };
+
+    test('Options as array of objects', function() {
+        var field = new editor({
+            schema: {
+                options: [
+                    {
+                        val: 0,
+                        label: "Option 1"
+                    },
+                    {
+                        val: 1,
+                        label: "Option 2"
+                    },
+                    {
+                        val: 2,
+                        label: "Option 3"
+                    }
+                ]
+            }
+        }).render();
+
+        var checkboxes = field.$el.find("input[type=checkbox]");
+        var labels = field.$el.find("label");
+
+        equal(checkboxes.length, 3);
+        equal(checkboxes.length, labels.length);
+
+        equal(labels.first().html(), "Option 1");
+        equal(labels.last().html(), "Option 3");
+
+        equal(checkboxes.first().val(), "0");
+        equal(checkboxes.last().val(), "2");
+    });
 
     test('Default value', function() {
         var field = new editor({
