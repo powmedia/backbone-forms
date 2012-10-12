@@ -291,6 +291,12 @@ test("setValue() - updates form field values", function() {
     
     //Check fields that shouldn't have changed
     equal(form.fields.author.getValue(), 'Sterling Archer');
+    
+    //Check callig with key, val as arguments
+    form.setValue('title', 'Danger Zone 3');
+    
+    //Check changed fields
+    equal(form.fields.title.getValue(), 'Danger Zone 3');
 });
 
 test("setValue() - ignore attributes not in form", function() {
