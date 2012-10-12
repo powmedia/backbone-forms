@@ -21,4 +21,5 @@ define(['jquery', 'underscore', 'backbone'], function($, _, Backbone) {
   //Exports
   Backbone.Form = Form;
 
+  return Form;
 });
