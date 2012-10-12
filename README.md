@@ -917,6 +917,7 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 
 
 ###0.10.0
+- Fields with options, such as Select, should handle 0 as value (torbjorntorbjorn)
 - Update backbone.bootstrap-modal adapter
 - Refactor rendering.
     - <legend> tags are now defined in the template.
