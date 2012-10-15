@@ -381,7 +381,6 @@ var Form = (function() {
       Backbone.View.prototype.remove.call(this);
     },
     
-    
     trigger: function(event) {
       if (event === 'focus') {
         this.hasFocus = true;
