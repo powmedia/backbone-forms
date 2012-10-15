@@ -176,6 +176,8 @@ var Form = (function() {
 
         //Render the fields with editors, apart from Hidden fields
         var fieldEl = field.render().el;
+        self.trigger(key + ':render', self, field);
+        self.trigger('field:render', self, field);
         
         field.editor.on('all', function(event) {
           // args = ["change", editor]
@@ -189,15 +191,18 @@ var Form = (function() {
         
         field.editor.on('change', function() {
           this.trigger('change', self);
+          this.trigger('field:change', self, field);
         }, self);
 
         field.editor.on('focus', function() {
           if (this.hasFocus) return;
           this.trigger('focus', this);
+          this.trigger('field:focus', this, field);
         }, self);
         field.editor.on('blur', function() {
           if (!this.hasFocus) return;
           var self = this;
+          self.trigger('field:blur', self, field);
           setTimeout(function() {
             if (_.find(self.fields, function(field) { return field.editor.hasFocus; })) return;
             self.trigger('blur', self);
@@ -207,6 +212,9 @@ var Form = (function() {
         if (itemSchema.type !== 'Hidden') {
           $fieldsContainer.append(fieldEl);
         }
+
+        self.trigger(key + ':show', self, field);
+        self.trigger('field:show', self, field);
       });
 
       $fieldsContainer = $fieldsContainer.children().unwrap();
@@ -399,7 +407,6 @@ var Form = (function() {
 
       Backbone.View.prototype.remove.call(this);
     },
-    
     
     trigger: function(event) {
       if (event === 'focus') {
