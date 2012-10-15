@@ -554,6 +554,40 @@ test("Events bubbling up from editors", function() {
     ok(spy.calledWith(form, form.fields.title.editor));
 });
 
+test("'change'/'focus'/'blur' events generically bubble up from editors", function() {
+    var form = new Form({
+        model: new Post
+    }).render();
+    
+    var spy = this.sinon.spy();
+    
+    form.on('field:change field:focus field:blur', spy);
+    
+    form.fields.title.editor.trigger('focus', form.fields.title.editor);
+    form.fields.title.editor.trigger('change', form.fields.title.editor);
+    form.fields.title.editor.trigger('blur', form.fields.title.editor);
+    
+    ok(spy.callCount == 3);
+    ok(spy.calledWith(form, form.fields.title));
+});
+
+test("field 'render'/'show' events generated when form is rendered", function() {
+    var form = new Form({
+        model: new Post
+    });
+    
+    var spy = this.sinon.spy();
+    
+    form.on('field:render title:show', spy);
+    form.on('all', function() { console.warn(arguments); });
+
+    form.render();
+    
+    // individual field:render's + title:show
+    ok(spy.callCount == _.keys(form.model.schema).length + 1);
+    ok(spy.calledWith(form, form.fields.title));
+});
+
 test('Allows access to field views', function() {
     var form = new Form({
         model: new Post
