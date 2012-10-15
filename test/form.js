@@ -138,6 +138,27 @@ test("'template' option - Specifies template", function() {
   ok(form.$el.hasClass('custom-form'));
 })
 
+test("'htmlErrors' option - Allows use of html in field validation messages", function () {
+    var errorText = "<button>error text</button>";
+    var form = new Form({
+        schema: {
+            title: { validators: [function () { return { type: 'title', message: errorText }; }] }
+        },
+        htmlErrors: false
+    }).render();
+    var $titleError = form.fields.title.$('.bbf-error');
+    form.validate();
+    ok($titleError.html().toLowerCase() === errorText, 'validation message isn\'t rendered as text');
+
+    form = new Form({
+        schema: {
+            title: { validators: [function () { return { type: 'title', message: errorText }; }] }
+        }
+    }).render();
+    form.validate();
+    $titleError = form.fields.title.$('.bbf-error');
+    ok($titleError.html() !== $titleError.text(), 'validation message isn\'t rendered as html');
+});
 
 test("validate() - validates the form and returns an errors object", function () {
   var form = new Form({
