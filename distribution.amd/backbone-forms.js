@@ -163,6 +163,8 @@ var Form = (function() {
 
         //Render the fields with editors, apart from Hidden fields
         var fieldEl = field.render().el;
+        self.trigger(key + ':render', self, field);
+        self.trigger('field:render', self, field);
         
         field.editor.on('all', function(event) {
           // args = ["change", editor]
@@ -176,15 +178,18 @@ var Form = (function() {
         
         field.editor.on('change', function() {
           this.trigger('change', self);
+          this.trigger('field:change', self, field);
         }, self);
 
         field.editor.on('focus', function() {
           if (this.hasFocus) return;
           this.trigger('focus', this);
+          this.trigger('field:focus', this, field);
         }, self);
         field.editor.on('blur', function() {
           if (!this.hasFocus) return;
           var self = this;
+          self.trigger('field:blur', self, field);
           setTimeout(function() {
             if (_.find(self.fields, function(field) { return field.editor.hasFocus; })) return;
             self.trigger('blur', self);
@@ -194,6 +199,9 @@ var Form = (function() {
         if (itemSchema.type != 'Hidden') {
           $fieldsContainer.append(fieldEl);
         }
+
+        self.trigger(key + ':show', self, field);
+        self.trigger('field:show', self, field);
       });
 
       $fieldsContainer = $fieldsContainer.children().unwrap()
@@ -378,11 +386,14 @@ var Form = (function() {
     },
     
     
+    focusRegexp: /\bfocus\b/,
+    blurRegexp: /\bblur\b/,
+    
     trigger: function(event) {
-      if (event == 'focus') {
+      if (event.match(this.focusRegexp)) {
         this.hasFocus = true;
       }
-      else if (event == 'blur') {
+      else if (event.match(this.blurRegexp)) {
         this.hasFocus = false;
       }
       
@@ -764,6 +775,23 @@ Form.Field = (function() {
       }, options.schema);
     },
 
+
+    /**
+     * Provides the context for rendering the field
+     * Override this to extend the default context
+     */
+    renderingContext: function(schema, editor) {
+      return {
+        key: this.key,
+        title: schema.title,
+        id: editor.id,
+        type: schema.type,
+        editor: '<b class="bbf-tmp-editor"></b>',
+        help: '<b class="bbf-tmp-help"></b>'
+      };
+    },
+
+
     /**
      * Renders the field
      */
@@ -791,14 +819,7 @@ Form.Field = (function() {
       var editor = this.editor = helpers.createEditor(schema.type, options);
       
       //Create the element
-      var $field = $(templates[schema.template]({
-        key: this.key,
-        title: schema.title,
-        id: editor.id,
-        type: schema.type,
-        editor: '<b class="bbf-tmp-editor"></b>',
-        help: '<b class="bbf-tmp-help"></b>'
-      }));
+      var $field = $(templates[schema.template](this.renderingContext(schema, editor)));
       
       //Render editor
       $field.find('.bbf-tmp-editor').replaceWith(editor.render().el);
