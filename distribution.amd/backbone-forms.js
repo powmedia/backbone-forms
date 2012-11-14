@@ -1586,7 +1586,7 @@ Form.editors = (function() {
     className: 'bbf-radio',
     
     events: {
-      'click input[type=radio]:not(:checked)': function() {
+      'change input[type=radio]': function() {
         this.trigger('change', this);
       },
       'focus input[type=radio]': function() {
