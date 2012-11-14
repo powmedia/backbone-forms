@@ -105,7 +105,7 @@ Form.Field = (function() {
 
       //Remove <label> if it's not wanted
       if (schema.title === false) {
-        $field.find('label').first().remove();
+        $field.find('label[for="'+editor.id+'"]').first().remove();
       }
       
       //Render editor
