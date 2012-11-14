@@ -130,7 +130,7 @@ See [validation](#validation) for more information.
 
 To update a field after the form has been rendered, use `form.setValue`:
 
-    model.bind('change:name', function(model, name) {
+    model.on('change:name', function(model, name) {
         form.setValue({ name: name });
     });
 
