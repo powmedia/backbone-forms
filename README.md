@@ -892,6 +892,7 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 ##Changelog
 
 ###master
+- Fix change event on radio editor (DominicBoettger)
 - Fix model errors not being return by validate() (mutewinter)
 - Setting value with setValue only from form.schema (okhomenko)
 - Some smaller optimisation and fixes according to jsHint (MarcelloDiSimone)
