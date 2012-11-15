@@ -892,6 +892,7 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 ##Changelog
 
 ###master
+- Don't show <label> if schema title===false (philfreo)
 - Fix change event on radio editor (DominicBoettger)
 - Fix model errors not being return by validate() (mutewinter)
 - Setting value with setValue only from form.schema (okhomenko)

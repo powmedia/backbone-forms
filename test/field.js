@@ -70,6 +70,16 @@ test("'schema.title' option - Defaults to formatted version of 'key' option", fu
     equal($('label', field.el).html(), 'Camel Cased Title');
 });
 
+test("'schema.title' false option - does not render a <label>", function() {
+    var field = new Field({
+        value: 'test',
+        key: 'title',
+        schema: { title: false }
+    }).render();
+
+    equal($('label', field.el).length, 0);
+});
+
 test("'schema.help' option - Specifies help text", function() {
   var field = new Field({
     key: 'title',
