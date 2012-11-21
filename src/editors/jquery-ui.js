@@ -22,6 +22,13 @@
       if (this.value && !_.isDate(this.value)) {
         this.value = new Date(this.value);
       }
+      console.log(this);
+      //set date format
+      if (this['schema'].dateFormat) {
+          this.dateFormat = this['schema'].dateFormat;
+      } else {
+          this.dateFormat = 'dd/mm/yy';
+      }
       
       //Set default date
       if (!this.value) {
@@ -41,7 +48,7 @@
       var input = $('input', $el);
 
       input.datepicker({
-        dateFormat: 'dd/mm/yy',
+        dateFormat: this.dateFormat,
         showButtonPanel: true
       });
       
