@@ -486,7 +486,7 @@ Form.editors = (function() {
 
       //If a function was passed, run it to get the options
       else if (_.isFunction(options)) {
-        options(function(result) {
+        options.call(self, function(result) {
           self.renderOptions(result);
         });
       }
