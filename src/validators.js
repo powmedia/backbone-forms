@@ -92,8 +92,8 @@ Form.validators = (function() {
         message: Form.helpers.createTemplate(options.message, options)
       };
       
-      //Don't check empty values (add a 'required' validator for this)
-      if (value === null || value === undefined || value === '') return;
+      //Don't check null/undefined values
+      if (value === null || value === undefined) return;
       
       if (value != attrs[options.field]) return err;
     }
