@@ -329,7 +329,10 @@ Form.editors = (function() {
   //TEXTAREA
   editors.TextArea = editors.Text.extend({
 
-    tagName: 'textarea'
+    tagName: 'textarea', 
+    initialize: function(options) {  //define initialize so editors.Text initialize function does not get called
+        editors.Base.prototype.initialize.call(this, options);
+    }    
 
   });
   
