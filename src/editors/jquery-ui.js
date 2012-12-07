@@ -22,7 +22,7 @@
       if (this.value && !_.isDate(this.value)) {
         this.value = new Date(this.value);
       }
-      console.log(this);
+      
       //set date format
       if (this['schema'].dateFormat) {
           this.dateFormat = this['schema'].dateFormat;
