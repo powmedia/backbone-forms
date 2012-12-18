@@ -644,6 +644,21 @@ test("Supports picking nested fields from within Objects", function() {
     ok(form.fields['author.name.last'].editor instanceof Form.editors.Text);
 });
 
+test("Supports using custom Field types", function() {
+    var MyField = Field.extend({
+        special: true
+    });
+
+    var MyForm = Form.extend({
+        Field: MyField
+    });
+
+    var form = new MyForm({
+        model: new Post
+    }).render();
+
+    ok(form.fields['title'].special);
+});
 
 
 })(Backbone.Form, Backbone.Form.Field, Backbone.Form.editors);

@@ -229,7 +229,8 @@ var Form = (function() {
         options.value = null;
       }
 
-      return new Form.Field(options);
+      var Field = this.Field || Backbone.Form.Field;
+      return new Field(options);
     },
 
     /**
