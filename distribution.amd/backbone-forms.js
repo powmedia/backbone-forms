@@ -76,6 +76,15 @@ var Form = (function() {
     },
 
     /**
+     * The rendering context for the form template
+     */
+    renderingContext: function() {
+      return {
+        fieldsets: '<b class="bbf-tmp"></b>'
+      };
+    },
+
+    /**
      * Renders the form and all fields
      */
     render: function() {
@@ -84,9 +93,7 @@ var Form = (function() {
           template = Form.templates[options.template];
       
       //Create el from template
-      var $form = $(template({
-        fieldsets: '<b class="bbf-tmp"></b>'
-      }));
+      var $form = $(template(self.renderingContext()));
 
       //Render fieldsets
       var $fieldsetContainer = $('.bbf-tmp', $form);
