@@ -1107,7 +1107,8 @@ Form.editors = (function() {
      * @return {String}
      */
     validate: function() {
-      var $el = this.$el,
+      var self = this,
+          $el = this.$el,
           error = null,
           value = this.getValue(),
           formValues = this.form ? this.form.getValue() : {},
@@ -1117,7 +1118,7 @@ Form.editors = (function() {
       if (validators) {
         //Run through validators until an error is found
         _.every(validators, function(validator) {
-          error = getValidator(validator)(value, formValues);
+          error = getValidator(validator).call(self, value, formValues);
 
           return error ? false : true;
         });
@@ -1481,7 +1482,7 @@ Form.editors = (function() {
 
       //If a function was passed, run it to get the options
       else if (_.isFunction(options)) {
-        options(function(result) {
+        options.call(self, function(result) {
           self.renderOptions(result);
         });
       }
