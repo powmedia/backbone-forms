@@ -62,6 +62,15 @@ var Form = (function() {
     },
 
     /**
+     * The rendering context for the form template
+     */
+    renderingContext: function() {
+      return {
+        fieldsets: '<b class="bbf-tmp"></b>'
+      };
+    },
+
+    /**
      * Renders the form and all fields
      */
     render: function() {
@@ -70,9 +79,7 @@ var Form = (function() {
           template = Form.templates[options.template];
       
       //Create el from template
-      var $form = $(template({
-        fieldsets: '<b class="bbf-tmp"></b>'
-      }));
+      var $form = $(template(self.renderingContext()));
 
       //Render fieldsets
       var $fieldsetContainer = $('.bbf-tmp', $form);
@@ -149,6 +156,8 @@ var Form = (function() {
 
         //Render the fields with editors, apart from Hidden fields
         var fieldEl = field.render().el;
+        self.trigger(key + ':render', self, field);
+        self.trigger('field:render', self, field);
         
         field.editor.on('all', function(event) {
           // args = ["change", editor]
@@ -161,14 +170,17 @@ var Form = (function() {
         }, self);
         
         field.editor.on('change', function() {
-          this.trigger('change', self);
+          this.trigger('change', this);
+          this.trigger('field:change', this, field);
         }, self);
 
         field.editor.on('focus', function() {
+          this.trigger('field:focus', this, field);
           if (this.hasFocus) return;
           this.trigger('focus', this);
         }, self);
         field.editor.on('blur', function() {
+          this.trigger('field:blur', this, field);
           if (!this.hasFocus) return;
           var self = this;
           setTimeout(function() {
@@ -180,6 +192,9 @@ var Form = (function() {
         if (itemSchema.type !== 'Hidden') {
           $fieldsContainer.append(fieldEl);
         }
+
+        self.trigger(key + ':show', self, field);
+        self.trigger('field:show', self, field);
       });
 
       $fieldsContainer = $fieldsContainer.children().unwrap();
@@ -214,7 +229,8 @@ var Form = (function() {
         options.value = null;
       }
 
-      return new Form.Field(options);
+      var Field = this.Field || Backbone.Form.Field;
+      return new Field(options);
     },
 
     /**

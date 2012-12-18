@@ -554,6 +554,61 @@ test("Events bubbling up from editors", function() {
     ok(spy.calledWith(form, form.fields.title.editor));
 });
 
+test("'change'/'focus'/'blur' events generically bubble up from editors", function() {
+    var form = new Form({
+        model: new Post
+    }).render();
+    
+    var spy = this.sinon.spy();
+    
+    form.on('field:change field:focus field:blur', spy);
+    
+    form.fields.title.editor.trigger('focus', form.fields.title.editor);
+    form.fields.title.editor.trigger('change', form.fields.title.editor);
+    form.fields.title.editor.trigger('blur', form.fields.title.editor);
+    
+    ok(spy.callCount == 3);
+    ok(spy.calledWith(form, form.fields.title));
+});
+
+test("'focus'/'blur' events bubble up from editors symmetrically", function() {
+    var form = new Form({
+        model: new Post
+    }).render();
+    // XXX:eo note these must be in the DOM in order to work
+    // since blur is not triggered on un-rooted fragments
+    $('body').append(form.$el);
+    
+    var spy = this.sinon.spy();
+    
+    form.on('field:focus field:blur', spy);
+    
+    form.fields.title.editor.$el.focus();
+    form.fields.content.editor.$el.focus();
+
+    ok(spy.callCount == 3);
+    ok(spy.calledWith(form, form.fields.title));
+    ok(spy.calledWith(form, form.fields.content));
+
+    form.$el.remove();
+});
+
+test("field 'render'/'show' events generated when form is rendered", function() {
+    var form = new Form({
+        model: new Post
+    });
+    
+    var spy = this.sinon.spy();
+    
+    form.on('field:render title:show', spy);
+
+    form.render();
+    
+    // individual field:render's + title:show
+    ok(spy.callCount == _.keys(form.model.schema).length + 1);
+    ok(spy.calledWith(form, form.fields.title));
+});
+
 test('Allows access to field views', function() {
     var form = new Form({
         model: new Post
@@ -589,6 +644,21 @@ test("Supports picking nested fields from within Objects", function() {
     ok(form.fields['author.name.last'].editor instanceof Form.editors.Text);
 });
 
+test("Supports using custom Field types", function() {
+    var MyField = Field.extend({
+        special: true
+    });
+
+    var MyForm = Form.extend({
+        Field: MyField
+    });
+
+    var form = new MyForm({
+        model: new Post
+    }).render();
+
+    ok(form.fields['title'].special);
+});
 
 
 })(Backbone.Form, Backbone.Form.Field, Backbone.Form.editors);
