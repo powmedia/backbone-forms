@@ -143,6 +143,10 @@
         }
         
         if (userInitiated) {
+          if (self.schema.focusOnAdd) {
+            item.editor.focus();
+          }
+
           self.trigger('add', self, item.editor);
           self.trigger('change', self);
         }
