@@ -646,7 +646,7 @@ Form.validators = (function() {
         message: Form.helpers.createTemplate(options.message, options)
       };
       
-      if (value === null || value === undefined || value === '') return err;
+      if (value === null || value === undefined || value === false || value === '') return err;
     };
   };
   
@@ -1351,7 +1351,7 @@ Form.editors = (function() {
     },
     
     getValue: function() {
-      return this.$el.prop('checked') || undefined;
+      return this.$el.prop('checked');
     },
     
     setValue: function(value) {
