@@ -862,7 +862,17 @@ module('Select', {
 
 (function() {
     
-    var editor = editors.Select,
+    var OptionModel = Backbone.Model.extend({
+            toString: function() {
+                return this.get('name');
+            }
+        }),
+    
+        OptionCollection = Backbone.Collection.extend({
+            model: OptionModel
+        }),
+    
+        editor = editors.Select,
         schema = {
             options: ['Sterling', 'Lana', 'Cyril', 'Cheryl', 'Pam']
         };
@@ -916,53 +926,109 @@ module('Select', {
         equal(newOptions.last().html(), 3);
     });
     
-    test('TODO: Options as array of items', function() {
-
+    test('Options as array of items', function() {
+        var field = new editor({
+            schema: {
+                options: ['Matilda', 'Larry']
+            }
+        }).render();
+        
+        var newOptions = field.$el.find('option');
+        
+        equal(newOptions.first().html(), 'Matilda');
+        equal(newOptions.last().html(), 'Larry');
     });
     
     test('Options as array of objects', function() {
         var field = new editor({
-            schema: schema
-        }).render();
-
-        field.setOptions([
-            {
-                val: 0,
-                label: "Option 1"
-            },
-            {
-                val: 1,
-                label: "Option 2"
-            },
-            {
-                val: 2,
-                label: "Option 3"
+            schema: {
+                options: [
+                    { val: 'kid1', label: 'Teo' },
+                    { val: 'kid2', label: 'Lilah' },
+                ]
             }
+        }).render();
+        
+        var newOptions = field.$el.find('option');
+        
+        equal(newOptions.first().val(), 'kid1');
+        equal(newOptions.last().val(), 'kid2');
+        equal(newOptions.first().html(), 'Teo');
+        equal(newOptions.last().html(), 'Lilah');
+    });
+
+    test('Options as function that calls back with options', function() {
+        var field = new editor({
+            schema: {
+                options: function(callback) {
+                    callback(['Melony', 'Frank']);
+                }
+            }
+        }).render();
+        
+        var newOptions = field.$el.find('option');
+        
+        equal(newOptions.first().html(), 'Melony');
+        equal(newOptions.last().html(), 'Frank');
+    });
+
+    test('Options as string of HTML', function() {
+        var field = new editor({
+            schema: {
+                options: '<option>Howard</option><option>Bree</option>'
+            }
+        }).render();
+        
+        var newOptions = field.$el.find('option');
+        
+        equal(newOptions.first().html(), 'Howard');
+        equal(newOptions.last().html(), 'Bree');
+    });
+
+    test('Options as a pre-populated collection', function() {
+        var options = new OptionCollection([
+            { id: 'kid1', name: 'Billy' },
+            { id: 'kid2', name: 'Sarah' }
         ]);
 
+        var field = new editor({
+            schema: {
+                options: options
+            }
+        }).render();
+        
         var newOptions = field.$el.find('option');
-
-        equal(newOptions.length, 3);
-        equal(newOptions.first().html(), "Option 1");
-        equal(newOptions.last().html(), "Option 3");
-
-        equal(newOptions.first().val(), "0");
-        equal(newOptions.last().val(), "2");
-    });
-
-    test('TODO: Options as function that calls back with options', function() {
-
-    });
-
-    test('TODO: Options as string of HTML', function() {
-
-    });
-
-    test('TODO: Options as a pre-populated collection', function() {
-
+        
+        equal(newOptions.first().val(), 'kid1');
+        equal(newOptions.last().val(), 'kid2');
+        equal(newOptions.first().html(), 'Billy');
+        equal(newOptions.last().html(), 'Sarah');
     });
     
-    test('TODO: Options as a new collection (needs to be fetched)', function() {
+    test('Options as a new collection (needs to be fetched)', function() {
+        OptionCollection.prototype.sync = function(method, collection, options) {
+            if (method === 'read') {
+                options.success([
+                    { id: 'kid1', name: 'Barbara' },
+                    { id: 'kid2', name: 'Phil' }
+                ]);
+            }
+        };
+                
+        var options = new OptionCollection();
+
+        var field = new editor({
+            schema: {
+                options: options
+            }
+        }).render();
+        
+        var newOptions = field.$el.find('option');
+        
+        equal(newOptions.first().val(), 'kid1');
+        equal(newOptions.last().val(), 'kid2');
+        equal(newOptions.first().html(), 'Barbara');
+        equal(newOptions.last().html(), 'Phil');
 
     });
     
