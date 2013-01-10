@@ -10,23 +10,23 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
   
   //DEFAULT TEMPLATES
   Form.setTemplates({
-    
+
     //HTML
     form: '\
-      <form class="bbf-form">{{fieldsets}}</form>\
+      <form class="bbf-form">{{{fieldsets}}}</form>\
     ',
-    
+
     fieldset: '\
       <fieldset>\
         <legend>{{legend}}</legend>\
-        <ul>{{fields}}</ul>\
+        <ul>{{{fields}}}</ul>\
       </fieldset>\
     ',
-    
+
     field: '\
       <li class="bbf-field field-{{key}}">\
         <label for="{{id}}">{{title}}</label>\
-        <div class="bbf-editor">{{editor}}</div>\
+        <div class="bbf-editor">{{{editor}}}</div>\
         <div class="bbf-help">{{help}}</div>\
         <div class="bbf-error">{{error}}</div>\
       </li>\
@@ -35,7 +35,7 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
     nestedField: '\
       <li class="bbf-field bbf-nested-field field-{{key}}" title="{{title}}">\
         <label for="{{id}}">{{title}}</label>\
-        <div class="bbf-editor">{{editor}}</div>\
+        <div class="bbf-editor">{{{editor}}}</div>\
         <div class="bbf-help">{{help}}</div>\
         <div class="bbf-error">{{error}}</div>\
       </li>\
@@ -43,7 +43,7 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
 
     list: '\
       <div class="bbf-list">\
-        <ul>{{items}}</ul>\
+        <ul>{{{items}}}</ul>\
         <div class="bbf-actions"><button type="button" data-action="add">Add</div>\
       </div>\
     ',
@@ -51,7 +51,7 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
     listItem: '\
       <li>\
         <button type="button" data-action="remove" class="bbf-remove">&times;</button>\
-        <div class="bbf-editor-container">{{editor}}</div>\
+        <div class="bbf-editor-container">{{{editor}}}</div>\
       </li>\
     ',
 

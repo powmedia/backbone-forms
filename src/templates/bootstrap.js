@@ -1,17 +1,17 @@
-  
+
   //TWITTER BOOTSTRAP TEMPLATES
   //Requires Bootstrap 2.x
   Form.setTemplates({
 
     //HTML
     form: '\
-      <form class="form-horizontal">{{fieldsets}}</form>\
+      <form class="form-horizontal">{{{fieldsets}}}</form>\
     ',
 
     fieldset: '\
       <fieldset>\
         <legend>{{legend}}</legend>\
-        {{fields}}\
+        {{{fields}}}\
       </fieldset>\
     ',
 
@@ -19,7 +19,7 @@
       <div class="control-group field-{{key}}">\
         <label class="control-label" for="{{id}}">{{title}}</label>\
         <div class="controls">\
-          {{editor}}\
+          {{{editor}}}\
           <div class="help-inline">{{error}}</div>\
           <div class="help-block">{{help}}</div>\
         </div>\
@@ -28,7 +28,7 @@
 
     nestedField: '\
       <div class="field-{{key}}">\
-        <div title="{{title}}" class="input-xlarge">{{editor}}\
+        <div title="{{title}}" class="input-xlarge">{{{editor}}}\
           <div class="help-inline">{{error}}</div>\
         </div>\
         <div class="help-block">{{help}}</div>\
@@ -37,14 +37,14 @@
 
     list: '\
       <div class="bbf-list">\
-        <ul class="unstyled clearfix">{{items}}</ul>\
+        <ul class="unstyled clearfix">{{{items}}}</ul>\
         <button class="btn bbf-add" data-action="add">Add</button>\
       </div>\
     ',
 
     listItem: '\
       <li class="clearfix">\
-        <div class="pull-left">{{editor}}</div>\
+        <div class="pull-left">{{{editor}}}</div>\
         <button type="button" class="btn bbf-del" data-action="remove">&times;</button>\
       </li>\
     ',
@@ -74,7 +74,7 @@
       </div>\
     '
   }, {
-  
+
     //CLASSNAMES
     error: 'error' //Set on the field tag when validation fails
   });
