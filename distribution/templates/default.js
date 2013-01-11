@@ -21,17 +21,17 @@
 
     fieldset: '\
       <fieldset>\
-        <legend>{{legend}}</legend>\
+        <legend>{{{legend}}}</legend>\
         <ul>{{{fields}}}</ul>\
       </fieldset>\
     ',
 
     field: '\
       <li class="bbf-field field-{{key}}">\
-        <label for="{{id}}">{{title}}</label>\
+        <label for="{{id}}">{{{title}}}</label>\
         <div class="bbf-editor">{{{editor}}}</div>\
-        <div class="bbf-help">{{help}}</div>\
-        <div class="bbf-error">{{error}}</div>\
+        <div class="bbf-help">{{{help}}}</div>\
+        <div class="bbf-error">{{{error}}}</div>\
       </li>\
     ',
 
@@ -39,8 +39,8 @@
       <li class="bbf-field bbf-nested-field field-{{key}}" title="{{title}}">\
         <label for="{{id}}">{{title}}</label>\
         <div class="bbf-editor">{{{editor}}}</div>\
-        <div class="bbf-help">{{help}}</div>\
-        <div class="bbf-error">{{error}}</div>\
+        <div class="bbf-help">{{{help}}}</div>\
+        <div class="bbf-error">{{{error}}}</div>\
       </li>\
     ',
 
@@ -60,24 +60,24 @@
 
     date: '\
       <div class="bbf-date">\
-        <select data-type="date" class="bbf-date">{{dates}}</select>\
-        <select data-type="month" class="bbf-month">{{months}}</select>\
-        <select data-type="year" class="bbf-year">{{years}}</select>\
+        <select data-type="date" class="bbf-date">{{{dates}}}</select>\
+        <select data-type="month" class="bbf-month">{{{months}}}</select>\
+        <select data-type="year" class="bbf-year">{{{years}}}</select>\
       </div>\
     ',
 
     dateTime: '\
       <div class="bbf-datetime">\
-        <div class="bbf-date-container">{{date}}</div>\
-        <select data-type="hour">{{hours}}</select>\
+        <div class="bbf-date-container">{{{date}}}</div>\
+        <select data-type="hour">{{{hours}}}</select>\
         :\
-        <select data-type="min">{{mins}}</select>\
+        <select data-type="min">{{{mins}}}</select>\
       </div>\
     ',
 
     'list.Modal': '\
       <div class="bbf-list-modal">\
-        {{summary}}\
+        {{{summary}}}\
       </div>\
     '
   }, {

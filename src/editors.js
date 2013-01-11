@@ -664,7 +664,7 @@ Form.editors = (function() {
       var escapedId = _.escape(this.id);
 
       _.each(array, function(option, index) {
-        var itemHtml = '<li';
+        var itemHtml = '<li>';
         if (_.isObject(option)) {
           var val = (option.val || option.val === 0) ? option.val : '';
           itemHtml += ('<input type="radio" name="'+escapedId+'" value="'+_.escape(val)+'" id="'+escapedId+'-'+index+'" />');

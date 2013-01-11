@@ -10,18 +10,18 @@
 
     fieldset: '\
       <fieldset>\
-        <legend>{{legend}}</legend>\
+        <legend>{{{legend}}}</legend>\
         {{{fields}}}\
       </fieldset>\
     ',
 
     field: '\
       <div class="control-group field-{{key}}">\
-        <label class="control-label" for="{{id}}">{{title}}</label>\
+        <label class="control-label" for="{{id}}">{{{title}}}</label>\
         <div class="controls">\
           {{{editor}}}\
-          <div class="help-inline">{{error}}</div>\
-          <div class="help-block">{{help}}</div>\
+          <div class="help-inline">{{{error}}}</div>\
+          <div class="help-block">{{{help}}}</div>\
         </div>\
       </div>\
     ',
@@ -29,9 +29,9 @@
     nestedField: '\
       <div class="field-{{key}}">\
         <div title="{{title}}" class="input-xlarge">{{{editor}}}\
-          <div class="help-inline">{{error}}</div>\
+          <div class="help-inline">{{{error}}}</div>\
         </div>\
-        <div class="help-block">{{help}}</div>\
+        <div class="help-block">{{{help}}}</div>\
       </div>\
     ',
 
@@ -51,9 +51,9 @@
 
     date: '\
       <div class="bbf-date">\
-        <select data-type="date" class="bbf-date">{{dates}}</select>\
-        <select data-type="month" class="bbf-month">{{months}}</select>\
-        <select data-type="year" class="bbf-year">{{years}}</select>\
+        <select data-type="date" class="bbf-date">{{{dates}}}</select>\
+        <select data-type="month" class="bbf-month">{{{months}}}</select>\
+        <select data-type="year" class="bbf-year">{{{years}}}</select>\
       </div>\
     ',
 
@@ -61,16 +61,16 @@
       <div class="bbf-datetime">\
         <p>{{date}}</p>\
         <p>\
-          <select data-type="hour" style="width: 4em">{{hours}}</select>\
+          <select data-type="hour" style="width: 4em">{{{hours}}}</select>\
           :\
-          <select data-type="min" style="width: 4em">{{mins}}</select>\
+          <select data-type="min" style="width: 4em">{{{mins}}}</select>\
         </p>\
       </div>\
     ',
 
     'list.Modal': '\
       <div class="bbf-list-modal">\
-        {{summary}}\
+        {{{summary}}}\
       </div>\
     '
   }, {
