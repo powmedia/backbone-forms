@@ -464,8 +464,8 @@ Form.helpers = (function() {
       //Set custom template settings
       //Added escaping regex and changed interpolating to match mustache templates
       //Escaping regex is added for prevention of XSS attacks of user-generated input from Backbone Model
-      _.templateSettings.escape = /(?<!\{)\{{2}([^{]+?)\}{2}/g;
-      _.templateSettings.interpolate = /\{{3}([\s\S]+?)\}{3}/g;
+      _.templateSettings.escape = /\{{2}([^{}]+?)\}{2}(?!\})/g;
+      _.templateSettings.interpolate = /\{{3}([^{}]+?)\}{3}(?!\})/g;
 
       var template = _.template(str);
 
