@@ -27,8 +27,8 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
       <li class="bbf-field field-{{key}}">\
         <label for="{{id}}">{{{title}}}</label>\
         <div class="bbf-editor">{{{editor}}}</div>\
-        <div class="bbf-help">{{help}}</div>\
-        <div class="bbf-error">{{error}}</div>\
+        <div class="bbf-help">{{{help}}}</div>\
+        <div class="bbf-error">{{{error}}}</div>\
       </li>\
     ',
 
@@ -36,8 +36,8 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
       <li class="bbf-field bbf-nested-field field-{{key}}" title="{{title}}">\
         <label for="{{id}}">{{title}}</label>\
         <div class="bbf-editor">{{{editor}}}</div>\
-        <div class="bbf-help">{{help}}</div>\
-        <div class="bbf-error">{{error}}</div>\
+        <div class="bbf-help">{{{help}}}</div>\
+        <div class="bbf-error">{{{error}}}</div>\
       </li>\
     ',
 

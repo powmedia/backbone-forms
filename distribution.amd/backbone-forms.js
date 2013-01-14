@@ -752,7 +752,7 @@ Form.Field = (function() {
      */
     /**
      * Creates a new field
-     * 
+     *
      * @param {Object} options
      * @param {Object} [options.schema]     Field schema. Defaults to { type: 'Text' }
      * @param {Model} [options.model]       Model the field relates to. Required if options.data is not set.
@@ -772,7 +772,7 @@ Form.Field = (function() {
 
       //Turn schema shorthand notation (e.g. 'Text') into schema object
       if (_.isString(options.schema)) options.schema = { type: options.schema };
-      
+
       //Set schema defaults
       this.schema = _.extend({
         type: 'Text',
@@ -829,7 +829,7 @@ Form.Field = (function() {
 
       //Decide on the editor to use
       var editor = this.editor = helpers.createEditor(schema.type, options);
-      
+
       //Create the element
       var $field = $(templates[schema.template](this.renderingContext(schema, editor)));
 
@@ -837,7 +837,7 @@ Form.Field = (function() {
       if (schema.title === false) {
         $field.find('label[for="'+editor.id+'"]').first().remove();
       }
-      
+
       //Render editor
       $field.find('.bbf-tmp-editor').replaceWith(editor.render().el);
 
@@ -852,10 +852,10 @@ Form.Field = (function() {
 
       //Add custom CSS class names
       if (this.schema.fieldClass) $field.addClass(this.schema.fieldClass);
-      
+
       //Add custom attributes
       if (this.schema.fieldAttrs) $field.attr(this.schema.fieldAttrs);
-      
+
       //Replace the generated wrapper tag
       this.setElement($field);
 
@@ -883,7 +883,7 @@ Form.Field = (function() {
 
       return id;
     },
-    
+
     /**
      * Check the validity of the field
      *
@@ -893,14 +893,14 @@ Form.Field = (function() {
       var error = this.editor.validate();
 
       if (error) {
-        this.setError(error.message);
+        this.setError( _.escape(error.message));
       } else {
         this.clearError();
       }
 
       return error;
     },
-    
+
     /**
      * Set the field into an error state, adding the error class and setting the error message
      *
@@ -909,34 +909,36 @@ Form.Field = (function() {
     setError: function(msg) {
       //Object and NestedModel types set their own errors internally
       if (this.editor.hasNestedForm) return;
-      
+
       var errClass = Form.classNames.error;
 
       this.$el.addClass(errClass);
-      
+
+      msg = _.escape( msg );
+
       if (this.$error) {
         this.$error.html(msg);
       } else if (this.$help) {
         this.$help.html(msg);
       }
     },
-    
+
     /**
      * Clear the error state and reset the help message
      */
     clearError: function() {
       var errClass = Form.classNames.error;
-       
+
       this.$el.removeClass(errClass);
-      
+
       // some fields (e.g., Hidden), may not have a help el
       if (this.$error) {
         this.$error.empty();
       } else if (this.$help) {
         this.$help.empty();
-      
+
         //Reset help text if available
-        var helpMsg = this.schema.help;
+        var helpMsg = _.escape(this.schema.help);
         if (helpMsg) this.$help.html(helpMsg);
       }
     },
@@ -956,7 +958,7 @@ Form.Field = (function() {
     getValue: function() {
       return this.editor.getValue();
     },
-    
+
     /**
      * Set/change the value of the editor
      *
@@ -965,11 +967,11 @@ Form.Field = (function() {
     setValue: function(value) {
       this.editor.setValue(value);
     },
-    
+
     focus: function() {
       this.editor.focus();
     },
-    
+
     blur: function() {
       this.editor.blur();
     },
@@ -2281,8 +2283,8 @@ Form.editors = (function() {
       <li class="bbf-field field-{{key}}">\
         <label for="{{id}}">{{{title}}}</label>\
         <div class="bbf-editor">{{{editor}}}</div>\
-        <div class="bbf-help">{{help}}</div>\
-        <div class="bbf-error">{{error}}</div>\
+        <div class="bbf-help">{{{help}}}</div>\
+        <div class="bbf-error">{{{error}}}</div>\
       </li>\
     ',
 
@@ -2290,8 +2292,8 @@ Form.editors = (function() {
       <li class="bbf-field bbf-nested-field field-{{key}}" title="{{title}}">\
         <label for="{{id}}">{{title}}</label>\
         <div class="bbf-editor">{{{editor}}}</div>\
-        <div class="bbf-help">{{help}}</div>\
-        <div class="bbf-error">{{error}}</div>\
+        <div class="bbf-help">{{{help}}}</div>\
+        <div class="bbf-error">{{{error}}}</div>\
       </li>\
     ',
 

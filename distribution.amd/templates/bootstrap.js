@@ -29,8 +29,8 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
         <label class="control-label" for="{{id}}">{{{title}}}</label>\
         <div class="controls">\
           {{{editor}}}\
-          <div class="help-inline">{{error}}</div>\
-          <div class="help-block">{{help}}</div>\
+          <div class="help-inline">{{{error}}}</div>\
+          <div class="help-block">{{{help}}}</div>\
         </div>\
       </div>\
     ',
@@ -38,9 +38,9 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
     nestedField: '\
       <div class="field-{{key}}">\
         <div title="{{title}}" class="input-xlarge">{{{editor}}}\
-          <div class="help-inline">{{error}}</div>\
+          <div class="help-inline">{{{error}}}</div>\
         </div>\
-        <div class="help-block">{{help}}</div>\
+        <div class="help-block">{{{help}}}</div>\
       </div>\
     ',
 
