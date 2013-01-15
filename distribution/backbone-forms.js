@@ -490,7 +490,7 @@ Form.helpers = (function() {
    * @return {Template|String}   Compiled template or the evaluated string
    */
   helpers.createTemplate = function(str, context) {
-    var template = helpers.compileTemplate(str);
+    var template = helpers.compileTemplate($.trim(str));
     
     if (!context) {
       return template;
