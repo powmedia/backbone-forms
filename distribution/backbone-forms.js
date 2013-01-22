@@ -349,10 +349,9 @@ var Form = (function() {
       var verifyKey=Form.helpers.verifyKey;
       if (typeof prop === 'string') {
         if (verifyKey(this.schema,prop)) {
-          console.log("setValue (1):"+prop+"=>"+val);
           this.fields[prop].setValue(val);
         }      
-      } else {
+      } else if (_.isObject(prop)) {
         var key;
         for (key in prop) {
           if (verifyKey(this.schema,key)) {
