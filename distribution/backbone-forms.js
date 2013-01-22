@@ -346,17 +346,18 @@ var Form = (function() {
      * @param val                     Value to set
      */
     setValue: function(prop, val) {
-      var data = {};
+      var verifyKey=Form.helpers.verifyKey;
       if (typeof prop === 'string') {
-        data[prop] = val;
+        if (verifyKey(this.schema,prop)) {
+          console.log("setValue (1):"+prop+"=>"+val);
+          this.fields[prop].setValue(val);
+        }      
       } else {
-        data = prop;
-      }
-      
-      var key;
-      for (key in this.schema) {
-        if (data[key] !== undefined) {
-          this.fields[key].setValue(data[key]);
+        var key;
+        for (key in prop) {
+          if (verifyKey(this.schema,key)) {
+            this.fields[key].setValue(prop[key]);            
+          }
         }
       }
     },
@@ -439,6 +440,37 @@ Form.helpers = (function() {
       result = result[fields[i]];
     }
     return result;
+  };
+
+
+  /**
+   * Used by setValue to enable setting field value for nested schema
+   * Verify validity of dot-notation key for nested models e.g. 'user.name.first'
+   *
+   * @param {Object} obj    Schema
+   * @param {String} key   Field key e.g. 'user.name.first'
+   * @return {Boolean}
+   * @api private
+   */
+  helpers.verifyKey = function(obj, key) {
+    var r=/\./, fields, path;
+    if (r.test(key)) {
+      path = key.replace(/\./g, '.subSchema.');
+      fields = path.split(".");
+    }
+    else{
+      fields = [key];
+    }
+    var result = obj;
+    for (var i = 0, n = fields.length; i < n; i++) {
+      if (_.has(result, fields[i])) {
+        result = result[fields[i]];
+      }
+      else {
+        return false;
+      }
+    }
+    return true;
   };
   
   /**
