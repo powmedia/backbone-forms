@@ -60,7 +60,7 @@
          <span class="add-on" for="{{id}}">{{title}}</span>{{editor}}\
          <div class="help-inline">{{error}}</div>\
         </div>\
-      <div class="help-block">{{help}}</div>\
+		<div class="help-block">{{help}}</div>\
      </div>\
     ',
 
