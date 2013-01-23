@@ -893,7 +893,7 @@ Form.Field = (function() {
       var error = this.editor.validate();
 
       if (error) {
-        this.setError( _.escape(error.message));
+        this.setError( error.message );
       } else {
         this.clearError();
       }
@@ -914,12 +914,10 @@ Form.Field = (function() {
 
       this.$el.addClass(errClass);
 
-      msg = _.escape( msg );
-
       if (this.$error) {
-        this.$error.html(msg);
+        this.$error.text(msg);
       } else if (this.$help) {
-        this.$help.html(msg);
+        this.$help.text(msg);
       }
     },
 
@@ -938,8 +936,7 @@ Form.Field = (function() {
         this.$help.empty();
 
         //Reset help text if available
-        var helpMsg = _.escape(this.schema.help);
-        if (helpMsg) this.$help.html(helpMsg);
+        if (helpMsg) this.$help.text(helpMsg);
       }
     },
 
