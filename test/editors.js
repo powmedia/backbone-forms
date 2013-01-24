@@ -639,7 +639,7 @@ module('Checkbox', {
     test('Default value', function() {
         var field = new editor().render();
 
-        deepEqual(field.getValue(), undefined);
+        deepEqual(field.getValue(), false);
     });
 
     test('Custom value', function() {
@@ -666,7 +666,7 @@ module('Checkbox', {
         deepEqual($(field.el).attr('type'), 'checkbox');
     });
     
-    test("getValue() - returns true if checked, or undefined", function() {
+    test("getValue() - returns boolean", function() {
         var field1 = new editor({
             value: true
         }).render();
@@ -676,7 +676,7 @@ module('Checkbox', {
         }).render();
         
         deepEqual(field1.getValue(), true);
-        deepEqual(field2.getValue(), undefined);
+        deepEqual(field2.getValue(), false);
     });
     
     test("setValue() - updates the input value", function() {

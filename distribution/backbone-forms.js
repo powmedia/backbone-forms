@@ -490,7 +490,7 @@ Form.helpers = (function() {
    * @return {Template|String}   Compiled template or the evaluated string
    */
   helpers.createTemplate = function(str, context) {
-    var template = helpers.compileTemplate(str);
+    var template = helpers.compileTemplate($.trim(str));
     
     if (!context) {
       return template;
@@ -659,7 +659,7 @@ Form.validators = (function() {
         message: Form.helpers.createTemplate(options.message, options)
       };
       
-      if (value === null || value === undefined || value === '') return err;
+      if (value === null || value === undefined || value === false || value === '') return err;
     };
   };
   
@@ -1364,7 +1364,7 @@ Form.editors = (function() {
     },
     
     getValue: function() {
-      return this.$el.prop('checked') || undefined;
+      return this.$el.prop('checked');
     },
     
     setValue: function(value) {
