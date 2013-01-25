@@ -44,7 +44,8 @@ var Form = (function() {
       options = _.extend({
         template: 'form',
         fieldsetTemplate: 'fieldset',
-        fieldTemplate: 'field'
+        fieldTemplate: 'field',
+        htmlErrors: true
       }, options);
 
       //Determine fieldsets

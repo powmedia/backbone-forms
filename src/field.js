@@ -185,7 +185,7 @@ Form.Field = (function() {
       this.$el.addClass(errClass);
       
       if (this.$error) {
-        this.$error.html(msg);
+        (this.form.options.htmlErrors ? this.$error.html : this.$error.text)(msg);
       } else if (this.$help) {
         this.$help.html(msg);
       }
