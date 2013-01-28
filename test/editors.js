@@ -958,8 +958,40 @@ module('Select', {
 
     });
 
-    test('TODO: Options as a pre-populated collection', function() {
+    test('Options as a pre-populated collection', function() {
+        var field = new editor({
+            schema: schema
+        }).render();
 
+        var TestModel = Backbone.Model.extend({
+            toString: function() {
+                return this.get('label');
+            }
+        });
+
+        field.setOptions(new Backbone.Collection([
+            new TestModel({
+                id: 1,
+                label: "Option 1"
+            }),
+            new TestModel({
+                id: 2,
+                label: "Option 2"
+            }),
+            new TestModel({
+                id: 3,
+                label: "Option 3"
+            })
+        ]));
+
+        var newOptions = field.$el.find('option');
+
+        equal(newOptions.length, 3);
+        equal(newOptions.first().html(), "Option 1");
+        equal(newOptions.last().html(), "Option 3");
+
+        equal(newOptions.first().val(), "1");
+        equal(newOptions.last().val(), "3");
     });
     
     test('TODO: Options as a new collection (needs to be fetched)', function() {
