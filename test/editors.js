@@ -1043,6 +1043,22 @@ module('Select', {
         equal(field.getValue(), 'Lana');
         equal($(field.el).val(), 'Lana');
     });
+
+    test("setValue() - updates the input value with Backbone.Collection", function() {
+        var field = new editor({
+            value: 'Pam',
+            schema: schema
+        }).render();
+        
+        var model1 = new Backbone.Model({id: 1});
+        var model2 = new Backbone.Model({id: 2});
+
+        field.setOptions(new Backbone.Collection([model1, model2]))
+        field.setValue(new Backbone.Collection([model1]));
+        
+        equal(field.getValue(), 1);
+        equal($(field.el).val(), 1);
+    });
     
     test("focus() - gives focus to editor and its selectbox", function() {
         var field = window.form.fields.select.editor;
