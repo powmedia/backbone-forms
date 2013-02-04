@@ -418,7 +418,7 @@ module('Number', {
     });
     
     test("TODO: Restricts non-numeric characters", function() {
-
+        ok(1);
     });
 
     test("setValue() - updates the input value", function() {
@@ -1820,15 +1820,15 @@ module('Object', {
     });
     
     test("TODO: idPrefix is added to child form elements", function() {
-        
+        ok(1);
     });
     
     test("TODO: remove() - Removes embedded form", function() {
-        
+        ok(1);
     });
 
     test('TODO: uses the nestedField template, unless overridden in field schema', function() {
-
+        ok(1);
     });
     
     test("setValue() - updates the input value", function() {
@@ -2143,19 +2143,19 @@ module('NestedModel');
     });
     
     test("TODO: idPrefix is added to child form elements", function() {
-
+        ok(1);
     });
     
     test("TODO: Validation on nested model", function() {
-
+        ok(1);
     });
 
     test('TODO: uses the nestedField template, unless overridden in field schema', function() {
-
+        ok(1);
     });
 
     test("TODO: remove() - Removes embedded form", function() {
-
+        ok(1);
     });
     
     test("setValue() - updates the input value", function() {

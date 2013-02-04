@@ -223,6 +223,7 @@ module('triggerCancellableEvent');
         var view = new Backbone.View();
         
         view.bind('edit', function(next) {
+            ok(true);
             //Don't continue
         });
         
