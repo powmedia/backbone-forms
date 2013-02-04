@@ -892,6 +892,8 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 ##Changelog
 
 ###master
+- Pass editor instance as second parameter to Select options function
+- Fix for jQuery 1.9
 - Don't show <label> if schema title===false (philfreo)
 - Fix change event on radio editor (DominicBoettger)
 - Fix model errors not being return by validate() (mutewinter)
