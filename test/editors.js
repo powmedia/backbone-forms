@@ -1056,10 +1056,10 @@ module('Select', {
         var model2 = new Backbone.Model({id: 2});
 
         field.setOptions(new Backbone.Collection([model1, model2]))
-        field.setValue(new Backbone.Collection([model1]));
+        field.setValue(new Backbone.Collection([model2]));
         
-        equal(field.getValue(), 1);
-        equal($(field.el).val(), 1);
+        equal(field.getValue(), 2);
+        equal($(field.el).val(), 2);
     });
     
     test("focus() - gives focus to editor and its selectbox", function() {

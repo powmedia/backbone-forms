@@ -534,6 +534,9 @@ Form.editors = (function() {
     },
     
     setValue: function(value) {
+      if (value instanceof Backbone.Collection) {
+        value = value.pluck('id');
+      }
       this.$el.val(value);
     },
     
