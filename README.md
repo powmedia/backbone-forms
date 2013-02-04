@@ -378,7 +378,7 @@ Creates and populates a `<select>` element.
     };
     
     var schema = {
-        users: { type: 'Select', options: function(callback) {
+        users: { type: 'Select', options: function(callback, editor) {
             users = db.getUsers();
             
             callback(users);

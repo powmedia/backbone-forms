@@ -488,7 +488,7 @@ Form.editors = (function() {
       else if (_.isFunction(options)) {
         options(function(result) {
           self.renderOptions(result);
-        });
+        }, self);
       }
 
       //Otherwise, ready to go straight to renderOptions

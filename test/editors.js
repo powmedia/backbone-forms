@@ -960,7 +960,9 @@ module('Select', {
     test('Options as function that calls back with options', function() {
         var field = new editor({
             schema: {
-                options: function(callback) {
+                options: function(callback, thisEditor) {
+                    ok(thisEditor instanceof editor);
+                    ok(thisEditor instanceof editors.Base);
                     callback(['Melony', 'Frank']);
                 }
             }
