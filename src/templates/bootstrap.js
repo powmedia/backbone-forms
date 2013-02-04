@@ -1,4 +1,3 @@
-  
   //TWITTER BOOTSTRAP TEMPLATES
   //Requires Bootstrap 2.x
   Form.setTemplates({
@@ -28,11 +27,12 @@
 
     nestedField: '\
       <div class="field-{{key}}">\
-        <div title="{{title}}" class="input-xlarge">{{editor}}\
-          <div class="help-inline">{{error}}</div>\
+        <div title="{{title}}" class="input-prepend">\
+         <span class="add-on" for="{{id}}">{{title}}</span>{{editor}}\
+         <div class="help-inline">{{error}}</div>\
         </div>\
-        <div class="help-block">{{help}}</div>\
-      </div>\
+		<div class="help-block">{{help}}</div>\
+     </div>\
     ',
 
     list: '\
