@@ -88,7 +88,7 @@ module('Base');
       key: 'title'
     }).render();
     
-    var err = editor.commit();
+    var err = editor.commit({ validate: true });
     
     equal(err, 'ERROR');
   });
@@ -1010,10 +1010,10 @@ module('Select', {
     test('Options as a new collection (needs to be fetched)', function() {
         OptionCollection.prototype.sync = function(method, collection, options) {
             if (method === 'read') {
-                options.success([
+                options.success(collection, [
                     { id: 'kid1', name: 'Barbara' },
                     { id: 'kid2', name: 'Phil' }
-                ]);
+                ], options);
             }
         };
                 
