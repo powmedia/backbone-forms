@@ -71,7 +71,7 @@ A flexible, customisable form framework for Backbone.JS applications.
 ##Installation
 
 Dependencies:
-- [Backbone 0.9.2](http://documentcloud.github.com/backbone/)
+- [Backbone 0.9.10](http://documentcloud.github.com/backbone/)
 
 
 Include backbone-forms.js and backbone-forms.css:
