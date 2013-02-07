@@ -92,15 +92,14 @@ Form.editors = (function() {
      *
      * @return {Mixed} error
      */
-    commit: function() {
+    commit: function(options) {
       var error = this.validate();
       if (error) return error;
       
-      this.model.set(this.key, this.getValue(), {
-        error: function(model, e) {
-          error = e;
-        }
+      this.listenTo(this.model, 'invalid', function(model, e) {
+        error = e;
       });
+      this.model.set(this.key, this.getValue(), options);
       
       if (error) return error;
     },
