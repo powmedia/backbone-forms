@@ -126,7 +126,11 @@ See [schema definition](#schema-definition) for more information.
 Once the user is done with the form, call `form.commit()` to apply the updated values to the model. If there are validation errors they will be returned. 
 See [validation](#validation) for more information.
 
-    var errors = form.commit();
+    var errors = form.commit(); // runs schema validation
+
+or 
+
+    var errors = form.commit({ validate: true }); // runs schema and model validation
 
 To update a field after the form has been rendered, use `form.setValue`:
 
@@ -578,7 +582,10 @@ This is a special editor which is in **a separate file and must be included**:
 <a name="validation"/>
 ##Validation
 
-There are 2 levels of validation: schema validators and the regular built-in Backbone model validation. Backbone Forms will run both when either `form.commit()` or `form.validate()` are called.
+There are 2 levels of validation: schema validators and the regular
+built-in Backbone model validation. Backbone Forms will run both when
+`form.validate()` is called. Calling `form.commit()` will run schema
+level validation by default, and can also run model validation if `{ validate: true }` is passed.
 
 
 ###Schema validation
