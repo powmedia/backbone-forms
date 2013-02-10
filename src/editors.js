@@ -22,7 +22,7 @@ Form.editors = (function() {
   editors.Base = Backbone.View.extend({
 
     defaultValue: null,
-    
+
     hasFocus: false,
 
     initialize: function(options) {
@@ -38,20 +38,20 @@ Form.editors = (function() {
       else if (options.value) {
         this.value = options.value;
       }
-      
+
       if (this.value === undefined) this.value = this.defaultValue;
 
       this.key = options.key;
       this.form = options.form;
       this.schema = options.schema || {};
       this.validators = options.validators || this.schema.validators;
-      
+
       //Main attributes
       this.$el.attr('name', this.getName());
-      
+
       //Add custom CSS class names
       if (this.schema.editorClass) this.$el.addClass(this.schema.editorClass);
-      
+
       //Add custom attributes
       if (this.schema.editorAttrs) this.$el.attr(this.schema.editorAttrs);
     },
@@ -59,15 +59,15 @@ Form.editors = (function() {
     getValue: function() {
       throw 'Not implemented. Extend and override this method.';
     },
-    
+
     setValue: function() {
       throw 'Not implemented. Extend and override this method.';
     },
-    
+
     focus: function() {
       throw 'Not implemented. Extend and override this method.';
     },
-    
+
     blur: function() {
       throw 'Not implemented. Extend and override this method.';
     },
@@ -76,7 +76,7 @@ Form.editors = (function() {
      * Get the value for the form input 'name' attribute
      *
      * @return {String}
-     * 
+     *
      * @api private
      */
     getName: function() {
@@ -85,7 +85,7 @@ Form.editors = (function() {
       //Replace periods with underscores (e.g. for when using paths)
       return key.replace(/\./g, '_');
     },
-    
+
     /**
      * Update the model with the current value
      * NOTE: The method is defined on the editors so that they can be used independently of fields
@@ -95,20 +95,20 @@ Form.editors = (function() {
     commit: function() {
       var error = this.validate();
       if (error) return error;
-      
+
       this.model.set(this.key, this.getValue(), {
         error: function(model, e) {
           error = e;
         }
       });
-      
+
       if (error) return error;
     },
-    
+
     /**
      * Check validity
      * NOTE: The method is defined on the editors so that they can be used independently of fields
-     * 
+     *
      * @return {String}
      */
     validate: function() {
@@ -130,8 +130,8 @@ Form.editors = (function() {
 
       return error;
     },
-    
-    
+
+
     trigger: function(event) {
       if (event === 'focus') {
         this.hasFocus = true;
@@ -139,7 +139,7 @@ Form.editors = (function() {
       else if (event === 'blur') {
         this.hasFocus = false;
       }
-      
+
       return Backbone.View.prototype.trigger.apply(this, arguments);
     }
   });
@@ -149,11 +149,11 @@ Form.editors = (function() {
   editors.Text = editors.Base.extend({
 
     tagName: 'input',
-    
+
     defaultValue: '',
-    
+
     previousValue: '',
-    
+
     events: {
       'keyup':    'determineChange',
       'keypress': function(event) {
@@ -172,15 +172,15 @@ Form.editors = (function() {
         this.trigger('blur', this);
       }
     },
-    
+
     initialize: function(options) {
       editors.Base.prototype.initialize.call(this, options);
-      
+
       var schema = this.schema;
-      
+
       //Allow customising text type (email, phone etc.) for HTML5 browsers
       var type = 'text';
-      
+
       if (schema && schema.editorAttrs && schema.editorAttrs.type) type = schema.editorAttrs.type;
       if (schema && schema.dataType) type = schema.dataType;
 
@@ -195,14 +195,14 @@ Form.editors = (function() {
 
       return this;
     },
-    
+
     determineChange: function(event) {
       var currentValue = this.$el.val();
       var changed = (currentValue !== this.previousValue);
-      
+
       if (changed) {
         this.previousValue = currentValue;
-        
+
         this.trigger('change', this);
       }
     },
@@ -214,27 +214,27 @@ Form.editors = (function() {
     getValue: function() {
       return this.$el.val();
     },
-    
+
     /**
      * Sets the value of the form element
      * @param {String}
      */
-    setValue: function(value) { 
+    setValue: function(value) {
       this.$el.val(value);
     },
-    
+
     focus: function() {
       if (this.hasFocus) return;
 
       this.$el.focus();
     },
-    
+
     blur: function() {
       if (!this.hasFocus) return;
 
       this.$el.blur();
     },
-    
+
     select: function() {
       this.$el.select();
     }
@@ -271,13 +271,13 @@ Form.editors = (function() {
               self.determineChange();
             }, 0);
           };
-          
+
       //Allow backspace
       if (event.charCode === 0) {
         delayedDetermineChange();
         return;
       }
-      
+
       //Get the whole new value so that we can prevent things like double decimals points etc.
       var newVal = this.$el.val() + String.fromCharCode(event.charCode);
 
@@ -291,12 +291,12 @@ Form.editors = (function() {
       }
     },
 
-    getValue: function() {        
+    getValue: function() {
       var value = this.$el.val();
-      
+
       return value === "" ? null : parseFloat(value, 10);
     },
-    
+
     setValue: function(value) {
       value = (function() {
         if (_.isNumber(value)) return value;
@@ -307,7 +307,7 @@ Form.editors = (function() {
       })();
 
       if (_.isNaN(value)) value = null;
-      
+
       editors.Text.prototype.setValue.call(this, value);
     }
 
@@ -332,15 +332,15 @@ Form.editors = (function() {
     tagName: 'textarea'
 
   });
-  
-  
+
+
   //CHECKBOX
   editors.Checkbox = editors.Base.extend({
-      
+
     defaultValue: false,
-    
+
     tagName: 'input',
-    
+
     events: {
       'click':  function(event) {
         this.trigger('change', this);
@@ -352,10 +352,10 @@ Form.editors = (function() {
         this.trigger('blur', this);
       }
     },
-    
+
     initialize: function(options) {
       editors.Base.prototype.initialize.call(this, options);
-      
+
       this.$el.attr('type', 'checkbox');
     },
 
@@ -367,35 +367,35 @@ Form.editors = (function() {
 
       return this;
     },
-    
+
     getValue: function() {
       return this.$el.prop('checked');
     },
-    
+
     setValue: function(value) {
       if (value) {
         this.$el.prop('checked', true);
       }
     },
-    
+
     focus: function() {
       if (this.hasFocus) return;
 
       this.$el.focus();
     },
-    
+
     blur: function() {
       if (!this.hasFocus) return;
 
       this.$el.blur();
     }
-    
+
   });
-  
-  
+
+
   //HIDDEN
   editors.Hidden = editors.Base.extend({
-    
+
     defaultValue: '',
 
     initialize: function(options) {
@@ -403,21 +403,21 @@ Form.editors = (function() {
 
       this.$el.attr('type', 'hidden');
     },
-    
+
     getValue: function() {
       return this.value;
     },
-    
+
     setValue: function(value) {
       this.value = value;
     },
-    
+
     focus: function() {
-      
+
     },
-    
+
     blur: function() {
-      
+
     }
 
   });
@@ -425,7 +425,7 @@ Form.editors = (function() {
 
   /**
    * SELECT
-   * 
+   *
    * Renders a <select> with given options
    *
    * Requires an 'options' value on the schema.
@@ -435,7 +435,7 @@ Form.editors = (function() {
   editors.Select = editors.Base.extend({
 
     tagName: 'select',
-    
+
     events: {
       'change': function(event) {
         this.trigger('change', this);
@@ -532,17 +532,17 @@ Form.editors = (function() {
     getValue: function() {
       return this.$el.val();
     },
-    
+
     setValue: function(value) {
       this.$el.val(value);
     },
-    
+
     focus: function() {
       if (this.hasFocus) return;
 
       this.$el.focus();
     },
-    
+
     blur: function() {
       if (!this.hasFocus) return;
 
@@ -551,7 +551,7 @@ Form.editors = (function() {
 
     /**
      * Transforms a collection into HTML ready to use in the renderOptions method
-     * @param {Backbone.Collection} 
+     * @param {Backbone.Collection}
      * @return {String}
      */
     _collectionToHtml: function(collection) {
@@ -577,13 +577,14 @@ Form.editors = (function() {
       var html = [];
 
       //Generate HTML
+      //_.escape() is used for preventing XSS attacks through model properties
       _.each(array, function(option) {
         if (_.isObject(option)) {
           var val = (option.val || option.val === 0) ? option.val : '';
-          html.push('<option value="'+val+'">'+option.label+'</option>');
+          html.push('<option value="'+_.escape(val)+'">'+_.escape(option.label)+'</option>');
         }
         else {
-          html.push('<option>'+option+'</option>');
+          html.push('<option>'+_.escape(option)+'</option>');
         }
       });
 
@@ -596,7 +597,7 @@ Form.editors = (function() {
 
   /**
    * RADIO
-   * 
+   *
    * Renders a <ul> with given options represented as <li> objects containing radio buttons
    *
    * Requires an 'options' value on the schema.
@@ -607,7 +608,7 @@ Form.editors = (function() {
 
     tagName: 'ul',
     className: 'bbf-radio',
-    
+
     events: {
       'change input[type=radio]': function() {
         this.trigger('change', this);
@@ -633,22 +634,22 @@ Form.editors = (function() {
     setValue: function(value) {
       this.$('input[type=radio]').val([value]);
     },
-    
+
     focus: function() {
       if (this.hasFocus) return;
-      
+
       var checked = this.$('input[type=radio]:checked');
       if (checked[0]) {
         checked.focus();
         return;
       }
-      
+
       this.$('input[type=radio]').first().focus();
     },
-    
+
     blur: function() {
       if (!this.hasFocus) return;
-      
+
       this.$('input[type=radio]:focus').blur();
     },
 
@@ -660,18 +661,18 @@ Form.editors = (function() {
      */
     _arrayToHtml: function (array) {
       var html = [];
-      var self = this;
+      var escapedId = _.escape(this.id);
 
       _.each(array, function(option, index) {
         var itemHtml = '<li>';
         if (_.isObject(option)) {
           var val = (option.val || option.val === 0) ? option.val : '';
-          itemHtml += ('<input type="radio" name="'+self.id+'" value="'+val+'" id="'+self.id+'-'+index+'" />');
-          itemHtml += ('<label for="'+self.id+'-'+index+'">'+option.label+'</label>');
+          itemHtml += ('<input type="radio" name="'+escapedId+'" value="'+_.escape(val)+'" id="'+escapedId+'-'+index+'" />');
+          itemHtml += ('<label for="'+escapedId+'-'+index+'">'+_.escape(option.label)+'</label>');
         }
         else {
-          itemHtml += ('<input type="radio" name="'+self.id+'" value="'+option+'" id="'+self.id+'-'+index+'" />');
-          itemHtml += ('<label for="'+self.id+'-'+index+'">'+option+'</label>');
+          itemHtml += ('<input type="radio" name="'+escapedId+'" value="'+_.escape(option)+'" id="'+escapedId+'-'+index+'" />');
+          itemHtml += ('<label for="'+escapedId+'-'+index+'">'+_.escape(option)+'</label>');
         }
         itemHtml += '</li>';
         html.push(itemHtml);
@@ -696,7 +697,7 @@ Form.editors = (function() {
 
     tagName: 'ul',
     className: 'bbf-checkboxes',
-    
+
     events: {
       'click input[type=checkbox]': function() {
         this.trigger('change', this);
@@ -727,16 +728,16 @@ Form.editors = (function() {
       if (!_.isArray(values)) values = [values];
       this.$('input[type=checkbox]').val(values);
     },
-    
+
     focus: function() {
       if (this.hasFocus) return;
-      
+
       this.$('input[type=checkbox]').first().focus();
     },
-    
+
     blur: function() {
       if (!this.hasFocus) return;
-      
+
       this.$('input[type=checkbox]:focus').blur();
     },
 
@@ -748,18 +749,18 @@ Form.editors = (function() {
      */
     _arrayToHtml: function (array) {
       var html = [];
-      var self = this;
+      var escapedId = _.escape(this.id);
 
       _.each(array, function(option, index) {
         var itemHtml = '<li>';
         if (_.isObject(option)) {
           var val = (option.val || option.val === 0) ? option.val : '';
-          itemHtml += ('<input type="checkbox" name="'+self.id+'" value="'+val+'" id="'+self.id+'-'+index+'" />');
-          itemHtml += ('<label for="'+self.id+'-'+index+'">'+option.label+'</label>');
+          itemHtml += ('<input type="checkbox" name="'+escapedId+'" value="'+_.escape(val)+'" id="'+escapedId+'-'+index+'" />');
+          itemHtml += ('<label for="'+escapedId+'-'+index+'">'+_.escape(option.label)+'</label>');
         }
         else {
-          itemHtml += ('<input type="checkbox" name="'+self.id+'" value="'+option+'" id="'+self.id+'-'+index+'" />');
-          itemHtml += ('<label for="'+self.id+'-'+index+'">'+option+'</label>');
+          itemHtml += ('<input type="checkbox" name="'+escapedId+'" value="'+_.escape(option)+'" id="'+escapedId+'-'+index+'" />');
+          itemHtml += ('<label for="'+escapedId+'-'+index+'">'+_.escape(option)+'</label>');
         }
         itemHtml += '</li>';
         html.push(itemHtml);
@@ -774,9 +775,9 @@ Form.editors = (function() {
 
   /**
    * OBJECT
-   * 
+   *
    * Creates a child form. For editing Javascript objects
-   * 
+   *
    * @param {Object} options
    * @param {Object} options.schema             The schema for the object
    * @param {Object} options.schema.subSchema   The schema for the nested form
@@ -798,7 +799,7 @@ Form.editors = (function() {
       if (!this.schema.subSchema) throw new Error("Missing required 'schema.subSchema' option for Object editor");
     },
 
-    render: function() {      
+    render: function() {
       //Create the nested form
       this.form = new Form({
         schema: this.schema.subSchema,
@@ -810,9 +811,9 @@ Form.editors = (function() {
       this._observeFormEvents();
 
       this.$el.html(this.form.render().el);
-      
+
       if (this.hasFocus) this.trigger('blur', this);
-      
+
       return this;
     },
 
@@ -821,22 +822,22 @@ Form.editors = (function() {
 
       return this.value;
     },
-    
+
     setValue: function(value) {
       this.value = value;
-      
+
       this.render();
     },
-    
+
     focus: function() {
       if (this.hasFocus) return;
-      
+
       this.form.focus();
     },
-    
+
     blur: function() {
       if (!this.hasFocus) return;
-      
+
       this.form.blur();
     },
 
@@ -845,18 +846,18 @@ Form.editors = (function() {
 
       Backbone.View.prototype.remove.call(this);
     },
-    
+
     validate: function() {
       return this.form.validate();
     },
-    
+
     _observeFormEvents: function() {
       this.form.on('all', function() {
         // args = ["key:change", form, fieldEditor]
         var args = _.toArray(arguments);
         args[1] = this;
         // args = ["key:change", this=objectEditor, fieldEditor]
-        
+
         this.trigger.apply(this, args);
       }, this);
     }
@@ -867,9 +868,9 @@ Form.editors = (function() {
 
   /**
    * NESTED MODEL
-   * 
+   *
    * Creates a child form. For editing nested Backbone models
-   * 
+   *
    * Special options:
    *   schema.model:   Embedded model constructor
    */
@@ -899,7 +900,7 @@ Form.editors = (function() {
 
       //Render form
       this.$el.html(this.form.render().el);
-      
+
       if (this.hasFocus) this.trigger('blur', this);
 
       return this;
@@ -976,18 +977,18 @@ Form.editors = (function() {
         yearStart: today.getFullYear() - 100,
         yearEnd: today.getFullYear()
       }, options.schema || {});
-            
+
       //Cast to Date
       if (this.value && !_.isDate(this.value)) {
         this.value = new Date(this.value);
       }
-      
+
       //Set default date
       if (!this.value) {
         var date = new Date();
         date.setSeconds(0);
         date.setMilliseconds(0);
-        
+
         this.value = date;
       }
     },
@@ -1005,7 +1006,7 @@ Form.editors = (function() {
         return '<option value="'+month+'">' + value + '</option>';
       });
 
-      var yearRange = schema.yearStart < schema.yearEnd ? 
+      var yearRange = schema.yearStart < schema.yearEnd ?
         _.range(schema.yearStart, schema.yearEnd + 1) :
         _.range(schema.yearStart, schema.yearEnd - 1, -1);
       var yearsOptions = _.map(yearRange, function(year) {
@@ -1034,7 +1035,7 @@ Form.editors = (function() {
       //Remove the wrapper tag
       this.setElement($el);
       this.$el.attr('id', this.id);
-      
+
       if (this.hasFocus) this.trigger('blur', this);
 
       return this;
@@ -1052,7 +1053,7 @@ Form.editors = (function() {
 
       return new Date(year, month, date);
     },
-    
+
     /**
      * @param {Date} date
      */
@@ -1063,16 +1064,16 @@ Form.editors = (function() {
 
       this.updateHidden();
     },
-    
+
     focus: function() {
       if (this.hasFocus) return;
-      
+
       this.$('select').first().focus();
     },
-    
+
     blur: function() {
       if (!this.hasFocus) return;
-      
+
       this.$('select:focus').blur();
     },
 
@@ -1101,7 +1102,7 @@ Form.editors = (function() {
 
   /**
    * DATETIME
-   * 
+   *
    * @param {Editor} [options.DateEditor]           Date editor view to use (not definition)
    * @param {Number} [options.schema.minsInterval]  Interval between minutes. Default: 15
    */
@@ -1179,13 +1180,13 @@ Form.editors = (function() {
 
       //Get the hidden date field to store values in case POSTed to server
       this.$hidden = $el.find('input[type="hidden"]');
-      
+
       //Set time
       this.setValue(this.value);
 
       this.setElement($el);
       this.$el.attr('id', this.id);
-      
+
       if (this.hasFocus) this.trigger('blur', this);
 
       return this;
@@ -1207,27 +1208,27 @@ Form.editors = (function() {
 
       return date;
     },
-    
+
     setValue: function(date) {
       if (!_.isDate(date)) date = new Date(date);
-      
+
       this.dateEditor.setValue(date);
-      
+
       this.$hour.val(date.getHours());
       this.$min.val(date.getMinutes());
 
       this.updateHidden();
     },
-    
+
     focus: function() {
       if (this.hasFocus) return;
-      
+
       this.$('select').first().focus();
     },
-    
+
     blur: function() {
       if (!this.hasFocus) return;
-      
+
       this.$('select:focus').blur();
     },
 
