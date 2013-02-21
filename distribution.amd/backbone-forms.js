@@ -1,11 +1,11 @@
 /**
- * Backbone Forms v0.10.1
+ * Backbone Forms v0.11.0
  *
  * NOTE:
  * This version is for use with RequireJS
  * If using regular <script> tags to include your files, use backbone-forms.min.js
  *
- * Copyright (c) 2012 Charles Davison, Pow Media Ltd
+ * Copyright (c) 2013 Charles Davison, Pow Media Ltd
  * 
  * License and more information at:
  * http://github.com/powmedia/backbone-forms
@@ -547,33 +547,6 @@ Form.helpers = (function() {
     return new constructorFn(options);
   };
   
-  /**
-   * Triggers an event that can be cancelled. Requires the user to invoke a callback. If false
-   * is passed to the callback, the action does not run.
-   *
-   * NOTE: This helper uses private Backbone apis so can break when Backbone is upgraded
-   * 
-   * @param {Mixed}       Instance of Backbone model, view, collection to trigger event on
-   * @param {String}      Event name
-   * @param {Array}       Arguments to pass to the event handlers
-   * @param {Function}    Callback to run after the event handler has run.
-   *                      If any of them passed false or error, this callback won't run
-   */ 
-  helpers.triggerCancellableEvent = function(subject, event, args, callback) { 
-    //Return if there are no event listeners
-    if (!subject._callbacks || !subject._callbacks[event]) return callback();
-    
-    var next = subject._callbacks[event].next;
-    if (!next) return callback();
-    
-    var fn = next.callback,
-        context = next.context || this;
-    
-    //Add the callback that will be used when done
-    args.push(callback);
-    
-    fn.apply(context, args);
-  };
   
   /**
    * Returns a validation function based on the type defined in the schema
@@ -1074,15 +1047,14 @@ Form.editors = (function() {
      *
      * @return {Mixed} error
      */
-    commit: function() {
+    commit: function(options) {
       var error = this.validate();
       if (error) return error;
       
-      this.model.set(this.key, this.getValue(), {
-        error: function(model, e) {
-          error = e;
-        }
+      this.listenTo(this.model, 'invalid', function(model, e) {
+        error = e;
       });
+      this.model.set(this.key, this.getValue(), options);
       
       if (error) return error;
     },
@@ -2333,7 +2305,7 @@ Form.editors = (function() {
 
 
   //Metadata
-  Form.VERSION = '0.10.1';
+  Form.VERSION = '0.11.0';
 
   //Exports
   Backbone.Form = Form;

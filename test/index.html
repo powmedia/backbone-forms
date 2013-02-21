@@ -7,7 +7,6 @@
 <html>
 <head>
     <link rel="stylesheet" href="lib/qunit.css" type="text/css" media="screen" />
-    <link rel="stylesheet" href="lib/jquery-ui/flick/jquery-ui-1.8.14.custom.css" type="text/css" media="screen" />
 
     <!-- TEST LIB FILES -->
     <script type="text/javascript" src="lib/qunit.js"></script>
@@ -15,11 +14,10 @@
     
     <!-- SRC LIB FILES -->
     <script src="lib/jquery-1.7.2.min.js"></script>
-    <script src="lib/jquery-ui/jquery-ui-1.8.14.custom.min.js"></script>
 
     <script src="lib/underscore-1.4.4.js"></script>
     <script src="lib/backbone-0.9.10.js"></script>
-    <script src="lib/backbone-deep-model.js"></script>
+    <script src="lib/backbone-deep-model-0.10.1.js"></script>
     <script src="lib/handlebars-1.0.rc.2.js"></script>
 
     <!-- SOURCE FILES -->
@@ -37,10 +35,6 @@
 
     <!-- TEMPLATES -->
     <link rel="stylesheet" href="../src/templates/default.css" type="text/css" media="screen" />
-
-    <!-- EXTRA EDITORS -->
-    <script src="../src/editors/jquery-ui.js"></script>
-    <link rel="stylesheet" href="../src/editors/jquery-ui.css" type="text/css" />
 </head>
 <body>
     <h1 id="qunit-header">backbone-forms tests</h1>
@@ -57,7 +51,6 @@
     <script src="field.js"></script>
     <script src="editors.js"></script>
     <script src="editors/list.js"></script>
-    <script src="editors/jquery-ui.js"></script>
     
     
     <div id="uiTest" style="height: 400px; overflow: auto; border: 1px solid #ccc">
@@ -107,21 +100,14 @@
                     objList: { type: 'List', itemType: 'Object', subSchema: {
                         name: { type: 'Text', validators: ['required'] },
                         age: 'Number'
-                    } },
-                    
-
-                    //jQuery UI
-                    jqueryDate:       { type: 'jqueryui.Date', help: 'Some help text' },
-                    jqueryDateTime:   { type: 'jqueryui.DateTime' },
-                    jqueryList:       { type: 'jqueryui.List' }
+                    } }
                 }
             });
             
             var model = new Model({
                 number: null,
                 checkbox: true,
-                textList: ['item1', 'item2', 'item3'],
-                jqueryList: ['item1', 'item2', 'item3']
+                textList: ['item1', 'item2', 'item3']
             });
 
             var form = new Backbone.Form({
@@ -129,7 +115,6 @@
                 fieldsets: [
                     ['email', 'tel', 'number', 'checkbox', 'radio', 'select', 'checkboxes', 'customTemplate', 'shorthand', 'date', 'dateTime'],
                     { legend: 'Lists', fields: ['textList', 'objList'] },
-                    { legend: 'jQuery UI editors', fields: ['jqueryDate', 'jqueryDateTime', 'jqueryList'] },
                     { legend: 'Nested editors', fields: ['object', 'nestedModel'] }
                 ]
             }).render();

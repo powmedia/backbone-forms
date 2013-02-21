@@ -67,7 +67,7 @@ builder(baseDir)
 
 
 //Extra editors
-['list', 'jquery-ui'].forEach(function(name) {
+['list'].forEach(function(name) {
   //Save regular dev and mini versions
   builder(baseDir)
     .load('src/editors/'+name+'.js')
