@@ -13,7 +13,7 @@
     <script type="text/javascript" src="lib/sinon.js"></script>
     
     <!-- SRC LIB FILES -->
-    <script src="lib/jquery-1.7.2.min.js"></script>
+    <script src="lib/jquery-1.8.3.js"></script>
 
     <script src="lib/underscore-1.4.4.js"></script>
     <script src="lib/backbone-0.9.10.js"></script>
@@ -37,12 +37,12 @@
     <link rel="stylesheet" href="../src/templates/default.css" type="text/css" media="screen" />
 </head>
 <body>
-    <h1 id="qunit-header">backbone-forms tests</h1>
-    <h2 id="qunit-banner"></h2>
-    <div id="qunit-testrunner-toolbar"></div>
-    <h2 id="qunit-userAgent"></h2>
-    <ol id="qunit-tests"></ol>
-    <div id="qunit-fixture">test markup, will be hidden</div>
+    <div id="qunit"></div>
+    <div id="qunit-fixture">
+        <div id='testElement'>
+            <h1>Test</h1>
+        </div>
+    </div>
 
     <script src="_setup.js"></script>
     <script src="form.js"></script>
