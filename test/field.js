@@ -416,6 +416,7 @@ test("keys can be paths to nested objects if using DeepModel", function() {
   //TODO: Test with DeepModel
   field.commit();
   equal(model.attributes.user.name.first, 'foo');
+  equal(model.get('user.name.first'), 'foo');
 });
 
 

@@ -4,7 +4,7 @@ var builder = require('buildify'),
     path = require('path');
 
 var templateData = {
-  version: '0.10.1'
+  version: '0.11.0'
 };
 
 var baseDir = __dirname + '/..',
@@ -67,7 +67,7 @@ builder(baseDir)
 
 
 //Extra editors
-['list', 'jquery-ui'].forEach(function(name) {
+['list'].forEach(function(name) {
   //Save regular dev and mini versions
   builder(baseDir)
     .load('src/editors/'+name+'.js')
