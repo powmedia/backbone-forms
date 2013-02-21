@@ -265,10 +265,8 @@ The following default editors are included:
 - [List](#editor-list) An editable list of items (included in a separate file: `distribution/editors/list.min.js`)
 
 
-The old jQuery editors are still included but may be moved to another repository:
-- jqueryui.List
-- jqueryui.Date (uses the jQuery UI popup datepicker)
-- jqueryui.DateTime
+NOTE:
+The old jQuery editors were broken with the changes to Backbone 0.9.10. As they were unsupported for some time they have been removed. However they are still available on previous tags (e.g. backbone-forms v0.10.0) so can be imported from there.
 
 
 
@@ -509,7 +507,6 @@ This is a special editor which is in **a separate file and must be included**:
 
     <script src="backbone-forms/distribution/adapters/backbone.bootstrap-modal.min.js" />
 
-*This list replaces the old jQueryUI list, but may need some upgrade work. The old jQueryUI List editor is still included in a separate file.*
 
 ###Attributes
 
@@ -898,7 +895,8 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 <a name="changelog"/>
 ##Changelog
 
-###master
+###0.11.0
+- Update for Backbone 0.9.10
 - Pass editor instance as second parameter to Select options function
 - Fix for jQuery 1.9
 - Don't show <label> if schema title===false (philfreo)
