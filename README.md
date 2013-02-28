@@ -354,6 +354,7 @@ Creates and populates a `<select>` element.
   Can be either:
     - String of HTML `<option>`s
     - Array of strings/numbers
+    - An array of option groups
     - Array of objects in the form `{ val: 123, label: 'Text' }`
     - A Backbone collection
     - A function that calls back with one of the above
@@ -363,7 +364,6 @@ Creates and populates a `<select>` element.
   If using a Backbone collection as the `options` attribute, models in the collection must implement a `toString()` method. This populates the label of the `<option>`. The ID of the model populates the `value` attribute.
 
   If there are no models in the collection, it will be `fetch()`ed.
-
 
 ####Methods
 
@@ -385,6 +385,14 @@ Creates and populates a `<select>` element.
 
             callback(users);
         }}
+    }
+
+    // Option groups
+    var schema = {
+      options: [
+        { group: 'Cities', options: ['Paris', 'Beijing']},
+        { group: 'Countries', options: ['Germany', 'Sweden']}
+      ]
     }
 
 

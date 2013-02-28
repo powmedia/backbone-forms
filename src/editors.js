@@ -574,12 +574,19 @@ Form.editors = (function() {
      */
     _arrayToHtml: function(array) {
       var html = [];
+      var self = this;
 
       //Generate HTML
       _.each(array, function(option) {
         if (_.isObject(option)) {
-          var val = (option.val || option.val === 0) ? option.val : '';
-          html.push('<option value="'+val+'">'+option.label+'</option>');
+          if (option.group) {
+            html.push('<optgroup label="'+option.group+'">');
+            html.push(self._arrayToHtml(option.options));
+            html.push('</optgroup>');
+          } else {
+            var val = option.val ? option.val : '';
+            html.push('<option value="'+val+'">'+option.label+'</option>');
+          }
         }
         else {
           html.push('<option>'+option+'</option>');
