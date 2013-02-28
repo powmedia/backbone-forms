@@ -1046,6 +1046,48 @@ module('Select', {
         equal($('option', optgroups.last()).first().attr('value'), 'fr');
     });
 
+    test('Mixed specification for option groups', function() {
+        var countries = new OptionCollection([
+            { id: 'fr', name: 'France' },
+            { id: 'cn', name: 'China' }
+        ]);
+        var field = new editor({
+            schema: {
+                options: [
+                    { group: 'Countries', options: countries },
+                    { group: 'Cities', options: ['Paris', 'Beijing', 'Tokyo']},
+                    { group: 'Food', options: '<option>Bread</option>'},
+                    { group: 'Cars', options: function(callback, thisEditor) {
+                        ok(thisEditor instanceof editor);
+                        ok(thisEditor instanceof editors.Base);
+                        callback(['VolksWagen', 'Fiat', 'Opel', 'Tesla']);
+                    }}
+                ]
+            }
+        }).render();
+
+        var optgroups = field.$('optgroup');
+
+        equal(optgroups.length, 4);
+        // Countries:
+        var options = $('option', optgroups.get(0));
+        equal(options.length, 2);
+        equal(options.first().attr('value'), 'fr');
+        equal(options.first().text(), 'France');
+        // Cities
+        var options = $('option', optgroups.get(1));
+        equal(options.length, 3);
+        equal(options.first().text(), 'Paris');
+        // Food
+        var options = $('option', optgroups.get(2));
+        equal(options.length, 1);
+        equal(options.first().text(), 'Bread');
+        // Cars
+        var options = $('option', optgroups.get(3));
+        equal(options.length, 4);
+        equal(options.last().text(), 'Tesla');
+    });
+
     test('Option groups with collections', function() {
         var countries = new OptionCollection([
             { id: 'fr', name: 'France' },
