@@ -865,6 +865,10 @@ module('Select', {
     var OptionModel = Backbone.Model.extend({
             toString: function() {
                 return this.get('name');
+            },
+
+            groupByType: function() {
+
             }
         }),
 
@@ -987,7 +991,42 @@ module('Select', {
         equal($('option', optgroups.first()).first().text(), 'Paris');
         equal($('option', optgroups.last()).first().text(), 'France');
         equal($('option', optgroups.last()).first().attr('value'), 'fr');
-    })
+    });
+
+    test('Option groups with collections', function() {
+        var countries = new OptionCollection([
+            { id: 'fr', name: 'France' },
+            { id: 'cn', name: 'China' }
+        ]);
+        var cities = new OptionCollection([
+            { id: 'paris', name: 'Paris' },
+            { id: 'bj', name: 'Beijing' },
+            { id: 'sf', name: 'San-Francisco' }
+        ]);
+
+        var field = new editor({
+            schema: {
+                options: [
+                    {
+                        group: 'Countries',
+                        options: countries
+                    },
+                    {
+                        group: 'Cities',
+                        options: cities
+                    }
+                ]
+            }
+        }).render();
+
+        var optgroups = field.$el.find('optgroup');
+        equal(optgroups.length, 2);
+
+        equal($('option', optgroups.first()).first().text(), 'France');
+        equal($('option', optgroups.first()).first().attr('value'), 'fr');
+        equal($('option', optgroups.last()).last().attr('value'), 'sf');
+        equal($('option', optgroups.last()).last().text(), 'San-Francisco');
+    });
 
     test('setOptions() - updates the options on a rendered select', function() {
         var field = new editor({
