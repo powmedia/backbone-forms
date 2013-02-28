@@ -506,6 +506,17 @@ Form.editors = (function() {
       var $select = this.$el,
           html;
 
+      html = this._getOptionsHtml(options);
+
+      //Insert options
+      $select.html(html);
+
+      //Select correct option
+      this.setValue(this.value);
+    },
+
+    _getOptionsHtml: function(options) {
+      var html;
       //Accept string of HTML
       if (_.isString(options)) {
         html = options;
@@ -521,11 +532,13 @@ Form.editors = (function() {
         html = this._collectionToHtml(options);
       }
 
-      //Insert options
-      $select.html(html);
+      else if (options instanceof Function) {
+        var self = this;
+        options(function(opts) { newOptions = opts; }, this);
+        html = this._getOptionsHtml(newOptions);
+      }
 
-      //Select correct option
-      this.setValue(this.value);
+      return html;
     },
 
     getValue: function() {
@@ -574,18 +587,13 @@ Form.editors = (function() {
      */
     _arrayToHtml: function(array) {
       var html = [];
-      var self = this;
 
       //Generate HTML
       _.each(array, function(option) {
         if (_.isObject(option)) {
           if (option.group) {
             html.push('<optgroup label="'+option.group+'">');
-            if (_.isArray(option.options)) {
-              html.push(self._arrayToHtml(option.options));
-            } else if (option.options instanceof Backbone.Collection) {
-              html.push(self._collectionToHtml(option.options));
-            }
+            html.push(this._getOptionsHtml(option.options))
             html.push('</optgroup>');
           } else {
             var val = (option.val || option.val === 0) ? option.val : '';
@@ -595,7 +603,7 @@ Form.editors = (function() {
         else {
           html.push('<option>'+option+'</option>');
         }
-      });
+      }, this);
 
       return html.join('');
     }
