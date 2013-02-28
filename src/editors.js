@@ -584,7 +584,7 @@ Form.editors = (function() {
             html.push(self._arrayToHtml(option.options));
             html.push('</optgroup>');
           } else {
-            var val = option.val ? option.val : '';
+            var val = (option.val || option.val === 0) ? option.val : '';
             html.push('<option value="'+val+'">'+option.label+'</option>');
           }
         }
