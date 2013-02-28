@@ -354,7 +354,7 @@ Creates and populates a `<select>` element.
   Can be either:
     - String of HTML `<option>`s
     - Array of strings/numbers
-    - An array of option groups in the form `[{group: 'Option Group Label', options: <the options in any of the forms from this list (except the option groups)>}]`
+    - An array of option groups in the form `[{group: 'Option Group Label', options: <any of the forms from this list (except the option groups)>}]`
     - Array of objects in the form `{ val: 123, label: 'Text' }`
     - A Backbone collection
     - A function that calls back with one of the above
@@ -387,11 +387,12 @@ Creates and populates a `<select>` element.
         }}
     }
 
-    // Option groups
+    // Option groups (each group's option can be specified differently)
     var schema = {
       options: [
         { group: 'Cities', options: ['Paris', 'Beijing']},
-        { group: 'Countries', options: ['Germany', 'Sweden']}
+        { group: 'Countries', options: new Collection(objects)},
+        { group: 'Food', options: '<option>Bread</option>'}
       ]
     }
 
