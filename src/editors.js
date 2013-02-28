@@ -533,7 +533,6 @@ Form.editors = (function() {
       }
 
       else if (options instanceof Function) {
-        var self = this;
         options(function(opts) { newOptions = opts; }, this);
         html = this._getOptionsHtml(newOptions);
       }
