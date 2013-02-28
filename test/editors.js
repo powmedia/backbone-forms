@@ -884,7 +884,7 @@ module('Select', {
                 },
                 {
                     group: 'Countries',
-                    options: ['France', 'China']
+                    options: [{val: 'fr', label: 'France'}, {val: 'cn', label: 'China'}]
                 }
             ]
         }
@@ -929,8 +929,8 @@ module('Select', {
             schema: optGroupSchema
         }).render();
 
-        equal($('optgroup', field.el).length, 2);
-        equal($('optgroup', field.el).first().attr('label'), 'Cities')
+        equal(field.$('optgroup').length, 2);
+        equal(field.$('optgroup').first().attr('label'), 'Cities')
     });
 
     test('Option groups only contain their "own" options', function() {
@@ -938,7 +938,7 @@ module('Select', {
             schema: optGroupSchema
         }).render();
 
-        var group = $('optgroup', field.el).first();
+        var group = field.$('optgroup').first();
         equal($('option', group).length, 3);
         var options = _.map($('option', group), function(el) {
             return $(el).text();
@@ -947,13 +947,26 @@ module('Select', {
         ok(_.contains(options, 'Beijing'));
         ok(_.contains(options, 'San-Francisco'));
 
-        var group = $('optgroup', field.el).last();
+        var group = field.$('optgroup').last();
         equal($('option', group).length, 2);
         var options = _.map($('option', group), function(el) {
             return $(el).text();
         });
         ok(_.contains(options, 'France'));
         ok(_.contains(options, 'China'));
+    });
+
+    test('Option groups allow to specify option value / label', function() {
+        var field = new editor({
+            schema: optGroupSchema
+        }).render();
+
+        var group = field.$('optgroup').last();
+        var options = $('option', group);
+        equal(options.first().attr('value'), 'fr');
+        equal(options.last().attr('value'), 'cn');
+        equal(options.first().text(), 'France');
+        equal(options.last().text(), 'China');
     });
 
     test('setOptions() - updates the options on a rendered select', function() {
