@@ -354,7 +354,7 @@ Creates and populates a `<select>` element.
   Can be either:
     - String of HTML `<option>`s
     - Array of strings/numbers
-    - An array of option groups
+    - An array of option groups in the form `[{group: 'Option Group Label', options: <the options in any of the forms from this list (except the option groups)>}]`
     - Array of objects in the form `{ val: 123, label: 'Text' }`
     - A Backbone collection
     - A function that calls back with one of the above

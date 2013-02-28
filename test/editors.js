@@ -865,10 +865,6 @@ module('Select', {
     var OptionModel = Backbone.Model.extend({
             toString: function() {
                 return this.get('name');
-            },
-
-            groupByType: function() {
-
             }
         }),
 
@@ -884,7 +880,7 @@ module('Select', {
             options: [
                 {
                     group: 'Cities',
-                    options: [ 'Paris', 'Beijing', 'San-Francisco']
+                    options: [ 'Paris', 'Beijing', 'San Francisco']
                 },
                 {
                     group: 'Countries',
@@ -949,9 +945,11 @@ module('Select', {
         });
         ok(_.contains(options, 'Paris'));
         ok(_.contains(options, 'Beijing'));
-        ok(_.contains(options, 'San-Francisco'));
+        ok(_.contains(options, 'San Francisco'));
 
         var group = field.$('optgroup').last();
+        window.group = group;
+        window.field = field;
         equal($('option', group).length, 2);
         var options = _.map($('option', group), function(el) {
             return $(el).text();
@@ -971,6 +969,28 @@ module('Select', {
         equal(options.last().attr('value'), 'cn');
         equal(options.first().text(), 'France');
         equal(options.last().text(), 'China');
+    });
+
+    test('Option groups with options as string', function() {
+        var field = new editor({
+            schema: {
+                options: [
+                    {
+                        group: 'Cities',
+                        options: [1,2,3]//'<option>Paris</option><option>Beijing</option><option>San Francisco</option>'
+                    },
+                    {
+                        group: 'Countries',
+                        options: ['a', 'b']//'<option value="fr">France</option><option value="cn">China</option>'
+                    }
+                ]
+            }
+        }).render();
+
+        var group = field.$('optgroup').first();
+        equal(group.attr('label'), 'Cities');
+        equal($('option', group).length, 3);
+        equal(field.$('optgroup').length, 2);
     });
 
     test('Option groups with options as callback', function() {
@@ -993,6 +1013,39 @@ module('Select', {
         equal($('option', optgroups.last()).first().attr('value'), 'fr');
     });
 
+    test('Each option group as its own callback', function() {
+        var field = new editor({
+            schema: {
+                options: [
+                    {
+                        group: 'Cities',
+                        options: function(callback, thisEditor) {
+                            ok(thisEditor instanceof editor);
+                            ok(thisEditor instanceof editors.Base);
+                            callback(optGroupSchema.options[0].options);
+                        }
+                    },
+                    {
+                        group: 'Countries',
+                        options: function(callback, thisEditor) {
+                            ok(thisEditor instanceof editor);
+                            ok(thisEditor instanceof editors.Base);
+                            callback(optGroupSchema.options[1].options);
+                        }
+                    }
+                ]
+            }
+        }).render();
+
+        var optgroups = field.$('optgroup');
+
+        equal(optgroups.length, 2);
+
+        equal($('option', optgroups.first()).first().text(), 'Paris');
+        equal($('option', optgroups.last()).first().text(), 'France');
+        equal($('option', optgroups.last()).first().attr('value'), 'fr');
+    });
+
     test('Option groups with collections', function() {
         var countries = new OptionCollection([
             { id: 'fr', name: 'France' },
@@ -1001,7 +1054,7 @@ module('Select', {
         var cities = new OptionCollection([
             { id: 'paris', name: 'Paris' },
             { id: 'bj', name: 'Beijing' },
-            { id: 'sf', name: 'San-Francisco' }
+            { id: 'sf', name: 'San Francisco' }
         ]);
 
         var field = new editor({
@@ -1025,7 +1078,7 @@ module('Select', {
         equal($('option', optgroups.first()).first().text(), 'France');
         equal($('option', optgroups.first()).first().attr('value'), 'fr');
         equal($('option', optgroups.last()).last().attr('value'), 'sf');
-        equal($('option', optgroups.last()).last().text(), 'San-Francisco');
+        equal($('option', optgroups.last()).last().text(), 'San Francisco');
     });
 
     test('setOptions() - updates the options on a rendered select', function() {
