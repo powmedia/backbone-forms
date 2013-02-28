@@ -581,7 +581,11 @@ Form.editors = (function() {
         if (_.isObject(option)) {
           if (option.group) {
             html.push('<optgroup label="'+option.group+'">');
-            html.push(self._arrayToHtml(option.options));
+            if (_.isArray(option.options)) {
+              html.push(self._arrayToHtml(option.options));
+            } else if (option.options instanceof Backbone.Collection) {
+              html.push(self._collectionToHtml(option.options));
+            }
             html.push('</optgroup>');
           } else {
             var val = (option.val || option.val === 0) ? option.val : '';
