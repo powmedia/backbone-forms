@@ -969,6 +969,26 @@ module('Select', {
         equal(options.last().text(), 'China');
     });
 
+    test('Option groups with options as callback', function() {
+        var field = new editor({
+            schema: {
+                options: function(callback, thisEditor) {
+                    ok(thisEditor instanceof editor);
+                    ok(thisEditor instanceof editors.Base);
+                    callback(optGroupSchema.options);
+                }
+            }
+        }).render();
+
+        var optgroups = field.$('optgroup');
+
+        equal(optgroups.length, 2);
+
+        equal($('option', optgroups.first()).first().text(), 'Paris');
+        equal($('option', optgroups.last()).first().text(), 'France');
+        equal($('option', optgroups.last()).first().attr('value'), 'fr');
+    })
+
     test('setOptions() - updates the options on a rendered select', function() {
         var field = new editor({
             schema: schema
