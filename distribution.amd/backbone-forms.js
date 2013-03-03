@@ -16,11 +16,11 @@ define(['jquery', 'underscore', 'backbone'], function($, _, Backbone) {
 //==================================================================================================
 //FORM
 //==================================================================================================
-  
+
 var Form = (function() {
 
   return Backbone.View.extend({
-    
+
     hasFocus: false,
 
     /**
@@ -30,7 +30,7 @@ var Form = (function() {
      * @param {Model} [options.model]                 Model the form relates to. Required if options.data is not set
      * @param {Object} [options.data]                 Date to populate the form. Required if options.model is not set
      * @param {String[]} [options.fields]             Fields to include in the form, in order
-     * @param {String[]|Object[]} [options.fieldsets] How to divide the fields up by section. E.g. [{ legend: 'Title', fields: ['field1', 'field2'] }]        
+     * @param {String[]|Object[]} [options.fieldsets] How to divide the fields up by section. E.g. [{ legend: 'Title', fields: ['field1', 'field2'] }]
      * @param {String} [options.idPrefix]             Prefix for editor IDs. By default, the model's CID is used.
      * @param {String} [options.template]             Form template key/name
      * @param {String} [options.fieldsetTemplate]     Fieldset template key/name
@@ -38,19 +38,19 @@ var Form = (function() {
      *
      * @return {Form}
      */
-    initialize: function(options) { 
+    initialize: function(options) {
       //Check templates have been loaded
       if (!Form.templates.form) throw new Error('Templates not loaded');
 
       //Get the schema
       this.schema = (function() {
         if (options.schema) return options.schema;
-      
+
         var model = options.model;
         if (!model) throw new Error('Could not find schema');
-      
+
         if (_.isFunction(model.schema)) return model.schema();
-      
+
         return model.schema;
       })();
 
@@ -67,7 +67,7 @@ var Form = (function() {
 
         options.fieldsets = [{ fields: fields }];
       }
-      
+
       //Store main attributes
       this.options = options;
       this.model = options.model;
@@ -82,7 +82,7 @@ var Form = (function() {
       var self = this,
           options = this.options,
           template = Form.templates[options.template];
-      
+
       //Create el from template
       var $form = $(template({
         fieldsets: '<b class="bbf-tmp"></b>'
@@ -99,7 +99,7 @@ var Form = (function() {
 
       //Set the template contents as the main element; removes the wrapper element
       this.setElement($form);
-      
+
       if (this.hasFocus) this.trigger('blur', this);
 
       return this;
@@ -113,7 +113,7 @@ var Form = (function() {
      * { legend: 'Some Fieldset', fields: ['field1', 'field2'] }
      *
      * @param {Object|Array} fieldset     A fieldset definition
-     * 
+     *
      * @return {jQuery}                   The fieldset DOM element
      */
     renderFieldset: function(fieldset) {
@@ -163,7 +163,7 @@ var Form = (function() {
 
         //Render the fields with editors, apart from Hidden fields
         var fieldEl = field.render().el;
-        
+
         field.editor.on('all', function(event) {
           // args = ["change", editor]
           var args = _.toArray(arguments);
@@ -173,7 +173,7 @@ var Form = (function() {
 
           this.trigger.apply(this, args);
         }, self);
-        
+
         field.editor.on('change', function() {
           this.trigger('change', self);
         }, self);
@@ -190,7 +190,7 @@ var Form = (function() {
             self.trigger('blur', self);
           }, 0);
         }, self);
-        
+
         if (itemSchema.type !== 'Hidden') {
           $fieldsContainer.append(fieldEl);
         }
@@ -253,16 +253,16 @@ var Form = (function() {
       //Get errors from default Backbone model validator
       if (model && model.validate) {
         var modelErrors = model.validate(this.getValue());
-        
+
         if (modelErrors) {
           var isDictionary = _.isObject(modelErrors) && !_.isArray(modelErrors);
-          
+
           //If errors are not in object form then just store on the error object
           if (!isDictionary) {
             errors._others = errors._others || [];
             errors._others.push(modelErrors);
           }
-          
+
           //Merge programmatic errors (requires model.validate() to return an object e.g. { fieldKey: 'error' })
           if (isDictionary) {
             _.each(modelErrors, function(val, key) {
@@ -271,7 +271,7 @@ var Form = (function() {
                 self.fields[key].setError(val);
                 errors[key] = val;
               }
-              
+
               else {
                 //Otherwise add to '_others' key
                 errors._others = errors._others || [];
@@ -304,21 +304,21 @@ var Form = (function() {
           modelError = e;
         }
       });
-      
+
       if (modelError) return modelError;
     },
 
     /**
      * Get all the field values as an object.
      * Use this method when passing data instead of objects
-     * 
+     *
      * @param {String} [key]    Specific field value to get
      */
     getValue: function(key) {
       //Return only given key if specified
       if (key) return this.fields[key].getValue();
-      
-      //Otherwise return entire form      
+
+      //Otherwise return entire form
       var values = {};
       _.each(this.fields, function(field) {
         values[field.key] = field.getValue();
@@ -326,7 +326,7 @@ var Form = (function() {
 
       return values;
     },
-    
+
     /**
      * Update field values, referenced by key
      * @param {Object|String} key     New values to set, or property to set
@@ -339,7 +339,7 @@ var Form = (function() {
       } else {
         data = prop;
       }
-      
+
       var key;
       for (key in this.schema) {
         if (data[key] !== undefined) {
@@ -347,10 +347,10 @@ var Form = (function() {
         }
       }
     },
-    
+
     focus: function() {
       if (this.hasFocus) return;
-      
+
       var fieldset = this.options.fieldsets[0];
       if (fieldset) {
         var field;
@@ -365,12 +365,12 @@ var Form = (function() {
         }
       }
     },
-    
+
     blur: function() {
       if (!this.hasFocus) return;
-      
+
       var focusedField = _.find(this.fields, function(field) { return field.editor.hasFocus; });
-      
+
       if (focusedField) focusedField.editor.blur();
     },
 
@@ -379,15 +379,15 @@ var Form = (function() {
      */
     remove: function() {
       var fields = this.fields;
-      
+
       for (var key in fields) {
         fields[key].remove();
       }
 
       Backbone.View.prototype.remove.call(this);
     },
-    
-    
+
+
     trigger: function(event) {
       if (event === 'focus') {
         this.hasFocus = true;
@@ -395,7 +395,7 @@ var Form = (function() {
       else if (event === 'blur') {
         this.hasFocus = false;
       }
-      
+
       return Backbone.View.prototype.trigger.apply(this, arguments);
     }
   });
@@ -718,7 +718,7 @@ Form.Field = (function() {
      */
     /**
      * Creates a new field
-     * 
+     *
      * @param {Object} options
      * @param {Object} [options.schema]     Field schema. Defaults to { type: 'Text' }
      * @param {Model} [options.model]       Model the field relates to. Required if options.data is not set.
@@ -738,7 +738,7 @@ Form.Field = (function() {
 
       //Turn schema shorthand notation (e.g. 'Text') into schema object
       if (_.isString(options.schema)) options.schema = { type: options.schema };
-      
+
       //Set schema defaults
       this.schema = _.extend({
         type: 'Text',
@@ -795,7 +795,7 @@ Form.Field = (function() {
 
       //Decide on the editor to use
       var editor = this.editor = helpers.createEditor(schema.type, options);
-      
+
       //Create the element
       var $field = $(templates[schema.template](this.renderingContext(schema, editor)));
 
@@ -803,7 +803,7 @@ Form.Field = (function() {
       if (schema.title === false) {
         $field.find('label[for="'+editor.id+'"]').first().remove();
       }
-      
+
       //Render editor
       $field.find('.bbf-tmp-editor').replaceWith(editor.render().el);
 
@@ -818,10 +818,10 @@ Form.Field = (function() {
 
       //Add custom CSS class names
       if (this.schema.fieldClass) $field.addClass(this.schema.fieldClass);
-      
+
       //Add custom attributes
       if (this.schema.fieldAttrs) $field.attr(this.schema.fieldAttrs);
-      
+
       //Replace the generated wrapper tag
       this.setElement($field);
 
@@ -849,7 +849,7 @@ Form.Field = (function() {
 
       return id;
     },
-    
+
     /**
      * Check the validity of the field
      *
@@ -866,7 +866,7 @@ Form.Field = (function() {
 
       return error;
     },
-    
+
     /**
      * Set the field into an error state, adding the error class and setting the error message
      *
@@ -875,32 +875,32 @@ Form.Field = (function() {
     setError: function(msg) {
       //Object and NestedModel types set their own errors internally
       if (this.editor.hasNestedForm) return;
-      
+
       var errClass = Form.classNames.error;
 
       this.$el.addClass(errClass);
-      
+
       if (this.$error) {
         this.$error.html(msg);
       } else if (this.$help) {
         this.$help.html(msg);
       }
     },
-    
+
     /**
      * Clear the error state and reset the help message
      */
     clearError: function() {
       var errClass = Form.classNames.error;
-       
+
       this.$el.removeClass(errClass);
-      
+
       // some fields (e.g., Hidden), may not have a help el
       if (this.$error) {
         this.$error.empty();
       } else if (this.$help) {
         this.$help.empty();
-      
+
         //Reset help text if available
         var helpMsg = this.schema.help;
         if (helpMsg) this.$help.html(helpMsg);
@@ -922,7 +922,7 @@ Form.Field = (function() {
     getValue: function() {
       return this.editor.getValue();
     },
-    
+
     /**
      * Set/change the value of the editor
      *
@@ -931,11 +931,11 @@ Form.Field = (function() {
     setValue: function(value) {
       this.editor.setValue(value);
     },
-    
+
     focus: function() {
       this.editor.focus();
     },
-    
+
     blur: function() {
       this.editor.blur();
     },
@@ -977,7 +977,7 @@ Form.editors = (function() {
   editors.Base = Backbone.View.extend({
 
     defaultValue: null,
-    
+
     hasFocus: false,
 
     initialize: function(options) {
@@ -993,20 +993,20 @@ Form.editors = (function() {
       else if (options.value) {
         this.value = options.value;
       }
-      
+
       if (this.value === undefined) this.value = this.defaultValue;
 
       this.key = options.key;
       this.form = options.form;
       this.schema = options.schema || {};
       this.validators = options.validators || this.schema.validators;
-      
+
       //Main attributes
       this.$el.attr('name', this.getName());
-      
+
       //Add custom CSS class names
       if (this.schema.editorClass) this.$el.addClass(this.schema.editorClass);
-      
+
       //Add custom attributes
       if (this.schema.editorAttrs) this.$el.attr(this.schema.editorAttrs);
     },
@@ -1014,15 +1014,15 @@ Form.editors = (function() {
     getValue: function() {
       throw 'Not implemented. Extend and override this method.';
     },
-    
+
     setValue: function() {
       throw 'Not implemented. Extend and override this method.';
     },
-    
+
     focus: function() {
       throw 'Not implemented. Extend and override this method.';
     },
-    
+
     blur: function() {
       throw 'Not implemented. Extend and override this method.';
     },
@@ -1031,7 +1031,7 @@ Form.editors = (function() {
      * Get the value for the form input 'name' attribute
      *
      * @return {String}
-     * 
+     *
      * @api private
      */
     getName: function() {
@@ -1040,7 +1040,7 @@ Form.editors = (function() {
       //Replace periods with underscores (e.g. for when using paths)
       return key.replace(/\./g, '_');
     },
-    
+
     /**
      * Update the model with the current value
      * NOTE: The method is defined on the editors so that they can be used independently of fields
@@ -1050,19 +1050,19 @@ Form.editors = (function() {
     commit: function(options) {
       var error = this.validate();
       if (error) return error;
-      
+
       this.listenTo(this.model, 'invalid', function(model, e) {
         error = e;
       });
       this.model.set(this.key, this.getValue(), options);
-      
+
       if (error) return error;
     },
-    
+
     /**
      * Check validity
      * NOTE: The method is defined on the editors so that they can be used independently of fields
-     * 
+     *
      * @return {String}
      */
     validate: function() {
@@ -1084,8 +1084,8 @@ Form.editors = (function() {
 
       return error;
     },
-    
-    
+
+
     trigger: function(event) {
       if (event === 'focus') {
         this.hasFocus = true;
@@ -1093,7 +1093,7 @@ Form.editors = (function() {
       else if (event === 'blur') {
         this.hasFocus = false;
       }
-      
+
       return Backbone.View.prototype.trigger.apply(this, arguments);
     }
   });
@@ -1103,11 +1103,11 @@ Form.editors = (function() {
   editors.Text = editors.Base.extend({
 
     tagName: 'input',
-    
+
     defaultValue: '',
-    
+
     previousValue: '',
-    
+
     events: {
       'keyup':    'determineChange',
       'keypress': function(event) {
@@ -1126,15 +1126,15 @@ Form.editors = (function() {
         this.trigger('blur', this);
       }
     },
-    
+
     initialize: function(options) {
       editors.Base.prototype.initialize.call(this, options);
-      
+
       var schema = this.schema;
-      
+
       //Allow customising text type (email, phone etc.) for HTML5 browsers
       var type = 'text';
-      
+
       if (schema && schema.editorAttrs && schema.editorAttrs.type) type = schema.editorAttrs.type;
       if (schema && schema.dataType) type = schema.dataType;
 
@@ -1149,14 +1149,14 @@ Form.editors = (function() {
 
       return this;
     },
-    
+
     determineChange: function(event) {
       var currentValue = this.$el.val();
       var changed = (currentValue !== this.previousValue);
-      
+
       if (changed) {
         this.previousValue = currentValue;
-        
+
         this.trigger('change', this);
       }
     },
@@ -1168,27 +1168,27 @@ Form.editors = (function() {
     getValue: function() {
       return this.$el.val();
     },
-    
+
     /**
      * Sets the value of the form element
      * @param {String}
      */
-    setValue: function(value) { 
+    setValue: function(value) {
       this.$el.val(value);
     },
-    
+
     focus: function() {
       if (this.hasFocus) return;
 
       this.$el.focus();
     },
-    
+
     blur: function() {
       if (!this.hasFocus) return;
 
       this.$el.blur();
     },
-    
+
     select: function() {
       this.$el.select();
     }
@@ -1225,13 +1225,13 @@ Form.editors = (function() {
               self.determineChange();
             }, 0);
           };
-          
+
       //Allow backspace
       if (event.charCode === 0) {
         delayedDetermineChange();
         return;
       }
-      
+
       //Get the whole new value so that we can prevent things like double decimals points etc.
       var newVal = this.$el.val() + String.fromCharCode(event.charCode);
 
@@ -1245,12 +1245,12 @@ Form.editors = (function() {
       }
     },
 
-    getValue: function() {        
+    getValue: function() {
       var value = this.$el.val();
-      
+
       return value === "" ? null : parseFloat(value, 10);
     },
-    
+
     setValue: function(value) {
       value = (function() {
         if (_.isNumber(value)) return value;
@@ -1261,7 +1261,7 @@ Form.editors = (function() {
       })();
 
       if (_.isNaN(value)) value = null;
-      
+
       editors.Text.prototype.setValue.call(this, value);
     }
 
@@ -1286,15 +1286,15 @@ Form.editors = (function() {
     tagName: 'textarea'
 
   });
-  
-  
+
+
   //CHECKBOX
   editors.Checkbox = editors.Base.extend({
-      
+
     defaultValue: false,
-    
+
     tagName: 'input',
-    
+
     events: {
       'click':  function(event) {
         this.trigger('change', this);
@@ -1306,10 +1306,10 @@ Form.editors = (function() {
         this.trigger('blur', this);
       }
     },
-    
+
     initialize: function(options) {
       editors.Base.prototype.initialize.call(this, options);
-      
+
       this.$el.attr('type', 'checkbox');
     },
 
@@ -1321,35 +1321,35 @@ Form.editors = (function() {
 
       return this;
     },
-    
+
     getValue: function() {
       return this.$el.prop('checked');
     },
-    
+
     setValue: function(value) {
       if (value) {
         this.$el.prop('checked', true);
       }
     },
-    
+
     focus: function() {
       if (this.hasFocus) return;
 
       this.$el.focus();
     },
-    
+
     blur: function() {
       if (!this.hasFocus) return;
 
       this.$el.blur();
     }
-    
+
   });
-  
-  
+
+
   //HIDDEN
   editors.Hidden = editors.Base.extend({
-    
+
     defaultValue: '',
 
     initialize: function(options) {
@@ -1357,21 +1357,21 @@ Form.editors = (function() {
 
       this.$el.attr('type', 'hidden');
     },
-    
+
     getValue: function() {
       return this.value;
     },
-    
+
     setValue: function(value) {
       this.value = value;
     },
-    
+
     focus: function() {
-      
+
     },
-    
+
     blur: function() {
-      
+
     }
 
   });
@@ -1379,7 +1379,7 @@ Form.editors = (function() {
 
   /**
    * SELECT
-   * 
+   *
    * Renders a <select> with given options
    *
    * Requires an 'options' value on the schema.
@@ -1389,7 +1389,7 @@ Form.editors = (function() {
   editors.Select = editors.Base.extend({
 
     tagName: 'select',
-    
+
     events: {
       'change': function(event) {
         this.trigger('change', this);
@@ -1461,6 +1461,17 @@ Form.editors = (function() {
       var $select = this.$el,
           html;
 
+      html = this._getOptionsHtml(options);
+
+      //Insert options
+      $select.html(html);
+
+      //Select correct option
+      this.setValue(this.value);
+    },
+
+    _getOptionsHtml: function(options) {
+      var html;
       //Accept string of HTML
       if (_.isString(options)) {
         html = options;
@@ -1476,27 +1487,28 @@ Form.editors = (function() {
         html = this._collectionToHtml(options);
       }
 
-      //Insert options
-      $select.html(html);
+      else if (_.isFunction(options)) {
+        options(function(opts) { newOptions = opts; }, this);
+        html = this._getOptionsHtml(newOptions);
+      }
 
-      //Select correct option
-      this.setValue(this.value);
+      return html;
     },
 
     getValue: function() {
       return this.$el.val();
     },
-    
+
     setValue: function(value) {
       this.$el.val(value);
     },
-    
+
     focus: function() {
       if (this.hasFocus) return;
 
       this.$el.focus();
     },
-    
+
     blur: function() {
       if (!this.hasFocus) return;
 
@@ -1505,7 +1517,7 @@ Form.editors = (function() {
 
     /**
      * Transforms a collection into HTML ready to use in the renderOptions method
-     * @param {Backbone.Collection} 
+     * @param {Backbone.Collection}
      * @return {String}
      */
     _collectionToHtml: function(collection) {
@@ -1533,13 +1545,19 @@ Form.editors = (function() {
       //Generate HTML
       _.each(array, function(option) {
         if (_.isObject(option)) {
-          var val = (option.val || option.val === 0) ? option.val : '';
-          html.push('<option value="'+val+'">'+option.label+'</option>');
+          if (option.group) {
+            html.push('<optgroup label="'+option.group+'">');
+            html.push(this._getOptionsHtml(option.options))
+            html.push('</optgroup>');
+          } else {
+            var val = (option.val || option.val === 0) ? option.val : '';
+            html.push('<option value="'+val+'">'+option.label+'</option>');
+          }
         }
         else {
           html.push('<option>'+option+'</option>');
         }
-      });
+      }, this);
 
       return html.join('');
     }
@@ -1550,7 +1568,7 @@ Form.editors = (function() {
 
   /**
    * RADIO
-   * 
+   *
    * Renders a <ul> with given options represented as <li> objects containing radio buttons
    *
    * Requires an 'options' value on the schema.
@@ -1561,7 +1579,7 @@ Form.editors = (function() {
 
     tagName: 'ul',
     className: 'bbf-radio',
-    
+
     events: {
       'change input[type=radio]': function() {
         this.trigger('change', this);
@@ -1587,22 +1605,22 @@ Form.editors = (function() {
     setValue: function(value) {
       this.$('input[type=radio]').val([value]);
     },
-    
+
     focus: function() {
       if (this.hasFocus) return;
-      
+
       var checked = this.$('input[type=radio]:checked');
       if (checked[0]) {
         checked.focus();
         return;
       }
-      
+
       this.$('input[type=radio]').first().focus();
     },
-    
+
     blur: function() {
       if (!this.hasFocus) return;
-      
+
       this.$('input[type=radio]:focus').blur();
     },
 
@@ -1650,7 +1668,7 @@ Form.editors = (function() {
 
     tagName: 'ul',
     className: 'bbf-checkboxes',
-    
+
     events: {
       'click input[type=checkbox]': function() {
         this.trigger('change', this);
@@ -1681,16 +1699,16 @@ Form.editors = (function() {
       if (!_.isArray(values)) values = [values];
       this.$('input[type=checkbox]').val(values);
     },
-    
+
     focus: function() {
       if (this.hasFocus) return;
-      
+
       this.$('input[type=checkbox]').first().focus();
     },
-    
+
     blur: function() {
       if (!this.hasFocus) return;
-      
+
       this.$('input[type=checkbox]:focus').blur();
     },
 
@@ -1728,9 +1746,9 @@ Form.editors = (function() {
 
   /**
    * OBJECT
-   * 
+   *
    * Creates a child form. For editing Javascript objects
-   * 
+   *
    * @param {Object} options
    * @param {Object} options.schema             The schema for the object
    * @param {Object} options.schema.subSchema   The schema for the nested form
@@ -1752,7 +1770,7 @@ Form.editors = (function() {
       if (!this.schema.subSchema) throw new Error("Missing required 'schema.subSchema' option for Object editor");
     },
 
-    render: function() {      
+    render: function() {
       //Create the nested form
       this.form = new Form({
         schema: this.schema.subSchema,
@@ -1764,9 +1782,9 @@ Form.editors = (function() {
       this._observeFormEvents();
 
       this.$el.html(this.form.render().el);
-      
+
       if (this.hasFocus) this.trigger('blur', this);
-      
+
       return this;
     },
 
@@ -1775,22 +1793,22 @@ Form.editors = (function() {
 
       return this.value;
     },
-    
+
     setValue: function(value) {
       this.value = value;
-      
+
       this.render();
     },
-    
+
     focus: function() {
       if (this.hasFocus) return;
-      
+
       this.form.focus();
     },
-    
+
     blur: function() {
       if (!this.hasFocus) return;
-      
+
       this.form.blur();
     },
 
@@ -1799,18 +1817,18 @@ Form.editors = (function() {
 
       Backbone.View.prototype.remove.call(this);
     },
-    
+
     validate: function() {
       return this.form.validate();
     },
-    
+
     _observeFormEvents: function() {
       this.form.on('all', function() {
         // args = ["key:change", form, fieldEditor]
         var args = _.toArray(arguments);
         args[1] = this;
         // args = ["key:change", this=objectEditor, fieldEditor]
-        
+
         this.trigger.apply(this, args);
       }, this);
     }
@@ -1821,9 +1839,9 @@ Form.editors = (function() {
 
   /**
    * NESTED MODEL
-   * 
+   *
    * Creates a child form. For editing nested Backbone models
-   * 
+   *
    * Special options:
    *   schema.model:   Embedded model constructor
    */
@@ -1853,7 +1871,7 @@ Form.editors = (function() {
 
       //Render form
       this.$el.html(this.form.render().el);
-      
+
       if (this.hasFocus) this.trigger('blur', this);
 
       return this;
@@ -1930,18 +1948,18 @@ Form.editors = (function() {
         yearStart: today.getFullYear() - 100,
         yearEnd: today.getFullYear()
       }, options.schema || {});
-            
+
       //Cast to Date
       if (this.value && !_.isDate(this.value)) {
         this.value = new Date(this.value);
       }
-      
+
       //Set default date
       if (!this.value) {
         var date = new Date();
         date.setSeconds(0);
         date.setMilliseconds(0);
-        
+
         this.value = date;
       }
     },
@@ -1959,7 +1977,7 @@ Form.editors = (function() {
         return '<option value="'+month+'">' + value + '</option>';
       });
 
-      var yearRange = schema.yearStart < schema.yearEnd ? 
+      var yearRange = schema.yearStart < schema.yearEnd ?
         _.range(schema.yearStart, schema.yearEnd + 1) :
         _.range(schema.yearStart, schema.yearEnd - 1, -1);
       var yearsOptions = _.map(yearRange, function(year) {
@@ -1988,7 +2006,7 @@ Form.editors = (function() {
       //Remove the wrapper tag
       this.setElement($el);
       this.$el.attr('id', this.id);
-      
+
       if (this.hasFocus) this.trigger('blur', this);
 
       return this;
@@ -2006,7 +2024,7 @@ Form.editors = (function() {
 
       return new Date(year, month, date);
     },
-    
+
     /**
      * @param {Date} date
      */
@@ -2017,16 +2035,16 @@ Form.editors = (function() {
 
       this.updateHidden();
     },
-    
+
     focus: function() {
       if (this.hasFocus) return;
-      
+
       this.$('select').first().focus();
     },
-    
+
     blur: function() {
       if (!this.hasFocus) return;
-      
+
       this.$('select:focus').blur();
     },
 
@@ -2055,7 +2073,7 @@ Form.editors = (function() {
 
   /**
    * DATETIME
-   * 
+   *
    * @param {Editor} [options.DateEditor]           Date editor view to use (not definition)
    * @param {Number} [options.schema.minsInterval]  Interval between minutes. Default: 15
    */
@@ -2133,13 +2151,13 @@ Form.editors = (function() {
 
       //Get the hidden date field to store values in case POSTed to server
       this.$hidden = $el.find('input[type="hidden"]');
-      
+
       //Set time
       this.setValue(this.value);
 
       this.setElement($el);
       this.$el.attr('id', this.id);
-      
+
       if (this.hasFocus) this.trigger('blur', this);
 
       return this;
@@ -2161,27 +2179,27 @@ Form.editors = (function() {
 
       return date;
     },
-    
+
     setValue: function(date) {
       if (!_.isDate(date)) date = new Date(date);
-      
+
       this.dateEditor.setValue(date);
-      
+
       this.$hour.val(date.getHours());
       this.$min.val(date.getMinutes());
 
       this.updateHidden();
     },
-    
+
     focus: function() {
       if (this.hasFocus) return;
-      
+
       this.$('select').first().focus();
     },
-    
+
     blur: function() {
       if (!this.hasFocus) return;
-      
+
       this.$('select:focus').blur();
     },
 
