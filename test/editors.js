@@ -977,11 +977,11 @@ module('Select', {
                 options: [
                     {
                         group: 'Cities',
-                        options: [1,2,3]//'<option>Paris</option><option>Beijing</option><option>San Francisco</option>'
+                        options: '<option>Paris</option><option>Beijing</option><option>San Francisco</option>'
                     },
                     {
                         group: 'Countries',
-                        options: ['a', 'b']//'<option value="fr">France</option><option value="cn">China</option>'
+                        options: '<option value="fr">France</option><option value="cn">China</option>'
                     }
                 ]
             }
@@ -990,6 +990,7 @@ module('Select', {
         var group = field.$('optgroup').first();
         equal(group.attr('label'), 'Cities');
         equal($('option', group).length, 3);
+        equal($('option', group).first().text(), 'Paris');
         equal(field.$('optgroup').length, 2);
     });
 
