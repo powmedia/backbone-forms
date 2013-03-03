@@ -904,6 +904,9 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 <a name="changelog"/>
 ##Changelog
 
+###master
+- Select: Add option group support (khepin)
+
 ###0.11.0
 - Update for Backbone 0.9.10
 - Pass editor instance as second parameter to Select options function
