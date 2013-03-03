@@ -84,6 +84,21 @@
                     checkbox:   { type: 'Checkbox' },
                     radio:      { type: 'Radio', options: ['Opt 1', 'Opt 2'] },
                     select:     { type: 'Select', options: ['Opt 1', 'Opt 2'] },
+                    groupSelect: { type: 'Select', options: [
+                        {
+                            group: 'North America', options: [
+                                { val: 'ca', label: 'Canada' },
+                                { val: 'us', label: 'United States' }
+                            ],
+                        },
+                        {
+                            group: 'Europe', options: [
+                                { val: 'es', label: 'Spain' },
+                                { val: 'fr', label: 'France' },
+                                { val: 'uk', label: 'United Kingdom' }
+                            ]
+                        }
+                    ] },
                     checkboxes: { type: 'Checkboxes', options: ['Sterling', 'Lana', 'Cyril', 'Cheryl', 'Pam'] },
                     object:     { type: 'Object', subSchema: {
                       name: {},
@@ -113,7 +128,7 @@
             var form = new Backbone.Form({
                 model: model,
                 fieldsets: [
-                    ['email', 'tel', 'number', 'checkbox', 'radio', 'select', 'checkboxes', 'customTemplate', 'shorthand', 'date', 'dateTime'],
+                    ['email', 'tel', 'number', 'checkbox', 'radio', 'select', 'groupSelect', 'checkboxes', 'customTemplate', 'shorthand', 'date', 'dateTime'],
                     { legend: 'Lists', fields: ['textList', 'objList'] },
                     { legend: 'Nested editors', fields: ['object', 'nestedModel'] }
                 ]
@@ -129,6 +144,8 @@
                     key = $editor.attr('name');
 
                 var editor = form.fields[key];
+
+                console.log(editor.getValue())
             });
             
             $('#uiTest button.validate').click(function() { form.validate() });
