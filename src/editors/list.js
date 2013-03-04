@@ -68,12 +68,12 @@
 
       //Add existing items
       if (value.length) {
-    	items = value;
-    	if (value instanceof Backbone.Collection) {
-    		items = value.models;
-    	}
+        items = value;
+        if (value instanceof Backbone.Collection) {
+          items = value.models;
+        }
         _.each(items, function(itemValue) {
-	          self.addItem(itemValue, false);
+          self.addItem(itemValue, false);
         });
       }
 
@@ -496,9 +496,9 @@
       
       //Otherwise check if it's NestedModel with it's own toString() method
       if (schema.itemType === 'NestedModel') {
-    	if (value instanceof Backbone.Model) {
-    		return value.toString();
-    	}
+        if (value instanceof Backbone.Model) {
+          return value.toString();
+        }
         return new (schema.model)(value).toString();
       }
       
