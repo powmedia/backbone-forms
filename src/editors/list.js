@@ -26,6 +26,9 @@
 
       var schema = this.schema;
       if (!schema) throw "Missing required option 'schema'";
+      if (schema.itemType === 'NestedModel' && !schema.collection) {
+        schema.collection = Backbone.Collection;
+      }
 
       //List schema defaults
       this.schema = _.extend({
@@ -52,7 +55,8 @@
 
     render: function() {
       var self = this,
-          value = this.value || [];
+          value = this.value || [],
+          items;
 
       //Create main element
       var $el = $(Form.templates[this.schema.listTemplate]({
@@ -64,14 +68,18 @@
 
       //Add existing items
       if (value.length) {
-        _.each(value, function(itemValue) {
-          self.addItem(itemValue);
+    	items = value;
+    	if (value instanceof Backbone.Collection) {
+    		items = value.models;
+    	}
+        _.each(items, function(itemValue) {
+	          self.addItem(itemValue, false);
         });
       }
 
       //If no existing items create an empty one, unless the editor specifies otherwise
       else {
-        if (!this.Editor.isAsync) this.addItem();
+        if (!this.Editor.isAsync) this.addItem(undefined, false);
       }
 
       this.setElement($el);
@@ -189,7 +197,11 @@
       });
 
       //Filter empty items
-      return _.without(values, undefined, '');
+      values = _.without(values, undefined, '');
+      if (this.schema.itemType === 'NestedModel') {
+        values = new this.schema.collection(values);
+      }
+      return values;
     },
 
     setValue: function(value) {
@@ -484,6 +496,9 @@
       
       //Otherwise check if it's NestedModel with it's own toString() method
       if (schema.itemType === 'NestedModel') {
+    	if (value instanceof Backbone.Model) {
+    		return value.toString();
+    	}
         return new (schema.model)(value).toString();
       }
       
