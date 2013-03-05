@@ -180,6 +180,20 @@ Form.helpers = (function() {
   };
 
 
+  /**
+   * Given an HTML string, return a jQuery-wrapped array of DOM nodes.
+   *
+   * @param {String} html
+   * @return {Object}
+   */
+  helpers.parseHTML = function(html) { 
+    if ($.parseHTML !== undefined) {
+      return $.parseHTML(html);
+    }
+    return $(html);
+  };
+
+
   return helpers;
 
 })();

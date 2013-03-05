@@ -1030,7 +1030,7 @@ Form.editors = (function() {
       });
 
       //Render the selects
-      var $el = this.form.parseHTML(Form.templates.date({
+      var $el = Form.helpers.parseHTML(Form.templates.date({
         dates: datesOptions.join(''),
         months: monthsOptions.join(''),
         years: yearsOptions.join('')
@@ -1181,7 +1181,7 @@ Form.editors = (function() {
       });
 
       //Render time selects
-      var $el = this.form.parseHTML(Form.templates.dateTime({
+      var $el = Form.helpers.parseHTML(Form.templates.dateTime({
         date: '<b class="bbf-tmp"></b>',
         hours: hoursOptions.join(),
         mins: minsOptions.join()
