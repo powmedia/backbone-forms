@@ -143,33 +143,6 @@ Form.helpers = (function() {
     return new constructorFn(options);
   };
   
-  /**
-   * Triggers an event that can be cancelled. Requires the user to invoke a callback. If false
-   * is passed to the callback, the action does not run.
-   *
-   * NOTE: This helper uses private Backbone apis so can break when Backbone is upgraded
-   * 
-   * @param {Mixed}       Instance of Backbone model, view, collection to trigger event on
-   * @param {String}      Event name
-   * @param {Array}       Arguments to pass to the event handlers
-   * @param {Function}    Callback to run after the event handler has run.
-   *                      If any of them passed false or error, this callback won't run
-   */ 
-  helpers.triggerCancellableEvent = function(subject, event, args, callback) { 
-    //Return if there are no event listeners
-    if (!subject._callbacks || !subject._callbacks[event]) return callback();
-    
-    var next = subject._callbacks[event].next;
-    if (!next) return callback();
-    
-    var fn = next.callback,
-        context = next.context || this;
-    
-    //Add the callback that will be used when done
-    args.push(callback);
-    
-    fn.apply(context, args);
-  };
   
   /**
    * Returns a validation function based on the type defined in the schema

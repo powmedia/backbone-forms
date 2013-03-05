@@ -4,16 +4,16 @@ var same = deepEqual;
 
 module('Base');
 
-(function() {  
+(function() {
   test('initialize() - sets the "name" attribute on the element, if key is available', function() {
     var editor = new editors.Text({
       model: new Post,
       key: 'title'
     }).render();
-    
+
     equal($(editor.el).attr('name'), 'title')
   })
-  
+
   test("'schema.editorClass' option - Adds class names to editor", function() {
     var editor = new editors.Text({
       key: 'title',
@@ -21,11 +21,11 @@ module('Base');
     }).render();
 
     var $el = editor.$el;
-    
+
     ok($el.hasClass('foo'), 'Adds first defined class');
     ok($el.hasClass('bar'), 'Adds other defined class');
   })
-  
+
   test("'schema.editorAttrs' option - Adds custom attributes", function() {
     var editor = new editors.Text({
       key: 'title',
@@ -44,18 +44,18 @@ module('Base');
     equal($el.attr('type'), 'foo');
     equal($el.attr('custom'), 'hello');
   })
-  
+
   test('commit() - returns validation errors', function() {
     var editor = new editors.Text({
       model: new Post,
       key: 'title',
       validators: ['required']
     }).render();
-    
+
     editor.setValue(null);
-    
+
     var err = editor.commit();
-    
+
     equal(err.type, 'required');
     equal(err.message, 'Required');
   });
@@ -75,10 +75,10 @@ module('Base');
 
     equal(post.get('title'), 'New Title');
   });
-  
+
   test('commit() - returns model validation errors', function() {
     var post = new Post;
-    
+
     post.validate = function() {
       return 'ERROR';
     };
@@ -87,12 +87,12 @@ module('Base');
       model: post,
       key: 'title'
     }).render();
-    
-    var err = editor.commit();
-    
+
+    var err = editor.commit({ validate: true });
+
     equal(err, 'ERROR');
   });
-  
+
   test('validate() - returns validation errors', function() {
     var editor = new editors.Text({
       key: 'title',
@@ -126,9 +126,9 @@ module('Text', {
 });
 
 (function() {
-    
+
     var editor = editors.Text;
-    
+
     test('getValue() - Default value', function() {
         var field = new editor().render();
 
@@ -148,27 +148,27 @@ module('Text', {
             model: new Post,
             key: 'title'
         }).render();
-        
+
         equal(field.getValue(), 'Danger Zone!');
     });
-    
+
     test("setValue() - updates the input value", function() {
         var field = new editor({
             model: new Post,
             key: 'title'
         }).render();
-        
+
         field.setValue('foobar');
-        
+
         equal(field.getValue(), 'foobar');
         equal($(field.el).val(), 'foobar');
     });
-    
+
     test("focus() - gives focus to editor and its input", function() {
         var field = window.form.fields.email.editor;
 
         field.focus();
-        
+
         ok(field.hasFocus);
         ok(field.$el.is(':focus'));
     });
@@ -184,7 +184,7 @@ module('Text', {
         field.on('focus', spy);
 
         field.focus();
-        
+
         ok(spy.called);
         ok(spy.calledWith(field));
     });
@@ -195,7 +195,7 @@ module('Text', {
         field.focus();
 
         field.blur();
-        
+
         ok(!field.hasFocus);
         ok(!field.$el.is(':focus'));
     });
@@ -205,7 +205,7 @@ module('Text', {
             model: new Post,
             key: 'title'
         }).render();
-        
+
         field.focus()
 
         var spy = this.sinon.spy();
@@ -213,88 +213,88 @@ module('Text', {
         field.on('blur', spy);
 
         field.blur();
-        
+
         ok(spy.called);
         ok(spy.calledWith(field));
     });
-    
+
     test("select() - triggers the 'select' event", function() {
         var field = new editor({
             model: new Post,
             key: 'title'
         }).render();
-        
+
         var spy = this.sinon.spy();
 
         field.on('select', spy);
 
         field.select();
-        
+
         ok(spy.called);
         ok(spy.calledWith(field));
     });
-    
+
     test("'change' event - is triggered when value of input changes", function() {
         var field = new editor({
             model: new Post,
             key: 'title'
         }).render();
-        
+
         callCount = 0;
 
         var spy = this.sinon.spy();
-        
+
         field.on('change', spy);
-        
+
         // Pressing a key
         field.$el.keypress();
         field.$el.val('a');
-        
+
         stop();
         setTimeout(function(){
             callCount++;
-        
+
             field.$el.keyup();
-        
+
             // Keeping a key pressed for a longer time
             field.$el.keypress();
             field.$el.val('ab');
-            
+
             setTimeout(function(){
                 callCount++;
-                
+
                 field.$el.keypress();
                 field.$el.val('abb');
-                
+
                 setTimeout(function(){
                     callCount++;
-                    
+
                     field.$el.keyup();
-        
+
                     // Cmd+A; Backspace: Deleting everything
                     field.$el.keyup();
                     field.$el.val('');
                     field.$el.keyup();
                     callCount++;
-        
+
                     // Cmd+V: Pasting something
                     field.$el.val('abdef');
                     field.$el.keyup();
                     callCount++;
-        
+
                     // Left; Right: Pointlessly moving around
                     field.$el.keyup();
                     field.$el.keyup();
 
                     ok(spy.callCount == callCount);
                     ok(spy.alwaysCalledWith(field));
-            
+
                     start();
                 }, 0);
             }, 0);
         }, 0);
     });
-    
+
     test("'focus' event - bubbles up from the input", function() {
         var field = new editor({
             model: new Post,
@@ -302,15 +302,15 @@ module('Text', {
         }).render();
 
         var spy = this.sinon.spy();
-        
+
         field.on('focus', spy);
-        
+
         field.$el.focus();
-        
+
         ok(spy.calledOnce);
         ok(spy.alwaysCalledWith(field));
     });
-    
+
     test("'blur' event - bubbles up from the input", function() {
         var field = new editor({
             model: new Post,
@@ -320,9 +320,9 @@ module('Text', {
         field.$el.focus();
 
         var spy = this.sinon.spy();
-        
+
         field.on('blur', spy);
-        
+
         field.$el.blur();
 
         ok(spy.calledOnce);
@@ -337,9 +337,9 @@ module('Text', {
 
 
         var spy = this.sinon.spy();
-        
+
         field.on('select', spy);
-        
+
         field.$el.select();
 
         ok(spy.calledOnce);
@@ -351,12 +351,12 @@ module('Text', {
 
         equal($(field.el).attr('type'), 'text');
     });
-    
+
     test('Type can be changed', function() {
         var field = new editor({
             schema: { dataType: 'tel' }
         }).render();
-        
+
         equal($(field.el).attr('type'), 'tel');
     });
 
@@ -376,9 +376,9 @@ module('Number', {
 });
 
 (function() {
-    
+
     var editor = editors.Number;
-    
+
     test('Default value', function() {
         var field = new editor().render();
 
@@ -405,7 +405,7 @@ module('Number', {
             model: new Post({ title: 99 }),
             key: 'title'
         }).render();
-        
+
         deepEqual(field.getValue(), 99);
     });
 
@@ -416,9 +416,9 @@ module('Number', {
 
         deepEqual(field.$el.attr('type'), 'number');
     });
-    
-    test("TODO: Restricts non-numeric characters", function() {
 
+    test("TODO: Restricts non-numeric characters", function() {
+        ok(1);
     });
 
     test("setValue() - updates the input value", function() {
@@ -455,44 +455,44 @@ module('Number', {
         field.setValue('heuo46fuek');
         same(field.getValue(), null);
     });
-    
+
     test("'change' event - is triggered when value of input changes and is valid", function() {
         var field = new editor({
             model: new Post,
             key: 'title'
         }).render();
-        
+
         callCount = 0;
 
         var spy = this.sinon.spy();
-        
+
         field.on('change', spy);
-        
+
         // Pressing a valid key
         field.$el.keypress($.Event("keypress", { charCode: 48 }));
         field.$el.val('0');
-        
+
         stop();
         setTimeout(function(){
             callCount++;
-        
+
             field.$el.keyup();
-        
+
             // Pressing an invalid key
             field.$el.keypress($.Event("keypress", { charCode: 65 }));
-            
+
             setTimeout(function(){
                 field.$el.keyup();
-                
+
                 // Pressing a valid key
                 field.$el.keypress($.Event("keypress", { charCode: 49 }));
                 field.$el.val('01');
-                
+
                 setTimeout(function(){
                     callCount++;
-                    
+
                     field.$el.keyup();
-        
+
                     // Cmd+A; Backspace: Deleting everything
                     field.$el.keyup();
                     field.$el.val('');
@@ -501,7 +501,7 @@ module('Number', {
 
                     ok(spy.callCount == callCount);
                     ok(spy.alwaysCalledWith(field));
-            
+
                     start();
                 }, 0);
             }, 0);
@@ -516,9 +516,9 @@ module('Number', {
 module('Password');
 
 (function() {
-    
+
     var editor = editors.Password;
-    
+
     test('Default value', function() {
         var field = new editor().render();
 
@@ -538,24 +538,24 @@ module('Password');
             model: new Post,
             key: 'title'
         }).render();
-        
+
         equal(field.getValue(), 'Danger Zone!');
     });
-    
+
     test('Correct type', function() {
         var field = new editor().render();
-        
+
         equal($(field.el).attr('type'), 'password');
     });
-    
+
     test("setValue() - updates the input value", function() {
         var field = new editor({
             model: new Post,
             key: 'title'
         }).render();
-        
+
         field.setValue('foobar');
-        
+
         equal(field.getValue(), 'foobar');
         equal($(field.el).val(), 'foobar');
     });
@@ -568,9 +568,9 @@ module('Password');
 module('TextArea');
 
 (function() {
-    
+
     var editor = editors.TextArea;
-    
+
     test('Default value', function() {
         var field = new editor().render();
 
@@ -590,24 +590,24 @@ module('TextArea');
             model: new Post,
             key: 'title'
         }).render();
-        
+
         equal(field.getValue(), 'Danger Zone!');
     });
-    
+
     test('Correct type', function() {
         var field = new editor().render();
-        
+
         equal($(field.el).get(0).tagName, 'TEXTAREA');
     });
-    
+
     test("setValue() - updates the input value", function() {
         var field = new editor({
             model: new Post,
             key: 'title'
         }).render();
-        
+
         field.setValue('foobar');
-        
+
         equal(field.getValue(), 'foobar');
         equal($(field.el).val(), 'foobar');
     });
@@ -627,15 +627,15 @@ module('Checkbox', {
 });
 
 (function() {
-    
+
     var editor = editors.Checkbox;
-    
+
     var Model = Backbone.Model.extend({
         schema: {
             enabled: { type: 'Checkbox' }
         }
     });
-    
+
     test('Default value', function() {
         var field = new editor().render();
 
@@ -655,47 +655,47 @@ module('Checkbox', {
             model: new Model({ enabled: true }),
             key: 'enabled'
         }).render();
-        
+
         deepEqual(field.getValue(), true);
     });
-    
+
     test('Correct type', function() {
         var field = new editor().render();
-        
+
         deepEqual($(field.el).get(0).tagName, 'INPUT');
         deepEqual($(field.el).attr('type'), 'checkbox');
     });
-    
+
     test("getValue() - returns boolean", function() {
         var field1 = new editor({
             value: true
         }).render();
-        
+
         var field2 = new editor({
             value: false
         }).render();
-        
+
         deepEqual(field1.getValue(), true);
         deepEqual(field2.getValue(), false);
     });
-    
+
     test("setValue() - updates the input value", function() {
         var field = new editor({
             model: new Model,
             key: 'enabled'
         }).render();
-        
+
         field.setValue(true);
-        
+
         deepEqual(field.getValue(), true);
         deepEqual($(field.el).attr('checked'), 'checked');
     });
-    
+
     test("focus() - gives focus to editor and its checkbox", function() {
         var field = window.form.fields.checkbox.editor;
 
         field.focus();
-        
+
         ok(field.hasFocus);
         ok(field.$el.is(':focus'));
     });
@@ -711,7 +711,7 @@ module('Checkbox', {
         field.on('focus', spy);
 
         field.focus();
-        
+
         ok(spy.called);
         ok(spy.calledWith(field));
     });
@@ -722,7 +722,7 @@ module('Checkbox', {
         field.focus();
 
         field.blur();
-        
+
         ok(!field.hasFocus);
         ok(!field.$el.is(':focus'));
     });
@@ -732,7 +732,7 @@ module('Checkbox', {
             model: new Model,
             key: 'enabled'
         }).render();
-        
+
         field.focus()
 
         var spy = this.sinon.spy();
@@ -740,11 +740,11 @@ module('Checkbox', {
         field.on('blur', spy);
 
         field.blur();
-        
+
         ok(spy.called);
         ok(spy.calledWith(field));
     });
-    
+
     test("'change' event - is triggered when the checkbox is clicked", function() {
         var field = new editor({
             model: new Model,
@@ -752,15 +752,15 @@ module('Checkbox', {
         }).render();
 
         var spy = this.sinon.spy();
-        
+
         field.on('change', spy);
-        
+
         field.$el.click();
-        
+
         ok(spy.calledOnce);
         ok(spy.alwaysCalledWith(field));
     });
-    
+
     test("'focus' event - bubbles up from the checkbox", function() {
         var field = new editor({
             model: new Model,
@@ -768,15 +768,15 @@ module('Checkbox', {
         }).render();
 
         var spy = this.sinon.spy();
-        
+
         field.on('focus', spy);
-        
+
         field.$el.focus();
-        
+
         ok(spy.calledOnce);
         ok(spy.alwaysCalledWith(field));
     });
-    
+
     test("'blur' event - bubbles up from the checkbox", function() {
         var field = new editor({
             model: new Model,
@@ -786,15 +786,15 @@ module('Checkbox', {
         field.$el.focus();
 
         var spy = this.sinon.spy();
-        
+
         field.on('blur', spy);
-        
+
         field.$el.blur();
 
         ok(spy.calledOnce);
         ok(spy.alwaysCalledWith(field));
     });
-    
+
 })();
 
 
@@ -861,12 +861,34 @@ module('Select', {
 });
 
 (function() {
-    
-    var editor = editors.Select,
+
+    var OptionModel = Backbone.Model.extend({
+            toString: function() {
+                return this.get('name');
+            }
+        }),
+
+        OptionCollection = Backbone.Collection.extend({
+            model: OptionModel
+        }),
+
+        editor = editors.Select,
         schema = {
             options: ['Sterling', 'Lana', 'Cyril', 'Cheryl', 'Pam']
         };
-    
+        optGroupSchema = {
+            options: [
+                {
+                    group: 'Cities',
+                    options: [ 'Paris', 'Beijing', 'San Francisco']
+                },
+                {
+                    group: 'Countries',
+                    options: [{val: 'fr', label: 'France'}, {val: 'cn', label: 'China'}]
+                }
+            ]
+        }
+
     test('Default value', function() {
         var field = new editor({
             schema: schema
@@ -890,16 +912,216 @@ module('Select', {
             key: 'name',
             schema: schema
         }).render();
-        
+
         equal(field.getValue(), 'Lana');
     });
-    
+
     test('Correct type', function() {
         var field = new editor({
             schema: schema
         }).render();
-        
+
         equal($(field.el).get(0).tagName, 'SELECT');
+    });
+
+    test('Option groups', function() {
+        var field = new editor({
+            schema: optGroupSchema
+        }).render();
+
+        equal(field.$('optgroup').length, 2);
+        equal(field.$('optgroup').first().attr('label'), 'Cities')
+    });
+
+    test('Option groups only contain their "own" options', function() {
+        var field = new editor({
+            schema: optGroupSchema
+        }).render();
+
+        var group = field.$('optgroup').first();
+        equal($('option', group).length, 3);
+        var options = _.map($('option', group), function(el) {
+            return $(el).text();
+        });
+        ok(_.contains(options, 'Paris'));
+        ok(_.contains(options, 'Beijing'));
+        ok(_.contains(options, 'San Francisco'));
+
+        var group = field.$('optgroup').last();
+        window.group = group;
+        window.field = field;
+        equal($('option', group).length, 2);
+        var options = _.map($('option', group), function(el) {
+            return $(el).text();
+        });
+        ok(_.contains(options, 'France'));
+        ok(_.contains(options, 'China'));
+    });
+
+    test('Option groups allow to specify option value / label', function() {
+        var field = new editor({
+            schema: optGroupSchema
+        }).render();
+
+        var group = field.$('optgroup').last();
+        var options = $('option', group);
+        equal(options.first().attr('value'), 'fr');
+        equal(options.last().attr('value'), 'cn');
+        equal(options.first().text(), 'France');
+        equal(options.last().text(), 'China');
+    });
+
+    test('Option groups with options as string', function() {
+        var field = new editor({
+            schema: {
+                options: [
+                    {
+                        group: 'Cities',
+                        options: '<option>Paris</option><option>Beijing</option><option>San Francisco</option>'
+                    },
+                    {
+                        group: 'Countries',
+                        options: '<option value="fr">France</option><option value="cn">China</option>'
+                    }
+                ]
+            }
+        }).render();
+
+        var group = field.$('optgroup').first();
+        equal(group.attr('label'), 'Cities');
+        equal($('option', group).length, 3);
+        equal($('option', group).first().text(), 'Paris');
+        equal(field.$('optgroup').length, 2);
+    });
+
+    test('Option groups with options as callback', function() {
+        var field = new editor({
+            schema: {
+                options: function(callback, thisEditor) {
+                    ok(thisEditor instanceof editor);
+                    ok(thisEditor instanceof editors.Base);
+                    callback(optGroupSchema.options);
+                }
+            }
+        }).render();
+
+        var optgroups = field.$('optgroup');
+
+        equal(optgroups.length, 2);
+
+        equal($('option', optgroups.first()).first().text(), 'Paris');
+        equal($('option', optgroups.last()).first().text(), 'France');
+        equal($('option', optgroups.last()).first().attr('value'), 'fr');
+    });
+
+    test('Each option group as its own callback', function() {
+        var field = new editor({
+            schema: {
+                options: [
+                    {
+                        group: 'Cities',
+                        options: function(callback, thisEditor) {
+                            ok(thisEditor instanceof editor);
+                            ok(thisEditor instanceof editors.Base);
+                            callback(optGroupSchema.options[0].options);
+                        }
+                    },
+                    {
+                        group: 'Countries',
+                        options: function(callback, thisEditor) {
+                            ok(thisEditor instanceof editor);
+                            ok(thisEditor instanceof editors.Base);
+                            callback(optGroupSchema.options[1].options);
+                        }
+                    }
+                ]
+            }
+        }).render();
+
+        var optgroups = field.$('optgroup');
+
+        equal(optgroups.length, 2);
+
+        equal($('option', optgroups.first()).first().text(), 'Paris');
+        equal($('option', optgroups.last()).first().text(), 'France');
+        equal($('option', optgroups.last()).first().attr('value'), 'fr');
+    });
+
+    test('Mixed specification for option groups', function() {
+        var countries = new OptionCollection([
+            { id: 'fr', name: 'France' },
+            { id: 'cn', name: 'China' }
+        ]);
+        var field = new editor({
+            schema: {
+                options: [
+                    { group: 'Countries', options: countries },
+                    { group: 'Cities', options: ['Paris', 'Beijing', 'Tokyo']},
+                    { group: 'Food', options: '<option>Bread</option>'},
+                    { group: 'Cars', options: function(callback, thisEditor) {
+                        ok(thisEditor instanceof editor);
+                        ok(thisEditor instanceof editors.Base);
+                        callback(['VolksWagen', 'Fiat', 'Opel', 'Tesla']);
+                    }}
+                ]
+            }
+        }).render();
+
+        var optgroups = field.$('optgroup');
+
+        equal(optgroups.length, 4);
+        // Countries:
+        var options = $('option', optgroups.get(0));
+        equal(options.length, 2);
+        equal(options.first().attr('value'), 'fr');
+        equal(options.first().text(), 'France');
+        // Cities
+        var options = $('option', optgroups.get(1));
+        equal(options.length, 3);
+        equal(options.first().text(), 'Paris');
+        // Food
+        var options = $('option', optgroups.get(2));
+        equal(options.length, 1);
+        equal(options.first().text(), 'Bread');
+        // Cars
+        var options = $('option', optgroups.get(3));
+        equal(options.length, 4);
+        equal(options.last().text(), 'Tesla');
+    });
+
+    test('Option groups with collections', function() {
+        var countries = new OptionCollection([
+            { id: 'fr', name: 'France' },
+            { id: 'cn', name: 'China' }
+        ]);
+        var cities = new OptionCollection([
+            { id: 'paris', name: 'Paris' },
+            { id: 'bj', name: 'Beijing' },
+            { id: 'sf', name: 'San Francisco' }
+        ]);
+
+        var field = new editor({
+            schema: {
+                options: [
+                    {
+                        group: 'Countries',
+                        options: countries
+                    },
+                    {
+                        group: 'Cities',
+                        options: cities
+                    }
+                ]
+            }
+        }).render();
+
+        var optgroups = field.$el.find('optgroup');
+        equal(optgroups.length, 2);
+
+        equal($('option', optgroups.first()).first().text(), 'France');
+        equal($('option', optgroups.first()).first().attr('value'), 'fr');
+        equal($('option', optgroups.last()).last().attr('value'), 'sf');
+        equal($('option', optgroups.last()).last().text(), 'San Francisco');
     });
 
     test('setOptions() - updates the options on a rendered select', function() {
@@ -915,74 +1137,132 @@ module('Select', {
         equal(newOptions.first().html(), 1);
         equal(newOptions.last().html(), 3);
     });
-    
-    test('TODO: Options as array of items', function() {
 
-    });
-    
-    test('Options as array of objects', function() {
+    test('Options as array of items', function() {
         var field = new editor({
-            schema: schema
-        }).render();
-
-        field.setOptions([
-            {
-                val: 0,
-                label: "Option 1"
-            },
-            {
-                val: 1,
-                label: "Option 2"
-            },
-            {
-                val: 2,
-                label: "Option 3"
+            schema: {
+                options: ['Matilda', 'Larry']
             }
-        ]);
+        }).render();
 
         var newOptions = field.$el.find('option');
 
-        equal(newOptions.length, 3);
-        equal(newOptions.first().html(), "Option 1");
-        equal(newOptions.last().html(), "Option 3");
-
-        equal(newOptions.first().val(), "0");
-        equal(newOptions.last().val(), "2");
+        equal(newOptions.first().html(), 'Matilda');
+        equal(newOptions.last().html(), 'Larry');
     });
 
-    test('TODO: Options as function that calls back with options', function() {
+    test('Options as array of objects', function() {
+        var field = new editor({
+            schema: {
+                options: [
+                    { val: 'kid1', label: 'Teo' },
+                    { val: 'kid2', label: 'Lilah' },
+                ]
+            }
+        }).render();
+
+        var newOptions = field.$el.find('option');
+
+        equal(newOptions.first().val(), 'kid1');
+        equal(newOptions.last().val(), 'kid2');
+        equal(newOptions.first().html(), 'Teo');
+        equal(newOptions.last().html(), 'Lilah');
+    });
+
+    test('Options as function that calls back with options', function() {
+        var field = new editor({
+            schema: {
+                options: function(callback, thisEditor) {
+                    ok(thisEditor instanceof editor);
+                    ok(thisEditor instanceof editors.Base);
+                    callback(['Melony', 'Frank']);
+                }
+            }
+        }).render();
+
+        var newOptions = field.$el.find('option');
+
+        equal(newOptions.first().html(), 'Melony');
+        equal(newOptions.last().html(), 'Frank');
+    });
+
+    test('Options as string of HTML', function() {
+        var field = new editor({
+            schema: {
+                options: '<option>Howard</option><option>Bree</option>'
+            }
+        }).render();
+
+        var newOptions = field.$el.find('option');
+
+        equal(newOptions.first().html(), 'Howard');
+        equal(newOptions.last().html(), 'Bree');
+    });
+
+    test('Options as a pre-populated collection', function() {
+        var options = new OptionCollection([
+            { id: 'kid1', name: 'Billy' },
+            { id: 'kid2', name: 'Sarah' }
+        ]);
+
+        var field = new editor({
+            schema: {
+                options: options
+            }
+        }).render();
+
+        var newOptions = field.$el.find('option');
+
+        equal(newOptions.first().val(), 'kid1');
+        equal(newOptions.last().val(), 'kid2');
+        equal(newOptions.first().html(), 'Billy');
+        equal(newOptions.last().html(), 'Sarah');
+    });
+
+    test('Options as a new collection (needs to be fetched)', function() {
+        OptionCollection.prototype.sync = function(method, collection, options) {
+            if (method === 'read') {
+                options.success(collection, [
+                    { id: 'kid1', name: 'Barbara' },
+                    { id: 'kid2', name: 'Phil' }
+                ], options);
+            }
+        };
+
+        var options = new OptionCollection();
+
+        var field = new editor({
+            schema: {
+                options: options
+            }
+        }).render();
+
+        var newOptions = field.$el.find('option');
+
+        equal(newOptions.first().val(), 'kid1');
+        equal(newOptions.last().val(), 'kid2');
+        equal(newOptions.first().html(), 'Barbara');
+        equal(newOptions.last().html(), 'Phil');
 
     });
 
-    test('TODO: Options as string of HTML', function() {
-
-    });
-
-    test('TODO: Options as a pre-populated collection', function() {
-
-    });
-    
-    test('TODO: Options as a new collection (needs to be fetched)', function() {
-
-    });
-    
     test("setValue() - updates the input value", function() {
         var field = new editor({
             value: 'Pam',
             schema: schema
         }).render();
-        
+
         field.setValue('Lana');
-        
+
         equal(field.getValue(), 'Lana');
         equal($(field.el).val(), 'Lana');
     });
-    
+
     test("focus() - gives focus to editor and its selectbox", function() {
         var field = window.form.fields.select.editor;
 
         field.focus();
-        
+
         ok(field.hasFocus);
         ok(field.$el.is(':focus'));
     });
@@ -998,7 +1278,7 @@ module('Select', {
         field.on('focus', spy);
 
         field.focus();
-        
+
         ok(spy.called);
         ok(spy.calledWith(field));
     });
@@ -1009,7 +1289,7 @@ module('Select', {
         field.focus();
 
         field.blur();
-        
+
         ok(!field.hasFocus);
         ok(!field.$el.is(':focus'));
     });
@@ -1019,7 +1299,7 @@ module('Select', {
             value: 'Pam',
             schema: schema
         }).render();
-        
+
         field.focus()
 
         var spy = this.sinon.spy();
@@ -1027,11 +1307,11 @@ module('Select', {
         field.on('blur', spy);
 
         field.blur();
-        
+
         ok(spy.called);
         ok(spy.calledWith(field));
     });
-    
+
     test("'change' event - bubbles up from the selectbox", function() {
         var field = new editor({
             value: 'Pam',
@@ -1039,16 +1319,16 @@ module('Select', {
         }).render();
 
         var spy = this.sinon.spy();
-        
+
         field.on('change', spy);
-        
+
         field.$el.val('Cyril');
         field.$el.change();
-        
+
         ok(spy.calledOnce);
         ok(spy.alwaysCalledWith(field));
     });
-    
+
     test("'focus' event - bubbles up from the selectbox", function() {
         var field = new editor({
             value: 'Pam',
@@ -1056,15 +1336,15 @@ module('Select', {
         }).render();
 
         var spy = this.sinon.spy();
-        
+
         field.on('focus', spy);
-        
+
         field.$el.focus();
-        
+
         ok(spy.calledOnce);
         ok(spy.alwaysCalledWith(field));
     });
-    
+
     test("'blur' event - bubbles up from the selectbox", function() {
         var field = new editor({
             value: 'Pam',
@@ -1074,9 +1354,9 @@ module('Select', {
         field.$el.focus();
 
         var spy = this.sinon.spy();
-        
+
         field.on('blur', spy);
-        
+
         field.$el.blur();
 
         ok(spy.calledOnce);
@@ -1176,37 +1456,37 @@ module('Radio', {
         equal($(field.el).get(0).tagName, 'UL');
         notEqual($(field.el).find('input[type=radio]').length, 0);
     });
-    
+
     test("focus() - gives focus to editor and its first radiobutton when no radiobutton is checked", function() {
         var field = window.form.fields.radio.editor;
 
         field.focus();
-        
+
         ok(field.hasFocus);
         ok(field.$('input[type=radio]').first().is(':focus'));
-        
+
         field.blur();
-        
+
         stop();
         setTimeout(function() {
           start();
         }, 0);
     });
-    
+
     test("focus() - gives focus to editor and its checked radiobutton when a radiobutton is checked", function() {
         var field = window.form.fields.radio.editor;
-        
+
         field.$('input[type=radio]').val([field.$('input[type=radio]').eq(1).val()]);
 
         field.focus();
-        
+
         ok(field.hasFocus);
         ok(field.$('input[type=radio]').eq(1).is(':focus'));
-        
+
         field.$('input[type=radio]').val([null]);
-        
+
         field.blur();
-        
+
         stop();
         setTimeout(function() {
           start();
@@ -1277,12 +1557,12 @@ module('Radio', {
         var spy = this.sinon.spy();
 
         field.on('change', spy);
-        
+
         field.$("input[type=radio]:not(:checked)").first().click();
 
         ok(spy.called);
         ok(spy.calledWith(field));
-        
+
         field.$("input[type=radio]").val([null]);
     });
 
@@ -1297,9 +1577,9 @@ module('Radio', {
 
         ok(spy.called);
         ok(spy.calledWith(field));
-        
+
         field.blur();
-        
+
         stop();
         setTimeout(function() {
           start();
@@ -1318,9 +1598,9 @@ module('Radio', {
         field.$("input[type=radio]").focus();
 
         ok(!spy.called);
-        
+
         field.blur();
-        
+
         stop();
         setTimeout(function() {
           start();
@@ -1482,7 +1762,7 @@ module('Checkboxes', {
         }).render();
 
         field.setValue(['Lana']);
-        
+
         deepEqual(field.getValue(), ['Lana']);
         equal($(field.el).find('input[type=checkbox]:checked').length, 1);
     });
@@ -1493,21 +1773,21 @@ module('Checkboxes', {
         }).render();
 
         field.setValue(['Lana', 'Doctor Krieger']);
-        
+
         deepEqual(field.getValue(), ['Lana', 'Doctor Krieger']);
         equal($(field.el).find('input[type=checkbox]:checked').length, 2);
     });
-    
+
     test("focus() - gives focus to editor and its first checkbox", function() {
         var field = window.form.fields.checkboxes.editor;
 
         field.focus();
-        
+
         ok(field.hasFocus);
         ok(field.$('input[type=checkbox]').first().is(':focus'));
-        
+
         field.blur();
-        
+
         stop();
         setTimeout(function() {
           start();
@@ -1578,12 +1858,12 @@ module('Checkboxes', {
         var spy = this.sinon.spy();
 
         field.on('change', spy);
-        
+
         field.$("input[type=checkbox]").first().click();
 
         ok(spy.called);
         ok(spy.calledWith(field));
-        
+
         field.$("input[type=checkbox]").val([null]);
     });
 
@@ -1598,9 +1878,9 @@ module('Checkboxes', {
 
         ok(spy.called);
         ok(spy.calledWith(field));
-        
+
         field.blur();
-        
+
         stop();
         setTimeout(function() {
           start();
@@ -1619,9 +1899,9 @@ module('Checkboxes', {
         field.$("input[type=checkbox]").focus();
 
         ok(!spy.called);
-        
+
         field.blur();
-        
+
         stop();
         setTimeout(function() {
           start();
@@ -1705,7 +1985,7 @@ module('Object', {
 });
 
 (function() {
-    
+
     var editor = editors.Object,
         schema = {
             subSchema: {
@@ -1713,12 +1993,12 @@ module('Object', {
                 name: { }
             }
         };
-    
+
     test('Default value', function() {
         var field = new editor({
             schema: schema
         }).render();
-        
+
         deepEqual(field.getValue(), { id: 0, name: '' });
     });
 
@@ -1741,28 +2021,28 @@ module('Object', {
                 name: 'Pam'
             }
         });
-        
+
         var field = new editor({
             schema: schema,
             model: agency,
             key: 'spy'
         }).render();
-        
+
         deepEqual(field.getValue(), { id: 28, name: 'Pam' });
     });
-    
+
     test("TODO: idPrefix is added to child form elements", function() {
-        
+        ok(1);
     });
-    
+
     test("TODO: remove() - Removes embedded form", function() {
-        
+        ok(1);
     });
 
     test('TODO: uses the nestedField template, unless overridden in field schema', function() {
-
+        ok(1);
     });
-    
+
     test("setValue() - updates the input value", function() {
         var field = new editor({
             schema: schema,
@@ -1771,17 +2051,17 @@ module('Object', {
                 name: "Krieger"
             }
         }).render();
-        
+
         var newValue = {
             id: 89,
             name: "Sterling"
         };
-        
+
         field.setValue(newValue);
-        
+
         deepEqual(field.getValue(), newValue);
     });
-    
+
     test('validate() - returns validation errors', function() {
       var schema = {};
       schema.subSchema = {
@@ -1789,7 +2069,7 @@ module('Object', {
         name:   {},
         email:  { validators: ['email'] }
       }
-      
+
       var field = new editor({
         schema: schema,
         value: {
@@ -1797,9 +2077,9 @@ module('Object', {
           email: 'invalid'
         }
       }).render();
-      
+
       var errs = field.validate();
-      
+
       equal(errs.id.type, 'required');
       equal(errs.email.type, 'email');
     });
@@ -1990,7 +2270,7 @@ module('Object', {
 module('NestedModel');
 
 (function() {
-    
+
     var ChildModel = Backbone.Model.extend({
         schema: {
             id: { type: 'Number' },
@@ -2001,15 +2281,15 @@ module('NestedModel');
             name: 'Marklar'
         }
     });
-    
+
     var editor = editors.NestedModel,
         schema = { model: ChildModel };
-    
+
     test('Default value', function() {
         var field = new editor({
             schema: schema
         }).render();
-        
+
         deepEqual(field.getValue(), { id: 8, name: 'Marklar' });
     });
 
@@ -2043,8 +2323,8 @@ module('NestedModel');
         var robin = new Person({ firstName: 'Dick', lastName: 'Grayson' });
 
         var duo = new Duo({
-            name: "The Dynamic Duo", 
-            hero: batman, 
+            name: "The Dynamic Duo",
+            hero: batman,
             sidekick: robin
         });
 
@@ -2052,7 +2332,7 @@ module('NestedModel');
         var batmanForm = new Backbone.Form({ model: batman }).render();
 
         same(duoForm.getValue().hero, {
-            firstName: 'Bruce', 
+            firstName: 'Bruce',
             lastName: 'Wayne'
         });
     });
@@ -2064,32 +2344,32 @@ module('NestedModel');
                 name: 'Pam'
             }
         });
-        
+
         var field = new editor({
             schema: schema,
             model: agency,
             key: 'spy'
         }).render();
-        
+
         deepEqual(field.getValue(), { id: 28, name: 'Pam' });
     });
-    
+
     test("TODO: idPrefix is added to child form elements", function() {
-
+        ok(1);
     });
-    
-    test("TODO: Validation on nested model", function() {
 
+    test("TODO: Validation on nested model", function() {
+        ok(1);
     });
 
     test('TODO: uses the nestedField template, unless overridden in field schema', function() {
-
+        ok(1);
     });
 
     test("TODO: remove() - Removes embedded form", function() {
-
+        ok(1);
     });
-    
+
     test("setValue() - updates the input value", function() {
         var agency = new Backbone.Model({
             spy: {
@@ -2097,20 +2377,20 @@ module('NestedModel');
                 name: 'Pam'
             }
         });
-        
+
         var field = new editor({
             schema: schema,
             model: agency,
             key: 'spy'
         }).render();
-        
+
         var newValue = {
             id: 89,
             name: "Sterling"
         };
-        
+
         field.setValue(newValue);
-        
+
         deepEqual(field.getValue(), newValue);
     });
 
@@ -2231,7 +2511,7 @@ module('Date', {
 
     test('setValue()', function() {
         var date = new Date(2015, 1, 4);
-        
+
         var editor = new Editor({
             schema: {
                 yearStart: 2000,
@@ -2271,18 +2551,18 @@ module('Date', {
         same(hiddenVal.getMonth(), 6);
         same(hiddenVal.getDate(), 13);
     });
-    
-    
+
+
     test("focus() - gives focus to editor and its first selectbox", function() {
         var field = window.form.fields.date.editor;
 
         field.focus();
-        
+
         ok(field.hasFocus);
         ok(field.$('select').first().is(':focus'));
-        
+
         field.blur();
-        
+
         stop();
         setTimeout(function() {
           start();
@@ -2353,7 +2633,7 @@ module('Date', {
         var spy = this.sinon.spy();
 
         field.on('change', spy);
-        
+
         field.$("select").first().val('31');
         field.$("select").first().change();
 
@@ -2372,9 +2652,9 @@ module('Date', {
 
         ok(spy.called);
         ok(spy.calledWith(field));
-        
+
         field.blur();
-        
+
         stop();
         setTimeout(function() {
           start();
@@ -2393,9 +2673,9 @@ module('Date', {
         field.$("select").focus();
 
         ok(!spy.called);
-        
+
         field.blur();
-        
+
         stop();
         setTimeout(function() {
           start();
@@ -2597,9 +2877,9 @@ module('DateTime', {
         var editor = new Editor().render();
 
         var spy = this.sinon.spy(editor.dateEditor, 'setValue');
-        
+
         var date = new Date(2005, 1, 4, 19, 45);
-        
+
         editor.setValue(date);
 
         //Should set value on date editor
@@ -2637,18 +2917,18 @@ module('DateTime', {
         ok(DateEditor.prototype.remove.calledOnce);
         ok(editors.Base.prototype.remove.calledOnce);
     });
-    
-    
+
+
     test("focus() - gives focus to editor and its first selectbox", function() {
         var field = window.form.fields.dateTime.editor;
 
         field.focus();
-        
+
         ok(field.hasFocus);
         ok(field.$('select').first().is(':focus'));
-        
+
         field.blur();
-        
+
         stop();
         setTimeout(function() {
           start();
@@ -2719,7 +2999,7 @@ module('DateTime', {
         var spy = this.sinon.spy();
 
         field.on('change', spy);
-        
+
         field.$("select").first().val('31');
         field.$("select").first().change();
 
@@ -2738,9 +3018,9 @@ module('DateTime', {
 
         ok(spy.called);
         ok(spy.calledWith(field));
-        
+
         field.blur();
-        
+
         stop();
         setTimeout(function() {
           start();
@@ -2759,9 +3039,9 @@ module('DateTime', {
         field.$("select").focus();
 
         ok(!spy.called);
-        
+
         field.blur();
-        
+
         stop();
         setTimeout(function() {
           start();

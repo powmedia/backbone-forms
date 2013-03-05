@@ -2,11 +2,11 @@
 //==================================================================================================
 //FORM
 //==================================================================================================
-  
+
 var Form = (function() {
 
   return Backbone.View.extend({
-    
+
     hasFocus: false,
 
     /**
@@ -16,7 +16,7 @@ var Form = (function() {
      * @param {Model} [options.model]                 Model the form relates to. Required if options.data is not set
      * @param {Object} [options.data]                 Date to populate the form. Required if options.model is not set
      * @param {String[]} [options.fields]             Fields to include in the form, in order
-     * @param {String[]|Object[]} [options.fieldsets] How to divide the fields up by section. E.g. [{ legend: 'Title', fields: ['field1', 'field2'] }]        
+     * @param {String[]|Object[]} [options.fieldsets] How to divide the fields up by section. E.g. [{ legend: 'Title', fields: ['field1', 'field2'] }]
      * @param {String} [options.idPrefix]             Prefix for editor IDs. By default, the model's CID is used.
      * @param {String} [options.template]             Form template key/name
      * @param {String} [options.fieldsetTemplate]     Fieldset template key/name
@@ -24,19 +24,19 @@ var Form = (function() {
      *
      * @return {Form}
      */
-    initialize: function(options) { 
+    initialize: function(options) {
       //Check templates have been loaded
       if (!Form.templates.form) throw new Error('Templates not loaded');
 
       //Get the schema
       this.schema = (function() {
         if (options.schema) return options.schema;
-      
+
         var model = options.model;
         if (!model) throw new Error('Could not find schema');
-      
+
         if (_.isFunction(model.schema)) return model.schema();
-      
+
         return model.schema;
       })();
 
@@ -53,7 +53,7 @@ var Form = (function() {
 
         options.fieldsets = [{ fields: fields }];
       }
-      
+
       //Store main attributes
       this.options = options;
       this.model = options.model;
@@ -68,7 +68,7 @@ var Form = (function() {
       var self = this,
           options = this.options,
           template = Form.templates[options.template];
-      
+
       //Create el from template
       var $form = this.parseHTML(template({
         fieldsets: '<b class="bbf-tmp"></b>'
@@ -85,7 +85,7 @@ var Form = (function() {
 
       //Set the template contents as the main element; removes the wrapper element
       this.setElement($form);
-      
+
       if (this.hasFocus) this.trigger('blur', this);
 
       return this;
@@ -99,7 +99,7 @@ var Form = (function() {
      * { legend: 'Some Fieldset', fields: ['field1', 'field2'] }
      *
      * @param {Object|Array} fieldset     A fieldset definition
-     * 
+     *
      * @return {jQuery}                   The fieldset DOM element
      */
     renderFieldset: function(fieldset) {
@@ -149,7 +149,7 @@ var Form = (function() {
 
         //Render the fields with editors, apart from Hidden fields
         var fieldEl = field.render().el;
-        
+
         field.editor.on('all', function(event) {
           // args = ["change", editor]
           var args = _.toArray(arguments);
@@ -159,7 +159,7 @@ var Form = (function() {
 
           this.trigger.apply(this, args);
         }, self);
-        
+
         field.editor.on('change', function() {
           this.trigger('change', self);
         }, self);
@@ -176,7 +176,7 @@ var Form = (function() {
             self.trigger('blur', self);
           }, 0);
         }, self);
-        
+
         if (itemSchema.type !== 'Hidden') {
           $fieldsContainer.append(fieldEl);
         }
@@ -239,16 +239,16 @@ var Form = (function() {
       //Get errors from default Backbone model validator
       if (model && model.validate) {
         var modelErrors = model.validate(this.getValue());
-        
+
         if (modelErrors) {
           var isDictionary = _.isObject(modelErrors) && !_.isArray(modelErrors);
-          
+
           //If errors are not in object form then just store on the error object
           if (!isDictionary) {
             errors._others = errors._others || [];
             errors._others.push(modelErrors);
           }
-          
+
           //Merge programmatic errors (requires model.validate() to return an object e.g. { fieldKey: 'error' })
           if (isDictionary) {
             _.each(modelErrors, function(val, key) {
@@ -257,7 +257,7 @@ var Form = (function() {
                 self.fields[key].setError(val);
                 errors[key] = val;
               }
-              
+
               else {
                 //Otherwise add to '_others' key
                 errors._others = errors._others || [];
@@ -290,21 +290,21 @@ var Form = (function() {
           modelError = e;
         }
       });
-      
+
       if (modelError) return modelError;
     },
 
     /**
      * Get all the field values as an object.
      * Use this method when passing data instead of objects
-     * 
+     *
      * @param {String} [key]    Specific field value to get
      */
     getValue: function(key) {
       //Return only given key if specified
       if (key) return this.fields[key].getValue();
-      
-      //Otherwise return entire form      
+
+      //Otherwise return entire form
       var values = {};
       _.each(this.fields, function(field) {
         values[field.key] = field.getValue();
@@ -312,7 +312,7 @@ var Form = (function() {
 
       return values;
     },
-    
+
     /**
      * Update field values, referenced by key
      * @param {Object|String} key     New values to set, or property to set
@@ -325,7 +325,7 @@ var Form = (function() {
       } else {
         data = prop;
       }
-      
+
       var key;
       for (key in this.schema) {
         if (data[key] !== undefined) {
@@ -333,10 +333,10 @@ var Form = (function() {
         }
       }
     },
-    
+
     focus: function() {
       if (this.hasFocus) return;
-      
+
       var fieldset = this.options.fieldsets[0];
       if (fieldset) {
         var field;
@@ -351,12 +351,12 @@ var Form = (function() {
         }
       }
     },
-    
+
     blur: function() {
       if (!this.hasFocus) return;
-      
+
       var focusedField = _.find(this.fields, function(field) { return field.editor.hasFocus; });
-      
+
       if (focusedField) focusedField.editor.blur();
     },
 
@@ -365,7 +365,7 @@ var Form = (function() {
      */
     remove: function() {
       var fields = this.fields;
-      
+
       for (var key in fields) {
         fields[key].remove();
       }
@@ -387,7 +387,7 @@ var Form = (function() {
       else if (event === 'blur') {
         this.hasFocus = false;
       }
-      
+
       return Backbone.View.prototype.trigger.apply(this, arguments);
     }
   });

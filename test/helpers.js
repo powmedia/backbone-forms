@@ -186,65 +186,6 @@ module('createEditor');
 
 
 
-module('triggerCancellableEvent');
-
-(function() {
-    
-    var trigger = Form.helpers.triggerCancellableEvent;
-    
-    test('Passes through arguments', function() {
-        expect(2);
-        
-        var view = new Backbone.View();
-
-        view.bind('add', function(arg1, arg2, next) {
-            equal(arg1, 'foo');
-            equal(arg2, 'bar');
-        });
-
-        trigger(view, 'add', ['foo', 'bar']);
-    });
-    
-    test('Default action runs if next is called', function() {
-        expect(1);
-        
-        var view = new Backbone.View();
-        
-        view.bind('remove', function(next) {
-            next();
-        });
-        
-        trigger(view, 'remove', [], function() {
-            ok(true);
-        });
-    });
-
-    test('Default action doesnt run if next is not called', function() {
-        var view = new Backbone.View();
-        
-        view.bind('edit', function(next) {
-            //Don't continue
-        });
-        
-        trigger(view, 'edit', [], function() {
-            ok(false); //Shouldn't run
-        });
-    });
-    
-    test('Default action run without anything bound', function() {
-        expect(1);
-
-        var view = new Backbone.View();
-
-        trigger(view, 'remove', [], function() {
-            ok(true);
-        });
-    });
-
-})();
-
-
-
 (function() {
   
   module('getValidator');
