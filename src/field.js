@@ -101,7 +101,7 @@ Form.Field = (function() {
       var editor = this.editor = helpers.createEditor(schema.type, options);
       
       //Create the element
-      var $field = $(templates[schema.template](this.renderingContext(schema, editor)));
+      var $field = this.form.parseHTML(templates[schema.template](this.renderingContext(schema, editor)));
 
       //Remove <label> if it's not wanted
       if (schema.title === false) {

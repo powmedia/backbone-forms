@@ -55,7 +55,7 @@
           value = this.value || [];
 
       //Create main element
-      var $el = $(Form.templates[this.schema.listTemplate]({
+      var $el = this.form.parseHTML(Form.templates[this.schema.listTemplate]({
         items: '<b class="bbf-tmp"></b>'
       }));
 
@@ -291,7 +291,7 @@
       }).render();
 
       //Create main element
-      var $el = $(Form.templates[this.schema.listItemTemplate]({
+      var $el = this.form.parseHTML(Form.templates[this.schema.listItemTemplate]({
         editor: '<b class="bbf-tmp"></b>'
       }));
 
