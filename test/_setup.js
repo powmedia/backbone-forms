@@ -1,5 +1,7 @@
 var same = deepEqual;
 
+sinon.config.useFakeTimers = false;
+
 var Post = Backbone.Model.extend({
     defaults: {
         title: 'Danger Zone!',
