@@ -320,22 +320,21 @@ test("focus() - gives focus to form and its first editor", function() {
     var form = new Form({
         model: new Post
     }).render();
-    
+    $(document.body).append(form.el);
+
     form.focus();
     
-    stop();
-    setTimeout(function() {
-      ok(form.fields.title.editor.hasFocus);
-      ok(form.hasFocus);
-      
-      start();
-    }, 0);
+    ok(form.fields.title.editor.hasFocus);
+    ok(form.hasFocus);
+
+    form.remove();
 });
 
 test("focus() - triggers the 'focus' event", function() {
     var form = new Form({
         model: new Post
     }).render();
+    $(document.body).append(form.el);
     
     var spy = this.sinon.spy();
     
@@ -343,13 +342,10 @@ test("focus() - triggers the 'focus' event", function() {
     
     form.focus();
     
-    stop();
-    setTimeout(function() {
-      ok(spy.called);
-      ok(spy.calledWith(form));
-      
-      start();
-    }, 0);
+    ok(spy.called);
+    ok(spy.calledWith(form));
+
+    form.remove();
 });
 
 test("blur() - removes focus from the form and its first editor", function() {
@@ -374,6 +370,7 @@ test("blur() - triggers the 'blur' event", function() {
     var form = new Form({
         model: new Post
     }).render();
+    $(document.body).append(form.el);
 
     form.focus();
     
@@ -390,6 +387,8 @@ test("blur() - triggers the 'blur' event", function() {
       
       start();
     }, 0);
+
+    form.remove();
 });
 
 test("setValue() - updates only field from schema", function() {
@@ -449,6 +448,7 @@ test("'focus' event - bubbles up from editor when form doesn't have focus", func
     var form = new Form({
         model: new Post
     }).render();
+    $(document.body).append(form.el);
     
     var spy = this.sinon.spy();
     
@@ -458,6 +458,8 @@ test("'focus' event - bubbles up from editor when form doesn't have focus", func
     
     ok(spy.called);
     ok(spy.calledWith(form));
+
+    form.remove();
 });
 
 test("'focus' event - doesn't bubble up from editor when form already has focus", function() {
@@ -480,6 +482,7 @@ test("'blur' event - bubbles up from editor when form has focus and we're not fo
     var form = new Form({
         model: new Post
     }).render();
+    $(document.body).append(form.el);
     
     form.focus();
     
@@ -496,6 +499,8 @@ test("'blur' event - bubbles up from editor when form has focus and we're not fo
         
         start();
     }, 0);
+
+    form.remove();
 });
 
 test("'blur' event - doesn't bubble up from editor when form has focus and we're focusing on another one of the form's editors", function() {
