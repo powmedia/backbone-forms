@@ -688,7 +688,7 @@ module('Checkbox', {
         field.setValue(true);
 
         deepEqual(field.getValue(), true);
-        deepEqual($(field.el).attr('checked'), 'checked');
+        deepEqual($(field.el).prop('checked'), true);
     });
 
     test("focus() - gives focus to editor and its checkbox", function() {
