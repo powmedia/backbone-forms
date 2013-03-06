@@ -97,7 +97,7 @@ var Form = (function() {
           template = Form.templates[options.template];
 
       //Create el from template
-      var $form = $(template({
+      var $form = Form.helpers.parseHTML(template({
         fieldsets: '<b class="bbf-tmp"></b>'
       }));
 
@@ -141,7 +141,7 @@ var Form = (function() {
       }
 
       //Concatenating HTML as strings won't work so we need to insert field elements into a placeholder
-      var $fieldset = $(template(_.extend({}, fieldset, {
+      var $fieldset = Form.helpers.parseHTML(template(_.extend({}, fieldset, {
         legend: '<b class="bbf-tmp-legend"></b>',
         fields: '<b class="bbf-tmp-fields"></b>'
       })));
@@ -400,7 +400,6 @@ var Form = (function() {
       Backbone.View.prototype.remove.call(this);
     },
 
-
     trigger: function(event) {
       if (event === 'focus') {
         this.hasFocus = true;
@@ -594,6 +593,20 @@ Form.helpers = (function() {
     
     //Unkown validator type
     throw new Error('Invalid validator: ' + validator);
+  };
+
+
+  /**
+   * Given an HTML string, return a jQuery-wrapped array of DOM nodes.
+   *
+   * @param {String} html
+   * @return {Object}
+   */
+  helpers.parseHTML = function(html) { 
+    if ($.parseHTML !== undefined) {
+      return $($.parseHTML(html));
+    }
+    return $(html);
   };
 
 
@@ -810,7 +823,7 @@ Form.Field = (function() {
       var editor = this.editor = helpers.createEditor(schema.type, options);
 
       //Create the element
-      var $field = $(templates[schema.template](this.renderingContext(schema, editor)));
+      var $field = Form.helpers.parseHTML(templates[schema.template](this.renderingContext(schema, editor)));
 
       //Remove <label> if it's not wanted
       if (schema.title === false) {
@@ -1998,7 +2011,7 @@ Form.editors = (function() {
       });
 
       //Render the selects
-      var $el = $(Form.templates.date({
+      var $el = Form.helpers.parseHTML(Form.templates.date({
         dates: datesOptions.join(''),
         months: monthsOptions.join(''),
         years: yearsOptions.join('')
@@ -2149,7 +2162,7 @@ Form.editors = (function() {
       });
 
       //Render time selects
-      var $el = $(Form.templates.dateTime({
+      var $el = Form.helpers.parseHTML(Form.templates.dateTime({
         date: '<b class="bbf-tmp"></b>',
         hours: hoursOptions.join(),
         mins: minsOptions.join()
