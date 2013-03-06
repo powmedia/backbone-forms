@@ -276,21 +276,26 @@ var Form = (function() {
     /**
      * Update the model with all latest values.
      *
+     * @param {Object} [options]  Options to pass to Model#set (e.g. { silent: true })
+     *
      * @return {Object}  Validation errors
      */
-    commit: function() {
+    commit: function(options) {
       //Validate
       var errors = this.validate();
       if (errors) return errors;
 
       //Commit
       var modelError;
-      this.model.set(this.getValue(), {
+
+      var setOptions = _.extend({
         error: function(model, e) {
           modelError = e;
         }
-      });
+      }, options);
 
+      this.model.set(this.getValue(), setOptions);
+      
       if (modelError) return modelError;
     },
 
