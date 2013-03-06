@@ -97,7 +97,8 @@
         schema: this.schema,
         value: value,
         Editor: this.Editor,
-        key: this.key
+        key: this.key,
+        form: this.form
       }).render();
       
       var _addItem = function() {
@@ -278,6 +279,7 @@
       this.value = options.value;
       this.Editor = options.Editor || editors.Text;
       this.key = options.key;
+      this.form = options.form;
     },
 
     render: function() {
@@ -287,7 +289,8 @@
         schema: this.schema,
         value: this.value,
         list: this.list,
-        item: this
+        item: this,
+        form: this.form
       }).render();
 
       //Create main element
