@@ -26,7 +26,7 @@ Form.editors = (function() {
     hasFocus: false,
 
     initialize: function(options) {
-      var options = options || {};
+      options = options || {};
 
       if (options.model) {
         if (!options.key) throw "Missing option: 'key'";
@@ -597,7 +597,7 @@ Form.editors = (function() {
         if (_.isObject(option)) {
           if (option.group) {
             html.push('<optgroup label="'+option.group+'">');
-            html.push(this._getOptionsHtml(option.options))
+            html.push(this._getOptionsHtml(option.options));
             html.push('</optgroup>');
           } else {
             var val = (option.val || option.val === 0) ? option.val : '';
