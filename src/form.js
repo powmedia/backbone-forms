@@ -70,7 +70,7 @@ var Form = (function() {
           template = Form.templates[options.template];
 
       //Create el from template
-      var $form = $(template({
+      var $form = Form.helpers.parseHTML(template({
         fieldsets: '<b class="bbf-tmp"></b>'
       }));
 
@@ -114,7 +114,7 @@ var Form = (function() {
       }
 
       //Concatenating HTML as strings won't work so we need to insert field elements into a placeholder
-      var $fieldset = $(template(_.extend({}, fieldset, {
+      var $fieldset = Form.helpers.parseHTML(template(_.extend({}, fieldset, {
         legend: '<b class="bbf-tmp-legend"></b>',
         fields: '<b class="bbf-tmp-fields"></b>'
       })));
@@ -372,7 +372,6 @@ var Form = (function() {
 
       Backbone.View.prototype.remove.call(this);
     },
-
 
     trigger: function(event) {
       if (event === 'focus') {
