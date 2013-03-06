@@ -188,7 +188,7 @@ Form.helpers = (function() {
    */
   helpers.parseHTML = function(html) { 
     if ($.parseHTML !== undefined) {
-      return $.parseHTML(html);
+      return $($.parseHTML(html));
     }
     return $(html);
   };
