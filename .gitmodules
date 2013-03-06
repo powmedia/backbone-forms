@@ -1,6 +1,3 @@
 [submodule "lib/backbone.bootstrap-modal"]
 	path = lib/backbone.bootstrap-modal
 	url = git@github.com:powmedia/backbone.bootstrap-modal.git
-[submodule "node_modules/buildify"]
-	path = node_modules/buildify
-	url = git@github.com:powmedia/buildify.git
