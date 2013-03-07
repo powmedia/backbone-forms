@@ -499,7 +499,7 @@
         data: this.value
       });
 
-      var ModalAdapter = (this.options.schema.modalAdapter ||
+      var ModalAdapter = (this.schema.modalAdapter ||
                           editors.List.Modal.ModalAdapter),
         modal = this.modal = new ModalAdapter({
         content: form,
