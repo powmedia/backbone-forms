@@ -175,7 +175,8 @@ module('List', {
             schema: list.schema,
             value: undefined,
             Editor: editors.Text,
-            key: list.key
+            key: list.key,
+            form: list.form
         }
 
         var actualOptions = spy.lastCall.args[0];
@@ -200,7 +201,32 @@ module('List', {
             schema: list.schema,
             value: 'foo',
             Editor: editors.Text,
-            key: list.key
+            key: list.key,
+            form: list.form
+        }
+
+        var actualOptions = spy.lastCall.args[0];
+
+        same(spy.callCount, 1);
+        same(actualOptions, expectedOptions);
+        same(list.items.length, 2);
+        same(_.last(list.items).value, 'foo');
+    });
+
+    test('Items keep form.', function() {
+        var list = new List({form: new Object()}).render();
+
+        var spy = this.sinon.spy(List, 'Item');
+
+        list.addItem('foo');
+
+        var expectedOptions = {
+            list: list,
+            schema: list.schema,
+            value: 'foo',
+            Editor: editors.Text,
+            key: list.key,
+            form: list.form
         }
 
         var actualOptions = spy.lastCall.args[0];
@@ -596,13 +622,15 @@ module('List.Item', {
         var spy = this.sinon.spy(editors, 'Number');
 
         var list = new List({
+            form: new Object(),
             schema: { itemType: 'Number' }
         }).render();
 
         var item = new List.Item({
             list: list,
             value: 123,
-            Editor: editors.Number
+            Editor: editors.Number,
+            form: list.form
         }).render();
 
         //Check created correct editor
@@ -614,7 +642,8 @@ module('List.Item', {
             value: 123,
             list: list,
             item: item,
-            key: item.key
+            key: item.key,
+            form: list.form
         });
     });
 
