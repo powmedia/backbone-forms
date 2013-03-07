@@ -392,7 +392,7 @@
       var schema = this.schema;
       
       //Dependencies
-      if (!editors.List.Modal.ModalAdapter) throw 'A ModalAdapter is required';
+      if (!schema.modalAdapter && !editors.List.Modal.ModalAdapter) throw 'A ModalAdapter is required';
 
       //Get nested schema if Object
       if (schema.itemType === 'Object') {
@@ -499,7 +499,9 @@
         data: this.value
       });
 
-      var modal = this.modal = new Backbone.BootstrapModal({
+      var ModalAdapter = (this.schema.modalAdapter ||
+                          editors.List.Modal.ModalAdapter),
+        modal = this.modal = new ModalAdapter({
         content: form,
         animate: true
       }).open();
