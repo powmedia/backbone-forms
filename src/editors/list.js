@@ -288,7 +288,7 @@
         value: this.value,
         list: this.list,
         item: this
-      }).render();
+      });
 
       //Create main element
       var $el = Form.helpers.parseHTML(Form.templates[this.schema.listItemTemplate]({
@@ -296,6 +296,7 @@
       }));
 
       $el.find('.bbf-tmp').replaceWith(this.editor.el);
+      this.editor.render();
 
       //Replace the entire element so there isn't a wrapper tag
       this.setElement($el);
