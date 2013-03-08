@@ -371,10 +371,10 @@
 
 
   /**
-   * Modal object editor for use with the List editor.
-   * To use it, set the 'itemType' property in a List schema to 'Object' or 'NestedModel'
+   * Base modal object editor for use with the List editor; used by Object 
+   * and NestedModal list types
    */
-  editors.List.Modal = editors.List.Object = editors.List.NestedModel = editors.Base.extend({
+  editors.List.Modal = editors.Base.extend({
     events: {
       'click': 'openEditor'
     },
@@ -388,26 +388,9 @@
      */
     initialize: function(options) {
       editors.Base.prototype.initialize.call(this, options);
-
-      var schema = this.schema;
       
       //Dependencies
       if (!editors.List.Modal.ModalAdapter) throw 'A ModalAdapter is required';
-
-      //Get nested schema if Object
-      if (schema.itemType === 'Object') {
-        if (!schema.subSchema) throw 'Missing required option "schema.subSchema"';
-
-        this.nestedSchema = schema.subSchema;
-      }
-
-      //Get nested schema if NestedModel
-      if (schema.itemType === 'NestedModel') {
-        if (!schema.model) throw 'Missing required option "schema.model"';
-
-        this.nestedSchema = schema.model.prototype.schema;
-        if (_.isFunction(this.nestedSchema)) this.nestedSchema = this.nestedSchema();
-      }
     },
 
     /**
@@ -482,11 +465,6 @@
       //If there's a specified toString use that
       if (schema.itemToString) return schema.itemToString(value);
       
-      //Otherwise check if it's NestedModel with it's own toString() method
-      if (schema.itemType === 'NestedModel') {
-        return new (schema.model)(value).toString();
-      }
-      
       //Otherwise use the generic method or custom overridden method
       return this.itemToString(value);
     },
@@ -509,12 +487,7 @@
       this.trigger('open', this);
       this.trigger('focus', this);
 
-      modal.on('cancel', function() {
-        this.modal = null;
-
-        this.trigger('close', this);
-        this.trigger('blur', this);
-      }, this);
+      modal.on('cancel', this.onModalCancelled, this);
       
       modal.on('ok', _.bind(this.onModalSubmitted, this, form, modal));
     },
@@ -540,6 +513,16 @@
       
       this.trigger('change', this);
       
+      this.trigger('close', this);
+      this.trigger('blur', this);
+    },
+
+    /**
+     * Called then the user clicks 'cancel'
+     */
+    onModalCancelled: function() {
+      this.modal = null;
+
       this.trigger('close', this);
       this.trigger('blur', this);
     },
@@ -575,6 +558,50 @@
     
     //Make the wait list for the 'ready' event before adding the item to the list
     isAsync: true
+  });
+
+  
+  editors.List.Object = editors.List.Modal.extend({
+    initialize: function () {
+      editors.List.Modal.prototype.initialize.apply(this, arguments);
+
+      var schema = this.schema;
+
+      if (!schema.subSchema) throw 'Missing required option "schema.subSchema"';
+
+      this.nestedSchema = schema.subSchema;
+    }
+  });
+
+
+  editors.List.NestedModel = editors.List.Modal.extend({
+    initialize: function() {
+      editors.List.Modal.prototype.initialize.apply(this, arguments);
+
+      var schema = this.schema;
+
+      if (!schema.model) throw 'Missing required option "schema.model"';
+
+      var nestedSchema = schema.model.prototype.schema;
+
+      this.nestedSchema = (_.isFunction(nestedSchema)) ? nestedSchema() : nestedSchema;
+    },
+
+    /**
+     * Returns the string representation of the object value
+     */
+    getStringValue: function() {
+      var schema = this.schema,
+          value = this.getValue();
+
+      if (_.isEmpty(value)) return null;
+
+      //If there's a specified toString use that
+      if (schema.itemToString) return schema.itemToString(value);
+      
+      //Otherwise use the model
+      return new (schema.model)(value).toString();
+    },
   });
 
 })();
