@@ -178,6 +178,7 @@ module('Text', {
             model: new Post,
             key: 'title'
         }).render();
+        $(document.body).append(field.el);
 
         var spy = this.sinon.spy();
 
@@ -187,6 +188,8 @@ module('Text', {
 
         ok(spy.called);
         ok(spy.calledWith(field));
+
+        field.remove();
     });
 
     test("blur() - removes focus from the editor and its input", function() {
@@ -205,6 +208,7 @@ module('Text', {
             model: new Post,
             key: 'title'
         }).render();
+        $(document.body).append(field.el);
 
         field.focus()
 
@@ -216,6 +220,8 @@ module('Text', {
 
         ok(spy.called);
         ok(spy.calledWith(field));
+
+        field.remove();
     });
 
     test("select() - triggers the 'select' event", function() {
@@ -300,6 +306,7 @@ module('Text', {
             model: new Post,
             key: 'title'
         }).render();
+        $(document.body).append(field.el);
 
         var spy = this.sinon.spy();
 
@@ -309,6 +316,8 @@ module('Text', {
 
         ok(spy.calledOnce);
         ok(spy.alwaysCalledWith(field));
+
+        field.remove();
     });
 
     test("'blur' event - bubbles up from the input", function() {
@@ -688,7 +697,7 @@ module('Checkbox', {
         field.setValue(true);
 
         deepEqual(field.getValue(), true);
-        deepEqual($(field.el).attr('checked'), 'checked');
+        deepEqual($(field.el).prop('checked'), true);
     });
 
     test("focus() - gives focus to editor and its checkbox", function() {
@@ -705,6 +714,7 @@ module('Checkbox', {
             model: new Model,
             key: 'enabled'
         }).render();
+        $(document.body).append(field.el);
 
         var spy = this.sinon.spy();
 
@@ -714,6 +724,8 @@ module('Checkbox', {
 
         ok(spy.called);
         ok(spy.calledWith(field));
+
+        field.remove();
     });
 
     test("blur() - removes focus from the editor and its checkbox", function() {
@@ -732,6 +744,7 @@ module('Checkbox', {
             model: new Model,
             key: 'enabled'
         }).render();
+        $(document.body).append(field.el);
 
         field.focus()
 
@@ -743,6 +756,8 @@ module('Checkbox', {
 
         ok(spy.called);
         ok(spy.calledWith(field));
+
+        field.remove();
     });
 
     test("'change' event - is triggered when the checkbox is clicked", function() {
@@ -766,6 +781,7 @@ module('Checkbox', {
             model: new Model,
             key: 'enabled'
         }).render();
+        $(document.body).append(field.el);
 
         var spy = this.sinon.spy();
 
@@ -775,6 +791,8 @@ module('Checkbox', {
 
         ok(spy.calledOnce);
         ok(spy.alwaysCalledWith(field));
+
+        field.remove();
     });
 
     test("'blur' event - bubbles up from the checkbox", function() {
@@ -1270,6 +1288,7 @@ module('Select', {
             value: 'Pam',
             schema: schema
         }).render();
+        $(document.body).append(field.el);
 
         var spy = this.sinon.spy();
 
@@ -1279,6 +1298,8 @@ module('Select', {
 
         ok(spy.called);
         ok(spy.calledWith(field));
+
+        field.remove();
     });
 
     test("blur() - removes focus from the editor and its selectbox", function() {
@@ -1297,6 +1318,7 @@ module('Select', {
             value: 'Pam',
             schema: schema
         }).render();
+        $(document.body).append(field.el);
 
         field.focus()
 
@@ -1308,6 +1330,8 @@ module('Select', {
 
         ok(spy.called);
         ok(spy.calledWith(field));
+
+        field.remove();
     });
 
     test("'change' event - bubbles up from the selectbox", function() {
@@ -1325,6 +1349,7 @@ module('Select', {
 
         ok(spy.calledOnce);
         ok(spy.alwaysCalledWith(field));
+
     });
 
     test("'focus' event - bubbles up from the selectbox", function() {
@@ -1332,6 +1357,7 @@ module('Select', {
             value: 'Pam',
             schema: schema
         }).render();
+        $(document.body).append(field.el);
 
         var spy = this.sinon.spy();
 
@@ -1341,6 +1367,8 @@ module('Select', {
 
         ok(spy.calledOnce);
         ok(spy.alwaysCalledWith(field));
+
+        field.remove();
     });
 
     test("'blur' event - bubbles up from the selectbox", function() {
@@ -2087,22 +2115,21 @@ module('Object', {
         var field = new editor({
             schema: schema
         }).render();
+        $(document.body).append(field.el);
 
         field.focus();
 
-        stop();
-        setTimeout(function() {
-          ok(field.hasFocus);
-          ok(field.form.hasFocus);
+        ok(field.hasFocus);
+        ok(field.form.hasFocus);
 
-          start();
-        }, 0);
+        field.remove();
     });
 
     test("focus() - triggers the 'focus' event", function() {
         var field = new editor({
             schema: schema
         }).render();
+        $(document.body).append(field.el);
 
         var spy = this.sinon.spy();
 
@@ -2110,13 +2137,10 @@ module('Object', {
 
         field.focus();
 
-        stop();
-        setTimeout(function() {
-          ok(spy.called);
-          ok(spy.calledWith(field));
+        ok(spy.called);
+        ok(spy.calledWith(field));
 
-          start();
-        }, 0);
+        field.remove();
     });
 
     test("blur() - removes focus from the editor and its form", function() {
@@ -2141,6 +2165,7 @@ module('Object', {
         var field = new editor({
             schema: schema
         }).render();
+        $(document.body).append(field.el);
 
         field.focus();
 
@@ -2157,6 +2182,8 @@ module('Object', {
 
           start();
         }, 0);
+
+        field.remove();
     });
 
     test("'change' event - bubbles up from the form", function() {
@@ -2178,6 +2205,7 @@ module('Object', {
         var field = new editor({
             schema: schema
         }).render();
+        $(document.body).append(field.el);
 
         var spy = this.sinon.spy();
 
@@ -2187,6 +2215,8 @@ module('Object', {
 
         ok(spy.called);
         ok(spy.calledWith(field));
+        
+        field.remove();
     });
 
     test("'focus' event - doesn't bubble up from the field when editor already has focus", function() {
@@ -2209,6 +2239,7 @@ module('Object', {
         var field = new editor({
             schema: schema
         }).render();
+        $(document.body).append(field.el);
 
         field.focus();
 
@@ -2225,6 +2256,8 @@ module('Object', {
 
             start();
         }, 0);
+        
+        field.remove();
     });
 
     test("'blur' event - doesn't bubble up from the form when editor doesn't have focus", function() {
