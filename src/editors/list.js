@@ -384,8 +384,8 @@
 
 
   /**
-   * Base modal object editor for use with the List editor; used by Object 
-   * and NestedModal list types
+   * Abstract base modal object editor for use with the List editor; 
+   * used by Object and NestedModal list types
    */
   editors.List.Modal = editors.Base.extend({
     events: {
@@ -606,7 +606,7 @@
   });
 
   /**
-   * Modal object editor for use with the List editor.
+   * Modal model editor for use with the List editor.
    * To use it, set the 'itemType' property in a List schema to 'NestedModel'.
    */
   editors.List.NestedModel = editors.List.Object.extend({
