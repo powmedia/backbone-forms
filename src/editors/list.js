@@ -561,7 +561,7 @@
       //Get nested schema if Object
       if (!this.schema.subSchema) throw 'Missing required option "schema.subSchema"';
 
-      this.nestedSchema = schema.subSchema;
+      this.nestedSchema = this.schema.subSchema;
     },
 
     /**
@@ -639,7 +639,7 @@
       if (_.isEmpty(value)) {
         value = null;
       } else if (!(value instanceof Backbone.Model)) {
-        value = new (schema.model)(value);
+        value = new (this.schema.model)(value);
       }
       return value;
     },
