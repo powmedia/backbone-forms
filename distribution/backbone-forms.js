@@ -1519,7 +1519,12 @@ Form.editors = (function() {
       }
 
       else if (_.isFunction(options)) {
-        options(function(opts) { newOptions = opts; }, this);
+        var newOptions;
+        
+        options(function(opts) {
+          newOptions = opts;
+        }, this);
+        
         html = this._getOptionsHtml(newOptions);
       }
 
