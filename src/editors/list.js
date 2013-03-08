@@ -60,7 +60,7 @@
           items;
 
       //Create main element
-      var $el = $(Form.templates[this.schema.listTemplate]({
+      var $el = Form.helpers.parseHTML(Form.templates[this.schema.listTemplate]({
         items: '<b class="bbf-tmp"></b>'
       }));
 
@@ -304,7 +304,7 @@
       }).render();
 
       //Create main element
-      var $el = $(Form.templates[this.schema.listItemTemplate]({
+      var $el = Form.helpers.parseHTML(Form.templates[this.schema.listItemTemplate]({
         editor: '<b class="bbf-tmp"></b>'
       }));
 
@@ -384,8 +384,8 @@
 
 
   /**
-   * Modal object editor for use with the List editor.
-   * To use it, set the 'itemType' property in a List schema to 'Object' or 'NestedModel'
+   * Base modal object editor for use with the List editor; used by Object 
+   * and NestedModal list types
    */
   editors.List.Modal = editors.Base.extend({
     events: {
@@ -401,8 +401,6 @@
      */
     initialize: function(options) {
       editors.Base.prototype.initialize.call(this, options);
-
-      var schema = this.schema;
       
       //Dependencies
       if (!editors.List.Modal.ModalAdapter) throw 'A ModalAdapter is required';
@@ -463,50 +461,59 @@
     openEditor: function() {
       var self = this;
 
-      var form = new Form({
+      var form = this.modalForm = new Form({
         schema: this.nestedSchema,
         data: this.value
       });
 
-      var modal = this.modal = new Backbone.BootstrapModal({
+      var modal = this.modal = new editors.List.Modal.ModalAdapter({
         content: form,
         animate: true
-      }).open();
+      });
+
+      modal.open();
 
       this.trigger('open', this);
       this.trigger('focus', this);
 
-      modal.on('cancel', function() {
-        this.modal = null;
-
-        this.trigger('close', this);
-        this.trigger('blur', this);
-      }, this);
+      modal.on('cancel', this.onModalClosed, this);
       
-      modal.on('ok', _.bind(this.onModalSubmitted, this, form, modal));
+      modal.on('ok', _.bind(this.onModalSubmitted, this));
     },
 
     /**
      * Called when the user clicks 'OK'.
      * Runs validation and tells the list when ready to add the item
      */
-    onModalSubmitted: function(form, modal) {
-      var isNew = !this.value;
+    onModalSubmitted: function() {
+      var modal = this.modal,
+          form = this.modalForm,
+          isNew = !this.value;
 
       //Stop if there are validation errors
       var error = form.validate();
       if (error) return modal.preventClose();
-      this.modal = null;
 
-      //If OK, render the list item
+      //Store form value
       this.value = form.getValue();
 
+      //Render item
       this.renderSummary();
 
       if (isNew) this.trigger('readyToAdd');
       
       this.trigger('change', this);
-      
+
+      this.onModalClosed();
+    },
+
+    /**
+     * Cleans up references, triggers events. To be called whenever the modal closes
+     */
+    onModalClosed: function() {
+      this.modal = null;
+      this.modalForm = null;
+
       this.trigger('close', this);
       this.trigger('blur', this);
     },
@@ -530,7 +537,6 @@
       
       if (this.modal) {
         this.modal.trigger('cancel');
-        this.modal.close();
       }
     }
   }, {

@@ -240,7 +240,7 @@ module('Text', {
             key: 'title'
         }).render();
 
-        callCount = 0;
+        var callCount = 0;
 
         var spy = this.sinon.spy();
 
@@ -462,7 +462,7 @@ module('Number', {
             key: 'title'
         }).render();
 
-        callCount = 0;
+        var callCount = 0;
 
         var spy = this.sinon.spy();
 
@@ -948,8 +948,6 @@ module('Select', {
         ok(_.contains(options, 'San Francisco'));
 
         var group = field.$('optgroup').last();
-        window.group = group;
-        window.field = field;
         equal($('option', group).length, 2);
         var options = _.map($('option', group), function(el) {
             return $(el).text();

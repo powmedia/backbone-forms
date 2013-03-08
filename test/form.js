@@ -244,6 +244,26 @@ test('commit() - triggers model change once', function() {
   equal(timesCalled, 1);
 });
 
+test('commit() - can silence change event with options', function() {
+    var post = new Post();
+
+    var form = new Form({
+        model: post
+    }).render();
+      
+    //Count change events
+    var timesCalled = 0;
+    post.on('change', function() {
+        timesCalled ++;
+    });
+
+    form.fields.title.setValue('New title');
+
+    form.commit({ silent: true });
+
+    equal(timesCalled, 0);
+});
+
 test("getValue() - returns form value as an object", function() {
     var data = {
         title: 'Yuuup', 

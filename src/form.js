@@ -70,7 +70,7 @@ var Form = (function() {
           template = Form.templates[options.template];
 
       //Create el from template
-      var $form = $(template({
+      var $form = Form.helpers.parseHTML(template({
         fieldsets: '<b class="bbf-tmp"></b>'
       }));
 
@@ -114,7 +114,7 @@ var Form = (function() {
       }
 
       //Concatenating HTML as strings won't work so we need to insert field elements into a placeholder
-      var $fieldset = $(template(_.extend({}, fieldset, {
+      var $fieldset = Form.helpers.parseHTML(template(_.extend({}, fieldset, {
         legend: '<b class="bbf-tmp-legend"></b>',
         fields: '<b class="bbf-tmp-fields"></b>'
       })));
@@ -276,21 +276,26 @@ var Form = (function() {
     /**
      * Update the model with all latest values.
      *
+     * @param {Object} [options]  Options to pass to Model#set (e.g. { silent: true })
+     *
      * @return {Object}  Validation errors
      */
-    commit: function() {
+    commit: function(options) {
       //Validate
       var errors = this.validate();
       if (errors) return errors;
 
       //Commit
       var modelError;
-      this.model.set(this.getValue(), {
+
+      var setOptions = _.extend({
         error: function(model, e) {
           modelError = e;
         }
-      });
+      }, options);
 
+      this.model.set(this.getValue(), setOptions);
+      
       if (modelError) return modelError;
     },
 
@@ -372,7 +377,6 @@ var Form = (function() {
 
       Backbone.View.prototype.remove.call(this);
     },
-
 
     trigger: function(event) {
       if (event === 'focus') {
