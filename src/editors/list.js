@@ -459,8 +459,6 @@
     },
 
     openEditor: function() {
-      var self = this;
-
       var form = this.modalForm = new Form({
         schema: this.nestedSchema,
         data: this.value
