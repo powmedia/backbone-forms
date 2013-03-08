@@ -472,7 +472,7 @@
     openEditor: function() {
       var self = this;
 
-      var form = new Form({
+      var form = this.modalForm = new Form({
         schema: this.nestedSchema,
         data: this.value
       });
@@ -487,41 +487,43 @@
       this.trigger('open', this);
       this.trigger('focus', this);
 
-      modal.on('cancel', this.onModalCancelled, this);
+      modal.on('cancel', this.onModalClosed, this);
       
-      modal.on('ok', _.bind(this.onModalSubmitted, this, form, modal));
+      modal.on('ok', _.bind(this.onModalSubmitted, this));
     },
 
     /**
      * Called when the user clicks 'OK'.
      * Runs validation and tells the list when ready to add the item
      */
-    onModalSubmitted: function(form, modal) {
-      var isNew = !this.value;
+    onModalSubmitted: function() {
+      var modal = this.modal,
+          form = this.modalForm,
+          isNew = !this.value;
 
       //Stop if there are validation errors
       var error = form.validate();
       if (error) return modal.preventClose();
-      this.modal = null;
 
-      //If OK, render the list item
+      //Store form value
       this.value = form.getValue();
 
+      //Render item
       this.renderSummary();
 
       if (isNew) this.trigger('readyToAdd');
       
       this.trigger('change', this);
-      
-      this.trigger('close', this);
-      this.trigger('blur', this);
+
+      this.onModalClosed();
     },
 
     /**
-     * Called then the user clicks 'cancel'
+     * Cleans up references, triggers events. To be called whenever the modal closes
      */
-    onModalCancelled: function() {
+    onModalClosed: function() {
       this.modal = null;
+      this.modalForm = null;
 
       this.trigger('close', this);
       this.trigger('blur', this);
