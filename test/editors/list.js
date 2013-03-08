@@ -417,7 +417,7 @@ module('List', {
 
         var spy = this.sinon.spy();
         
-        item = field.items[0];
+        var item = field.items[0];
 
         field.on('change', spy);
 
