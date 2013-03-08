@@ -800,27 +800,24 @@ module('List.Item', {
     });
 }());
 
-module('List.Modal', {
+module('List.Object', {
     setup: function() {
         this.sinon = sinon.sandbox.create();
 
         //ModalAdapter interface
         var MockModalAdapter = this.MockModalAdapter = Backbone.View.extend({
-            open: function() {},
-            close: function() {},
-            preventClose: function() {}
-        });
-
+                open: function() {},
+                close: function() {},
+                preventClose: function() {}
+            }),
+            subSchema = {
+                id: { type: 'Number' },
+                name: { }
+            };
         this.sinon.stub(editors.List.Modal, 'ModalAdapter', MockModalAdapter);
 
         //Create editor to test
-        this.editor = new editors.List.Modal();
-        
-        //Force nestedSchema because this is usually done by Object or NestedModel constructors
-        this.editor.nestedSchema = {
-            id: { type: 'Number' },
-            name: { }
-        };
+        this.editor = new editors.List.Object({schema: {subSchema: subSchema}});
     },
 
     teardown: function() {
