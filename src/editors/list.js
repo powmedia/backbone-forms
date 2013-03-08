@@ -641,7 +641,7 @@
     setValue: function(value) {
       this.value = value;
     }
-  },
+  }, {
     returnsModel: true
   });
 
