@@ -199,7 +199,7 @@
 
       //Filter empty items
       values = _.without(values, undefined, '');
-      if (this.schema.itemType === 'NestedModel') {
+      if (this.Editor.returnsModel) {
         values = new this.schema.collection(values);
       }
       return values;
@@ -641,6 +641,8 @@
     setValue: function(value) {
       this.value = value;
     }
+  },
+    returnsModel: true
   });
 
 })();
