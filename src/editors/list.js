@@ -603,7 +603,7 @@
       
       //Otherwise use the model
       return new (schema.model)(value).toString();
-    },
+    }
   });
 
 })();
