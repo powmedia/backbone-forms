@@ -499,7 +499,7 @@
         data: this.value
       });
 
-      var modal = this.modal = new Backbone.BootstrapModal({
+      var modal = this.modal = new editors.List.Modal.ModalAdapter({
         content: form,
         animate: true
       }).open();
