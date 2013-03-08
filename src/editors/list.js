@@ -502,7 +502,9 @@
       var modal = this.modal = new editors.List.Modal.ModalAdapter({
         content: form,
         animate: true
-      }).open();
+      });
+
+      modal.open();
 
       this.trigger('open', this);
       this.trigger('focus', this);
@@ -561,7 +563,6 @@
       
       if (this.modal) {
         this.modal.trigger('cancel');
-        this.modal.close();
       }
     }
   }, {

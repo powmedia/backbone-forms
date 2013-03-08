@@ -729,169 +729,174 @@ module('List.Item', {
 
 
 
-// Needs a editors.List.Modal.ModalAdapter that isn't dependent on Bootstrap.
+module('List.Modal', {
+    setup: function() {
+        this.sinon = sinon.sandbox.create();
 
-// module('List.Modal', {
-//     setup: function() {
-//         this.sinon = sinon.sandbox.create();
-//     },
-// 
-//     teardown: function() {
-//         this.sinon.restore();
-//     }
-// });
-// 
-// (function() {
-// 
-//   var editor = editors.List.Modal,
-//       schema = {
-//           itemType: "Object",
-//           subSchema: {
-//               id: { type: 'Number' },
-//               name: { }
-//           }
-//       };
-//   
-//   test("focus() - gives focus to the editor and opens the modal", function() {
-//       var field = new editor({
-//           schema: schema
-//       }).render();
-// 
-//       field.focus();
-// 
-//       ok(field.modal);
-//       ok(field.hasFocus);
-//   });
-// 
-//   test("focus() - triggers the 'focus' event", function() {
-//       var field = new editor({
-//           schema: schema
-//       }).render();
-// 
-//       var spy = this.sinon.spy();
-// 
-//       field.on('focus', spy);
-// 
-//       field.focus();
-//       
-//       ok(spy.called);
-//       ok(spy.calledWith(field));
-//   });
-//   
-//   test("blur() - removes focus from the editor and closes the modal", function() {
-//       var field = new editor({
-//           schema: schema
-//       }).render();
-// 
-//       field.focus();
-//       
-//       field.blur()
-// 
-//       ok(!field.modal);
-//       ok(!field.hasFocus);
-//   });
-//   
-//   test("blur() - triggers the 'blur' event", function() {
-//       var field = new editor({
-//           schema: schema
-//       }).render();
-//       
-//       field.focus();
-// 
-//       var spy = this.sinon.spy();
-// 
-//       field.on('blur', spy);
-// 
-//       field.blur();
-//       
-//       ok(spy.called);
-//       ok(spy.calledWith(field));
-//   });
-//   
-//   test("'change' event - is triggered when the modal is submitted", function() {
-//       var field = new editor({
-//           schema: schema
-//       }).render();
-//       
-//       field.openEditor();
-// 
-//       var spy = this.sinon.spy();
-//       
-//       field.on('blur', spy);
-//       
-//       field.modal.trigger('ok');
-//       field.modal.close();
-//       
-//       ok(spy.calledOnce);
-//       ok(spy.alwaysCalledWith(field));
-//   });
-//   
-//   test("'focus' event - is triggered when the modal is opened", function() {
-//       var field = new editor({
-//           schema: schema
-//       }).render();
-//       
-//       var spy = this.sinon.spy();
-//       
-//       field.on('focus', spy);
-//       
-//       field.openEditor();
-//       
-//       ok(spy.calledOnce);
-//       ok(spy.alwaysCalledWith(field));
-//   });
-//   
-//   test("'blur' event - is triggered when the modal is closed", function() {
-//       var field = new editor({
-//           schema: schema
-//       }).render();
-//       
-//       field.openEditor();
-// 
-//       var spy = this.sinon.spy();
-//       
-//       field.on('blur', spy);
-//       
-//       field.modal.trigger('cancel');
-//       field.modal.close();
-//       
-//       ok(spy.calledOnce);
-//       ok(spy.alwaysCalledWith(field));
-//   });
-//   
-//   test("'open' event - is triggered when the modal is opened", function() {
-//       var field = new editor({
-//           schema: schema
-//       }).render();
-//       
-//       var spy = this.sinon.spy();
-//       
-//       field.on('open', spy);
-//       
-//       field.openEditor();
-//       
-//       ok(spy.calledOnce);
-//       ok(spy.alwaysCalledWith(field));
-//   });
-//   
-//   test("'close' event - is triggered when the modal is closed", function() {
-//       var field = new editor({
-//           schema: schema
-//       }).render();
-//       
-//       field.openEditor();
-// 
-//       var spy = this.sinon.spy();
-//       
-//       field.on('close', spy);
-//       
-//       field.modal.trigger('cancel');
-//       field.modal.close();
-//       
-//       ok(spy.calledOnce);
-//       ok(spy.alwaysCalledWith(field));
-//   });
-//   
-// })();
+        //ModalAdapter interface
+        var MockModalAdapter = Backbone.View.extend({
+            open: function() {},
+            close: function() {},
+            preventClose: function() {}
+        });
+
+        this.sinon.stub(editors.List.Modal, 'ModalAdapter', MockModalAdapter);
+    },
+
+    teardown: function() {
+        this.sinon.restore();
+    }
+});
+
+(function() {
+
+  var editor = editors.List.Modal,
+      schema = {
+          itemType: "Object",
+          subSchema: {
+              id: { type: 'Number' },
+              name: { }
+          }
+      };
+  
+  test("focus() - gives focus to the editor and opens the modal", function() {
+      var field = new editor({
+          schema: schema
+      }).render();
+
+      field.focus();
+
+      ok(field.modal);
+      ok(field.hasFocus);
+  });
+
+  test("focus() - triggers the 'focus' event", function() {
+      var field = new editor({
+          schema: schema
+      }).render();
+
+      var spy = this.sinon.spy();
+
+      field.on('focus', spy);
+
+      field.focus();
+      
+      ok(spy.called);
+      ok(spy.calledWith(field));
+  });
+  
+  test("blur() - removes focus from the editor and closes the modal", function() {
+      var field = new editor({
+          schema: schema
+      }).render();
+
+      field.focus();
+      
+      field.blur()
+
+      ok(!field.modal);
+      ok(!field.hasFocus);
+  });
+  
+  test("blur() - triggers the 'blur' event", function() {
+      var field = new editor({
+          schema: schema
+      }).render();
+      
+      field.focus();
+
+      var spy = this.sinon.spy();
+
+      field.on('blur', spy);
+
+      field.blur();
+      
+      ok(spy.called);
+      ok(spy.calledWith(field));
+  });
+  
+
+  test("'change' event - is triggered when the modal is submitted", function() {
+      var field = new editor({
+          schema: schema
+      }).render();
+      
+      field.openEditor();
+
+      var spy = this.sinon.spy();
+      
+      field.on('blur', spy);
+      
+      field.modal.trigger('ok');
+      
+      ok(spy.calledOnce);
+      ok(spy.alwaysCalledWith(field));
+  });
+  
+  test("'focus' event - is triggered when the modal is opened", function() {
+      var field = new editor({
+          schema: schema
+      }).render();
+      
+      var spy = this.sinon.spy();
+      
+      field.on('focus', spy);
+      
+      field.openEditor();
+      
+      ok(spy.calledOnce);
+      ok(spy.alwaysCalledWith(field));
+  });
+  
+  test("'blur' event - is triggered when the modal is closed", function() {
+      var field = new editor({
+          schema: schema
+      }).render();
+      
+      field.openEditor();
+
+      var spy = this.sinon.spy();
+      
+      field.on('blur', spy);
+      
+      field.modal.trigger('cancel');
+      
+      ok(spy.calledOnce);
+      ok(spy.alwaysCalledWith(field));
+  });
+  
+  test("'open' event - is triggered when the modal is opened", function() {
+      var field = new editor({
+          schema: schema
+      }).render();
+      
+      var spy = this.sinon.spy();
+      
+      field.on('open', spy);
+      
+      field.openEditor();
+      
+      ok(spy.calledOnce);
+      ok(spy.alwaysCalledWith(field));
+  });
+  
+  test("'close' event - is triggered when the modal is closed", function() {
+      var field = new editor({
+          schema: schema
+      }).render();
+      
+      field.openEditor();
+
+      var spy = this.sinon.spy();
+      
+      field.on('close', spy);
+      
+      field.modal.trigger('cancel');
+      
+      ok(spy.calledOnce);
+      ok(spy.alwaysCalledWith(field));
+  });
+
+})();
 
 })(Backbone.Form, Backbone.Form.Field, Backbone.Form.editors);
