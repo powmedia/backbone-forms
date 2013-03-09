@@ -458,11 +458,16 @@
       return value.toString();
     },
 
-    openEditor: function() {
-      var form = this.modalForm = new Form({
+    makeForm: function () {
+      this.modalForm = new Form({
         schema: this.nestedSchema,
         data: this.value
       });
+      return this.modalForm;
+    },
+
+    openEditor: function() {
+      var form = this.makeForm();
 
       var modal = this.modal = new editors.List.Modal.ModalAdapter({
         content: form,
@@ -615,6 +620,14 @@
 
       this.nestedSchema = this.schema.model.prototype.schema;
       if (_.isFunction(this.nestedSchema)) this.nestedSchema = this.nestedSchema();
+    },
+
+    makeForm: function () {
+      this.modalForm = new Form({
+        schema: this.nestedSchema,
+        model: this.value
+      });
+      return this.modalForm;
     },
 
     /**
