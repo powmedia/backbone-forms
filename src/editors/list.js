@@ -156,6 +156,7 @@
       //Most editors can be added automatically
       else {
         _addItem();
+        item.editor.focus();
       }
       
       return item;

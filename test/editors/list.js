@@ -238,6 +238,16 @@ module('List', {
         same(_.indexOf(list.items, item), -1, 'Removed item is no longer in list.items');
     });
 
+    test('addItem() - sets editor focus if editor is not isAsync', function() {
+        var list = new List().render();
+        
+        this.sinon.spy(list.Editor.prototype, 'focus');
+
+        list.addItem();
+
+        ok(list.Editor.prototype.focus.calledOnce);
+    });
+
     test('removeItem() - adds an empty item if list is empty', function() {
         var list = new List().render();
 
