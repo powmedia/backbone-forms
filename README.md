@@ -905,6 +905,7 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 ##Changelog
 
 ###master
+- List: Set focus on newly added simple list items
 - Select: Add option group support (khepin)
 
 ###0.11.0
