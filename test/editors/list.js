@@ -303,16 +303,14 @@ module('List', {
             model: new Post,
             key: 'weapons'
         }).render();
+        $(document.body).append(field.el);
 
         field.focus();
 
-        stop();
-        setTimeout(function() {
-          ok(field.items[0].editor.hasFocus);
-          ok(field.hasFocus);
-
-          start();
-        }, 0);
+        ok(field.items[0].editor.hasFocus);
+        ok(field.hasFocus);
+        
+        field.remove();
     });
 
     test("focus() - triggers the 'focus' event", function() {
@@ -320,6 +318,7 @@ module('List', {
             model: new Post,
             key: 'weapons'
         }).render();
+        $(document.body).append(field.el);
 
         var spy = this.sinon.spy();
 
@@ -327,13 +326,10 @@ module('List', {
 
         field.focus();
 
-        stop();
-        setTimeout(function() {
-          ok(spy.called);
-          ok(spy.calledWith(field));
+        ok(spy.called);
+        ok(spy.calledWith(field));
 
-          start();
-        }, 0);
+        field.remove();
     });
 
     test("blur() - removes focus from the editor and its first item's editor", function() {
@@ -360,6 +356,7 @@ module('List', {
             model: new Post,
             key: 'weapons'
         }).render();
+        $(document.body).append(field.el);
 
         field.focus();
 
@@ -376,6 +373,8 @@ module('List', {
 
           start();
         }, 0);
+
+        field.remove();
     });
 
     test("'change' event - bubbles up from item's editor", function() {
@@ -433,6 +432,7 @@ module('List', {
             model: new Post,
             key: 'weapons'
         }).render();
+        $(document.body).append(field.el);
 
         var spy = this.sinon.spy();
 
@@ -442,6 +442,8 @@ module('List', {
 
         ok(spy.called);
         ok(spy.calledWith(field));
+
+        field.remove();
     });
 
     test("'focus' event - doesn't bubble up from item's editor when editor already has focus", function() {
@@ -466,6 +468,7 @@ module('List', {
             model: new Post,
             key: 'weapons'
         }).render();
+        $(document.body).append(field.el);
 
         field.focus();
 
@@ -482,6 +485,8 @@ module('List', {
 
             start();
         }, 0);
+
+        field.remove();
     });
 
     test("'blur' event - doesn't bubble up from item's editor when editor has focus and we're focusing on another one of the editor's item's editors", function() {
