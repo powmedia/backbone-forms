@@ -224,7 +224,11 @@
         return;
       }
 
-      $el.one('hidden', function() {
+      $el.one('hidden', function onHidden(e) {
+        // Ignore events propagated from interior objects, like bootstrap tooltips
+        if(e.target !== e.currentTarget){
+          return $el.one('hidden', onHidden);
+        }
         self.remove();
 
         if (self.options.content && self.options.content.trigger) {
