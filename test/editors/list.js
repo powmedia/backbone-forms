@@ -12,6 +12,7 @@ module('List', {
     }
 });
 
+
 (function() {
     var Post = Backbone.Model.extend({
         defaults: {
@@ -743,28 +744,95 @@ module('List.Item', {
 })();
 
 
+(function() {
+    var Child = Backbone.Model.extend({
+          defaults: {
+            value: "Foo"
+          },
+          schema: {
+            value: { type: 'Text' }
+          },
+          toString: function () {
+            return this.get('value');
+          }
+        }),
+        ChildCollection = Backbone.Collection.extend({
+          model: Child,
+          thisIsAChildCollection: true
+        }),
+        Parent = Backbone.Model.extend({
+          schema: {
+            children: { type: 'List', itemType: 'NestedModel', model: Child}
+          }
+        }),
+        ParentChildCollection = Backbone.Model.extend({
+          schema: {
+            children: { type: 'List', itemType: 'NestedModel', model: Child, collection: ChildCollection}
+          }
+        }),
+        MockModal = function () {};
 
-module('List.Modal', {
+    MockModal.prototype.open = MockModal.prototype.on = function () {};
+
+    test("Nested model with default collection.", function() {
+      editors.List.Modal.ModalAdapter = Backbone.BootstrapModal = MockModal;
+      try {
+        var parent = new Parent(),
+            child = new Child(),
+            form = new Form({model: parent}),
+            editor, item;
+
+        form.render();
+        editor = form.fields.children.editor;
+        item = editor.addItem(child);
+        item.editor.trigger('readyToAdd');
+        same(editor.getValue().models[0], child);
+      } finally {
+        delete Backbone.BootstrapModal;
+        editors.List.Modal.ModalAdapter = undefined;
+      }
+    });
+
+    test("Nested model with custom collection.", function() {
+      editors.List.Modal.ModalAdapter = Backbone.BootstrapModal = MockModal;
+      try {
+        var parent = new ParentChildCollection(),
+            child = new Child(),
+            form = new Form({model: parent}),
+            editor, item, value;
+
+        form.render();
+        editor = form.fields.children.editor;
+        item = editor.addItem(child);
+        item.editor.trigger('readyToAdd');
+        value = editor.getValue();
+        ok(value.thisIsAChildCollection);
+        same(value.models[0], child);
+      } finally {
+        delete Backbone.BootstrapModal;
+        editors.List.Modal.ModalAdapter = undefined;
+      }
+    });
+}());
+
+module('List.Object', {
     setup: function() {
         this.sinon = sinon.sandbox.create();
 
         //ModalAdapter interface
         var MockModalAdapter = this.MockModalAdapter = Backbone.View.extend({
-            open: function() {},
-            close: function() {},
-            preventClose: function() {}
-        });
-
+                open: function() {},
+                close: function() {},
+                preventClose: function() {}
+            }),
+            subSchema = {
+                id: { type: 'Number' },
+                name: { }
+            };
         this.sinon.stub(editors.List.Modal, 'ModalAdapter', MockModalAdapter);
 
         //Create editor to test
-        this.editor = new editors.List.Modal();
-        
-        //Force nestedSchema because this is usually done by Object or NestedModel constructors
-        this.editor.nestedSchema = {
-            id: { type: 'Number' },
-            name: { }
-        };
+        this.editor = new editors.List.Object({schema: {subSchema: subSchema}});
     },
 
     teardown: function() {

@@ -47,12 +47,17 @@
         return editors[type];
       })();
 
+      if (this.Editor.returnsModel && !schema.collection) {
+        this.schema.collection = Backbone.Collection;
+      }
+
       this.items = [];
     },
 
     render: function() {
       var self = this,
-          value = this.value || [];
+          value = this.value || [],
+          items;
 
       //Create main element
       var $el = Form.helpers.parseHTML(Form.templates[this.schema.listTemplate]({
@@ -64,14 +69,18 @@
 
       //Add existing items
       if (value.length) {
-        _.each(value, function(itemValue) {
-          self.addItem(itemValue);
+        items = value;
+        if (value instanceof Backbone.Collection) {
+          items = value.models;
+        }
+        _.each(items, function(itemValue) {
+          self.addItem(itemValue, false);
         });
       }
 
       //If no existing items create an empty one, unless the editor specifies otherwise
       else {
-        if (!this.Editor.isAsync) this.addItem();
+        if (!this.Editor.isAsync) this.addItem(undefined, false);
       }
 
       this.setElement($el);
@@ -190,7 +199,11 @@
       });
 
       //Filter empty items
-      return _.without(values, undefined, '');
+      values = _.without(values, undefined, '');
+      if (this.Editor.returnsModel) {
+        values = new this.schema.collection(values);
+      }
+      return values;
     },
 
     setValue: function(value) {
@@ -372,8 +385,8 @@
 
 
   /**
-   * Base modal object editor for use with the List editor; used by Object 
-   * and NestedModal list types
+   * Abstract base modal object editor for use with the List editor; 
+   * used by Object and NestedModal list types
    */
   editors.List.Modal = editors.Base.extend({
     events: {
@@ -431,30 +444,6 @@
     },
 
     /**
-     * Function which returns a generic string representation of an object
-     *
-     * @param {Object} value
-     * 
-     * @return {String}
-     */
-    itemToString: function(value) {
-      value = value || {};
-
-      //Pretty print the object keys and values
-      var parts = [];
-      _.each(this.nestedSchema, function(schema, key) {
-        var desc = schema.title ? schema.title : Form.helpers.keyToTitle(key),
-            val = value[key];
-
-        if (_.isUndefined(val) || _.isNull(val)) val = '';
-
-        parts.push(desc + ': ' + val);
-      });
-
-      return parts.join('<br />');
-    },
-
-    /**
      * Returns the string representation of the object value
      */
     getStringValue: function() {
@@ -467,16 +456,19 @@
       if (schema.itemToString) return schema.itemToString(value);
       
       //Otherwise use the generic method or custom overridden method
-      return this.itemToString(value);
+      return value.toString();
     },
 
-    openEditor: function() {
-      var self = this;
-
-      var form = this.modalForm = new Form({
+    makeForm: function () {
+      this.modalForm = new Form({
         schema: this.nestedSchema,
         data: this.value
       });
+      return this.modalForm;
+    },
+
+    openEditor: function() {
+      var form = this.makeForm();
 
       var modal = this.modal = new editors.List.Modal.ModalAdapter({
         content: form,
@@ -563,31 +555,41 @@
     isAsync: true
   });
 
-  
+  /**
+   * Modal object editor for use with the List editor.
+   * To use it, set the 'itemType' property in a List schema to 'Object'.
+   */
   editors.List.Object = editors.List.Modal.extend({
     initialize: function () {
       editors.List.Modal.prototype.initialize.apply(this, arguments);
+      //Get nested schema if Object
+      if (!this.schema.subSchema) throw 'Missing required option "schema.subSchema"';
 
-      var schema = this.schema;
+      this.nestedSchema = this.schema.subSchema;
+    },
 
-      if (!schema.subSchema) throw 'Missing required option "schema.subSchema"';
+    /**
+     * Function which returns a generic string representation of an object
+     *
+     * @param {Object} value
+     * 
+     * @return {String}
+     */
+    itemToString: function(value) {
+      value = value || {};
 
-      this.nestedSchema = schema.subSchema;
-    }
-  });
+      //Pretty print the object keys and values
+      var parts = [];
+      _.each(this.nestedSchema, function(schema, key) {
+        var desc = schema.title ? schema.title : Form.helpers.keyToTitle(key),
+            val = value[key];
 
+        if (_.isUndefined(val) || _.isNull(val)) val = '';
 
-  editors.List.NestedModel = editors.List.Modal.extend({
-    initialize: function() {
-      editors.List.Modal.prototype.initialize.apply(this, arguments);
+        parts.push(desc + ': ' + val);
+      });
 
-      var schema = this.schema;
-
-      if (!schema.model) throw 'Missing required option "schema.model"';
-
-      var nestedSchema = schema.model.prototype.schema;
-
-      this.nestedSchema = (_.isFunction(nestedSchema)) ? nestedSchema() : nestedSchema;
+      return parts.join('<br />');
     },
 
     /**
@@ -597,14 +599,68 @@
       var schema = this.schema,
           value = this.getValue();
 
-      if (_.isEmpty(value)) return null;
+      if (_.isEmpty(value)) return '[Empty]';
 
       //If there's a specified toString use that
       if (schema.itemToString) return schema.itemToString(value);
       
-      //Otherwise use the model
-      return new (schema.model)(value).toString();
+      //Otherwise use the generic method or custom overridden method
+      return this.itemToString(value);
+    }
+  });
+
+  /**
+   * Modal model editor for use with the List editor.
+   * To use it, set the 'itemType' property in a List schema to 'NestedModel'.
+   */
+  editors.List.NestedModel = editors.List.Object.extend({
+    initialize: function () {
+      editors.List.Modal.prototype.initialize.apply(this, arguments);
+
+      if (!this.schema.model) throw 'Missing required option "schema.model"';
+
+      this.nestedSchema = this.schema.model.prototype.schema;
+      if (_.isFunction(this.nestedSchema)) this.nestedSchema = this.nestedSchema();
     },
+
+    makeForm: function () {
+      this.modalForm = new Form({
+        schema: this.nestedSchema,
+        model: this.value
+      });
+      return this.modalForm;
+    },
+
+    /**
+     * Returns the string representation of the object value
+     */
+    getStringValue: function() {
+      var schema = this.schema,
+          value = this.getValue();
+
+      if (_.isEmpty(value)) return '[Empty]';
+
+      //If there's a specified toString use that
+      if (schema.itemToString) return schema.itemToString(value);
+      
+      return value.toString();
+    },
+
+    getValue: function() {
+      var value = this.value;
+      if (_.isEmpty(value)) {
+        value = null;
+      } else if (!(value instanceof Backbone.Model)) {
+        value = new (this.schema.model)(value);
+      }
+      return value;
+    },
+
+    setValue: function(value) {
+      this.value = value;
+    }
+  }, {
+    returnsModel: true
   });
 
 })();
