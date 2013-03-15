@@ -30,12 +30,24 @@ var Form = (function() {
       options = options || {};
 
       //Find the schema to use
-      var schemaSource = options.schema 
-        || (options.model && options.model.schema) 
-        || this.schema
-        || {};
-      
-      var schema = this.schema = _.isFunction(schemaSource) ? schemaSource() : schemaSource;
+      var schema = this.schema = (function() {
+        //Prefer schema from options
+        if (options.schema) return _.result(options, 'schema');
+
+        //Then schema on model
+        var model = options.model;
+        if (model && model.schema) {
+          return (_.isFunction(model.schema)) ? model.schema() : model.schema;
+        }
+
+        //Then built-in schema
+        if (self.schema) {
+          return (_.isFunction(self.schema)) ? self.schema() : self.schema;
+        }
+
+        //Fallback to empty schema
+        return {};
+      })();
 
       //Store important data
       _.extend(this, _.pick(options, 'model', 'data', 'idPrefix'));
@@ -61,46 +73,6 @@ var Form = (function() {
       _.each(fieldsetSchema, function(itemSchema) {
         this.fieldsets.push(this.createFieldset(itemSchema));
       }, this);
-    },
-
-    render: function() {
-      var self = this,
-          fields = this.fields;
-
-      //Render form
-      var $form = $(this.template(_.result(this, 'templateData')));
-
-      //Render fields into specific containers
-      $form.find('[data-fields]').each(function(i, el) {
-        var $container = $(el),
-            selection = $container.attr('data-fields');
-
-        //Work out which fields to include
-        var keys = (selection == '*')
-          ? self.selectedFields || _.keys(fields)
-          : selection.split(',');
-
-        //Add them
-        _.each(keys, function(key) {
-          var field = fields[key];
-
-          $container.append(field.render().el);
-        });
-      });
-
-      //Render fieldsets
-      $form.find('[data-fieldsets]').each(function(i, el) {
-        var $container = $(el);
-
-        _.each(self.fieldsets, function(fieldset) {
-          $container.append(fieldset.render().el);
-        });
-      });
-
-      //Set the main element
-      this.setElement($form);
-
-      return this;
     },
 
     /**
@@ -144,6 +116,46 @@ var Form = (function() {
       }
 
       return new Form.Field(options);
+    },
+
+    render: function() {
+      var self = this,
+          fields = this.fields;
+
+      //Render form
+      var $form = $(this.template(_.result(this, 'templateData')));
+
+      //Render fields into specific containers
+      $form.find('[data-fields]').each(function(i, el) {
+        var $container = $(el),
+            selection = $container.attr('data-fields');
+
+        //Work out which fields to include
+        var keys = (selection == '*')
+          ? self.selectedFields || _.keys(fields)
+          : selection.split(',');
+
+        //Add them
+        _.each(keys, function(key) {
+          var field = fields[key];
+
+          $container.append(field.render().el);
+        });
+      });
+
+      //Render fieldsets
+      $form.find('[data-fieldsets]').each(function(i, el) {
+        var $container = $(el);
+
+        _.each(self.fieldsets, function(fieldset) {
+          $container.append(fieldset.render().el);
+        });
+      });
+
+      //Set the main element
+      this.setElement($form);
+
+      return this;
     },
 
     /**
