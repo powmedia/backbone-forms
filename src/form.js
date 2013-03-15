@@ -51,7 +51,9 @@ var Form = Backbone.View.extend({
     _.extend(this, _.pick(options, 'model', 'data', 'idPrefix'));
 
     //Override defaults
-    _.extend(this, _.pick(options, 'Fieldset', 'Field', 'template'));
+    _.extend(this, _.pick(options, 'template'));
+    this.Fieldset = options.Fieldset || Form.Fieldset;
+    this.Field = options.Field || Form.Field;
 
     //Check which fields will be included (defaults to all)
     var selectedFields = this.selectedFields = options.fields || _.keys(schema);
@@ -86,7 +88,7 @@ var Form = Backbone.View.extend({
       fields: this.fields
     };
 
-    return new Form.Fieldset(options);
+    return new this.Fieldset(options);
   },
 
   /**
@@ -113,7 +115,7 @@ var Form = Backbone.View.extend({
       options.value = null;
     }
 
-    return new Form.Field(options);
+    return new this.Field(options);
   },
 
   render: function() {

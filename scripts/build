@@ -18,9 +18,9 @@ var fileList = [
   'validators.js',
   'fieldset.js',
   'field.js',
+  'nestedField.js',
   'editors.js',
-  'setup.js',
-  'templates/default.js'
+  'setup.js'
 ];
 
 //Concatenate the main files
