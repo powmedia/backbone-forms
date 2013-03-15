@@ -9,7 +9,7 @@ A flexible, customisable form framework for Backbone.JS applications.
 - Custom HTML templates
 
 
-###Example
+###Example: Quickly generate forms to edit models
 
     var User = Backbone.Model.extend({
         schema: {
@@ -30,6 +30,44 @@ A flexible, customisable form framework for Backbone.JS applications.
     }).render();
 
     $('body').append(form.el);
+
+
+###Example: Fully customise forms and templates
+
+HTML:
+```
+<script id="formTemplate" type="text/html">
+    <form>
+        <h1>New User</h1>
+        
+        <h2>Main Info</h2>
+        <div data-fields="title,name,birthday"></div>
+        
+        <h2>Account Info</h2>
+        <div data-fields="email,password"></div>
+    </form>
+</script>
+```
+
+Javascript:
+```js
+var UserForm = Backbone.Form.extend({
+    template: _.template($('#formTemplate').html()),
+    
+    schema: {
+        title:      { type: 'Select', options: ['Mr', 'Mrs', 'Ms'] },
+        name:       'Text',
+        email:      { validators: ['required', 'email'] },
+        password:   'Password'
+    }
+});
+
+var form = new UserForm({
+    model: new User()
+}).render();
+
+$('body').append(form.el);
+```
 
 
 ###Live editable demos
