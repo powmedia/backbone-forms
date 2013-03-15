@@ -10,7 +10,7 @@ Form.Fieldset = (function() {
     template: _.template('\
       <fieldset>\
         <% if (legend) { %>\
-          <legend>{{legend}}</legend>\
+          <legend><%= legend %></legend>\
         <% } %>\
         <div data-fields></div>\
       </fieldset>\
