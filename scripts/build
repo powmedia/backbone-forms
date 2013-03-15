@@ -16,6 +16,7 @@ var fileList = [
   'form.js',
   'helpers.js',
   'validators.js',
+  'fieldset.js',
   'field.js',
   'editors.js',
   'setup.js',

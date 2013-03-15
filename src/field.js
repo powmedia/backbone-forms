@@ -5,131 +5,72 @@
 
 Form.Field = (function() {
 
-  var helpers = Form.helpers,
-      templates = Form.templates;
-
   return Backbone.View.extend({
 
+    template: _.template('\
+      <div class="control-group field-{{key}}">\
+        <label class="control-label" for="{{editorId}}">{{title}}</label>\
+        <div class="controls">\
+          <div data-editor></div>\
+          <div class="help-inline" data-error></div>\
+          <div class="help-block">{{help}}</div>\
+        </div>\
+      </div>\
+    '),
+
     /**
-     * @param {Object}  Options
-     *      Required:
-     *          key     {String} : The model attribute key
-     *      Optional:
-     *          schema  {Object} : Schema for the field
-     *          value       {Mixed} : Pass value when not using a model. Use getValue() to get out value
-     *          model       {Backbone.Model} : Use instead of value, and use commit().
-     *          idPrefix    {String} : Prefix to add to the editor DOM element's ID
+     * CSS class name added to the field when there is a validation error
      */
-    /**
-     * Creates a new field
-     *
-     * @param {Object} options
-     * @param {Object} [options.schema]     Field schema. Defaults to { type: 'Text' }
-     * @param {Model} [options.model]       Model the field relates to. Required if options.data is not set.
-     * @param {String} [options.key]        Model key/attribute the field relates to.
-     * @param {Mixed} [options.value]       Field value. Required if options.model is not set.
-     * @param {String} [options.idPrefix]   Prefix for the editor ID. By default, the model's CID is used.
-     *
-     * @return {Field}
-     */
+    errorClassName: 'error',
+
     initialize: function(options) {
       options = options || {};
 
-      this.form = options.form;
-      this.key = options.key;
-      this.value = options.value;
-      this.model = options.model;
+      //Store important data
+      _.extend(this, _.pick(options, 'form', 'key', 'value', 'model', 'idPrefix'));
 
-      //Turn schema shorthand notation (e.g. 'Text') into schema object
-      if (_.isString(options.schema)) options.schema = { type: options.schema };
+      //Override defaults
+      _.extend(this, _.pick(options, 'template', 'errorClassName'));
 
-      //Set schema defaults
-      this.schema = _.extend({
+      //Create the full field schema, merging defaults etc.
+      this.schema = this.createSchema(options.schema);
+
+      //Create editor
+      this.editor = this.createEditor();
+    },
+
+    /**
+     * Creates the full field schema, merging defaults etc.
+     *
+     * @param {Object|String} schema
+     *
+     * @return {Object}
+     */
+    createSchema: function(schema) {
+      if (_.isString(schema)) schema = { type: schema };
+
+      return _.extend({
         type: 'Text',
-        title: helpers.keyToTitle(this.key),
-        template: 'field'
-      }, options.schema);
+        title: this.createTitle()
+      }, schema);
     },
 
-
     /**
-     * Provides the context for rendering the field
-     * Override this to extend the default context
+     * Creates the editor specified in the schema; either a string name or
+     * a constructor function
      *
-     * @param {Object} schema
-     * @param {View} editor
-     *
-     * @return {Object}     Locals passed to the template
+     * @return {View}
      */
-    renderingContext: function(schema, editor) {
-      return {
-        key: this.key,
-        title: schema.title,
-        id: editor.id,
-        type: schema.type,
-        editor: '<b class="bbf-tmp-editor"></b>',
-        help: '<b class="bbf-tmp-help"></b>',
-        error: '<b class="bbf-tmp-error"></b>'
-      };
-    },
+    createEditor: function() {
+      var options = _.extend(
+        _.pick(this, 'schema', 'form', 'key', 'idPrefix', 'model', 'value'),
+        { id: this.createEditorId() }
+      );
 
+      var type = this.schema.type,
+          constructorFn = (_.isString(type)) ? Form.editors[type] : type;
 
-    /**
-     * Renders the field
-     */
-    render: function() {
-      var schema = this.schema,
-          templates = Form.templates;
-
-      //Standard options that will go to all editors
-      var options = {
-        form: this.form,
-        key: this.key,
-        schema: schema,
-        idPrefix: this.options.idPrefix,
-        id: this.getId()
-      };
-
-      //Decide on data delivery type to pass to editors
-      if (this.model) {
-        options.model = this.model;
-      } else {
-        options.value = this.value;
-      }
-
-      //Decide on the editor to use
-      var editor = this.editor = helpers.createEditor(schema.type, options);
-
-      //Create the element
-      var $field = Form.helpers.parseHTML(templates[schema.template](this.renderingContext(schema, editor)));
-
-      //Remove <label> if it's not wanted
-      if (schema.title === false) {
-        $field.find('label[for="'+editor.id+'"]').first().remove();
-      }
-
-      //Render editor
-      $field.find('.bbf-tmp-editor').replaceWith(editor.render().el);
-
-      //Set help text
-      this.$help = $('.bbf-tmp-help', $field).parent();
-      this.$help.empty();
-      if (this.schema.help) this.$help.html(this.schema.help);
-
-      //Create error container
-      this.$error = $($('.bbf-tmp-error', $field).parent()[0]);
-      if (this.$error) this.$error.empty();
-
-      //Add custom CSS class names
-      if (this.schema.fieldClass) $field.addClass(this.schema.fieldClass);
-
-      //Add custom attributes
-      if (this.schema.fieldAttrs) $field.attr(this.schema.fieldAttrs);
-
-      //Replace the generated wrapper tag
-      this.setElement($field);
-
-      return this;
+      return new constructorFn(options);
     },
 
     /**
@@ -137,8 +78,8 @@ Form.Field = (function() {
      *
      * @return {String}
      */
-    getId: function() {
-      var prefix = this.options.idPrefix,
+    createEditorId: function() {
+      var prefix = this.idPrefix,
           id = this.key;
 
       //Replace periods with underscores (e.g. for when using paths)
@@ -152,6 +93,54 @@ Form.Field = (function() {
       if (this.model) return this.model.cid + '_' + id;
 
       return id;
+    },
+
+    /**
+     * Create the default field title (label text) from the key name.
+     * (Converts 'camelCase' to 'Camel Case')
+     *
+     * @return {String}
+     */
+    createTitle: function() {
+      var str = this.key;
+
+      //Add spaces
+      str = str.replace(/([A-Z])/g, ' $1');
+
+      //Uppercase first character
+      str = str.replace(/^./, function(str) { return str.toUpperCase(); });
+
+      return str;
+    },
+
+    /**
+     * Returns the data to be passed to the template
+     *
+     * @return {Object}
+     */
+    templateData: function() {
+      return _.extend({
+        help: '',
+        key: this.key,
+        editorId: this.editor.id
+      }, this.schema);
+    },
+
+    render: function() {
+      var schema = this.schema;
+
+      //Render field
+      var $field = $(this.template(_.result(this, 'templateData')));
+
+      if (schema.fieldClass) $field.addClass(schema.fieldClass);
+      if (schema.fieldAttrs) $field.attr(schema.fieldAttrs);
+
+      //Render editor
+      $field.find('[data-editor]').html(this.editor.render().el);
+
+      this.setElement($field);
+
+      return this;
     },
 
     /**
@@ -177,42 +166,31 @@ Form.Field = (function() {
      * @param {String} msg     Error message
      */
     setError: function(msg) {
-      //Object and NestedModel types set their own errors internally
+      //Nested form editors (e.g. Object) set their errors internally
       if (this.editor.hasNestedForm) return;
 
-      var errClass = Form.classNames.error;
+      //Add error CSS class
+      this.$el.addClass(this.errorClassName);
 
-      this.$el.addClass(errClass);
-
-      if (this.$error) {
-        this.$error.html(msg);
-      } else if (this.$help) {
-        this.$help.html(msg);
-      }
+      //Set error message
+      this.$('[data-error]').html(msg);
     },
 
     /**
      * Clear the error state and reset the help message
      */
     clearError: function() {
-      var errClass = Form.classNames.error;
+      //Remove error CSS class
+      this.$el.removeClass(this.errorClassName);
 
-      this.$el.removeClass(errClass);
-
-      // some fields (e.g., Hidden), may not have a help el
-      if (this.$error) {
-        this.$error.empty();
-      } else if (this.$help) {
-        this.$help.empty();
-
-        //Reset help text if available
-        var helpMsg = this.schema.help;
-        if (helpMsg) this.$help.html(helpMsg);
-      }
+      //Clear error message
+      this.$('[data-error]').empty();
     },
 
     /**
      * Update the model with the new value from the editor
+     *
+     * @return {Mixed}
      */
     commit: function() {
       return this.editor.commit();
@@ -236,10 +214,16 @@ Form.Field = (function() {
       this.editor.setValue(value);
     },
 
+    /**
+     * Give the editor focus
+     */
     focus: function() {
       this.editor.focus();
     },
 
+    /**
+     * Remove focus from the editor
+     */
     blur: function() {
       this.editor.blur();
     },
@@ -252,7 +236,6 @@ Form.Field = (function() {
 
       Backbone.View.prototype.remove.call(this);
     }
-
   });
 
 })();
