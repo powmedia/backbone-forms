@@ -826,7 +826,7 @@ Form.editors = (function() {
         schema: this.schema.subSchema,
         data: this.value,
         idPrefix: this.id + '_',
-        fieldTemplate: 'nestedField'
+        Field: Form.NestedField
       });
 
       this._observeFormEvents();
