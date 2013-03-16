@@ -44,7 +44,12 @@ HTML:
         <div data-fields="title,name,birthday"></div>
         
         <h2>Account Info</h2>
-        <div data-fields="email,password"></div>
+        <h3>Email</h3>
+        <div data-fields="email"></div>
+
+        <h3>Password</h3>
+        <p>Must be at least 8 characters long</p>
+        <div data-editors="password"></div>
     </form>
 </script>
 ```
