@@ -6,12 +6,12 @@
 Form.Field = Backbone.View.extend({
 
   template: _.template('\
-    <div class="control-group field-<%= key %>">\
-      <label class="control-label" for="<%= editorId %>"><%= title %></label>\
-      <div class="controls">\
+    <div>\
+      <label for="<%= editorId %>"><%= title %></label>\
+      <div>\
         <div data-editor></div>\
-        <div class="help-inline" data-error></div>\
-        <div class="help-block"><%= help %></div>\
+        <div data-error></div>\
+        <div><%= help %></div>\
       </div>\
     </div>\
   '),
@@ -234,4 +234,5 @@ Form.Field = Backbone.View.extend({
 
     Backbone.View.prototype.remove.call(this);
   }
+
 });

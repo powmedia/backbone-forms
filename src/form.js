@@ -6,7 +6,7 @@
 var Form = Backbone.View.extend({
 
   template: _.template('\
-    <form class="form-horizontal">\
+    <form>\
       <div data-fieldsets></div>\
     </form>\
   '),
@@ -125,7 +125,25 @@ var Form = Backbone.View.extend({
     //Render form
     var $form = $(this.template(_.result(this, 'templateData')));
 
-    //Render fields into specific containers
+    //Render standalone editors
+    $form.find('[data-editors]').each(function(i, el) {
+      var $container = $(el),
+          selection = $container.attr('data-editors');
+
+      //Work out which fields to include
+      var keys = (selection == '*')
+        ? self.selectedFields || _.keys(fields)
+        : selection.split(',');
+
+      //Add them
+      _.each(keys, function(key) {
+        var field = fields[key];
+
+        $container.append(field.editor.render().el);
+      });
+    });
+
+    //Render standalone fields
     $form.find('[data-fields]').each(function(i, el) {
       var $container = $(el),
           selection = $container.attr('data-fields');
@@ -335,4 +353,13 @@ var Form = Backbone.View.extend({
     Backbone.View.prototype.remove.call(this);
   }
 
+}, {
+  //STATICS
+
+  /**
+   * Make this the form used when calling instantiating Backbone.Form
+   */
+  makeDefault: function() {
+    
+  }
 });
