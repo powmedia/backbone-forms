@@ -3,7 +3,7 @@
 //FIELD
 //==================================================================================================
 
-Backbone.BootstrapForm.Field = Form.Field.extend({
+Form.BootstrapField = Form.Field.extend({
 
   template: _.template('\
     <div class="control-group field-<%= key %>">\

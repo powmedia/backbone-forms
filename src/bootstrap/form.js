@@ -12,10 +12,10 @@ Backbone.BootstrapForm = Form.extend({
   '),
 
   initialize: function(options) {
-    Form.prototype.initialize.call(this, options);
+    options.Fieldset = options.Fieldset || Form.BootstrapFieldset;
+    options.Field = options.Field || Form.BootstrapField;
 
-    this.Fieldset = options.Fieldset || Backbone.BootstrapForm.Fieldset;
-    this.Field = options.Field || Backbone.BootstrapForm.Field;
+    Form.prototype.initialize.call(this, options);
   }
 
 });
