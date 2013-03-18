@@ -5,13 +5,13 @@
 
 Form.Fieldset = Backbone.View.extend({
 
-  template: _.template('\
+  template: _.template($.trim('\
     <fieldset data-fields>\
       <% if (legend) { %>\
         <legend><%= legend %></legend>\
       <% } %>\
     </fieldset>\
-  '),
+  ')),
 
   /**
    * Constructor
@@ -21,14 +21,19 @@ Form.Fieldset = Backbone.View.extend({
    *   { legend: 'Some Fieldset', fields: ['field1', 'field2'] }
    *
    * @param {String[]|Object[]} options.schema      Fieldset schema
-   * @param {Form.Field[]} options.fields           Form fields
+   * @param {Object} options.fields           Form fields
    */
   initialize: function(options) {
+    options = options || {};
+
     //Create the full fieldset schema, merging defaults etc.
     var schema = this.schema = this.createSchema(options.schema);
 
     //Store the fields for this fieldset
     this.fields = _.pick(options.fields, schema.fields);
+    
+    //Override defaults
+    _.extend(this, _.pick(options, 'template'));
   },
 
   /**
@@ -45,9 +50,9 @@ Form.Fieldset = Backbone.View.extend({
     }
 
     //Add null legend to prevent template error
-    return _.extend({
-      legend: null
-    }, schema);
+    schema.legend = schema.legend || null;
+
+    return schema;
   },
 
   /**
