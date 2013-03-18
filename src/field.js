@@ -9,7 +9,7 @@ Form.Field = Backbone.View.extend({
     <div>\
       <label for="<%= editorId %>"><%= title %></label>\
       <div>\
-        <div data-editor></div>\
+        <span data-editor></span>\
         <div data-error></div>\
         <div><%= help %></div>\
       </div>\
@@ -125,7 +125,8 @@ Form.Field = Backbone.View.extend({
   },
 
   render: function() {
-    var schema = this.schema;
+    var schema = this.schema,
+        editor = this.editor;
 
     //Render field
     var $field = $(this.template(_.result(this, 'templateData')));
@@ -134,7 +135,14 @@ Form.Field = Backbone.View.extend({
     if (schema.fieldAttrs) $field.attr(schema.fieldAttrs);
 
     //Render editor
-    $field.find('[data-editor]').html(this.editor.render().el);
+    $field.find('[data-editor]').add($field).each(function(i, el) {
+      var $container = $(el),
+          selection = $container.attr('data-editor');
+
+      if (_.isUndefined(selection)) return;
+
+      $container.append(editor.render().el);
+    });
 
     this.setElement($field);
 

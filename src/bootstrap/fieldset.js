@@ -1,16 +1,15 @@
 
 //==================================================================================================
-//FIELDSET
+//BOOTSTRAP FIELDSET
 //==================================================================================================
 
 Form.BootstrapFieldset = Form.Fieldset.extend({
 
   template: _.template('\
-    <fieldset>\
+    <fieldset data-fields>\
       <% if (legend) { %>\
         <legend><%= legend %></legend>\
       <% } %>\
-      <div data-fields></div>\
     </fieldset>\
   ')
 

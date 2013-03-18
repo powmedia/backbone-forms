@@ -1,18 +1,17 @@
 
 //==================================================================================================
-//BOOTSTRAP FIELD
+//BOOTSTRAP NESTED FIELD
 //==================================================================================================
 
-Form.BootstrapField = Form.Field.extend({
+Form.BootstrapNestedField = Form.Field.extend({
 
   template: _.template('\
-    <div class="control-group field-<%= key %>">\
-      <label class="control-label" for="<%= editorId %>"><%= title %></label>\
-      <div class="controls">\
+    <div class="field-<%= key %>">\
+      <div title="<%= title %>" class="input-xlarge">\
         <span data-editor></span>\
         <div class="help-inline" data-error></div>\
-        <div class="help-block"><%= help %></div>\
       </div>\
+      <div class="help-block"><%= help %></div>\
     </div>\
   ')
 

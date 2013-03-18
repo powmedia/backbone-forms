@@ -5,11 +5,7 @@
 
 var Form = Backbone.View.extend({
 
-  template: _.template('\
-    <form>\
-      <div data-fieldsets></div>\
-    </form>\
-  '),
+  template: _.template('<form data-fieldsets></form>'),
 
   /**
    * @param {Object} [options.schema]
@@ -54,6 +50,7 @@ var Form = Backbone.View.extend({
     _.extend(this, _.pick(options, 'template'));
     this.Fieldset = options.Fieldset || Form.Fieldset;
     this.Field = options.Field || Form.Field;
+    this.NestedField = options.NestedField || Form.NestedField;
 
     //Check which fields will be included (defaults to all)
     var selectedFields = this.selectedFields = options.fields || _.keys(schema);
@@ -126,9 +123,11 @@ var Form = Backbone.View.extend({
     var $form = $(this.template(_.result(this, 'templateData')));
 
     //Render standalone editors
-    $form.find('[data-editors]').each(function(i, el) {
+    $form.find('[data-editors]').add($form).each(function(i, el) {
       var $container = $(el),
           selection = $container.attr('data-editors');
+
+      if (typeof selection == 'undefined') return;
 
       //Work out which fields to include
       var keys = (selection == '*')
@@ -144,9 +143,11 @@ var Form = Backbone.View.extend({
     });
 
     //Render standalone fields
-    $form.find('[data-fields]').each(function(i, el) {
+    $form.find('[data-fields]').add($form).each(function(i, el) {
       var $container = $(el),
           selection = $container.attr('data-fields');
+
+      if (typeof selection == 'undefined') return;
 
       //Work out which fields to include
       var keys = (selection == '*')
@@ -162,8 +163,11 @@ var Form = Backbone.View.extend({
     });
 
     //Render fieldsets
-    $form.find('[data-fieldsets]').each(function(i, el) {
-      var $container = $(el);
+    $form.find('[data-fieldsets]').add($form).each(function(i, el) {
+      var $container = $(el),
+          selection = $container.attr('data-fieldsets');
+
+      if (typeof selection == 'undefined') return;
 
       _.each(self.fieldsets, function(fieldset) {
         $container.append(fieldset.render().el);

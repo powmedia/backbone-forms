@@ -6,11 +6,10 @@
 Form.Fieldset = Backbone.View.extend({
 
   template: _.template('\
-    <fieldset>\
+    <fieldset data-fields>\
       <% if (legend) { %>\
         <legend><%= legend %></legend>\
       <% } %>\
-      <div data-fields></div>\
     </fieldset>\
   '),
 
@@ -86,8 +85,11 @@ Form.Fieldset = Backbone.View.extend({
     var $fieldset = $(this.template(_.result(this, 'templateData')));
 
     //Render fields
-    $fieldset.find('[data-fields]').each(function(i, el) {
-      var $container = $(el);
+    $fieldset.find('[data-fields]').add($fieldset).each(function(i, el) {
+      var $container = $(el),
+          selection = $container.attr('data-fields');
+
+      if (typeof selection == 'undefined') return;
 
       _.each(fields, function(field) {
         $container.append(field.render().el);
