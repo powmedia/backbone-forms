@@ -127,7 +127,7 @@ var Form = Backbone.View.extend({
       var $container = $(el),
           selection = $container.attr('data-editors');
 
-      if (typeof selection == 'undefined') return;
+      if (_.isUndefined(selection)) return;
 
       //Work out which fields to include
       var keys = (selection == '*')
@@ -147,7 +147,7 @@ var Form = Backbone.View.extend({
       var $container = $(el),
           selection = $container.attr('data-fields');
 
-      if (typeof selection == 'undefined') return;
+      if (_.isUndefined(selection)) return;
 
       //Work out which fields to include
       var keys = (selection == '*')
@@ -167,7 +167,7 @@ var Form = Backbone.View.extend({
       var $container = $(el),
           selection = $container.attr('data-fieldsets');
 
-      if (typeof selection == 'undefined') return;
+      if (_.isUndefined(selection)) return;
 
       _.each(self.fieldsets, function(fieldset) {
         $container.append(fieldset.render().el);
@@ -344,6 +344,9 @@ var Form = Backbone.View.extend({
 
   /**
    * Override default remove function in order to remove embedded views
+   *
+   * TODO: If editors are included directly with data-editors="x", they need to be removed
+   * May be best to use XView to manage adding/removing views
    */
   remove: function() {
     _.each(this.fieldsets, function(fieldset) {
@@ -357,13 +360,4 @@ var Form = Backbone.View.extend({
     Backbone.View.prototype.remove.call(this);
   }
 
-}, {
-  //STATICS
-
-  /**
-   * Make this the form used when calling instantiating Backbone.Form
-   */
-  makeDefault: function() {
-    
-  }
 });
