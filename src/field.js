@@ -25,7 +25,7 @@ Form.Field = Backbone.View.extend({
     options = options || {};
 
     //Store important data
-    _.extend(this, _.pick(options, 'form', 'key', 'value', 'model', 'idPrefix'));
+    _.extend(this, _.pick(options, 'form', 'key', 'model', 'idPrefix'));
 
     //Override defaults
     _.extend(this, _.pick(options, 'template', 'errorClassName'));
@@ -35,6 +35,9 @@ Form.Field = Backbone.View.extend({
 
     //Create editor
     this.editor = this.createEditor();
+
+    //Set initial value
+    this.setValue(options.value);
   },
 
   /**
