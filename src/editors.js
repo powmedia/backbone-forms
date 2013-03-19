@@ -960,6 +960,14 @@ Form.editors = (function() {
    */
   editors.Date = editors.Base.extend({
 
+    template: _.template($.trim('\
+      <div class="bbf-date">\
+        <select class="bbf-date" data-type="date"><%= dates %></select>\
+        <select class="bbf-month" data-type="month"><%= months %></select>\
+        <select class="bbf-year" data-type="year"><%= years %></select>\
+      </div>\
+    '), null, Form.templateSettings),
+
     events: {
       'change select':  function() {
         this.updateHidden();
@@ -1023,28 +1031,32 @@ Form.editors = (function() {
       });
 
       var monthsOptions = _.map(_.range(0, 12), function(month) {
-        var value = options.showMonthNames ? options.monthNames[month] : (month + 1);
+        var value = (options.showMonthNames)
+            ? options.monthNames[month]
+            : (month + 1);
+
         return '<option value="'+month+'">' + value + '</option>';
       });
 
-      var yearRange = schema.yearStart < schema.yearEnd ?
-        _.range(schema.yearStart, schema.yearEnd + 1) :
-        _.range(schema.yearStart, schema.yearEnd - 1, -1);
+      var yearRange = (schema.yearStart < schema.yearEnd)
+        ? _.range(schema.yearStart, schema.yearEnd + 1)
+        : _.range(schema.yearStart, schema.yearEnd - 1, -1);
+
       var yearsOptions = _.map(yearRange, function(year) {
         return '<option value="'+year+'">' + year + '</option>';
       });
 
       //Render the selects
-      var $el = Form.helpers.parseHTML(Form.templates.date({
+      var $el = $(this.template({
         dates: datesOptions.join(''),
         months: monthsOptions.join(''),
         years: yearsOptions.join('')
       }));
 
       //Store references to selects
-      this.$date = $el.find('select[data-type="date"]');
-      this.$month = $el.find('select[data-type="month"]');
-      this.$year = $el.find('select[data-type="year"]');
+      this.$date = $el.find('[data-type="date"]');
+      this.$month = $el.find('[data-type="month"]');
+      this.$year = $el.find('[data-type="year"]');
 
       //Create the hidden field to store values in case POSTed to server
       this.$hidden = $('<input type="hidden" name="'+this.key+'" />');
@@ -1066,24 +1078,41 @@ Form.editors = (function() {
     * @return {Date}   Selected date
     */
     getValue: function() {
-      var year = this.$year.val(),
+      //If rendered, get the latest value from the selects
+      if (this.$year) {
+        var year = this.$year.val(),
           month = this.$month.val(),
           date = this.$date.val();
 
-      if (!year || !month || !date) return null;
+        if (!year || !month || !date) return null;
 
-      return new Date(year, month, date);
+        return new Date(year, month, date);
+      }
+
+      //If not rendered, just return stored value
+      else {
+        return this.value;
+      }
     },
 
     /**
      * @param {Date} date
      */
     setValue: function(date) {
-      this.$date.val(date.getDate());
-      this.$month.val(date.getMonth());
-      this.$year.val(date.getFullYear());
+      if (!date) date = new Date();
 
-      this.updateHidden();
+      if (!_.isDate(date)) date = new Date(date);
+
+      this.value = date;
+
+      //Update selects if rendered
+      if (this.$date) {
+        this.$date.val(date.getDate());
+        this.$month.val(date.getMonth());
+        this.$year.val(date.getFullYear());
+
+        this.updateHidden();
+      }
     },
 
     focus: function() {
@@ -1104,6 +1133,7 @@ Form.editors = (function() {
      */
     updateHidden: function() {
       var val = this.getValue();
+      
       if (_.isDate(val)) val = val.toISOString();
 
       this.$hidden.val(val);
@@ -1128,6 +1158,15 @@ Form.editors = (function() {
    * @param {Number} [options.schema.minsInterval]  Interval between minutes. Default: 15
    */
   editors.DateTime = editors.Base.extend({
+
+    template: _.template($.trim('\
+      <div class="bbf-datetime">\
+        <div class="bbf-date-container" data-date></div>\
+        <select data-type="hour">{{hours}}</select>\
+        :\
+        <select data-type="min">{{mins}}</select>\
+      </div>\
+    '), null, Form.templateSettings),
 
     events: {
       'change select':  function() {
@@ -1186,14 +1225,13 @@ Form.editors = (function() {
       });
 
       //Render time selects
-      var $el = Form.helpers.parseHTML(Form.templates.dateTime({
-        date: '<b class="bbf-tmp"></b>',
+      var $el = $(this.template({
         hours: hoursOptions.join(),
         mins: minsOptions.join()
       }));
 
       //Include the date editor
-      $el.find('.bbf-tmp').replaceWith(this.dateEditor.render().el);
+      $el.find('[data-date]').append(this.dateEditor.render().el);
 
       //Store references to selects
       this.$hour = $el.find('select[data-type="hour"]');
@@ -1219,15 +1257,23 @@ Form.editors = (function() {
     getValue: function() {
       var date = this.dateEditor.getValue();
 
-      var hour = this.$hour.val(),
+      //Return current value from selects if rendered
+      if (this.$hour) {
+        var hour = this.$hour.val(),
           min = this.$min.val();
 
-      if (!date || !hour || !min) return null;
+        if (!date || !hour || !min) return null;
 
-      date.setHours(hour);
-      date.setMinutes(min);
+        date.setHours(hour);
+        date.setMinutes(min);
 
-      return date;
+        return date;
+      }
+
+      //If not rendered, just return stored value
+      else {
+        return this.value;
+      }      
     },
 
     setValue: function(date) {
@@ -1235,8 +1281,8 @@ Form.editors = (function() {
 
       this.dateEditor.setValue(date);
 
-      this.$hour.val(date.getHours());
-      this.$min.val(date.getMinutes());
+      if (this.$hour) this.$hour.val(date.getHours());
+      if (this.$min) this.$min.val(date.getMinutes());
 
       this.updateHidden();
     },
@@ -1261,7 +1307,7 @@ Form.editors = (function() {
       var val = this.getValue();
       if (_.isDate(val)) val = val.toISOString();
 
-      this.$hidden.val(val);
+      if (this.$hidden) this.$hidden.val(val);
     },
 
     /**

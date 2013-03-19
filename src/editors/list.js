@@ -13,6 +13,13 @@
    * @param {String} [options.schema.confirmDelete]     Text to display in a delete confirmation dialog. If falsey, will not ask for confirmation.
    */
   editors.List = editors.Base.extend({
+
+    template: _.template($.trim('\
+      <div class="bbf-list">\
+        <ul data-items></ul>\
+        <div class="bbf-actions"><button type="button" data-action="add">Add</div>\
+      </div>\
+    '), null, Form.templateSettings),
     
     events: {
       'click [data-action="add"]': function(event) {
@@ -55,12 +62,10 @@
           value = this.value || [];
 
       //Create main element
-      var $el = Form.helpers.parseHTML(Form.templates[this.schema.listTemplate]({
-        items: '<b class="bbf-tmp"></b>'
-      }));
+      var $el = $(this.template());
 
       //Store a reference to the list (item container)
-      this.$list = $el.find('.bbf-tmp').parent().empty();
+      this.$list = $el.find('[data-items]');
 
       //Add existing items
       if (value.length) {
@@ -260,6 +265,14 @@
    * @param {Object} options.schema     Field schema
    */
   editors.List.Item = Backbone.View.extend({
+
+    template: _.template($.trim('\
+      <li>\
+        <button type="button" data-action="remove" class="bbf-remove">&times;</button>\
+        <div class="bbf-editor-container" data-editor></div>\
+      </li>\
+    '), null, Form.templateSettings),
+
     events: {
       'click [data-action="remove"]': function(event) {
         event.preventDefault();
@@ -292,11 +305,9 @@
       }).render();
 
       //Create main element
-      var $el = Form.helpers.parseHTML(Form.templates[this.schema.listItemTemplate]({
-        editor: '<b class="bbf-tmp"></b>'
-      }));
+      var $el = $(this.template());
 
-      $el.find('.bbf-tmp').replaceWith(this.editor.el);
+      $el.find('[data-editor]').append(this.editor.el);
 
       //Replace the entire element so there isn't a wrapper tag
       this.setElement($el);
