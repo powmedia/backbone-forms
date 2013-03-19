@@ -341,7 +341,7 @@
       var value = this.getValue(),
           formValues = this.list.form ? this.list.form.getValue() : {},
           validators = this.schema.validators,
-          getValidator = Form.helpers.getValidator;
+          getValidator = this.getValidator;
 
       if (!validators) return null;
 

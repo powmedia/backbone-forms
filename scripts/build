@@ -14,13 +14,11 @@ var baseDir = __dirname + '/..',
 //Files to concatenate into main file
 var fileList = [
   'form.js',
-  'helpers.js',
   'validators.js',
   'fieldset.js',
   'field.js',
   'nestedField.js',
   'editors.js',
-  'setup.js',
 
   'bootstrap/form.js',
   'bootstrap/fieldset.js',
@@ -49,25 +47,13 @@ builder(baseDir)
   .save('distribution.amd/backbone-forms.min.js');
 
 
-//Standalone template files
+//CSS files
 ['default', 'bootstrap'].forEach(function(template) {
-  //HTML
-  builder(baseDir)
-    .load('src/templates/'+template+'.js')
-    .wrap('scripts/build-templates/standalone-template.js')
-    .save('distribution/templates/'+template+'.js');
-
-  //HTML (AMD)
-  builder(baseDir)
-    .load('src/templates/'+template+'.js')
-    .wrap('scripts/build-templates/standalone-template.amd.js')
-    .save('distribution.amd/templates/'+template+'.js');
-
   //CSS
   builder(baseDir)
-    .load('src/templates/'+template+'.css')
-    .save('distribution/templates/'+template+'.css')
-    .save('distribution.amd/templates/'+template+'.css');
+    .load('src/'+template+'.css')
+    .save('distribution/'+template+'.css')
+    .save('distribution.amd/'+template+'.css');
 });
 
 

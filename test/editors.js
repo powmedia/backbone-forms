@@ -112,6 +112,72 @@ module('Base');
 
     equal(editor.getName(), 'user_name_first');
   });
+
+  test('getValidator() - Given a string, a bundled validator is returned', function() {
+    var editor = new editors.Base();
+
+    var required = editor.getValidator('required'),
+        email = editor.getValidator('email');
+    
+    equal(required(null).type, 'required');
+    equal(email('invalid').type, 'email');
+  });
+  
+  test('getValidator() - Given a string, throws if the bundled validator is not found', 1, function() {
+    var editor = new editors.Base();
+
+    try {
+      editor.getValidator('unknown validator');
+    } catch (e) {
+      equal(e.message, 'Validator "unknown validator" not found');
+    }
+  });
+  
+  test('getValidator() - Given an object, a customised bundled validator is returned', function() {
+    var editor = new editors.Base();
+
+    //Can customise error message
+    var required = editor.getValidator({ type: 'required', message: 'Custom message' });
+    
+    var err = required('');
+    equal(err.type, 'required');
+    equal(err.message, 'Custom message');
+    
+    //Can customise options on certain validators
+    var regexp = editor.getValidator({ type: 'regexp', regexp: /foobar/, message: 'Must include "foobar"' });
+    
+    var err = regexp('invalid');
+    equal(err.type, 'regexp');
+    equal(err.message, 'Must include "foobar"');
+  });
+
+  test('getValidator() - Given a regular expression, returns a regexp validator', function() {
+    var editor = new editors.Base();
+
+    var regexp = editor.getValidator(/hello/);
+    
+    equal(regexp('invalid').type, 'regexp');
+  });
+
+  test('getValidator() - Given a function, it is returned', function () {
+    var editor = new editors.Base();
+
+    var myValidator = function () { return; };
+
+    var validator = editor.getValidator(myValidator);
+
+    equal(validator, myValidator);
+  });
+
+  test('getValidator() - Given an unknown type, an error is thrown', 1, function () {    
+    var editor = new editors.Base();
+
+    try {
+      editor.getValidator(['array']);
+    } catch (e) {
+      equal(e.message, 'Invalid validator: array');
+    }
+  });
 })();
 
 

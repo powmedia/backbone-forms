@@ -12,16 +12,8 @@ Form.validators = (function() {
     regexp: 'Invalid',
     email: 'Invalid email address',
     url: 'Invalid URL',
-    match: 'Must match field "<%= field %>"'
+    match: _.template('Must match field "<%= field %>"', null, Form.templateSettings)
   };
-
-  //Compile templates
-  var errMessages = validators.errMessages,
-      templateSettings = Form.templateSettings;
-
-  _.each(errMessages, function(msg, key) {
-    errMessages[key] = _.template(msg, null, templateSettings);
-  });
   
   validators.required = function(options) {
     options = _.extend({

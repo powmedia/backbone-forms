@@ -116,7 +116,7 @@ Form.editors = (function() {
           value = this.getValue(),
           formValues = this.form ? this.form.getValue() : {},
           validators = this.validators,
-          getValidator = Form.helpers.getValidator;
+          getValidator = this.getValidator;
 
       if (validators) {
         //Run through validators until an error is found
@@ -130,7 +130,6 @@ Form.editors = (function() {
       return error;
     },
 
-
     trigger: function(event) {
       if (event === 'focus') {
         this.hasFocus = true;
@@ -140,6 +139,41 @@ Form.editors = (function() {
       }
 
       return Backbone.View.prototype.trigger.apply(this, arguments);
+    },
+
+    /**
+     * Returns a validation function based on the type defined in the schema
+     *
+     * @param {RegExp|String|Function} validator
+     * @return {Function}
+     */
+    getValidator: function(validator) {
+      var validators = Form.validators;
+
+      //Convert regular expressions to validators
+      if (_.isRegExp(validator)) {
+        return validators.regexp({ regexp: validator });
+      }
+      
+      //Use a built-in validator if given a string
+      if (_.isString(validator)) {
+        if (!validators[validator]) throw new Error('Validator "'+validator+'" not found');
+        
+        return validators[validator]();
+      }
+
+      //Functions can be used directly
+      if (_.isFunction(validator)) return validator;
+
+      //Use a customised built-in validator if given an object
+      if (_.isObject(validator) && validator.type) {
+        var config = validator;
+        
+        return validators[config.type](config);
+      }
+      
+      //Unkown validator type
+      throw new Error('Invalid validator: ' + validator);
     }
   });
 
@@ -1133,7 +1167,7 @@ Form.editors = (function() {
      */
     updateHidden: function() {
       var val = this.getValue();
-      
+
       if (_.isDate(val)) val = val.toISOString();
 
       this.$hidden.val(val);
