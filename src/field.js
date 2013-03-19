@@ -5,7 +5,7 @@
 
 Form.Field = Backbone.View.extend({
 
-  template: _.template('\
+  template: _.template($.trim('\
     <div>\
       <label for="<%= editorId %>"><%= title %></label>\
       <div>\
@@ -14,18 +14,30 @@ Form.Field = Backbone.View.extend({
         <div><%= help %></div>\
       </div>\
     </div>\
-  '),
+  '), null, Form.templateSettings),
 
   /**
    * CSS class name added to the field when there is a validation error
    */
   errorClassName: 'error',
 
+  /**
+   * Constructor
+   * 
+   * @param {Object} options.key
+   * @param {Object} options.form
+   * @param {Object} [options.schema]
+   * @param {Backbone.Model} [options.model]
+   * @param {Object} [options.value]
+   * @param {String} [options.idPrefix]
+   * @param {Function} [options.template]
+   * @param {Function} [options.errorClassName]
+   */
   initialize: function(options) {
     options = options || {};
 
     //Store important data
-    _.extend(this, _.pick(options, 'form', 'key', 'model', 'idPrefix'));
+    _.extend(this, _.pick(options, 'form', 'key', 'model', 'value', 'idPrefix'));
 
     //Override defaults
     _.extend(this, _.pick(options, 'template', 'errorClassName'));
@@ -50,14 +62,20 @@ Form.Field = Backbone.View.extend({
   createSchema: function(schema) {
     if (_.isString(schema)) schema = { type: schema };
 
-    return _.extend({
+    //Set defaults
+    schema = _.extend({
       type: 'Text',
       title: this.createTitle()
     }, schema);
+
+    //Get the real constructor function i.e. if type is a string such as 'Text'
+    schema.type = (_.isString(schema.type)) ? Form.editors[schema.type] : schema.type;
+
+    return schema;
   },
 
   /**
-   * Creates the editor specified in the schema; either a string name or
+   * Creates the editor specified in the schema; either an editor string name or
    * a constructor function
    *
    * @return {View}
@@ -68,8 +86,7 @@ Form.Field = Backbone.View.extend({
       { id: this.createEditorId() }
     );
 
-    var type = this.schema.type,
-        constructorFn = (_.isString(type)) ? Form.editors[type] : type;
+    var constructorFn = this.schema.type;
 
     return new constructorFn(options);
   },
@@ -120,18 +137,30 @@ Form.Field = Backbone.View.extend({
    * @return {Object}
    */
   templateData: function() {
-    return _.extend({
-      help: '',
+    var schema = this.schema;
+
+    return {
+      help: schema.help || '',
+      title: schema.title,
+      fieldAttrs: schema.fieldAttrs,
+      editorAttrs: schema.editorAttrs,
       key: this.key,
       editorId: this.editor.id
-    }, this.schema);
+    };
   },
 
+  /**
+   * Render the field and editor
+   *
+   * @return {Field} self
+   */
   render: function() {
     var schema = this.schema,
         editor = this.editor;
 
     //Render field
+    console.log(_.result(this, 'templateData')) || 'NONE';
+
     var $field = $(this.template(_.result(this, 'templateData')));
 
     if (schema.fieldClass) $field.addClass(schema.fieldClass);

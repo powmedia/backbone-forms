@@ -11,7 +11,7 @@ Form.Fieldset = Backbone.View.extend({
         <legend><%= legend %></legend>\
       <% } %>\
     </fieldset>\
-  ')),
+  '), null, Form.templateSettings),
 
   /**
    * Constructor

@@ -5,9 +5,13 @@
 
 var Form = Backbone.View.extend({
 
-  template: _.template('<form data-fieldsets></form>'),
+  template: _.template($.trim('\
+    <form data-fieldsets></form>\
+  '), null, this.templateSettings),
 
   /**
+   * Constructor
+   * 
    * @param {Object} [options.schema]
    * @param {Backbone.Model} [options.model]
    * @param {Object} [options.data]
@@ -360,4 +364,11 @@ var Form = Backbone.View.extend({
     Backbone.View.prototype.remove.call(this);
   }
 
+}, {
+  //STATICS
+  templateSettings: {
+    evaluate: /<%([\s\S]+?)%>/g, 
+    interpolate: /<%=([\s\S]+?)%>/g, 
+    escape: /<%-([\s\S]+?)%>/g
+  }
 });
