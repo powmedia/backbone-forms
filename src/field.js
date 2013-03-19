@@ -159,8 +159,6 @@ Form.Field = Backbone.View.extend({
         editor = this.editor;
 
     //Render field
-    console.log(_.result(this, 'templateData')) || 'NONE';
-
     var $field = $(this.template(_.result(this, 'templateData')));
 
     if (schema.fieldClass) $field.addClass(schema.fieldClass);
