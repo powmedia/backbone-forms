@@ -9,7 +9,7 @@
   test('can change default error messages with mustache tags', function() {
     var originalMessage = Form.validators.errMessages.email;
     
-    Form.validators.errMessages.email = '{{value}} is an invalid email address. {{customTag}}.'
+    Form.validators.errMessages.email = _.template('<%= value %> is an invalid email address. <%= customTag %>.', null, Form.templateSettings);
     
     var email = Form.validators.email({ customTag: 'Cool beans' })
     equal(email('foo').message, 'foo is an invalid email address. Cool beans.')
