@@ -129,7 +129,6 @@ test('creates a new instance of the Editor defined in the schema', function() {
   same(optionsArg.key, field.key);
   same(optionsArg.id, field.createEditorId());
   same(optionsArg.form, field.form);
-  same(optionsArg.idPrefix, field.idPrefix);
   same(optionsArg.model, field.model);
   same(optionsArg.value, field.value);
 });

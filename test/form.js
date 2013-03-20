@@ -2,6 +2,7 @@
 
 var same = deepEqual;
 
+
 module('Form#initialize', {
   setup: function() {
     this.sinon = sinon.sandbox.create();

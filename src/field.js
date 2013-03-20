@@ -79,7 +79,7 @@ Form.Field = Backbone.View.extend({
    */
   createEditor: function() {
     var options = _.extend(
-      _.pick(this, 'schema', 'form', 'key', 'idPrefix', 'model', 'value'),
+      _.pick(this, 'schema', 'form', 'key', 'model', 'value'),
       { id: this.createEditorId() }
     );
 
