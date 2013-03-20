@@ -19,10 +19,7 @@ var fileList = [
   'field.js',
   'nestedField.js',
   'editors.js',
-
-  'bootstrap/form.js',
-  'bootstrap/fieldset.js',
-  'bootstrap/field.js'
+  'bootstrap.js'
 ];
 
 //Concatenate the main files
