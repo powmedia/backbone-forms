@@ -10,7 +10,7 @@
  * @param {Object} [options.validators] Validators; falls back to those stored on schema
  * @param {Object} [options.form]       The form
  */
-Form.Editor = Backbone.View.extend({
+Form.Editor = Form.editors.Base = Backbone.View.extend({
 
   defaultValue: null,
 
