@@ -134,8 +134,6 @@ var Form = Backbone.View.extend({
     //Re-trigger editor events on the form
     var formEvent = editor.key+':'+event;
 
-    console.log(formEvent)
-
     this.trigger.call(this, formEvent, this, editor);
 
     //Trigger additional events
@@ -150,6 +148,7 @@ var Form = Backbone.View.extend({
 
       case 'blur':
         if (this.hasFocus) {
+          //TODO: Is the timeout etc needed?
           var self = this;
           setTimeout(function() {
             var focusedField = _.find(self.fields, function(field) {

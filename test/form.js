@@ -304,13 +304,83 @@ test('adds listener to all editor events', function() {
 
   var field = form.createField('name', { type: 'Text' });
 
-  //Trigger events on editor to check they call the handlEditorEvent callback
+  //Trigger events on editor to check they call the handleEditorEvent callback
   field.editor.trigger('focus');
   field.editor.trigger('blur');
   field.editor.trigger('change');
   field.editor.trigger('foo');
 
   same(form.handleEditorEvent.callCount, 4);
+});
+
+
+
+module('Form#handleEditorEvent', {
+  setup: function() {
+    this.sinon = sinon.sandbox.create();
+  },
+
+  teardown: function() {
+    this.sinon.restore();
+  }
+});
+
+test('triggers editor events on the form, prefixed with the key name', function() {
+  var form = new Form(),
+      editor = new Form.Editor({ key: 'title' });
+
+  var spy = this.sinon.spy();
+
+  form.on('all', spy);
+
+  form.handleEditorEvent('foo', editor);
+
+  same(spy.callCount, 1);
+
+  var args = spy.args[0],
+      eventArg = args[0],
+      formArg = args[1],
+      editorArg = args[2];
+
+  same(eventArg, 'title:foo');
+  same(formArg, form);
+  same(editorArg, editor);
+});
+
+test('triggers general form events', function() {
+  var form = new Form(),
+      editor = new Form.Editor({ key: 'title' });
+
+  //Change
+  var changeSpy = this.sinon.spy()
+
+  form.on('change', changeSpy);
+  form.handleEditorEvent('change', editor);
+
+  same(changeSpy.callCount, 1);
+  same(changeSpy.args[0][0], form);
+
+  //Focus
+  var focusSpy = this.sinon.spy()
+
+  form.on('focus', focusSpy);
+  form.handleEditorEvent('focus', editor);
+
+  same(focusSpy.callCount, 1);
+  same(focusSpy.args[0][0], form);
+
+  //Blur
+  var blurSpy = this.sinon.spy()
+
+  form.hasFocus = true;
+
+  form.on('blur', blurSpy);
+  form.handleEditorEvent('blur', editor);
+
+  setTimeout(function() {
+    same(blurSpy.callCount, 1);
+    same(blurSpy.args[0][0], form);
+  }, 0);
 });
 
 
