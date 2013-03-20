@@ -130,9 +130,7 @@
             $editor = $('#' + name),
             key = $editor.attr('name');
 
-        var editor = form.fields[key];
-
-        console.log(editor.getValue())
+        console.log(form.getValue(key))
       });
       
       $('#uiTest button.validate').click(function() { form.validate() });
