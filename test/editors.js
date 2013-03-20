@@ -2757,31 +2757,6 @@ module('DateTime', {
         same(editor.$min.find('option:last').html(), '59');
     });
 
-    test('render() - adds date editor in {{date}} template tag', function() {
-        //Replace template
-        var _template = Form.templates.dateTime;
-
-        Form.setTemplates({
-            dateTime: '\
-                <div>\
-                    <div class="foo">{{date}}</div>\
-                    <select data-type="hour">{{hours}}</select>\
-                    :\
-                    <select data-type="min">{{mins}}</select>\
-                </div>\
-            '
-        });
-
-        //Create item
-        var editor = new Editor().render();
-
-        //Check editor placed in correct location
-        ok(editor.dateEditor.$el.parent().hasClass('foo'), 'Date el placed correctly');
-
-        //Restore template
-        Form.templates.dateTime = _template;
-    });
-
     test('getValue() - returns a Date', function() {
         var date = new Date(2010, 5, 5, 14, 30),
             editor = new Editor({ value: date }).render();
