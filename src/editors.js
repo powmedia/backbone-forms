@@ -1102,6 +1102,7 @@ Form.editors = (function() {
       //Remove the wrapper tag
       this.setElement($el);
       this.$el.attr('id', this.id);
+      this.$el.attr('name', this.getName());
 
       if (this.hasFocus) this.trigger('blur', this);
 
@@ -1109,44 +1110,27 @@ Form.editors = (function() {
     },
 
     /**
-    * @return {Date}   Selected date
-    */
+     * @return {Date}   Selected date
+     */
     getValue: function() {
-      //If rendered, get the latest value from the selects
-      if (this.$year) {
-        var year = this.$year.val(),
+      var year = this.$year.val(),
           month = this.$month.val(),
           date = this.$date.val();
 
-        if (!year || !month || !date) return null;
+      if (!year || !month || !date) return null;
 
-        return new Date(year, month, date);
-      }
-
-      //If not rendered, just return stored value
-      else {
-        return this.value;
-      }
+      return new Date(year, month, date);
     },
 
     /**
      * @param {Date} date
      */
     setValue: function(date) {
-      if (!date) date = new Date();
+      this.$date.val(date.getDate());
+      this.$month.val(date.getMonth());
+      this.$year.val(date.getFullYear());
 
-      if (!_.isDate(date)) date = new Date(date);
-
-      this.value = date;
-
-      //Update selects if rendered
-      if (this.$date) {
-        this.$date.val(date.getDate());
-        this.$month.val(date.getMonth());
-        this.$year.val(date.getFullYear());
-
-        this.updateHidden();
-      }
+      this.updateHidden();
     },
 
     focus: function() {
@@ -1196,9 +1180,9 @@ Form.editors = (function() {
     template: _.template($.trim('\
       <div class="bbf-datetime">\
         <div class="bbf-date-container" data-date></div>\
-        <select data-type="hour">{{hours}}</select>\
+        <select data-type="hour"><%= hours %></select>\
         :\
-        <select data-type="min">{{mins}}</select>\
+        <select data-type="min"><%= mins %></select>\
       </div>\
     '), null, Form.templateSettings),
 
@@ -1279,6 +1263,7 @@ Form.editors = (function() {
 
       this.setElement($el);
       this.$el.attr('id', this.id);
+      this.$el.attr('name', this.getName());
 
       if (this.hasFocus) this.trigger('blur', this);
 
@@ -1286,37 +1271,32 @@ Form.editors = (function() {
     },
 
     /**
-    * @return {Date}   Selected datetime
-    */
+     * @return {Date}   Selected datetime
+     */
     getValue: function() {
       var date = this.dateEditor.getValue();
 
-      //Return current value from selects if rendered
-      if (this.$hour) {
-        var hour = this.$hour.val(),
+      var hour = this.$hour.val(),
           min = this.$min.val();
 
-        if (!date || !hour || !min) return null;
+      if (!date || !hour || !min) return null;
 
-        date.setHours(hour);
-        date.setMinutes(min);
+      date.setHours(hour);
+      date.setMinutes(min);
 
-        return date;
-      }
-
-      //If not rendered, just return stored value
-      else {
-        return this.value;
-      }      
+      return date;
     },
 
+    /**
+     * @param {Date}
+     */
     setValue: function(date) {
       if (!_.isDate(date)) date = new Date(date);
 
       this.dateEditor.setValue(date);
 
-      if (this.$hour) this.$hour.val(date.getHours());
-      if (this.$min) this.$min.val(date.getMinutes());
+      this.$hour.val(date.getHours());
+      this.$min.val(date.getMinutes());
 
       this.updateHidden();
     },
@@ -1341,7 +1321,7 @@ Form.editors = (function() {
       var val = this.getValue();
       if (_.isDate(val)) val = val.toISOString();
 
-      if (this.$hidden) this.$hidden.val(val);
+      this.$hidden.val(val);
     },
 
     /**
