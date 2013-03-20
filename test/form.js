@@ -526,7 +526,7 @@ test('returns form value as an object', function() {
       title: {},
       author: {}
     }
-  });
+  }).render();
   
   var result = form.getValue();
   
@@ -546,7 +546,7 @@ test('returns specific field value', function() {
       title: {},
       author: {}
     }
-  });
+  }).render();
   
   same(form.getValue('title'), 'Danger Zone!');
 });

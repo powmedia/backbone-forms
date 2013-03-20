@@ -72,19 +72,6 @@ test('creates the editor', function() {
   same(field.editor instanceof Form.editors.Text, true);
 });
 
-test('sets initial value', function() {
-  this.sinon.spy(Field.prototype, 'setValue');
-
-  var field = new Field({
-    key: 'title',
-    schema: { type: 'Text' },
-    value: 'Hello'
-  });
-
-  same(field.setValue.callCount, 1);
-  same(field.setValue.args[0][0], 'Hello');
-});
-
 
 
 module('Field#createSchema');
@@ -447,7 +434,7 @@ test('Returns the value from the editor', function() {
     var field = new Field({
       value: 'The Title',
       key: 'title'
-    });
+    }).render();
 
     this.sinon.spy(field.editor, 'getValue');
 

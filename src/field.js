@@ -47,9 +47,6 @@ Form.Field = Backbone.View.extend({
 
     //Create editor
     this.editor = this.createEditor();
-
-    //Set initial value
-    this.setValue(options.value);
   },
 
   /**
