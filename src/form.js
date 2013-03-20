@@ -116,7 +116,51 @@ var Form = Backbone.View.extend({
       options.value = null;
     }
 
-    return new this.Field(options);
+    var field = new this.Field(options);
+
+    this.listenTo(field.editor, 'all', this.handleEditorEvent);
+
+    return field;
+  },
+
+  /**
+   * Callback for when an editor event is fired.
+   * Re-triggers events on the form as key:event and triggers additional form-level events
+   *
+   * @param {String} event
+   * @param {Editor} editor
+   */
+  handleEditorEvent: function(event, editor) {
+    //Re-trigger editor events on the form
+    var formEvent = editor.key+':'+event;
+
+    console.log(formEvent)
+
+    this.trigger.call(this, formEvent, this, editor);
+
+    //Trigger additional events
+    switch (event) {
+      case 'change':
+        this.trigger('change', this);
+        break;
+
+      case 'focus':
+        if (!this.hasFocus) this.trigger('focus', this);
+        break;
+
+      case 'blur':
+        if (this.hasFocus) {
+          var self = this;
+          setTimeout(function() {
+            var focusedField = _.find(self.fields, function(field) {
+              return field.editor.hasFocus;
+            });
+
+            if (!focusedField) self.trigger('blur', self);
+          }, 0);
+        }
+        break;
+    }
   },
 
   render: function() {

@@ -234,6 +234,10 @@ test('creates a new instance of the Fieldset defined on the form', function() {
 module('Form#createField', {
   setup: function() {
     this.sinon = sinon.sandbox.create();
+
+    this.MockField = Backbone.View.extend({
+      editor: new Backbone.View()
+    });
   },
 
   teardown: function() {
@@ -242,8 +246,8 @@ module('Form#createField', {
 });
 
 test('creates a new instance of the Field defined on the form - with model', function() {
-  var MockField = Backbone.View.extend();
-  
+  var MockField = this.MockField;
+
   var form = new Form({
     Field: MockField,
     idPrefix: 'foo',
@@ -267,7 +271,7 @@ test('creates a new instance of the Field defined on the form - with model', fun
 });
 
 test('creates a new instance of the Field defined on the form - without model', function() {
-  var MockField = Backbone.View.extend();
+  var MockField = this.MockField;
   
   var form = new Form({
     Field: MockField,
@@ -285,6 +289,28 @@ test('creates a new instance of the Field defined on the form - without model', 
   var optionsArg = MockField.prototype.initialize.args[0][0];
 
   same(optionsArg.value, 'John');
+});
+
+test('adds listener to all editor events', function() {
+  var MockField = this.MockField;
+  
+  var form = new Form({
+    Field: MockField,
+    idPrefix: 'foo',
+    data: { name: 'John' }
+  });
+
+  this.sinon.stub(form, 'handleEditorEvent', function() {});
+
+  var field = form.createField('name', { type: 'Text' });
+
+  //Trigger events on editor to check they call the handlEditorEvent callback
+  field.editor.trigger('focus');
+  field.editor.trigger('blur');
+  field.editor.trigger('change');
+  field.editor.trigger('foo');
+
+  same(form.handleEditorEvent.callCount, 4);
 });
 
 
