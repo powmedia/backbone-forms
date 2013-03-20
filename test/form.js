@@ -608,6 +608,8 @@ test('Removes focus from the currently focused editor', function() {
     schema: { title: 'Text', author: 'Text' }
   });
 
+  form.hasFocus = true;
+
   form.fields.author.editor.hasFocus = true;
 
   this.sinon.spy(form.fields.author.editor, 'blur');

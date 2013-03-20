@@ -325,6 +325,8 @@ var Form = Backbone.View.extend({
    * Gives the first editor in the form focus
    */
   focus: function() {
+    if (this.hasFocus) return;
+
     //Get the first field
     var fieldset = this.fieldsets[0],
         field = fieldset.getFieldAt(0);
@@ -339,6 +341,8 @@ var Form = Backbone.View.extend({
    * Removes focus from the currently focused editor
    */
   blur: function() {
+    if (!this.hasFocus) return;
+
     var focusedField = _.find(this.fields, function(field) {
       return field.editor.hasFocus;
     });
