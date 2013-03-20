@@ -27,7 +27,17 @@
   <script src="../src/field.js"></script>
   <script src="../src/nestedField.js"></script>
   <script src="../src/editor.js"></script>
-  <script src="../src/editors.js"></script>
+
+  <script src="../src/editors/text.js"></script>
+  <script src="../src/editors/textarea.js"></script>
+  <script src="../src/editors/password.js"></script>
+  <script src="../src/editors/number.js"></script>
+  <script src="../src/editors/hidden.js"></script>
+  <script src="../src/editors/checkbox.js"></script>
+  <script src="../src/editors/select.js"></script>
+  <script src="../src/editors/radio.js"></script>
+  <script src="../src/editors/checkboxes.js"></script>
+  <script src="../src/editors/object.js"></script>
 
   <script>Backbone.Form = Form</script>
 
@@ -53,6 +63,15 @@
 
   <!-- Editors -->
   <script src="editors/text.js"></script>
+  <script src="editors/textarea.js"></script>
+  <script src="editors/password.js"></script>
+  <script src="editors/number.js"></script>
+  <script src="editors/hidden.js"></script>
+  <script src="editors/checkbox.js"></script>
+  <script src="editors/select.js"></script>
+  <script src="editors/radio.js"></script>
+  <script src="editors/checkboxes.js"></script>
+  <script src="editors/object.js"></script>
 
   <!--<script src="editors.js"></script>
   <script src="editors/list.js"></script>-->
@@ -63,7 +82,7 @@
     <button class="validate">Validate</button>
   </div>
   <script>
-    $(function() {
+    /*$(function() {
       var NestedModel = Backbone.Model.extend({
         schema: {
           name: { validators: ['required']},
@@ -140,7 +159,7 @@
       });
       
       $('#uiTest button.validate').click(function() { form.validate() });
-    });
+    });*/
   </script>
 </body>
 </html>

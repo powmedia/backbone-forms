@@ -31,7 +31,7 @@ Form.editors.Text = Form.Editor.extend({
   },
 
   initialize: function(options) {
-    editors.Base.prototype.initialize.call(this, options);
+    Form.editors.Base.prototype.initialize.call(this, options);
 
     var schema = this.schema;
 

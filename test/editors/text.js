@@ -1,289 +1,299 @@
-;(function(Form, Text) {
+;(function(Form, Editor) {
 
-var same = deepEqual;
+  module('Text');
 
+  var same = deepEqual;
 
-module('Text#initialize');
 
-test('Default type is text', function() {
-  var editor = new Text().render();
+  module('Text#initialize');
 
-  equal($(editor.el).attr('type'), 'text');
-});
+  test('Default type is text', function() {
+    var editor = new Editor().render();
 
-test('Type can be changed', function() {
-  var editor = new Text({
-    schema: { dataType: 'tel' }
-  }).render();
+    equal($(editor.el).attr('type'), 'text');
+  });
 
-  equal($(editor.el).attr('type'), 'tel');
-});
+  test('Type can be changed', function() {
+    var editor = new Editor({
+      schema: { dataType: 'tel' }
+    }).render();
 
+    equal($(editor.el).attr('type'), 'tel');
+  });
 
 
-module('Text#getValue()');
 
-test('Default value', function() {
-  var editor = new Text().render();
+  module('Text#getValue()');
 
-  equal(editor.getValue(), '');
-});
+  test('Default value', function() {
+    var editor = new Editor().render();
 
-test('Custom value', function() {
-  var editor = new Text({
-    value: 'Test'
-  }).render();
+    equal(editor.getValue(), '');
+  });
 
-  equal(editor.getValue(), 'Test');
-});
+  test('Custom value', function() {
+    var editor = new Editor({
+      value: 'Test'
+    }).render();
 
-test('Value from model', function() {
-  var editor = new Text({
-    model: new Backbone.Model({ title: 'Danger Zone!' }),
-    key: 'title'
-  }).render();
+    equal(editor.getValue(), 'Test');
+  });
 
-  equal(editor.getValue(), 'Danger Zone!');
-});
+  test('Value from model', function() {
+    var editor = new Editor({
+      model: new Backbone.Model({ title: 'Danger Zone!' }),
+      key: 'title'
+    }).render();
 
+    equal(editor.getValue(), 'Danger Zone!');
+  });
 
 
-module('Text#setValue');
 
-test('updates the input value', function() {
-  var editor = new Text({
-    key: 'title'
-  }).render();
+  module('Text#setValue');
 
-  editor.setValue('foobar');
+  test('updates the input value', function() {
+    var editor = new Editor({
+      key: 'title'
+    }).render();
 
-  equal(editor.getValue(), 'foobar');
-  equal($(editor.el).val(), 'foobar');
-});
+    editor.setValue('foobar');
 
+    equal(editor.getValue(), 'foobar');
+    equal($(editor.el).val(), 'foobar');
+  });
 
 
-module('Text#focus', {
-  setup: function() {
-    this.sinon = sinon.sandbox.create();
 
-    this.editor = new Text().render();
+  module('Text#focus', {
+    setup: function() {
+      this.sinon = sinon.sandbox.create();
 
-    //jQuery events only triggered when element is on the page
-    //TODO: Stub methods so we don't need to add to the page
-    $('body').append(this.editor.el);
-  },
+      this.editor = new Editor().render();
 
-  teardown: function() {
-    //Remove the editor from the page
-    this.editor.remove();
-  }
-});
+      //jQuery events only triggered when element is on the page
+      //TODO: Stub methods so we don't need to add to the page
+      $('body').append(this.editor.el);
+    },
 
-test('gives focus to editor and its input', function() {
-  this.editor.focus();
+    teardown: function() {
+      this.sinon.restore();
+      
+      //Remove the editor from the page
+      this.editor.remove();
+    }
+  });
 
-  ok(this.editor.hasFocus);
-  ok(this.editor.$el.is(':focus'));
-});
+  test('gives focus to editor and its input', function() {
+    this.editor.focus();
 
-test('triggers the "focus" event', function() {
-  var editor = this.editor,
-      spy = this.sinon.spy();
+    ok(this.editor.hasFocus);
+    ok(this.editor.$el.is(':focus'));
+  });
 
-  editor.on('focus', spy);
+  test('triggers the "focus" event', function() {
+    var editor = this.editor,
+        spy = this.sinon.spy();
 
-  editor.focus();
+    editor.on('focus', spy);
 
-  ok(spy.called);
-  ok(spy.calledWith(editor));
-});
+    editor.focus();
 
+    ok(spy.called);
+    ok(spy.calledWith(editor));
+  });
 
 
-module('Text#blur', {
-  setup: function() {
-    this.sinon = sinon.sandbox.create();
 
-    this.editor = new Text().render();
+  module('Text#blur', {
+    setup: function() {
+      this.sinon = sinon.sandbox.create();
 
-    $('body').append(this.editor.el);
-  },
+      this.editor = new Editor().render();
 
-  teardown: function() {
-    this.editor.remove();
-  }
-});
+      $('body').append(this.editor.el);
+    },
 
-test('removes focus from the editor and its input', function() {
-  var editor = this.editor;
+    teardown: function() {
+      this.sinon.restore();
 
-  editor.focus();
+      this.editor.remove();
+    }
+  });
 
-  editor.blur();
+  test('removes focus from the editor and its input', function() {
+    var editor = this.editor;
 
-  ok(!editor.hasFocus);
-  ok(!editor.$el.is(':focus'));
-});
+    editor.focus();
 
-test('triggers the "blur" event', function() {
-  var editor = this.editor;
+    editor.blur();
 
-  editor.focus()
+    ok(!editor.hasFocus);
+    ok(!editor.$el.is(':focus'));
+  });
 
-  var spy = this.sinon.spy();
+  test('triggers the "blur" event', function() {
+    var editor = this.editor;
 
-  editor.on('blur', spy);
+    editor.focus()
 
-  editor.blur();
+    var spy = this.sinon.spy();
 
-  ok(spy.called);
-  ok(spy.calledWith(editor));
-});
+    editor.on('blur', spy);
 
+    editor.blur();
 
+    ok(spy.called);
+    ok(spy.calledWith(editor));
+  });
 
-module('Text#select', {
-  setup: function() {
-    this.sinon = sinon.sandbox.create();
 
-    this.editor = new Text().render();
 
-    $('body').append(this.editor.el);
-  },
+  module('Text#select', {
+    setup: function() {
+      this.sinon = sinon.sandbox.create();
 
-  teardown: function() {
-    this.editor.remove();
-  }
-});
+      this.editor = new Editor().render();
 
-test('triggers the "select" event', function() {
-  var editor = this.editor;
+      $('body').append(this.editor.el);
+    },
 
-  var spy = this.sinon.spy();
+    teardown: function() {
+      this.sinon.restore();
 
-  editor.on('select', spy);
+      this.editor.remove();
+    }
+  });
 
-  editor.select();
+  test('triggers the "select" event', function() {
+    var editor = this.editor;
 
-  ok(spy.called);
-  ok(spy.calledWith(editor));
-});
+    var spy = this.sinon.spy();
 
+    editor.on('select', spy);
 
+    editor.select();
 
-module('Text events', {
-  setup: function() {
-    this.sinon = sinon.sandbox.create();
+    ok(spy.called);
+    ok(spy.calledWith(editor));
+  });
 
-    this.editor = new Text().render();
 
-    $('body').append(this.editor.el);
-  },
 
-  teardown: function() {
-    this.editor.remove();
-  }
-});
+  module('Text events', {
+    setup: function() {
+      this.sinon = sinon.sandbox.create();
 
-test("'change' event - is triggered when value of input changes", function() {
-  var editor = this.editor;
+      this.editor = new Editor().render();
 
-  var callCount = 0;
+      $('body').append(this.editor.el);
+    },
 
-  var spy = this.sinon.spy();
+    teardown: function() {
+      this.sinon.restore();
 
-  editor.on('change', spy);
+      this.editor.remove();
+    }
+  });
 
-  // Pressing a key
-  editor.$el.keypress();
-  editor.$el.val('a');
+  test("'change' event - is triggered when value of input changes", function() {
+    var editor = this.editor;
 
-  stop();
-  setTimeout(function(){
-    callCount++;
+    var callCount = 0;
 
-    editor.$el.keyup();
+    var spy = this.sinon.spy();
 
-    // Keeping a key pressed for a longer time
+    editor.on('change', spy);
+
+    // Pressing a key
     editor.$el.keypress();
-    editor.$el.val('ab');
+    editor.$el.val('a');
 
+    stop();
     setTimeout(function(){
       callCount++;
 
+      editor.$el.keyup();
+
+      // Keeping a key pressed for a longer time
       editor.$el.keypress();
-      editor.$el.val('abb');
+      editor.$el.val('ab');
 
       setTimeout(function(){
         callCount++;
 
-        editor.$el.keyup();
+        editor.$el.keypress();
+        editor.$el.val('abb');
 
-        // Cmd+A; Backspace: Deleting everything
-        editor.$el.keyup();
-        editor.$el.val('');
-        editor.$el.keyup();
-        callCount++;
+        setTimeout(function(){
+          callCount++;
 
-        // Cmd+V: Pasting something
-        editor.$el.val('abdef');
-        editor.$el.keyup();
-        callCount++;
+          editor.$el.keyup();
 
-        // Left; Right: Pointlessly moving around
-        editor.$el.keyup();
-        editor.$el.keyup();
+          // Cmd+A; Backspace: Deleting everything
+          editor.$el.keyup();
+          editor.$el.val('');
+          editor.$el.keyup();
+          callCount++;
 
-        ok(spy.callCount == callCount);
-        ok(spy.alwaysCalledWith(editor));
+          // Cmd+V: Pasting something
+          editor.$el.val('abdef');
+          editor.$el.keyup();
+          callCount++;
 
-        start();
+          // Left; Right: Pointlessly moving around
+          editor.$el.keyup();
+          editor.$el.keyup();
+
+          ok(spy.callCount == callCount);
+          ok(spy.alwaysCalledWith(editor));
+
+          start();
+        }, 0);
       }, 0);
     }, 0);
-  }, 0);
-});
+  });
 
-test("'focus' event - bubbles up from the input", function() {
-  var editor = this.editor;
+  test("'focus' event - bubbles up from the input", function() {
+    var editor = this.editor;
 
-  var spy = this.sinon.spy();
+    var spy = this.sinon.spy();
 
-  editor.on('focus', spy);
+    editor.on('focus', spy);
 
-  editor.$el.focus();
+    editor.$el.focus();
 
-  ok(spy.calledOnce);
-  ok(spy.alwaysCalledWith(editor));
-});
+    ok(spy.calledOnce);
+    ok(spy.alwaysCalledWith(editor));
+  });
 
-test("'blur' event - bubbles up from the input", function() {
-  var editor = this.editor;
+  test("'blur' event - bubbles up from the input", function() {
+    var editor = this.editor;
 
-  editor.$el.focus();
+    editor.$el.focus();
 
-  var spy = this.sinon.spy();
+    var spy = this.sinon.spy();
 
-  editor.on('blur', spy);
+    editor.on('blur', spy);
 
-  editor.$el.blur();
+    editor.$el.blur();
 
-  ok(spy.calledOnce);
-  ok(spy.alwaysCalledWith(editor));
-});
+    ok(spy.calledOnce);
+    ok(spy.alwaysCalledWith(editor));
+  });
 
-test("'select' event - bubbles up from the input", function() {
-  var editor = this.editor;
+  test("'select' event - bubbles up from the input", function() {
+    var editor = this.editor;
 
-  var spy = this.sinon.spy();
+    var spy = this.sinon.spy();
 
-  editor.on('select', spy);
+    editor.on('select', spy);
 
-  editor.$el.select();
+    editor.$el.select();
 
-  ok(spy.calledOnce);
-  ok(spy.alwaysCalledWith(editor));
-});
+    ok(spy.calledOnce);
+    ok(spy.alwaysCalledWith(editor));
+  });
 
 
 })(Backbone.Form, Backbone.Form.editors.Text);
