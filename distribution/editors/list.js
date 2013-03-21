@@ -30,7 +30,8 @@
       //List schema defaults
       this.schema = _.extend({
         listTemplate: 'list',
-        listItemTemplate: 'listItem'
+        listItemTemplate: 'listItem',
+        addLabel: 'Add'
       }, schema);
 
       //Determine the editor to use
@@ -56,7 +57,8 @@
 
       //Create main element
       var $el = Form.helpers.parseHTML(Form.templates[this.schema.listTemplate]({
-        items: '<b class="bbf-tmp"></b>'
+        items: '<b class="bbf-tmp"></b>',
+        addlabel: this.schema.addLabel
       }));
 
       //Store a reference to the list (item container)

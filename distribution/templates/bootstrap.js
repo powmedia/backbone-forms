@@ -50,7 +50,7 @@
     list: '\
       <div class="bbf-list">\
         <ul class="unstyled clearfix">{{items}}</ul>\
-        <button class="btn bbf-add" data-action="add">Add</button>\
+        <button class="btn bbf-add" data-action="add">{{addLabel}}</button>\
       </div>\
     ',
 
