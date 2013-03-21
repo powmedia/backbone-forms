@@ -10,7 +10,6 @@
 Form.editors.Radio = Form.editors.Select.extend({
 
   tagName: 'ul',
-  className: 'bbf-radio',
 
   events: {
     'change input[type=radio]': function() {

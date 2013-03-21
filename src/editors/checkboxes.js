@@ -10,7 +10,6 @@
 Form.editors.Checkboxes = Form.editors.Select.extend({
 
   tagName: 'ul',
-  className: 'bbf-checkboxes',
 
   events: {
     'click input[type=checkbox]': function() {

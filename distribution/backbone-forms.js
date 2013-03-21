@@ -1668,7 +1668,6 @@ Form.editors.Select = Form.editors.Base.extend({
 Form.editors.Radio = Form.editors.Select.extend({
 
   tagName: 'ul',
-  className: 'bbf-radio',
 
   events: {
     'change input[type=radio]': function() {
@@ -1756,7 +1755,6 @@ Form.editors.Radio = Form.editors.Select.extend({
 Form.editors.Checkboxes = Form.editors.Select.extend({
 
   tagName: 'ul',
-  className: 'bbf-checkboxes',
 
   events: {
     'click input[type=checkbox]': function() {
@@ -1844,8 +1842,6 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
 Form.editors.Object = Form.editors.Base.extend({
   //Prevent error classes being set on the main control; they are internally on the individual fields
   hasNestedForm: true,
-
-  className: 'bbf-object',
 
   initialize: function(options) {
     //Set default value for the instance so it's not a shared object
