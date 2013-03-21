@@ -51,10 +51,10 @@ var Form = Backbone.View.extend({
     _.extend(this, _.pick(options, 'model', 'data', 'idPrefix'));
 
     //Override defaults
-    _.extend(this, _.pick(options, 'template'));
-    this.Fieldset = options.Fieldset || Form.Fieldset;
-    this.Field = options.Field || Form.Field;
-    this.NestedField = options.NestedField || Form.NestedField;
+    _.extend(this, _.pick(options, 'template', 'Fieldset', 'Field', 'NestedField'));
+    this.Fieldset = options.Fieldset || this.constructor.Fieldset;
+    this.Field = options.Field || this.constructor.Field;
+    this.NestedField = options.NestedField || this.constructor.NestedField;
 
     //Check which fields will be included (defaults to all)
     var selectedFields = this.selectedFields = options.fields || _.keys(schema);

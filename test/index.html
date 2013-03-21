@@ -41,12 +41,13 @@
   <script src="../src/editors/nestedmodel.js"></script>
   <script src="../src/editors/date.js"></script>
   <script src="../src/editors/datetime.js"></script>
-  <script src="../src/editors/list.js"></script>
 
   <script>Backbone.Form = Form</script>
 
+  <script src="../src/editors/extra/list.js"></script>
+
   <!-- TEMPLATES -->
-  <link rel="stylesheet" href="../src/default.css" type="text/css" media="screen" />
+  <link rel="stylesheet" href="../src/templates/default.css" type="text/css" media="screen" />
 </head>
 <body>
   <div id="qunit"></div>
@@ -77,7 +78,8 @@
   <script src="editors/nestedmodel.js"></script>
   <script src="editors/date.js"></script>
   <script src="editors/datetime.js"></script>
-  <script src="editors/list.js"></script>
+
+  <script src="editors/extra/list.js"></script>
   
   
   <div id="uiTest" style="height: 400px; overflow: auto; border: 1px solid #ccc">
@@ -126,11 +128,11 @@
         dateTime: { type: 'DateTime', yearStart: 2000, yearEnd: 1980 },
 
         //List
-        /*textList: { type: 'List', itemType: 'Text', validators: ['required', 'email'] },
+        textList: { type: 'List', itemType: 'Text', validators: ['required', 'email'] },
         objList: { type: 'List', itemType: 'Object', subSchema: {
           name: { type: 'Text', validators: ['required'] },
           age: 'Number'
-        } }*/
+        } }
       };
       
       var model = new Backbone.Model({
@@ -144,7 +146,7 @@
         schema: schema,
         fieldsets: [
           ['email', 'tel', 'number', 'checkbox', 'radio', 'select', 'groupSelect', 'checkboxes', 'customTemplate', 'shorthand', 'date', 'dateTime'],
-          //{ legend: 'Lists', fields: ['textList', 'objList'] },
+          { legend: 'Lists', fields: ['textList', 'objList'] },
           { legend: 'Nested editors', fields: ['object', 'nestedModel'] }
         ]
       });

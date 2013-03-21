@@ -101,6 +101,14 @@ test('overrides defaults', function() {
   same(form.NestedField, options.NestedField);
 });
 
+test('uses fieldset and field classes stored on form class', function() {
+  var form = new Form();
+
+  same(form.Fieldset, Form.Fieldset);
+  same(form.Field, Form.Field);
+  same(form.NestedField, Form.NestedField);
+});
+
 test('sets selectedFields - with options.fields', function() {
   var options = {
     fields: ['foo', 'bar']

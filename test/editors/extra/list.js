@@ -792,7 +792,7 @@ test('renderSummary()', function() {
 
     editor.renderSummary();
 
-    equal(editor.$el.html(), '<div class="bbf-list-modal">      Id: 1<br>Name: foo    </div>');
+    equal(editor.$el.html(), '<div class="bbf-list-modal">        Id: 1<br>Name: foo      </div>');
 });
 
 test('itemToString() - formats an object', function() {
