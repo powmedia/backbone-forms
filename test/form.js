@@ -717,6 +717,30 @@ test('Removes focus from the currently focused editor', function() {
 
 
 
+module('Form#trigger');
+
+test('Sets hasFocus to true on focus event', function() {
+  var form = new Form();
+
+  form.hasFocus = false;
+
+  form.trigger('focus');
+
+  same(form.hasFocus, true);
+});
+
+test('Sets hasFocus to false on blur event', function() {
+  var form = new Form();
+
+  form.hasFocus = true;
+
+  form.trigger('blur');
+
+  same(form.hasFocus, false);
+});
+
+
+
 module('Form#remove', {
   setup: function() {
     this.sinon = sinon.sandbox.create();

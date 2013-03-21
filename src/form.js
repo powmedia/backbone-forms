@@ -394,6 +394,22 @@ var Form = Backbone.View.extend({
   },
 
   /**
+   * Manages the hasFocus property
+   *
+   * @param {String} event
+   */
+  trigger: function(event) {
+    if (event === 'focus') {
+      this.hasFocus = true;
+    }
+    else if (event === 'blur') {
+      this.hasFocus = false;
+    }
+
+    return Backbone.View.prototype.trigger.apply(this, arguments);
+  },
+
+  /**
    * Override default remove function in order to remove embedded views
    *
    * TODO: If editors are included directly with data-editors="x", they need to be removed
