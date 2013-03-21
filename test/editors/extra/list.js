@@ -156,13 +156,18 @@ var same = deepEqual;
     });
 
     test('addItem() - with no value', function() {
-        var list = new List().render();
+        var form = new Form();
+
+        var list = new List({
+            form: form
+        }).render();
 
         var spy = this.sinon.spy(List, 'Item');
 
         list.addItem();
 
         var expectedOptions = {
+            form: form,
             list: list,
             schema: list.schema,
             value: undefined,
@@ -181,13 +186,18 @@ var same = deepEqual;
     });
 
     test('addItem() - with value', function() {
-        var list = new List().render();
+        var form = new Form();
+        
+        var list = new List({
+            form: form
+        }).render();
 
         var spy = this.sinon.spy(List, 'Item');
 
         list.addItem('foo');
 
         var expectedOptions = {
+            form: form,
             list: list,
             schema: list.schema,
             value: 'foo',
@@ -602,11 +612,15 @@ module('List.Item', {
     test('render() - creates the editor for the given listType', function() {
         var spy = this.sinon.spy(editors, 'Number');
 
+        var form = new Form();
+
         var list = new List({
+            form: form,
             schema: { itemType: 'Number' }
         }).render();
 
         var item = new List.Item({
+            form: form,
             list: list,
             value: 123,
             Editor: editors.Number
@@ -616,6 +630,7 @@ module('List.Item', {
         var editorOptions = spy.lastCall.args[0];
 
         same(editorOptions, {
+            form: form,
             key: '',
             schema: item.schema,
             value: 123,
@@ -743,7 +758,9 @@ module('List.Modal', {
         this.sinon.stub(editors.List.Modal, 'ModalAdapter', MockModalAdapter);
 
         //Create editor to test
-        this.editor = new editors.List.Modal();
+        this.editor = new editors.List.Modal({
+            form: new Form()
+        });
         
         //Force nestedSchema because this is usually done by Object or NestedModel constructors
         this.editor.nestedSchema = {
@@ -1131,6 +1148,7 @@ module('List.Object', {
 
         //Create editor to test
         this.editor = new editors.List.Object({
+            form: new Form(),
             schema: {
                 subSchema: {
                     id: { type: 'Number' },
@@ -1174,6 +1192,7 @@ module('List.NestedModel', {
         });
 
         this.editor = new editors.List.NestedModel({
+            form: new Form(),
             schema: {
                 model: this.Model
             }
@@ -1194,6 +1213,7 @@ test('initialize() - sets the nestedSchema, when schema is object', function() {
     });
 
     var editor = new editors.List.NestedModel({
+        form: new Form(),
         schema: {
             model: Model
         }
@@ -1213,6 +1233,7 @@ test('initialize() - sets the nestedSchema, when schema is function', function()
     });
 
     var editor = new editors.List.NestedModel({
+        form: new Form(),
         schema: {
             model: Model
         }

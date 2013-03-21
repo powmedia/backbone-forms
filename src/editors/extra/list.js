@@ -97,6 +97,7 @@
       //Create the item
       var item = new editors.List.Item({
         list: this,
+        form: this.form,
         schema: this.schema,
         value: value,
         Editor: this.Editor,
@@ -293,6 +294,7 @@
       this.Editor = options.Editor || Form.editors.Text;
       this.key = options.key;
       this.template = options.template || this.template;
+      this.form = options.form;
     },
 
     render: function() {
@@ -302,7 +304,8 @@
         schema: this.schema,
         value: this.value,
         list: this.list,
-        item: this
+        item: this,
+        form: this.form
       }).render();
 
       //Create main element
@@ -401,16 +404,22 @@
 
     /**
      * @param {Object} options
+     * @param {Form} options.form                       The main form
      * @param {Function} [options.schema.itemToString]  Function to transform the value for display in the list.
      * @param {String} [options.schema.itemType]        Editor type e.g. 'Text', 'Object'.
      * @param {Object} [options.schema.subSchema]       Schema for nested form,. Required when itemType is 'Object'
      * @param {Function} [options.schema.model]         Model constructor function. Required when itemType is 'NestedModel'
      */
     initialize: function(options) {
+      options = options || {};
+      
       Form.editors.Base.prototype.initialize.call(this, options);
       
       //Dependencies
       if (!Form.editors.List.Modal.ModalAdapter) throw 'A ModalAdapter is required';
+
+      this.form = options.form;
+      if (!options.form) throw 'Missing required option: "form"';
     },
 
     /**
@@ -494,9 +503,10 @@
     },
 
     openEditor: function() {
-      var self = this;
+      var self = this,
+          ModalForm = this.form.constructor;
 
-      var form = this.modalForm = new Form({
+      var form = this.modalForm = new ModalForm({
         schema: this.nestedSchema,
         data: this.value
       });

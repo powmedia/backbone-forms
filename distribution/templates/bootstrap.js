@@ -55,3 +55,18 @@ Backbone.BootstrapForm.NestedField = Backbone.Form.Field.extend({
   '))
 
 });
+
+
+Backbone.Form.editors.List.prototype.template = _.template($.trim('\
+  <div class="bbf-list">\
+    <ul class="unstyled clearfix" data-items></ul>\
+    <button class="btn bbf-add" data-action="add">Add</button>\
+  </div>\
+'));
+
+Backbone.Form.editors.List.Item.prototype.template = _.template($.trim('\
+  <li class="clearfix">\
+    <div class="pull-left" data-editor></div>\
+    <button type="button" class="btn bbf-del" data-action="remove">&times;</button>\
+  </li>\
+'));
