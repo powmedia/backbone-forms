@@ -10,11 +10,14 @@ Form.editors.NestedModel = Form.editors.Object.extend({
   initialize: function(options) {
     Form.editors.Base.prototype.initialize.call(this, options);
 
-    if (!options.schema.model)
-      throw 'Missing required "schema.model" option for NestedModel editor';
+    if (!this.form) throw 'Missing required option "form"';
+    if (!options.schema.model) throw 'Missing required "schema.model" option for NestedModel editor';
   },
 
   render: function() {
+    //Get the constructor for creating the nested form; i.e. the same constructor as used by the parent form
+    var NestedForm = this.form.constructor;
+
     var data = this.value || {},
         key = this.key,
         nestedModel = this.schema.model;
@@ -22,7 +25,7 @@ Form.editors.NestedModel = Form.editors.Object.extend({
     //Wrap the data in a model if it isn't already a model instance
     var modelInstance = (data.constructor === nestedModel) ? data : new nestedModel(data);
 
-    this.form = new Form({
+    this.nestedForm = new NestedForm({
       model: modelInstance,
       idPrefix: this.id + '_',
       fieldTemplate: 'nestedField'
@@ -31,7 +34,7 @@ Form.editors.NestedModel = Form.editors.Object.extend({
     this._observeFormEvents();
 
     //Render form
-    this.$el.html(this.form.render().el);
+    this.$el.html(this.nestedForm.render().el);
 
     if (this.hasFocus) this.trigger('blur', this);
 
@@ -45,7 +48,7 @@ Form.editors.NestedModel = Form.editors.Object.extend({
    * @return {Error|null} Validation error or null
    */
   commit: function() {
-    var error = this.form.commit();
+    var error = this.nestedForm.commit();
     if (error) {
       this.$el.addClass('error');
       return error;

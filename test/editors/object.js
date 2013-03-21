@@ -22,6 +22,7 @@
 
   test('Default value', function() {
     var editor = new Editor({
+      form: new Form(),
       schema: schema
     }).render();
 
@@ -30,6 +31,7 @@
 
   test('Custom value', function() {
     var editor = new Editor({
+      form: new Form(),
       schema: schema,
       value: {
         id: 42,
@@ -49,6 +51,7 @@
     });
 
     var editor = new Editor({
+      form: new Form(),
       schema: schema,
       model: agency,
       key: 'spy'
@@ -71,6 +74,7 @@
 
   test("setValue() - updates the input value", function() {
     var editor = new Editor({
+      form: new Form(),
       schema: schema,
       value: {
         id: 42,
@@ -97,6 +101,7 @@
     }
 
     var editor = new Editor({
+      form: new Form(),
       schema: schema,
       value: {
         id: null,
@@ -117,6 +122,7 @@
       this.sinon = sinon.sandbox.create();
 
       this.editor = new Editor({
+        form: new Form(),
         schema: schema
       }).render();
 
@@ -136,7 +142,7 @@
     editor.focus();
 
     ok(editor.hasFocus);
-    ok(editor.form.hasFocus);
+    ok(editor.nestedForm.hasFocus);
   });
 
   test("focus() - triggers the 'focus' event", function() {
@@ -162,7 +168,7 @@
     stop();
     setTimeout(function() {
       ok(!editor.hasFocus);
-      ok(!editor.form.hasFocus);
+      ok(!editor.nestedForm.hasFocus);
 
       start();
     }, 0);
@@ -195,7 +201,7 @@
 
     editor.on('change', spy);
 
-    editor.form.trigger('change', editor.form);
+    editor.nestedForm.trigger('change', editor.nestedForm);
 
     ok(spy.called);
     ok(spy.calledWith(editor));
@@ -208,7 +214,7 @@
 
     editor.on('focus', spy);
 
-    editor.form.focus();
+    editor.nestedForm.focus();
 
     ok(spy.called);
     ok(spy.calledWith(editor));
@@ -223,7 +229,7 @@
 
     editor.on('focus', spy);
 
-    editor.form.focus();
+    editor.nestedForm.focus();
 
     ok(!spy.called);
   });
@@ -237,7 +243,7 @@
 
     editor.on('blur', spy);
 
-    editor.form.blur();
+    editor.nestedForm.blur();
 
     stop();
     setTimeout(function() {
@@ -255,7 +261,7 @@
 
     editor.on('blur', spy);
 
-    editor.form.blur();
+    editor.nestedForm.blur();
 
     stop();
     setTimeout(function() {
@@ -272,7 +278,7 @@
 
     editor.on('whatever', spy);
 
-    editor.form.trigger('whatever', editor.form);
+    editor.nestedForm.trigger('whatever', editor.nestedForm);
 
     ok(spy.called);
     ok(spy.calledWith(editor));

@@ -4,6 +4,7 @@
  * Creates a child form. For editing Javascript objects
  *
  * @param {Object} options
+ * @param {Form} options.form                 The form this editor belongs to; used to determine the constructor for the nested form
  * @param {Object} options.schema             The schema for the object
  * @param {Object} options.schema.subSchema   The schema for the nested form
  */
@@ -21,21 +22,25 @@ Form.editors.Object = Form.editors.Base.extend({
     Form.editors.Base.prototype.initialize.call(this, options);
 
     //Check required options
+    if (!this.form) throw 'Missing required option "form"';
     if (!this.schema.subSchema) throw new Error("Missing required 'schema.subSchema' option for Object editor");
   },
 
   render: function() {
+    //Get the constructor for creating the nested form; i.e. the same constructor as used by the parent form
+    var NestedForm = this.form.constructor;
+
     //Create the nested form
-    this.form = new Form({
+    this.nestedForm = new NestedForm({
       schema: this.schema.subSchema,
       data: this.value,
       idPrefix: this.id + '_',
-      Field: Form.NestedField
+      Field: NestedForm.NestedField
     });
 
     this._observeFormEvents();
 
-    this.$el.html(this.form.render().el);
+    this.$el.html(this.nestedForm.render().el);
 
     if (this.hasFocus) this.trigger('blur', this);
 
@@ -43,7 +48,7 @@ Form.editors.Object = Form.editors.Base.extend({
   },
 
   getValue: function() {
-    if (this.form) return this.form.getValue();
+    if (this.nestedForm) return this.nestedForm.getValue();
 
     return this.value;
   },
@@ -57,27 +62,29 @@ Form.editors.Object = Form.editors.Base.extend({
   focus: function() {
     if (this.hasFocus) return;
 
-    this.form.focus();
+    this.nestedForm.focus();
   },
 
   blur: function() {
     if (!this.hasFocus) return;
 
-    this.form.blur();
+    this.nestedForm.blur();
   },
 
   remove: function() {
-    this.form.remove();
+    this.nestedForm.remove();
 
     Backbone.View.prototype.remove.call(this);
   },
 
   validate: function() {
-    return this.form.validate();
+    return this.nestedForm.validate();
   },
 
   _observeFormEvents: function() {
-    this.form.on('all', function() {
+    if (!this.nestedForm) return;
+    
+    this.nestedForm.on('all', function() {
       // args = ["key:change", form, fieldEditor]
       var args = _.toArray(arguments);
       args[1] = this;

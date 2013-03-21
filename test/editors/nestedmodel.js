@@ -22,7 +22,8 @@
 
   test('Default value', function() {
     var editor = new Editor({
-        schema: schema
+      form: new Form(),
+      schema: schema
     }).render();
 
     deepEqual(editor.getValue(), { id: 8, name: 'Marklar' });
@@ -30,6 +31,7 @@
 
   test('Custom value', function() {
     var editor = new Editor({
+      form: new Form(),
       schema: schema,
       value: {
         id: 42,
@@ -81,6 +83,7 @@
     });
 
     var editor = new Editor({
+      form: new Form(),
       schema: schema,
       model: agency,
       key: 'spy'
@@ -114,6 +117,7 @@
     });
 
     var editor = new Editor({
+      form: new Form(),
       schema: schema,
       model: agency,
       key: 'spy'
