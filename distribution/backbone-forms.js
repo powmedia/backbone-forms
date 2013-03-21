@@ -2004,10 +2004,10 @@ Form.editors.NestedModel = Form.editors.Object.extend({
 Form.editors.Date = Form.editors.Base.extend({
 
   template: _.template($.trim('\
-    <div class="bbf-date">\
-      <select class="bbf-date" data-type="date"><%= dates %></select>\
-      <select class="bbf-month" data-type="month"><%= months %></select>\
-      <select class="bbf-year" data-type="year"><%= years %></select>\
+    <div>\
+      <select data-type="date"><%= dates %></select>\
+      <select data-type="month"><%= months %></select>\
+      <select data-type="year"><%= years %></select>\
     </div>\
   '), null, Form.templateSettings),
 

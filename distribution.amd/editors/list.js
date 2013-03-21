@@ -14,9 +14,9 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
   Form.editors.List = Form.editors.Base.extend({
 
     template: _.template($.trim('\
-      <div class="bbf-list">\
-        <ul data-items></ul>\
-        <div class="bbf-actions"><button type="button" data-action="add">Add</div>\
+      <div>\
+        <div data-items></div>\
+        <button type="button" data-action="add">Add</button>\
       </div>\
     '), null, Form.templateSettings),
     
@@ -268,10 +268,10 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
   Form.editors.List.Item = Form.editors.Base.extend({
 
     template: _.template($.trim('\
-      <li>\
-        <button type="button" data-action="remove" class="bbf-remove">&times;</button>\
-        <div class="bbf-editor-container" data-editor></div>\
-      </li>\
+      <div>\
+        <span data-editor></span>\
+        <button type="button" data-action="remove">&times;</button>\
+      </div>\
     '), null, Form.templateSettings),
 
     errorClassName: 'error',
@@ -395,9 +395,7 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
   Form.editors.List.Modal = Form.editors.Base.extend({
 
     template: _.template($.trim('\
-      <div class="bbf-list-modal">\
-        <%= summary %>\
-      </div>\
+      <div><%= summary %></div>\
     ')),
 
     events: {

@@ -83,23 +83,18 @@ builder(baseDir)
 });
 
 
-//CSS files
-['default', 'bootstrap'].forEach(function(template) {
-  //CSS
-  builder(baseDir)
-    .load('src/templates/'+template+'.css')
-    .save('distribution/templates/'+template+'.css')
-    .save('distribution.amd/templates/'+template+'.css');
-});
-
-
 //Templates
-['bootstrap'].forEach(function(name) {
+['old', 'bootstrap'].forEach(function(name) {
+  //HTML
   builder(baseDir)
     .load('src/templates/'+name+'.js')
-    .save('distribution/templates/'+name+'.js')
-    .uglify()
-    .save('distribution/templates/'+name+'.min.js');
+    .save('distribution/templates/'+name+'.js');
+
+  //CSS
+  builder(baseDir)
+    .load('src/templates/'+name+'.css')
+    .save('distribution/templates/'+name+'.css')
+    .save('distribution.amd/templates/'+name+'.css');
 });
 
 

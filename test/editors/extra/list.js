@@ -218,7 +218,7 @@ var same = deepEqual;
 
         list.addItem('foo');
 
-        var $el = list.$('li:last input');
+        var $el = list.$('[data-items] div:last input');
 
         same($el.val(), 'foo');
     });
@@ -229,14 +229,14 @@ var same = deepEqual;
         list.addItem();
 
         same(list.items.length, 2);
-        same(list.$('li').length, 2);
+        same(list.$('[data-items] div').length, 2);
 
         var item = _.last(list.items);
 
         list.removeItem(item);
 
         same(list.items.length, 1);
-        same(list.$('li').length, 1);
+        same(list.$('[data-items] div').length, 1);
         same(_.indexOf(list.items, item), -1, 'Removed item is no longer in list.items');
     });
 
@@ -809,7 +809,7 @@ test('renderSummary()', function() {
 
     editor.renderSummary();
 
-    equal(editor.$el.html(), '<div class="bbf-list-modal">        Id: 1<br>Name: foo      </div>');
+    equal(editor.$el.html(), '<div>Id: 1<br>Name: foo</div>');
 });
 
 test('itemToString() - formats an object', function() {

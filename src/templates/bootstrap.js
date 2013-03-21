@@ -1,8 +1,7 @@
 /**
  * Bootstrap templates for Backbone Forms
  *
- * Include this file after backbone-forms.js and use Backbone.BootstrapForm instead
- * of Backbone.Form
+ * Include this file after backbone-forms.js and the default templates will be overridden
  */
 Backbone.Form.prototype.template = _.template($.trim('\
   <form class="form-horizontal" data-fieldsets></form>\
