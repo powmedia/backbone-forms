@@ -38,6 +38,9 @@
   <script src="../src/editors/radio.js"></script>
   <script src="../src/editors/checkboxes.js"></script>
   <script src="../src/editors/object.js"></script>
+  <script src="../src/editors/nestedmodel.js"></script>
+  <script src="../src/editors/date.js"></script>
+  <script src="../src/editors/datetime.js"></script>
 
   <script>Backbone.Form = Form</script>
 
@@ -72,9 +75,11 @@
   <script src="editors/radio.js"></script>
   <script src="editors/checkboxes.js"></script>
   <script src="editors/object.js"></script>
+  <script src="editors/nestedmodel.js"></script>
+  <script src="editors/date.js"></script>
+  <script src="editors/datetime.js"></script>
 
-  <!--<script src="editors.js"></script>
-  <script src="editors/list.js"></script>-->
+  <!--<script src="editors/list.js"></script>-->
   
   
   <div id="uiTest" style="height: 400px; overflow: auto; border: 1px solid #ccc">
@@ -82,7 +87,7 @@
     <button class="validate">Validate</button>
   </div>
   <script>
-    /*$(function() {
+    $(function() {
       var NestedModel = Backbone.Model.extend({
         schema: {
           name: { validators: ['required']},
@@ -123,11 +128,11 @@
         dateTime: { type: 'DateTime', yearStart: 2000, yearEnd: 1980 },
 
         //List
-        textList: { type: 'List', itemType: 'Text', validators: ['required', 'email'] },
+        /*textList: { type: 'List', itemType: 'Text', validators: ['required', 'email'] },
         objList: { type: 'List', itemType: 'Object', subSchema: {
           name: { type: 'Text', validators: ['required'] },
           age: 'Number'
-        } }
+        } }*/
       };
       
       var model = new Backbone.Model({
@@ -141,7 +146,7 @@
         schema: schema,
         fieldsets: [
           ['email', 'tel', 'number', 'checkbox', 'radio', 'select', 'groupSelect', 'checkboxes', 'customTemplate', 'shorthand', 'date', 'dateTime'],
-          { legend: 'Lists', fields: ['textList', 'objList'] },
+          //{ legend: 'Lists', fields: ['textList', 'objList'] },
           { legend: 'Nested editors', fields: ['object', 'nestedModel'] }
         ]
       });
@@ -159,7 +164,7 @@
       });
       
       $('#uiTest button.validate').click(function() { form.validate() });
-    });*/
+    });
   </script>
 </body>
 </html>
