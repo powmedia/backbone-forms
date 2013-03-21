@@ -1,12 +1,9 @@
 define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Backbone) {
 
-  ;(function() {
-
-  var Form = Backbone.Form,
-      editors = Form.editors;
+  ;(function(Form) {
 
   /**
-   * LIST
+   * List editor
    * 
    * An array editor. Creates a list of other editor items.
    *
@@ -14,7 +11,14 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
    * @param {String} [options.schema.itemType]          The editor type for each item in the list. Default: 'Text'
    * @param {String} [options.schema.confirmDelete]     Text to display in a delete confirmation dialog. If falsey, will not ask for confirmation.
    */
-  editors.List = editors.Base.extend({
+  Form.editors.List = Form.editors.Base.extend({
+
+    template: _.template($.trim('\
+      <div class="bbf-list">\
+        <ul data-items></ul>\
+        <div class="bbf-actions"><button type="button" data-action="add">Add</div>\
+      </div>\
+    '), null, Form.templateSettings),
     
     events: {
       'click [data-action="add"]': function(event) {
@@ -24,16 +28,16 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
     },
 
     initialize: function(options) {
+      options = options || {};
+
+      var editors = Form.editors;
+
       editors.Base.prototype.initialize.call(this, options);
 
       var schema = this.schema;
       if (!schema) throw "Missing required option 'schema'";
 
-      //List schema defaults
-      this.schema = _.extend({
-        listTemplate: 'list',
-        listItemTemplate: 'listItem'
-      }, schema);
+      this.template = options.template || this.template;
 
       //Determine the editor to use
       this.Editor = (function() {
@@ -57,12 +61,10 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
           value = this.value || [];
 
       //Create main element
-      var $el = Form.helpers.parseHTML(Form.templates[this.schema.listTemplate]({
-        items: '<b class="bbf-tmp"></b>'
-      }));
+      var $el = $(this.template());
 
       //Store a reference to the list (item container)
-      this.$list = $el.find('.bbf-tmp').parent().empty();
+      this.$list = $el.is('[data-items]') ? $el : $el.find('[data-items]');
 
       //Add existing items
       if (value.length) {
@@ -91,7 +93,8 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
      * @param {Boolean} [userInitiated] If the item was added by the user clicking 'add'
      */
     addItem: function(value, userInitiated) {
-      var self = this;
+      var self = this,
+          editors = Form.editors;
 
       //Create the item
       var item = new editors.List.Item({
@@ -220,7 +223,7 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
     remove: function() {
       _.invoke(this.items, 'remove');
 
-      editors.Base.prototype.remove.call(this);
+      Form.editors.Base.prototype.remove.call(this);
     },
     
     /**
@@ -261,7 +264,17 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
    * @param {Mixed} options.value       Value
    * @param {Object} options.schema     Field schema
    */
-  editors.List.Item = Backbone.View.extend({
+  Form.editors.List.Item = Form.editors.Base.extend({
+
+    template: _.template($.trim('\
+      <li>\
+        <button type="button" data-action="remove" class="bbf-remove">&times;</button>\
+        <div class="bbf-editor-container" data-editor></div>\
+      </li>\
+    '), null, Form.templateSettings),
+
+    errorClassName: 'error',
+
     events: {
       'click [data-action="remove"]': function(event) {
         event.preventDefault();
@@ -279,8 +292,9 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
       this.list = options.list;
       this.schema = options.schema || this.list.schema;
       this.value = options.value;
-      this.Editor = options.Editor || editors.Text;
+      this.Editor = options.Editor || Form.editors.Text;
       this.key = options.key;
+      this.template = options.template || this.template;
     },
 
     render: function() {
@@ -294,11 +308,9 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
       }).render();
 
       //Create main element
-      var $el = Form.helpers.parseHTML(Form.templates[this.schema.listItemTemplate]({
-        editor: '<b class="bbf-tmp"></b>'
-      }));
+      var $el = $(this.template());
 
-      $el.find('.bbf-tmp').replaceWith(this.editor.el);
+      $el.find('[data-editor]').append(this.editor.el);
 
       //Replace the entire element so there isn't a wrapper tag
       this.setElement($el);
@@ -332,7 +344,7 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
       var value = this.getValue(),
           formValues = this.list.form ? this.list.form.getValue() : {},
           validators = this.schema.validators,
-          getValidator = Form.helpers.getValidator;
+          getValidator = this.getValidator;
 
       if (!validators) return null;
 
@@ -359,7 +371,7 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
      * Show a validation error
      */
     setError: function(err) {
-      this.$el.addClass(Form.classNames.error);
+      this.$el.addClass(this.errorClassName);
       this.$el.attr('title', err.message);
     },
 
@@ -367,7 +379,7 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
      * Hide validation errors
      */
     clearError: function() {
-      this.$el.removeClass(Form.classNames.error);
+      this.$el.removeClass(this.errorClassName);
       this.$el.attr('title', null);
     }
   });
@@ -377,7 +389,14 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
    * Base modal object editor for use with the List editor; used by Object 
    * and NestedModal list types
    */
-  editors.List.Modal = editors.Base.extend({
+  Form.editors.List.Modal = Form.editors.Base.extend({
+
+    template: _.template($.trim('\
+      <div class="bbf-list-modal">\
+        <%= summary %>\
+      </div>\
+    ')),
+
     events: {
       'click': 'openEditor'
     },
@@ -390,10 +409,10 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
      * @param {Function} [options.schema.model]         Model constructor function. Required when itemType is 'NestedModel'
      */
     initialize: function(options) {
-      editors.Base.prototype.initialize.call(this, options);
+      Form.editors.Base.prototype.initialize.call(this, options);
       
       //Dependencies
-      if (!editors.List.Modal.ModalAdapter) throw 'A ModalAdapter is required';
+      if (!Form.editors.List.Modal.ModalAdapter) throw 'A ModalAdapter is required';
     },
 
     /**
@@ -425,9 +444,7 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
      * Renders the list item representation
      */
     renderSummary: function() {
-      var template = Form.templates['list.Modal'];
-
-      this.$el.html(template({
+      this.$el.html(this.template({
         summary: this.getStringValue()
       }));
     },
@@ -440,12 +457,18 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
      * @return {String}
      */
     itemToString: function(value) {
+      var createTitle = function(key) {
+        var context = { key: key };
+
+        return Form.Field.prototype.createTitle.call(context);
+      };
+
       value = value || {};
 
       //Pretty print the object keys and values
       var parts = [];
       _.each(this.nestedSchema, function(schema, key) {
-        var desc = schema.title ? schema.title : Form.helpers.keyToTitle(key),
+        var desc = schema.title ? schema.title : createTitle(key),
             val = value[key];
 
         if (_.isUndefined(val) || _.isNull(val)) val = '';
@@ -480,7 +503,7 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
         data: this.value
       });
 
-      var modal = this.modal = new editors.List.Modal.ModalAdapter({
+      var modal = this.modal = new Form.editors.List.Modal.ModalAdapter({
         content: form,
         animate: true
       });
@@ -565,10 +588,10 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
     isAsync: true
   });
 
-  
-  editors.List.Object = editors.List.Modal.extend({
+
+  Form.editors.List.Object = Form.editors.List.Modal.extend({
     initialize: function () {
-      editors.List.Modal.prototype.initialize.apply(this, arguments);
+      Form.editors.List.Modal.prototype.initialize.apply(this, arguments);
 
       var schema = this.schema;
 
@@ -579,9 +602,9 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
   });
 
 
-  editors.List.NestedModel = editors.List.Modal.extend({
+  Form.editors.List.NestedModel = Form.editors.List.Modal.extend({
     initialize: function() {
-      editors.List.Modal.prototype.initialize.apply(this, arguments);
+      Form.editors.List.Modal.prototype.initialize.apply(this, arguments);
 
       var schema = this.schema;
 
@@ -609,7 +632,7 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
     },
   });
 
-})();
+})(Backbone.Form);
 
 
 });
