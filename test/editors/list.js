@@ -85,6 +85,18 @@ module('List', {
         list.setValue(['a', 'b', 'c']);
 
         same(list.getValue(), ['a', 'b', 'c']);
+        same(list.$('li').length, 3);
+
+        list.setValue(['e', 'f']);
+
+        same(list.getValue(), ['e', 'f']);
+        same(list.$('li').length, 2);
+
+        list.setValue([]);
+
+        // An empty list will produce 1 input field.
+        same(list.getValue(), []);
+        same(list.$('li').length, 1);
     });
 
     test('validate() - returns validation errors', function() {

@@ -63,16 +63,7 @@
       this.$list = $el.find('.bbf-tmp').parent().empty();
 
       //Add existing items
-      if (value.length) {
-        _.each(value, function(itemValue) {
-          self.addItem(itemValue);
-        });
-      }
-
-      //If no existing items create an empty one, unless the editor specifies otherwise
-      else {
-        if (!this.Editor.isAsync) this.addItem();
-      }
+      this.setValue(value);
 
       this.setElement($el);
       this.$el.attr('id', this.id);
@@ -194,8 +185,21 @@
     },
 
     setValue: function(value) {
-      this.value = value;
-      this.render();
+      // Ensure items are removed before adding.
+      _.invoke(this.items, 'remove');
+      this.items = [];
+
+      //Add existing items
+      if (value.length) {
+        _.each(value, function(itemValue) {
+          this.addItem(itemValue);
+        }, this);
+      }
+
+      //If no existing items create an empty one, unless the editor specifies otherwise
+      else {
+        if (!this.Editor.isAsync) this.addItem();
+      }
     },
     
     focus: function() {
