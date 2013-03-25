@@ -370,7 +370,9 @@
   });
 
   test('Options as a new collection (needs to be fetched)', function() {
-    this.sinon.stub(OptionCollection.prototype, 'fetch', function(options) {
+    var options = new OptionCollection();
+
+    this.sinon.stub(options, 'fetch', function(options) {
       this.set([
         { id: 'kid1', name: 'Barbara' },
         { id: 'kid2', name: 'Phil' }
@@ -378,8 +380,6 @@
 
       options.success(this);
     });
-
-    var options = new OptionCollection();
 
     var editor = new Editor({
       schema: {
