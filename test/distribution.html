@@ -1,146 +1,146 @@
 <!--
-    TESTS FOR DISTRIBUTION
-    Tests the combined and minified distribution file created after building
+  TESTS FOR DEVELOPMENT
+  These use the individual source files. Use this while developing
 -->
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-    <link rel="stylesheet" href="lib/qunit.css" type="text/css" media="screen" />
+  <link rel="stylesheet" href="lib/qunit.css" type="text/css" media="screen" />
 
-    <!-- TEST LIB FILES -->
-    <script type="text/javascript" src="lib/qunit.js"></script>
-    <script type="text/javascript" src="lib/sinon.js"></script>
-    
-    <!-- SRC LIB FILES -->
-    <script src="lib/jquery.js"></script>
+  <!-- TEST LIB FILES -->
+  <script type="text/javascript" src="lib/qunit.js"></script>
+  <script type="text/javascript" src="lib/sinon.js"></script>
+  
+  <!-- SRC LIB FILES -->
+  <script src="lib/jquery.js"></script>
 
-    <script src="lib/underscore-1.4.4.js"></script>
-    <script src="lib/backbone-0.9.10.js"></script>
-    <script src="lib/backbone-deep-model-0.10.1.js"></script>
-    <script src="lib/handlebars-1.0.rc.2.js"></script>
+  <script src="lib/underscore-1.4.4.js"></script>
+  <script src="lib/backbone-0.9.10.js"></script>
+  <script src="lib/backbone-deep-model-0.10.1.js"></script>
 
-    <!-- SOURCE FILES -->
-    <script src="../distribution/backbone-forms.min.js"></script>
-    <script src="../distribution/editors/list.min.js"></script>
+  <!-- SOURCE FILES -->
+  <script src="../distribution/backbone-forms.min.js"></script>
+  <script src="../distribution/editors/list.min.js"></script>
 
-    <!-- TEMPLATES -->
-    <link rel="stylesheet" href="../src/templates/default.css" type="text/css" media="screen" />
+  <script src="../src/editors/extra/list.js"></script>
 </head>
 <body>
-    <div id="qunit"></div>
-    <div id="qunit-fixture">
-        <div id='testElement'>
-            <h1>Test</h1>
-        </div>
+  <div id="qunit"></div>
+  <div id="qunit-fixture">
+    <div id='testElement'>
+      <h1>Test</h1>
     </div>
+  </div>
 
-    <script src="_setup.js"></script>
-    <script src="form.js"></script>
-    <script src="helpers.js"></script>
-    <script src="validators.js"></script>
-    <script src="field.js"></script>
-    <script src="editors.js"></script>
-    <script src="editors/list.js"></script>
-    
-    
-    <div id="uiTest" style="height: 400px; overflow: auto; border: 1px solid #ccc">
-      <div id="formContainer"></div>
-      <button class="validate">Validate</button>
-    </div>
-    <script>
-        $(function() {
-            Backbone.Form.setTemplates({
-              customField: '\
-                <div style="border: 1px solid blue">\
-                  <label for="{{id}}">{{title}}</label>\
-                  <div>{{editor}}</div>\
-                  <div>{{help}}</div>\
-                </div>\
-              '
-            });
-          
-            var NestedModel = Backbone.Model.extend({
-              schema: {
-                name: { validators: ['required']},
-                email: { validators: ['required', 'email'] }
-              }
-            });
-            
-            var Model = Backbone.Model.extend({
-                schema: {
-                    email:      { dataType: 'email', validators: ['required', 'email'] },
-                    tel:        { type: 'Text', dataType: 'tel', validators: ['required'], help: 'Include area code' },
-                    number:     { type: 'Number', validators: [/[0-9]+(?:\.[0-9]*)?/] },
-                    checkbox:   { type: 'Checkbox' },
-                    radio:      { type: 'Radio', options: ['Opt 1', 'Opt 2'] },
-                    select:     { type: 'Select', options: ['Opt 1', 'Opt 2'] },
-                    groupSelect: { type: 'Select', options: [
-                        {
-                            group: 'North America', options: [
-                                { val: 'ca', label: 'Canada' },
-                                { val: 'us', label: 'United States' }
-                            ],
-                        },
-                        {
-                            group: 'Europe', options: [
-                                { val: 'es', label: 'Spain' },
-                                { val: 'fr', label: 'France' },
-                                { val: 'uk', label: 'United Kingdom' }
-                            ]
-                        }
-                    ] },
-                    checkboxes: { type: 'Checkboxes', options: ['Sterling', 'Lana', 'Cyril', 'Cheryl', 'Pam'] },
-                    object:     { type: 'Object', subSchema: {
-                      name: {},
-                      age:  { type: 'Number' }
-                    }},
-                    nestedModel: { type: 'NestedModel', model: NestedModel },
-                    customTemplate: { template: 'customField' },
-                    shorthand: 'Password',
-                    date: { type: 'Date' },
-                    dateTime: { type: 'DateTime', yearStart: 2000, yearEnd: 1980 },
+  <!-- Main -->
+  <script src="form.js"></script>
+  <script src="fieldset.js"></script>
+  <script src="validators.js"></script>
+  <script src="field.js"></script>
+  <script src="editor.js"></script>
 
-                    //List
-                    textList: { type: 'List', itemType: 'Text', validators: ['required', 'email'] },
-                    objList: { type: 'List', itemType: 'Object', subSchema: {
-                        name: { type: 'Text', validators: ['required'] },
-                        age: 'Number'
-                    } }
-                }
-            });
-            
-            var model = new Model({
-                number: null,
-                checkbox: true,
-                textList: ['item1', 'item2', 'item3']
-            });
+  <!-- Editors -->
+  <script src="editors/text.js"></script>
+  <script src="editors/textarea.js"></script>
+  <script src="editors/password.js"></script>
+  <script src="editors/number.js"></script>
+  <script src="editors/hidden.js"></script>
+  <script src="editors/checkbox.js"></script>
+  <script src="editors/select.js"></script>
+  <script src="editors/radio.js"></script>
+  <script src="editors/checkboxes.js"></script>
+  <script src="editors/object.js"></script>
+  <script src="editors/nestedmodel.js"></script>
+  <script src="editors/date.js"></script>
+  <script src="editors/datetime.js"></script>
 
-            var form = new Backbone.Form({
-                model: model,
-                fieldsets: [
-                    ['email', 'tel', 'number', 'checkbox', 'radio', 'select', 'groupSelect', 'checkboxes', 'customTemplate', 'shorthand', 'date', 'dateTime'],
-                    { legend: 'Lists', fields: ['textList', 'objList'] },
-                    { legend: 'Nested editors', fields: ['object', 'nestedModel'] }
-                ]
-            }).render();
-            
-            window.form = form;
+  <script src="editors/extra/list.js"></script>
+  
+  
+  <div id="uiTest" style="height: 400px; overflow: auto; border: 1px solid #ccc">
+    <div id="formContainer"></div>
+    <button class="validate">Validate</button>
+  </div>
+  <script>
+    $(function() {
+      var NestedModel = Backbone.Model.extend({
+        schema: {
+          name: { validators: ['required']},
+          email: { validators: ['required', 'email'] }
+        }
+      });
+        
+      var schema = {
+        email:      { dataType: 'email', validators: ['required', 'email'] },
+        tel:        { type: 'Text', dataType: 'tel', validators: ['required'], help: 'Include area code' },
+        number:     { type: 'Number', validators: [/[0-9]+(?:\.[0-9]*)?/] },
+        checkbox:   { type: 'Checkbox' },
+        radio:      { type: 'Radio', options: ['Opt 1', 'Opt 2'] },
+        select:     { type: 'Select', options: ['Opt 1', 'Opt 2'] },
+        groupSelect: { type: 'Select', options: [
+          {
+            group: 'North America', options: [
+              { val: 'ca', label: 'Canada' },
+              { val: 'us', label: 'United States' }
+            ],
+          },
+          {
+            group: 'Europe', options: [
+              { val: 'es', label: 'Spain' },
+              { val: 'fr', label: 'France' },
+              { val: 'uk', label: 'United Kingdom' }
+            ]
+          }
+        ] },
+        checkboxes: { type: 'Checkboxes', options: ['Sterling', 'Lana', 'Cyril', 'Cheryl', 'Pam'] },
+        object:     { type: 'Object', subSchema: {
+          name: {},
+          age:  { type: 'Number' }
+        }},
+        nestedModel: { type: 'NestedModel', model: NestedModel },
+        shorthand: 'Password',
+        date: { type: 'Date' },
+        dateTime: { type: 'DateTime', yearStart: 2000, yearEnd: 1980 },
 
-            $('#uiTest #formContainer').html(form.el);
+        //List
+        textList: { type: 'List', itemType: 'Text', validators: ['required', 'email'] },
+        objList: { type: 'List', itemType: 'Object', subSchema: {
+          name: { type: 'Text', validators: ['required'] },
+          age: 'Number'
+        } }
+      };
+      
+      var model = new Backbone.Model({
+        number: null,
+        checkbox: true,
+        textList: ['item1', 'item2', 'item3']
+      });
 
-            $('#uiTest label').click(function() {
-                var name = $(this).attr('for'),
-                    $editor = $('#' + name),
-                    key = $editor.attr('name');
+      var form = new Backbone.Form({
+        model: model,
+        schema: schema,
+        fieldsets: [
+          ['email', 'tel', 'number', 'checkbox', 'radio', 'select', 'groupSelect', 'checkboxes', 'customTemplate', 'shorthand', 'date', 'dateTime'],
+          { legend: 'Lists', fields: ['textList', 'objList'] },
+          { legend: 'Nested editors', fields: ['object', 'nestedModel'] }
+        ]
+      });
+      
+      window.form = form;
 
-                var editor = form.fields[key];
+      $('#uiTest #formContainer').html(form.render().el);
 
-                console.log(editor.getValue())
-            });
-            
-            $('#uiTest button.validate').click(function() { form.validate() });
-        });
-    </script>
+      $('#uiTest label').click(function() {
+        var name = $(this).attr('for'),
+            $editor = $('#' + name),
+            key = $editor.attr('name');
+
+        console.log(form.getValue(key))
+      });
+      
+      $('#uiTest button.validate').click(function() { form.validate() });
+    });
+  </script>
 </body>
 </html>
