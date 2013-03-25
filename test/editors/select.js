@@ -370,14 +370,14 @@
   });
 
   test('Options as a new collection (needs to be fetched)', function() {
-    OptionCollection.prototype.sync = function(method, collection, options) {
-      if (method === 'read') {
-        options.success(collection, [
-          { id: 'kid1', name: 'Barbara' },
-          { id: 'kid2', name: 'Phil' }
-        ], options);
-      }
-    };
+    this.sinon.stub(OptionCollection.prototype, 'fetch', function(options) {
+      this.set([
+        { id: 'kid1', name: 'Barbara' },
+        { id: 'kid2', name: 'Phil' }
+      ]);
+
+      options.success(this);
+    });
 
     var options = new OptionCollection();
 
