@@ -101,6 +101,20 @@ test('overrides defaults', function() {
   same(form.NestedField, options.NestedField);
 });
 
+test('uses template stored on form class', function() {
+  var oldTemplate = Form.template;
+
+  var newTemplate = _.template('<form><b data-fieldsets></b></div>');
+
+  Form.template = newTemplate;
+
+  var form = new Form();
+
+  same(form.template, newTemplate);
+
+  Form.template = oldTemplate;
+});
+
 test('uses fieldset and field classes stored on form class', function() {
   var form = new Form();
 

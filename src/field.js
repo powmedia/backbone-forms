@@ -5,22 +5,6 @@
 
 Form.Field = Backbone.View.extend({
 
-  template: _.template($.trim('\
-    <div>\
-      <label for="<%= editorId %>"><%= title %></label>\
-      <div>\
-        <span data-editor></span>\
-        <div data-error></div>\
-        <div><%= help %></div>\
-      </div>\
-    </div>\
-  '), null, Form.templateSettings),
-
-  /**
-   * CSS class name added to the field when there is a validation error
-   */
-  errorClassName: 'error',
-
   /**
    * Constructor
    * 
@@ -40,7 +24,8 @@ Form.Field = Backbone.View.extend({
     _.extend(this, _.pick(options, 'form', 'key', 'model', 'value', 'idPrefix'));
 
     //Override defaults
-    _.extend(this, _.pick(options, 'template', 'errorClassName'));
+    this.template = options.template || this.constructor.template;
+    this.errorClassName = options.errorClassName || this.constructor.errorClassName;
 
     //Create the full field schema, merging defaults etc.
     this.schema = this.createSchema(options.schema);
@@ -273,5 +258,24 @@ Form.Field = Backbone.View.extend({
 
     Backbone.View.prototype.remove.call(this);
   }
+
+}, {
+  //STATICS
+
+  template: _.template($.trim('\
+    <div>\
+      <label for="<%= editorId %>"><%= title %></label>\
+      <div>\
+        <span data-editor></span>\
+        <div data-error></div>\
+        <div><%= help %></div>\
+      </div>\
+    </div>\
+  '), null, Form.templateSettings),
+
+  /**
+   * CSS class name added to the field when there is a validation error
+   */
+  errorClassName: 'error'
 
 });

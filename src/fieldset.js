@@ -5,14 +5,6 @@
 
 Form.Fieldset = Backbone.View.extend({
 
-  template: _.template($.trim('\
-    <fieldset data-fields>\
-      <% if (legend) { %>\
-        <legend><%= legend %></legend>\
-      <% } %>\
-    </fieldset>\
-  '), null, Form.templateSettings),
-
   /**
    * Constructor
    *
@@ -33,7 +25,7 @@ Form.Fieldset = Backbone.View.extend({
     this.fields = _.pick(options.fields, schema.fields);
     
     //Override defaults
-    _.extend(this, _.pick(options, 'template'));
+    this.template = options.template || this.constructor.template;
   },
 
   /**
@@ -117,4 +109,15 @@ Form.Fieldset = Backbone.View.extend({
     Backbone.View.prototype.remove.call(this);
   }
   
+}, {
+  //STATICS
+
+  template: _.template($.trim('\
+    <fieldset data-fields>\
+      <% if (legend) { %>\
+        <legend><%= legend %></legend>\
+      <% } %>\
+    </fieldset>\
+  '), null, Form.templateSettings)
+
 });

@@ -5,10 +5,6 @@
 
 var Form = Backbone.View.extend({
 
-  template: _.template($.trim('\
-    <form data-fieldsets></form>\
-  '), null, this.templateSettings),
-
   /**
    * Constructor
    * 
@@ -51,10 +47,11 @@ var Form = Backbone.View.extend({
     _.extend(this, _.pick(options, 'model', 'data', 'idPrefix'));
 
     //Override defaults
-    _.extend(this, _.pick(options, 'template', 'Fieldset', 'Field', 'NestedField'));
-    this.Fieldset = options.Fieldset || this.constructor.Fieldset;
-    this.Field = options.Field || this.constructor.Field;
-    this.NestedField = options.NestedField || this.constructor.NestedField;
+    var constructor = this.constructor;
+    this.template = options.template || constructor.template;
+    this.Fieldset = options.Fieldset || constructor.Fieldset;
+    this.Field = options.Field || constructor.Field;
+    this.NestedField = options.NestedField || constructor.NestedField;
 
     //Check which fields will be included (defaults to all)
     var selectedFields = this.selectedFields = options.fields || _.keys(schema);
@@ -428,7 +425,12 @@ var Form = Backbone.View.extend({
   }
 
 }, {
+
   //STATICS
+  template: _.template($.trim('\
+    <form data-fieldsets></form>\
+  '), null, this.templateSettings),
+
   templateSettings: {
     evaluate: /<%([\s\S]+?)%>/g, 
     interpolate: /<%=([\s\S]+?)%>/g, 
@@ -436,4 +438,5 @@ var Form = Backbone.View.extend({
   },
 
   editors: {}
+
 });

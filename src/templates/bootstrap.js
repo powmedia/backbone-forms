@@ -3,12 +3,12 @@
  *
  * Include this file after backbone-forms.js and the default templates will be overridden
  */
-Backbone.Form.prototype.template = _.template($.trim('\
+Backbone.Form.template = _.template($.trim('\
   <form class="form-horizontal" data-fieldsets></form>\
 '));
 
 
-Backbone.Form.Fieldset.prototype.template = _.template($.trim('\
+Backbone.Form.Fieldset.template = _.template($.trim('\
   <fieldset data-fields>\
     <% if (legend) { %>\
       <legend><%= legend %></legend>\
@@ -17,7 +17,7 @@ Backbone.Form.Fieldset.prototype.template = _.template($.trim('\
 '));
 
 
-Backbone.Form.Field.prototype.template = _.template($.trim('\
+Backbone.Form.Field.template = _.template($.trim('\
   <div class="control-group field-<%= key %>">\
     <label class="control-label" for="<%= editorId %>"><%= title %></label>\
     <div class="controls">\
@@ -29,7 +29,7 @@ Backbone.Form.Field.prototype.template = _.template($.trim('\
 '));
 
 
-Backbone.Form.NestedField.prototype.template = _.template($.trim('\
+Backbone.Form.NestedField.template = _.template($.trim('\
   <div class="field-<%= key %>">\
     <div title="<%= title %>" class="input-xlarge">\
       <span data-editor></span>\
@@ -40,7 +40,7 @@ Backbone.Form.NestedField.prototype.template = _.template($.trim('\
 '));
 
 
-Backbone.Form.editors.List.prototype.template = _.template($.trim('\
+Backbone.Form.editors.List.template = _.template($.trim('\
   <div class="bbf-list">\
     <ul class="unstyled clearfix" data-items></ul>\
     <button class="btn bbf-add" data-action="add">Add</button>\
@@ -48,7 +48,7 @@ Backbone.Form.editors.List.prototype.template = _.template($.trim('\
 '));
 
 
-Backbone.Form.editors.List.Item.prototype.template = _.template($.trim('\
+Backbone.Form.editors.List.Item.template = _.template($.trim('\
   <li class="clearfix">\
     <div class="pull-left" data-editor></div>\
     <button type="button" class="btn bbf-del" data-action="remove">&times;</button>\

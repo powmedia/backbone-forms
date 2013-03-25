@@ -3,12 +3,12 @@
  *
  * Include this file after backbone-forms.js and the default templates will be overridden
  */
-Backbone.Form.prototype.template = _.template($.trim('\
+Backbone.Form.template = _.template($.trim('\
   <form class="bbf-form" data-fieldsets></form>\
 '));
 
 
-Backbone.Form.Fieldset.prototype.template = _.template($.trim('\
+Backbone.Form.Fieldset.template = _.template($.trim('\
   <fieldset>\
     <% if (legend) { %>\
       <legend><%= legend %></legend>\
@@ -18,7 +18,7 @@ Backbone.Form.Fieldset.prototype.template = _.template($.trim('\
 '));
 
 
-Backbone.Form.Field.prototype.template = _.template($.trim('\
+Backbone.Form.Field.template = _.template($.trim('\
   <li class="bbf-field field-<%= key %>">\
     <label for="<%= editorId %>"><%= title %></label>\
     <div class="bbf-editor" data-editor></div>\
@@ -28,7 +28,7 @@ Backbone.Form.Field.prototype.template = _.template($.trim('\
 '));
 
 
-Backbone.Form.NestedField.prototype.template = _.template($.trim('\
+Backbone.Form.NestedField.template = _.template($.trim('\
   <li class="bbf-field bbf-nested-field field-<%= key %>">\
     <label for="<%= editorId %>"><%= title %></label>\
     <div class="bbf-editor" data-editor></div>\
@@ -38,7 +38,7 @@ Backbone.Form.NestedField.prototype.template = _.template($.trim('\
 '));
 
 
-Backbone.Form.editors.Date.prototype.template = _.template($.trim('\
+Backbone.Form.editors.Date.template = _.template($.trim('\
   <div class="bbf-date">\
     <select class="bbf-date" data-type="date"><%= dates %></select>\
     <select class="bbf-month" data-type="month"><%= months %></select>\
@@ -47,7 +47,7 @@ Backbone.Form.editors.Date.prototype.template = _.template($.trim('\
 '));
 
 
-Backbone.Form.editors.DateTime.prototype.template = _.template($.trim('\
+Backbone.Form.editors.DateTime.template = _.template($.trim('\
   <div class="bbf-datetime">\
     <div class="bbf-date-container" data-date></div>\
     <select data-type="hour"><%= hours %></select>\
@@ -57,7 +57,7 @@ Backbone.Form.editors.DateTime.prototype.template = _.template($.trim('\
 '));
 
 
-Backbone.Form.editors.List.prototype.template = _.template($.trim('\
+Backbone.Form.editors.List.template = _.template($.trim('\
   <div class="bbf-list">\
     <ul data-items></ul>\
     <div class="bbf-actions"><button type="button" data-action="add">Add</div>\
@@ -65,7 +65,7 @@ Backbone.Form.editors.List.prototype.template = _.template($.trim('\
 '));
 
 
-Backbone.Form.editors.List.Item.prototype.template = _.template($.trim('\
+Backbone.Form.editors.List.Item.template = _.template($.trim('\
   <li>\
     <button type="button" data-action="remove" class="bbf-remove">&times;</button>\
     <div class="bbf-editor-container" data-editor></div>\
@@ -73,7 +73,7 @@ Backbone.Form.editors.List.Item.prototype.template = _.template($.trim('\
 '));
 
 
-Backbone.Form.editors.List.Modal.prototype.template = _.template($.trim('\
+Backbone.Form.editors.List.Modal.template = _.template($.trim('\
   <div class="bbf-list-modal">\
     <%= summary %>\
   </div>\
