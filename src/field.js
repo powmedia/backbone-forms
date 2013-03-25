@@ -140,12 +140,8 @@ Form.Field = Backbone.View.extend({
     var schema = this.schema,
         editor = this.editor;
 
-    function parseHTML(html) {
-      return $.parseHTML ? $($.parseHTML(html)) : $(html);
-    }
-
     //Render field
-    var $field = parseHTML(this.template(_.result(this, 'templateData')));
+    var $field = $($.trim(this.template(_.result(this, 'templateData'))));
 
     if (schema.fieldClass) $field.addClass(schema.fieldClass);
     if (schema.fieldAttrs) $field.attr(schema.fieldAttrs);
@@ -262,7 +258,7 @@ Form.Field = Backbone.View.extend({
 }, {
   //STATICS
 
-  template: _.template($.trim('\
+  template: _.template('\
     <div>\
       <label for="<%= editorId %>"><%= title %></label>\
       <div>\
@@ -271,7 +267,7 @@ Form.Field = Backbone.View.extend({
         <div><%= help %></div>\
       </div>\
     </div>\
-  '), null, Form.templateSettings),
+  ', null, Form.templateSettings),
 
   /**
    * CSS class name added to the field when there is a validation error

@@ -726,7 +726,7 @@ module('List.Item', {
 
         item.setError({ type: 'errType', message: 'ErrMessage' });
 
-        ok(item.$el.hasClass(item.errorClassName), 'Element has error class');
+        ok(item.$el.hasClass(List.Item.errorClassName), 'Element has error class');
         same(item.$el.attr('title'), 'ErrMessage');
     });
 

@@ -11,13 +11,6 @@
    */
   Form.editors.List = Form.editors.Base.extend({
 
-    template: _.template($.trim('\
-      <div>\
-        <div data-items></div>\
-        <button type="button" data-action="add">Add</button>\
-      </div>\
-    '), null, Form.templateSettings),
-    
     events: {
       'click [data-action="add"]': function(event) {
         event.preventDefault();
@@ -35,7 +28,7 @@
       var schema = this.schema;
       if (!schema) throw "Missing required option 'schema'";
 
-      this.template = options.template || this.template;
+      this.template = options.template || this.constructor.template;
 
       //Determine the editor to use
       this.Editor = (function() {
@@ -59,7 +52,7 @@
           value = this.value || [];
 
       //Create main element
-      var $el = $(this.template());
+      var $el = $($.trim(this.template()));
 
       //Store a reference to the list (item container)
       this.$list = $el.is('[data-items]') ? $el : $el.find('[data-items]');
@@ -251,6 +244,16 @@
 
       return fieldError;
     }
+  }, {
+
+    //STATICS
+    template: _.template('\
+      <div>\
+        <div data-items></div>\
+        <button type="button" data-action="add">Add</button>\
+      </div>\
+    ', null, Form.templateSettings)
+
   });
 
 
@@ -264,15 +267,6 @@
    * @param {Object} options.schema     Field schema
    */
   Form.editors.List.Item = Form.editors.Base.extend({
-
-    template: _.template($.trim('\
-      <div>\
-        <span data-editor></span>\
-        <button type="button" data-action="remove">&times;</button>\
-      </div>\
-    '), null, Form.templateSettings),
-
-    errorClassName: 'error',
 
     events: {
       'click [data-action="remove"]': function(event) {
@@ -293,7 +287,8 @@
       this.value = options.value;
       this.Editor = options.Editor || Form.editors.Text;
       this.key = options.key;
-      this.template = options.template || this.template;
+      this.template = options.template || this.constructor.template;
+      this.errorClassName = options.errorClassName || this.constructor.errorClassName;
       this.form = options.form;
     },
 
@@ -309,7 +304,7 @@
       }).render();
 
       //Create main element
-      var $el = $(this.template());
+      var $el = $($.trim(this.template()));
 
       $el.find('[data-editor]').append(this.editor.el);
 
@@ -383,6 +378,18 @@
       this.$el.removeClass(this.errorClassName);
       this.$el.attr('title', null);
     }
+  }, {
+
+    //STATICS
+    template: _.template('\
+      <div>\
+        <span data-editor></span>\
+        <button type="button" data-action="remove">&times;</button>\
+      </div>\
+    ', null, Form.templateSettings),
+
+    errorClassName: 'error'
+
   });
 
 
@@ -391,10 +398,6 @@
    * and NestedModal list types
    */
   Form.editors.List.Modal = Form.editors.Base.extend({
-
-    template: _.template($.trim('\
-      <div><%= summary %></div>\
-    ')),
 
     events: {
       'click': 'openEditor'
@@ -418,6 +421,9 @@
 
       this.form = options.form;
       if (!options.form) throw 'Missing required option: "form"';
+
+      //Template
+      this.template = options.template || this.constructor.template;
     },
 
     /**
@@ -449,9 +455,9 @@
      * Renders the list item representation
      */
     renderSummary: function() {
-      this.$el.html(this.template({
+      this.$el.html($.trim(this.template({
         summary: this.getStringValue()
-      }));
+      })));
     },
 
     /**
@@ -584,6 +590,9 @@
     }
   }, {
     //STATICS
+    template: _.template('\
+      <div><%= summary %></div>\
+    '),
 
     //The modal adapter that creates and manages the modal dialog.
     //Defaults to BootstrapModal (http://github.com/powmedia/backbone.bootstrap-modal)

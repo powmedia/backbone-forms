@@ -164,7 +164,7 @@ var Form = Backbone.View.extend({
         fields = this.fields;
 
     //Render form
-    var $form = $(this.template(_.result(this, 'templateData')));
+    var $form = $($.trim(this.template(_.result(this, 'templateData'))));
 
     //Render standalone editors
     $form.find('[data-editors]').add($form).each(function(i, el) {
@@ -427,9 +427,9 @@ var Form = Backbone.View.extend({
 }, {
 
   //STATICS
-  template: _.template($.trim('\
+  template: _.template('\
     <form data-fieldsets></form>\
-  '), null, this.templateSettings),
+  ', null, this.templateSettings),
 
   templateSettings: {
     evaluate: /<%([\s\S]+?)%>/g, 

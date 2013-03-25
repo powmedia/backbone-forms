@@ -6,15 +6,6 @@
  */
 Form.editors.DateTime = Form.editors.Base.extend({
 
-  template: _.template($.trim('\
-    <div class="bbf-datetime">\
-      <div class="bbf-date-container" data-date></div>\
-      <select data-type="hour"><%= hours %></select>\
-      :\
-      <select data-type="min"><%= mins %></select>\
-    </div>\
-  '), null, Form.templateSettings),
-
   events: {
     'change select':  function() {
       this.updateHidden();
@@ -53,6 +44,9 @@ Form.editors.DateTime = Form.editors.Base.extend({
     this.dateEditor = new this.options.DateEditor(options);
 
     this.value = this.dateEditor.value;
+
+    //Template
+    this.template = options.template || this.constructor.template;
   },
 
   render: function() {
@@ -72,10 +66,10 @@ Form.editors.DateTime = Form.editors.Base.extend({
     });
 
     //Render time selects
-    var $el = $(this.template({
+    var $el = $($.trim(this.template({
       hours: hoursOptions.join(),
       mins: minsOptions.join()
-    }));
+    })));
 
     //Include the date editor
     $el.find('[data-date]').append(this.dateEditor.render().el);
@@ -164,6 +158,14 @@ Form.editors.DateTime = Form.editors.Base.extend({
 
 }, {
   //STATICS
+  template: _.template('\
+    <div class="bbf-datetime">\
+      <div class="bbf-date-container" data-date></div>\
+      <select data-type="hour"><%= hours %></select>\
+      :\
+      <select data-type="min"><%= mins %></select>\
+    </div>\
+  ', null, Form.templateSettings),
 
   //The date editor to use (constructor function, not instance)
   DateEditor: Form.editors.Date

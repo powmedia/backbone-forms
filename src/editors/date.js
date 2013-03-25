@@ -11,14 +11,6 @@
  */
 Form.editors.Date = Form.editors.Base.extend({
 
-  template: _.template($.trim('\
-    <div>\
-      <select data-type="date"><%= dates %></select>\
-      <select data-type="month"><%= months %></select>\
-      <select data-type="year"><%= years %></select>\
-    </div>\
-  '), null, Form.templateSettings),
-
   events: {
     'change select':  function() {
       this.updateHidden();
@@ -71,6 +63,9 @@ Form.editors.Date = Form.editors.Base.extend({
 
       this.value = date;
     }
+
+    //Template
+    this.template = options.template || this.constructor.template;
   },
 
   render: function() {
@@ -98,11 +93,11 @@ Form.editors.Date = Form.editors.Base.extend({
     });
 
     //Render the selects
-    var $el = $(this.template({
+    var $el = $($.trim(this.template({
       dates: datesOptions.join(''),
       months: monthsOptions.join(''),
       years: yearsOptions.join('')
-    }));
+    })));
 
     //Store references to selects
     this.$date = $el.find('[data-type="date"]');
@@ -176,6 +171,13 @@ Form.editors.Date = Form.editors.Base.extend({
 
 }, {
   //STATICS
+  template: _.template('\
+    <div>\
+      <select data-type="date"><%= dates %></select>\
+      <select data-type="month"><%= months %></select>\
+      <select data-type="year"><%= years %></select>\
+    </div>\
+  ', null, Form.templateSettings),
 
   //Whether to show month names instead of numbers
   showMonthNames: true,

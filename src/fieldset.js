@@ -79,7 +79,7 @@ Form.Fieldset = Backbone.View.extend({
         fields = this.fields;
 
     //Render fieldset
-    var $fieldset = $(this.template(_.result(this, 'templateData')));
+    var $fieldset = $($.trim(this.template(_.result(this, 'templateData'))));
 
     //Render fields
     $fieldset.find('[data-fields]').add($fieldset).each(function(i, el) {
@@ -112,12 +112,12 @@ Form.Fieldset = Backbone.View.extend({
 }, {
   //STATICS
 
-  template: _.template($.trim('\
+  template: _.template('\
     <fieldset data-fields>\
       <% if (legend) { %>\
         <legend><%= legend %></legend>\
       <% } %>\
     </fieldset>\
-  '), null, Form.templateSettings)
+  ', null, Form.templateSettings)
 
 });
