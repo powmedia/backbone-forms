@@ -1,4 +1,12 @@
+/** 
+ * Include this template file after backbone-forms.amd.js to override the default templates
+ *
+ * 'data-*' attributes control where elements are placed
+ */
+define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Backbone) {
+  var Form = Backbone.Form;
 
+  
   /**
    * Bootstrap templates for Backbone Forms
    */
@@ -53,3 +61,6 @@
       <button type="button" class="btn bbf-del" data-action="remove">&times;</button>\
     </li>\
   ');
+
+
+});

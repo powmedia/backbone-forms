@@ -88,7 +88,14 @@ builder(baseDir)
   //HTML
   builder(baseDir)
     .load('src/templates/'+name+'.js')
+    .wrap('scripts/build-templates/standalone-template.js')
     .save('distribution/templates/'+name+'.js');
+
+  //HTML (AMD)
+  builder(baseDir)
+    .load('src/templates/'+name+'.js')
+    .wrap('scripts/build-templates/standalone-template.amd.js')
+    .save('distribution.amd/templates/'+name+'.js');
 
   //CSS
   builder(baseDir)

@@ -1,8 +1,7 @@
 /** 
- * Requirements when customising templates:
- * - Each template must have one 'parent' element tag.
- * - "data-type" attributes are required.
- * - The main placeholder tags such as the following are required: fieldsets, fields
+ * Include this template file after backbone-forms.amd.js to override the default templates
+ *
+ * 'data-*' attributes control where elements are placed
  */
 define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Backbone) {
   var Form = Backbone.Form;

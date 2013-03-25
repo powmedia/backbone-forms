@@ -1,15 +1,10 @@
-/**
- * Include this file _after_ the main backbone-forms file to override the default templates.
- * You only need to include templates you want to override.
+/** 
+ * Include this template file after backbone-forms.amd.js to override the default templates
  * 
- * Requirements when customising templates:
- * - Each template must have one 'parent' element tag.
- * - "data-type" attributes are required.
- * - The main placeholder tags such as the following are required: fieldsets, fields
+ * 'data-*' attributes control where elements are placed
  */
-;(function() {
-  var Form = Backbone.Form;
+;(function(Form) {
 
   {{body}}
 
-})();
+})(Backbone.Form);

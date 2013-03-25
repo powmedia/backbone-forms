@@ -32,10 +32,6 @@
 
 var Form = Backbone.View.extend({
 
-  template: _.template($.trim('\
-    <form data-fieldsets></form>\
-  '), null, this.templateSettings),
-
   /**
    * Constructor
    * 
@@ -78,10 +74,11 @@ var Form = Backbone.View.extend({
     _.extend(this, _.pick(options, 'model', 'data', 'idPrefix'));
 
     //Override defaults
-    _.extend(this, _.pick(options, 'template', 'Fieldset', 'Field', 'NestedField'));
-    this.Fieldset = options.Fieldset || this.constructor.Fieldset;
-    this.Field = options.Field || this.constructor.Field;
-    this.NestedField = options.NestedField || this.constructor.NestedField;
+    var constructor = this.constructor;
+    this.template = options.template || constructor.template;
+    this.Fieldset = options.Fieldset || constructor.Fieldset;
+    this.Field = options.Field || constructor.Field;
+    this.NestedField = options.NestedField || constructor.NestedField;
 
     //Check which fields will be included (defaults to all)
     var selectedFields = this.selectedFields = options.fields || _.keys(schema);
@@ -194,7 +191,7 @@ var Form = Backbone.View.extend({
         fields = this.fields;
 
     //Render form
-    var $form = $(this.template(_.result(this, 'templateData')));
+    var $form = $($.trim(this.template(_.result(this, 'templateData'))));
 
     //Render standalone editors
     $form.find('[data-editors]').add($form).each(function(i, el) {
@@ -455,7 +452,12 @@ var Form = Backbone.View.extend({
   }
 
 }, {
+
   //STATICS
+  template: _.template('\
+    <form data-fieldsets></form>\
+  ', null, this.templateSettings),
+
   templateSettings: {
     evaluate: /<%([\s\S]+?)%>/g, 
     interpolate: /<%=([\s\S]+?)%>/g, 
@@ -463,6 +465,7 @@ var Form = Backbone.View.extend({
   },
 
   editors: {}
+
 });
 
   
@@ -578,14 +581,6 @@ Form.validators = (function() {
 
 Form.Fieldset = Backbone.View.extend({
 
-  template: _.template($.trim('\
-    <fieldset data-fields>\
-      <% if (legend) { %>\
-        <legend><%= legend %></legend>\
-      <% } %>\
-    </fieldset>\
-  '), null, Form.templateSettings),
-
   /**
    * Constructor
    *
@@ -606,7 +601,7 @@ Form.Fieldset = Backbone.View.extend({
     this.fields = _.pick(options.fields, schema.fields);
     
     //Override defaults
-    _.extend(this, _.pick(options, 'template'));
+    this.template = options.template || this.constructor.template;
   },
 
   /**
@@ -660,7 +655,7 @@ Form.Fieldset = Backbone.View.extend({
         fields = this.fields;
 
     //Render fieldset
-    var $fieldset = $(this.template(_.result(this, 'templateData')));
+    var $fieldset = $($.trim(this.template(_.result(this, 'templateData'))));
 
     //Render fields
     $fieldset.find('[data-fields]').add($fieldset).each(function(i, el) {
@@ -690,6 +685,17 @@ Form.Fieldset = Backbone.View.extend({
     Backbone.View.prototype.remove.call(this);
   }
   
+}, {
+  //STATICS
+
+  template: _.template('\
+    <fieldset data-fields>\
+      <% if (legend) { %>\
+        <legend><%= legend %></legend>\
+      <% } %>\
+    </fieldset>\
+  ', null, Form.templateSettings)
+
 });
 
 
@@ -698,22 +704,6 @@ Form.Fieldset = Backbone.View.extend({
 //==================================================================================================
 
 Form.Field = Backbone.View.extend({
-
-  template: _.template($.trim('\
-    <div>\
-      <label for="<%= editorId %>"><%= title %></label>\
-      <div>\
-        <span data-editor></span>\
-        <div data-error></div>\
-        <div><%= help %></div>\
-      </div>\
-    </div>\
-  '), null, Form.templateSettings),
-
-  /**
-   * CSS class name added to the field when there is a validation error
-   */
-  errorClassName: 'error',
 
   /**
    * Constructor
@@ -734,7 +724,8 @@ Form.Field = Backbone.View.extend({
     _.extend(this, _.pick(options, 'form', 'key', 'model', 'value', 'idPrefix'));
 
     //Override defaults
-    _.extend(this, _.pick(options, 'template', 'errorClassName'));
+    this.template = options.template || this.constructor.template;
+    this.errorClassName = options.errorClassName || this.constructor.errorClassName;
 
     //Create the full field schema, merging defaults etc.
     this.schema = this.createSchema(options.schema);
@@ -849,12 +840,8 @@ Form.Field = Backbone.View.extend({
     var schema = this.schema,
         editor = this.editor;
 
-    function parseHTML(html) {
-      return $.parseHTML ? $($.parseHTML(html)) : $(html);
-    }
-
     //Render field
-    var $field = parseHTML(this.template(_.result(this, 'templateData')));
+    var $field = $($.trim(this.template(_.result(this, 'templateData'))));
 
     if (schema.fieldClass) $field.addClass(schema.fieldClass);
     if (schema.fieldAttrs) $field.attr(schema.fieldAttrs);
@@ -967,6 +954,25 @@ Form.Field = Backbone.View.extend({
 
     Backbone.View.prototype.remove.call(this);
   }
+
+}, {
+  //STATICS
+
+  template: _.template('\
+    <div>\
+      <label for="<%= editorId %>"><%= title %></label>\
+      <div>\
+        <span data-editor></span>\
+        <div data-error></div>\
+        <div><%= help %></div>\
+      </div>\
+    </div>\
+  ', null, Form.templateSettings),
+
+  /**
+   * CSS class name added to the field when there is a validation error
+   */
+  errorClassName: 'error'
 
 });
 
@@ -1999,14 +2005,6 @@ Form.editors.NestedModel = Form.editors.Object.extend({
  */
 Form.editors.Date = Form.editors.Base.extend({
 
-  template: _.template($.trim('\
-    <div>\
-      <select data-type="date"><%= dates %></select>\
-      <select data-type="month"><%= months %></select>\
-      <select data-type="year"><%= years %></select>\
-    </div>\
-  '), null, Form.templateSettings),
-
   events: {
     'change select':  function() {
       this.updateHidden();
@@ -2059,6 +2057,9 @@ Form.editors.Date = Form.editors.Base.extend({
 
       this.value = date;
     }
+
+    //Template
+    this.template = options.template || this.constructor.template;
   },
 
   render: function() {
@@ -2086,11 +2087,11 @@ Form.editors.Date = Form.editors.Base.extend({
     });
 
     //Render the selects
-    var $el = $(this.template({
+    var $el = $($.trim(this.template({
       dates: datesOptions.join(''),
       months: monthsOptions.join(''),
       years: yearsOptions.join('')
-    }));
+    })));
 
     //Store references to selects
     this.$date = $el.find('[data-type="date"]');
@@ -2164,6 +2165,13 @@ Form.editors.Date = Form.editors.Base.extend({
 
 }, {
   //STATICS
+  template: _.template('\
+    <div>\
+      <select data-type="date"><%= dates %></select>\
+      <select data-type="month"><%= months %></select>\
+      <select data-type="year"><%= years %></select>\
+    </div>\
+  ', null, Form.templateSettings),
 
   //Whether to show month names instead of numbers
   showMonthNames: true,
@@ -2180,15 +2188,6 @@ Form.editors.Date = Form.editors.Base.extend({
  * @param {Number} [options.schema.minsInterval]  Interval between minutes. Default: 15
  */
 Form.editors.DateTime = Form.editors.Base.extend({
-
-  template: _.template($.trim('\
-    <div class="bbf-datetime">\
-      <div class="bbf-date-container" data-date></div>\
-      <select data-type="hour"><%= hours %></select>\
-      :\
-      <select data-type="min"><%= mins %></select>\
-    </div>\
-  '), null, Form.templateSettings),
 
   events: {
     'change select':  function() {
@@ -2228,6 +2227,9 @@ Form.editors.DateTime = Form.editors.Base.extend({
     this.dateEditor = new this.options.DateEditor(options);
 
     this.value = this.dateEditor.value;
+
+    //Template
+    this.template = options.template || this.constructor.template;
   },
 
   render: function() {
@@ -2247,10 +2249,10 @@ Form.editors.DateTime = Form.editors.Base.extend({
     });
 
     //Render time selects
-    var $el = $(this.template({
+    var $el = $($.trim(this.template({
       hours: hoursOptions.join(),
       mins: minsOptions.join()
-    }));
+    })));
 
     //Include the date editor
     $el.find('[data-date]').append(this.dateEditor.render().el);
@@ -2339,6 +2341,14 @@ Form.editors.DateTime = Form.editors.Base.extend({
 
 }, {
   //STATICS
+  template: _.template('\
+    <div class="bbf-datetime">\
+      <div class="bbf-date-container" data-date></div>\
+      <select data-type="hour"><%= hours %></select>\
+      :\
+      <select data-type="min"><%= mins %></select>\
+    </div>\
+  ', null, Form.templateSettings),
 
   //The date editor to use (constructor function, not instance)
   DateEditor: Form.editors.Date
