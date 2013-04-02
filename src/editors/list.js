@@ -228,9 +228,15 @@
      */
     validate: function() {
       if (!this.validators) return null;
+      
+      // call validate of Base editor
+      var errors = editors.Base.prototype.validate.call(this);
 
-      //Collect errors
-      var errors = _.map(this.items, function(item) {
+      // if any errors return them
+      if (errors) return errors;
+
+      //Collect items errors
+      errors = _.map(this.items, function(item) {
         return item.validate();
       });
 
