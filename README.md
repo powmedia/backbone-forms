@@ -223,13 +223,25 @@ If a form has a model attached to it, the initial values are taken from the mode
 
   This event is triggered whenever something happens that affects the result of `form.getValue()`.
 
+        form.on('change', function(form, field) {
+            console.log(field.key + ' changed to "' + field.getValue() + '".');
+        });
+
 - **`focus`**
 
   This event is triggered whenever this form gains focus, i.e. when the input of an editor within this form becomes the `document.activeElement`.
 
+        form.on('focus', function(form, field) {
+            console.log(field.key + ' gained focus.');
+        });
+
 - **`blur`**
 
   This event is triggered whenever this form loses focus, i.e. when the input of an editor within this form stops being the `document.activeElement`.
+
+        form.on('blur', function(form, field) {
+            console.log(field.key + ' lost focus.');
+        });
 
 - **`<key>:<event>`**
 
