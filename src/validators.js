@@ -12,7 +12,7 @@ Form.validators = (function() {
     regexp: 'Invalid',
     email: 'Invalid email address',
     url: 'Invalid URL',
-    match: 'Must match field "{{field}}"'
+    match: _.template('Must match field "<%= field %>"', null, Form.templateSettings)
   };
   
   validators.required = function(options) {
@@ -26,7 +26,7 @@ Form.validators = (function() {
       
       var err = {
         type: options.type,
-        message: Form.helpers.createTemplate(options.message, options)
+        message: _.isFunction(options.message) ? options.message(options) : options.message
       };
       
       if (value === null || value === undefined || value === false || value === '') return err;
@@ -46,7 +46,7 @@ Form.validators = (function() {
       
       var err = {
         type: options.type,
-        message: Form.helpers.createTemplate(options.message, options)
+        message: _.isFunction(options.message) ? options.message(options) : options.message
       };
       
       //Don't check empty values (add a 'required' validator for this)
@@ -89,7 +89,7 @@ Form.validators = (function() {
       
       var err = {
         type: options.type,
-        message: Form.helpers.createTemplate(options.message, options)
+        message: _.isFunction(options.message) ? options.message(options) : options.message
       };
       
       //Don't check empty values (add a 'required' validator for this)

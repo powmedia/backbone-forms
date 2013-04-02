@@ -1,7 +1,5 @@
 ;(function(Form, Field, editors) {
 
-    
-
 module('List', {
     setup: function() {
         this.sinon = sinon.sandbox.create();
@@ -11,6 +9,8 @@ module('List', {
         this.sinon.restore();
     }
 });
+
+var same = deepEqual;
 
 (function() {
     var Post = Backbone.Model.extend({
@@ -123,20 +123,12 @@ module('List', {
         same(list.items.length, 2);
     });
 
-    test('render() - sets the $list property to the template {{items}} tag', function() {
-        //Backup original template
-        var _template = Form.templates.list;
-
-        Form.setTemplates({
-            list: '<ul class="customList">{{items}}</div>'
-        });
-
-        var list = new List().render();
+    test('render() - sets the $list property to the data-items placeholder', function() {
+        var list = new List({
+            template: _.template('<ul class="customList" data-items></div>')
+        }).render();
 
         ok(list.$list.hasClass('customList'));
-
-        //Restore template
-        Form.templates.list = _template;
     });
 
     test('render() - creates items for each item in value array', function() {
@@ -164,13 +156,18 @@ module('List', {
     });
 
     test('addItem() - with no value', function() {
-        var list = new List().render();
+        var form = new Form();
+
+        var list = new List({
+            form: form
+        }).render();
 
         var spy = this.sinon.spy(List, 'Item');
 
         list.addItem();
 
         var expectedOptions = {
+            form: form,
             list: list,
             schema: list.schema,
             value: undefined,
@@ -189,13 +186,18 @@ module('List', {
     });
 
     test('addItem() - with value', function() {
-        var list = new List().render();
+        var form = new Form();
+        
+        var list = new List({
+            form: form
+        }).render();
 
         var spy = this.sinon.spy(List, 'Item');
 
         list.addItem('foo');
 
         var expectedOptions = {
+            form: form,
             list: list,
             schema: list.schema,
             value: 'foo',
@@ -216,7 +218,7 @@ module('List', {
 
         list.addItem('foo');
 
-        var $el = list.$('li:last input');
+        var $el = list.$('[data-items] div:last input');
 
         same($el.val(), 'foo');
     });
@@ -227,14 +229,14 @@ module('List', {
         list.addItem();
 
         same(list.items.length, 2);
-        same(list.$('li').length, 2);
+        same(list.$('[data-items] div').length, 2);
 
         var item = _.last(list.items);
 
         list.removeItem(item);
 
         same(list.items.length, 1);
-        same(list.$('li').length, 1);
+        same(list.$('[data-items] div').length, 1);
         same(_.indexOf(list.items, item), -1, 'Removed item is no longer in list.items');
     });
 
@@ -610,11 +612,15 @@ module('List.Item', {
     test('render() - creates the editor for the given listType', function() {
         var spy = this.sinon.spy(editors, 'Number');
 
+        var form = new Form();
+
         var list = new List({
+            form: form,
             schema: { itemType: 'Number' }
         }).render();
 
         var item = new List.Item({
+            form: form,
             list: list,
             value: 123,
             Editor: editors.Number
@@ -624,6 +630,7 @@ module('List.Item', {
         var editorOptions = spy.lastCall.args[0];
 
         same(editorOptions, {
+            form: form,
             key: '',
             schema: item.schema,
             value: 123,
@@ -633,25 +640,18 @@ module('List.Item', {
         });
     });
 
-    test('render() - creates the main element entirely from template, with editor in {{editor}} tag location', function() {
-        //Replace template
-        var _template = Form.templates.listItem;
-
-        Form.setTemplates({
-            listItem: '<div class="outer"><div class="inner">{{editor}}</div></div>'
-        })
-
+    test('render() - creates the main element entirely from template, with editor in data-editor placeholder', function() {
         //Create item
-        var item = new List.Item({ list: new List }).render();
+        var item = new List.Item({
+            template: _.template('<div class="outer"><div class="inner" data-editor></div></div>'),
+            list: new List
+        }).render();
 
         //Check there is no wrapper tag
         ok(item.$el.hasClass('outer'));
 
         //Check editor placed in correct location
         ok(item.editor.$el.parent().hasClass('inner'));
-
-        //Restore template
-        Form.templates.listItem = _template;
     });
 
     test('getValue() - returns editor value', function() {
@@ -726,7 +726,7 @@ module('List.Item', {
 
         item.setError({ type: 'errType', message: 'ErrMessage' });
 
-        ok(item.$el.hasClass(Form.classNames.error), 'Element has error class');
+        ok(item.$el.hasClass(List.Item.errorClassName), 'Element has error class');
         same(item.$el.attr('title'), 'ErrMessage');
     });
 
@@ -737,7 +737,7 @@ module('List.Item', {
 
         item.clearError();
 
-        same(item.$el.hasClass(Form.classNames.error), false, 'Error class is removed from element');
+        same(item.$el.hasClass(item.errorClassName), false, 'Error class is removed from element');
         same(item.$el.attr('title'), undefined);
     });
 })();
@@ -758,7 +758,9 @@ module('List.Modal', {
         this.sinon.stub(editors.List.Modal, 'ModalAdapter', MockModalAdapter);
 
         //Create editor to test
-        this.editor = new editors.List.Modal();
+        this.editor = new editors.List.Modal({
+            form: new Form()
+        });
         
         //Force nestedSchema because this is usually done by Object or NestedModel constructors
         this.editor.nestedSchema = {
@@ -807,7 +809,7 @@ test('renderSummary()', function() {
 
     editor.renderSummary();
 
-    equal(editor.$el.html(), '<div class=\"bbf-list-modal\">        Id: 1<br>Name: foo      </div>');
+    equal(editor.$el.html(), '<div>Id: 1<br>Name: foo</div>');
 });
 
 test('itemToString() - formats an object', function() {
@@ -1146,6 +1148,7 @@ module('List.Object', {
 
         //Create editor to test
         this.editor = new editors.List.Object({
+            form: new Form(),
             schema: {
                 subSchema: {
                     id: { type: 'Number' },
@@ -1189,6 +1192,7 @@ module('List.NestedModel', {
         });
 
         this.editor = new editors.List.NestedModel({
+            form: new Form(),
             schema: {
                 model: this.Model
             }
@@ -1209,6 +1213,7 @@ test('initialize() - sets the nestedSchema, when schema is object', function() {
     });
 
     var editor = new editors.List.NestedModel({
+        form: new Form(),
         schema: {
             model: Model
         }
@@ -1228,6 +1233,7 @@ test('initialize() - sets the nestedSchema, when schema is function', function()
     });
 
     var editor = new editors.List.NestedModel({
+        form: new Form(),
         schema: {
             model: Model
         }

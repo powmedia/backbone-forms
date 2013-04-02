@@ -1,347 +1,143 @@
-;(function(Form, Field, editors) {
+;(function(Form, Field) {
+
+var same = deepEqual;
 
 
+module('Field#initialize', {
+  setup: function() {
+    this.sinon = sinon.sandbox.create();
+  },
 
-module('Field');
-
-test("'schema' option - can be a string representing the type", function() {
-  var field = new Field({
-    key: 'age',
-    value: 30,
-    schema: 'Number'
-  }).render();
-
-  ok(field.editor instanceof editors.Number);
+  teardown: function() {
+    this.sinon.restore();
+  }
 });
 
-test("'schema.type' option - Specifies editor to use", function() {
-    var field = new Field({
-        value: 'test',
-        key: 'title',
-        schema: { type: 'Text' }
-    }).render();
-    
-    ok(field.editor instanceof editors.Text);
-    
-    var field = new Field({
-        value: 'test',
-        key: 'title',
-        schema: { type: 'Number' }
-    }).render();
-    
-    ok(field.editor instanceof editors.Number);
-});
-
-test("'schema.type' option - Defaults to 'Text'", function() {
-    var field = new Field({
-        value: 'test',
-        key: 'title',
-        schema: {}
-    }).render();
-    
-    ok(field.editor instanceof editors.Text);
-});
-
-test("'schema.title' option - Populates the <label>", function() {
-    var field = new Field({
-        value: 'test',
-        key: 'title',
-        schema: { title: 'Post Title' }
-    }).render();
-    
-    equal($('label', field.el).html(), 'Post Title');
-});
-
-test("'schema.title' option - Defaults to formatted version of 'key' option", function() {
-    var field = new Field({
-        value: 'test',
-        key: 'title',
-        schema: {}
-    }).render();
-    
-    equal($('label', field.el).html(), 'Title');
-    
-    var field = new Field({
-        value: 'test',
-        key: 'camelCasedTitle',
-        schema: {}
-    }).render();
-    
-    equal($('label', field.el).html(), 'Camel Cased Title');
-});
-
-test("'schema.title' false option - does not render a <label>", function() {
-    var field = new Field({
-        value: 'test',
-        key: 'title',
-        schema: { title: false }
-    }).render();
-
-    equal($('label', field.el).length, 0);
-});
-
-test("'schema.help' option - Specifies help text", function() {
-  var field = new Field({
+test('overrides defaults', function() {
+  var options = {
     key: 'title',
-    schema: { help: 'Some new help text' }
-  }).render();
-  
-  equal($('.bbf-help', field.el).html(), 'Some new help text');
-});
-
-test("'schema.fieldClass' option - Adds class names to field", function() {
-  var field = new Field({
-    key: 'title',
-    schema: { fieldClass: 'foo bar' }
-  }).render();
-  
-  ok(field.$el.hasClass('bbf-field'), 'Doesnt overwrite default classes');
-  ok(field.$el.hasClass('foo'), 'Adds first defined class');
-  ok(field.$el.hasClass('bar'), 'Adds other defined class');
-})
-
-test("'schema.fieldAttrs' option - Adds custom attributes", function() {
-  var field = new Field({
-    key: 'title',
-    schema: {
-      fieldAttrs: {
-        maxlength: 30,
-        type: 'foo',
-        custom: 'hello'
-      }
-    }
-  }).render();
-  
-  var $el = field.$el;
-  
-  equal($el.attr('maxlength'), 30);
-  equal($el.attr('type'), 'foo');
-  equal($el.attr('custom'), 'hello');
-})
-
-test("'schema.template' option - Specifies template", function() {
-  Form.templates.custom = Form.helpers.createTemplate('<div class="custom-field"></div>');
-  
-  var field = new Field({
-    key: 'title',
-    schema: { template: 'custom' }
-  }).render();
-  
-  ok(field.$el.hasClass('custom-field'));
-})
-
-test("'model' option - Populates the field with the given 'key' option from the model", function() {
-    var field = new Field({
-        model: new Post,
-        key: 'title',
-        idPrefix: null
-    }).render();
-    
-    equal($('#title', field.el).val(), 'Danger Zone!');
-});
-
-test("'value' option - Populates the field", function() {
-    var field = new Field({
-        value: 'test',
-        key: 'title'
-    }).render();
-    
-    equal($('#title', field.el).val(), 'test');
-});
-
-test("'idPrefix' option - Specifies editor's DOM element ID prefix", function() {
-    var field = new Field({
-        value: 'test',
-        key: 'title',
-        idPrefix: 'prefix_'
-    }).render();
-    
-    equal($('#prefix_title', field.el).length, 1);
-});
-
-
-test("commit() - Calls editor commit", function() {
-  expect(1);
-  
-  var field = new Field({
-    key: 'title'
-  }).render();
-  
-  //Mock
-  var called = false;
-  field.editor.commit = function() {
-    called = true;
+    template: _.template('<b></b>'),
+    errorClassName: 'ERR'
   };
 
-  field.commit();
-  
-  ok(called, 'Called editor.commit');
+  var field = new Field(options);
+
+  same(field.template, options.template);
+  same(field.errorClassName, 'ERR');
 });
 
-test("getValue() - Returns the new value", function() {
-    var field = new Field({
-        value: 'Initial Title',
-        key: 'title'
-    }).render();
-    
-    //Change field value
-    $('#title', field.el).val('New Title');
-    
-    equal(field.getValue(), 'New Title');
+test('stores important options', function() {
+  var options = {
+    key: 'foo',
+    form: new Form(),
+    model: new Backbone.Model(),
+    value: { foo: 1 },
+    idPrefix: 'foo'
+  }
+
+  var field = new Field(options);
+
+  same(field.key, options.key);
+  same(field.form, options.form);
+  same(field.model, options.model);
+  same(field.value, options.value);
+  same(field.idPrefix, options.idPrefix);
 });
 
-test("setValue() - Sets the new value", function() {
-    var field = new Field({
-        value: 'Initial Title',
-        key: 'title'
-    }).render();
-    
-    field.setValue('New Title');
-    
-    equal(field.getValue(), 'New Title');
+test('creates the schema', function() {
+  this.sinon.spy(Field.prototype, 'createSchema');
+
+  var options = {
+    key: 'title',
+    schema: { type: 'Text', title: 'Title' }
+  };
+
+  var field = new Field(options);
+
+  same(field.createSchema.callCount, 1);
+  same(field.createSchema.args[0][0], options.schema);
+  same(field.schema.type, Form.editors.Text);
+  same(field.schema.title, 'Title');
 });
 
-test("remove() - Removes the editor view", function() {
-    var counter = 0;
-    
-    //Mock out the remove method so we can tell how many times it was called
-    var _remove = Backbone.View.prototype.remove;
-    Backbone.View.prototype.remove = function() {
-        counter++;
-    }
-    
-    var field = new Field({
-        model: new Post,
-        key: 'title'
-    }).render();
-    
-    field.remove();
-    
-    //remove() should have been called twice (once for the editor and once for the field)
-    equal(counter, 2);
-    
-    //Restore remove method
-    Backbone.View.prototype.remove = _remove;
-});
-
-test('commit() - sets value to model', function() {
-  var post = new Post;
-
-  var field = new Field({
-    model: post,
-    key: 'title'
-  }).render();
-
-  //Change value
-  field.setValue('New Title');
-
-  field.commit();
-
-  equal(post.get('title'), 'New Title');
-});
-
-test('validate() - calls setError if validation fails', function() {
-  expect(3);
+test('creates the editor', function() {
+  this.sinon.spy(Field.prototype, 'createEditor');
 
   var field = new Field({
     key: 'title',
-    schema: { validators: ['required'] }
-  }).render();
-  
-  //Mocks
-  var calledSetError = false,
-      errMsg = null;
-      
-  field.setError = function(msg) {
-    calledSetError = true;
-    errMsg = msg;
-  }
-  
-  //Make validation fail
-  field.setValue(null);
-  var err = field.validate();
-  
-  //Test
-  ok(calledSetError, 'calledSetError');
-  deepEqual(err, {
-    type: 'required',
-    message: 'Required'
+    schema: { type: 'Text' }
   });
-  equal(errMsg, err.message);
+
+  same(field.createEditor.callCount, 1);
+  same(field.editor instanceof Form.editors.Text, true);
 });
 
-test('validate() - calls clearError if validation passes', function() {
-  expect(1);
 
-  var field = new Field({
-    key: 'title',
-    schema: { validators: ['required'] }
-  }).render();
-  
-  //Trigger error to appear
-  field.setValue(null);
-  field.validate();
-  
-  //Mocks
-  var calledClearError = false;
-  field.clearError = function(msg) {
-    calledClearError = true;
+
+module('Field#createSchema');
+
+test('converts strings to full schemas', function() {
+  var field = new Field({ key: 'title' });
+
+  var schema = field.createSchema('Text');
+
+  same(schema.type, Form.editors.Text);
+  same(schema.title, 'Title');
+});
+
+test('applies defaults', function() {
+  var field = new Field({ key: 'age' });
+
+  var schema = field.createSchema({ type: 'Number' });
+
+  same(schema.type, Form.editors.Number);
+  same(schema.title, 'Age');
+});
+
+
+
+module('Field#createEditor', {
+  setup: function() {
+    this.sinon = sinon.sandbox.create();
+  },
+
+  teardown: function() {
+    this.sinon.restore();
   }
-  
-  //Trigger validation to pass
-  field.setValue('ok');
-  field.validate();
-  
-  //Test
-  ok(calledClearError, 'calledClearError');
 });
 
-test('setError() - sets field error class name and error message', function() {
-  var errorClass = Form.classNames.error;
-
+test('creates a new instance of the Editor defined in the schema', function() {  
   var field = new Field({
-    key: 'title',
-    schema: { validators: ['required'] }
-  }).render();
-  
-  field.setError('foo');
-  ok($(field.el).hasClass(errorClass));
-  equal(field.$error.html(), 'foo');
+    key: 'password',
+    schema: { type: 'Password' },
+    form: new Form(),
+    idPrefix: 'foo',
+    model: new Backbone.Model(),
+    value: '123'
+  });
+
+  this.sinon.spy(Form.editors.Password.prototype, 'initialize');
+
+  var editor = field.createEditor(field.schema);
+
+  same(editor instanceof Form.editors.Password, true);
+
+  //Check correct options were passed
+  var optionsArg = Form.editors.Password.prototype.initialize.args[0][0];
+
+  same(optionsArg.schema, field.schema);
+  same(optionsArg.key, field.key);
+  same(optionsArg.id, field.createEditorId());
+  same(optionsArg.form, field.form);
+  same(optionsArg.model, field.model);
+  same(optionsArg.value, field.value);
 });
 
-test('setError() - returns if the editor is a "nested" type', function() {
-  var errorClass = Form.classNames.error;
 
-  var field = new Field({
-    key: 'nested',
-    schema: { type: 'Object', subSchema: { title: {} } }
-  }).render();
-  
-  field.setError('foo');
-  
-  equal($(field.el).hasClass(errorClass), false);
-});
 
-test('clearError() - clears error class and resets help message', function() {
-  var errorClass = Form.classNames.error;
-  
-  var field = new Field({
-    key: 'email',
-    schema: { validators: ['email'], help: 'Help message' }
-  }).render();
-  
-  //Trigger error message
-  field.setError('foo')
-  
-  //Clear error message
-  field.clearError();
-  
-  //Test
-  equal($(field.el).hasClass(errorClass), false);
-  equal(field.$help.html(), 'Help message');
-});
+module('Field#createEditorId');
 
-test('getId() - uses idPrefix if defined', function() {
+test('uses idPrefix if defined', function() {
   var stringPrefixField = new Field({
     idPrefix: 'foo_',
     key: 'name'
@@ -352,73 +148,400 @@ test('getId() - uses idPrefix if defined', function() {
     key: 'name'
   });
   
-  equal(numberPrefixField.getId(), '123name');
+  same(numberPrefixField.createEditorId(), '123name');
 });
 
-test('getId() - adds no prefix if idPrefix is null', function() {
+test('adds no prefix if idPrefix is null', function() {
   var field = new Field({
     idPrefix: null,
     key: 'name'
   });
   
-  equal(field.getId(), 'name');
+  same(field.createEditorId(), 'name');
 });
 
-test('getId() - uses model cid if no idPrefix is set', function() {
+test('uses model cid if no idPrefix is set', function() {
+  var model = new Backbone.Model();
+  model.cid = 'foo';
+
   var field = new Field({
     key: 'name',
-    model: { cid: 'foo' }
+    model: model
   });
   
-  equal(field.getId(), 'foo_name');
+  same(field.createEditorId(), 'foo_name');
 });
 
-test('getId() - adds no prefix if idPrefix is null and there is no model', function() {
+test('adds no prefix if idPrefix is null and there is no model', function() {
   var field = new Field({
     key: 'name'
   });
   
-  equal(field.getId(), 'name');
+  same(field.createEditorId(), 'name');
 });
 
-test('getId() - replaces periods with underscores', function() {
+test('replaces periods with underscores', function() {
   var field = new Field({
     key: 'user.name.first'
   });
 
-  equal(field.getId(), 'user_name_first');
+  same(field.createEditorId(), 'user_name_first');
 });
 
-test("keys can be paths to nested objects if using DeepModel", function() {
-  var model = new Backbone.DeepModel({
-    user: {
-      name: {
-        first: 'Stan',
-        last: 'Marsh'
-      }
-    }
+
+
+module('Field#createTitle');
+
+test('Transforms camelCased string to words', function() {
+  var field = new Field({ key: 'camelCasedString' });
+
+  same(field.createTitle(), 'Camel Cased String');
+});
+
+
+
+module('Field#templateData');
+
+test('returns schema and template data', function() {
+  var field = new Field({
+    key: 'author',
+    schema: { type: 'Text', help: 'Help!' }
   });
 
-  var field = new Field({
-    key: 'user.name.first',
-    model: model,
-    idPrefix: null
-  }).render();
+  var data = field.templateData();
 
-  field.setValue('foo');
-
-  var $input = field.$('#user_name_first');
-
-  equal(field.getValue(), 'foo');
-  equal($input.val(), 'foo');
-  equal($input.attr('name'), 'user_name_first');
-
-  //TODO: Test with DeepModel
-  field.commit();
-  equal(model.attributes.user.name.first, 'foo');
-  equal(model.get('user.name.first'), 'foo');
+  same(data.editorId, 'author');
+  same(data.help, 'Help!');
+  same(data.key, 'author');
+  same(data.title, 'Author');
 });
 
 
 
-})(Backbone.Form, Backbone.Form.Field, Backbone.Form.editors);
+module('Field#render', {
+  setup: function() {
+    this.sinon = sinon.sandbox.create();
+
+    this.sinon.stub(Form.editors.Text.prototype, 'render', function() {
+      this.setElement($('<input class="'+this.key+'" />'));
+      return this;
+    });
+  },
+
+  teardown: function() {
+    this.sinon.restore();
+  }
+});
+
+test('returns self', function() {
+  var field = new Field({
+    key: 'title',
+    schema: { type: 'Text' },
+    template: _.template('<div data-editor></div>')
+  });
+
+  var returnedValue = field.render();
+
+  same(returnedValue, field);
+});
+
+test('with data-editor and data-error placeholders', function() {
+  var field = new Field({
+    key: 'title',
+    schema: { type: 'Text' },
+    template: _.template('<div><%= title %><b data-editor></b><i data-error></i></div>', null, Form.templateSettings)
+  }).render();
+
+  same(field.$el.html(), 'Title<b data-editor=""><input class="title"></b><i data-error=""></i>');
+});
+
+
+
+module('Field#validate', {
+  setup: function() {
+    this.sinon = sinon.sandbox.create();
+  },
+
+  teardown: function() {
+    this.sinon.restore();
+  }
+});
+
+test('calls setError if validation fails', 4, function() {
+  var field = new Field({
+    key: 'title',
+    schema: { validators: ['required'] }
+  });
+
+  this.sinon.spy(field, 'setError');
+  
+  //Make validation fail
+  field.setValue(null);
+  var err = field.validate();
+  
+  //Test
+  same(field.setError.callCount, 1);
+  same(field.setError.args[0][0], 'Required');
+
+  same(err.type, 'required');
+  same(err.message, 'Required');
+});
+
+test('calls clearError if validation passes', 1, function() {
+  var field = new Field({
+    key: 'title',
+    schema: { validators: ['required'] }
+  });
+
+  this.sinon.spy(field, 'clearError');
+  
+  //Trigger error to appear
+  field.setValue(null);
+  field.validate();
+    
+  //Trigger validation to pass
+  field.setValue('ok');
+  field.validate();
+  
+  //Test
+  same(field.clearError.callCount, 1);
+});
+
+
+
+module('Field#setError');
+
+test('exits if field hasNestedForm', function() {
+  var field = new Field({ key: 'title' });
+
+  field.errorClassName = 'error';
+  field.editor.hasNestedForm = true;
+
+  field.render();
+  field.setError('foo');
+
+  same(field.$el.hasClass('error'), false);
+});
+
+test('adds error CSS class to field element', function() {
+  var field = new Field({ key: 'title' });
+
+  field.errorClassName = 'ERR';
+
+  field.render();
+  field.setError('foo');
+
+  same(field.$el.hasClass('ERR'), true);
+});
+
+test('adds error message to data-error placeholder', function() {
+  var field = new Field({ key: 'title' });
+
+  field.render();
+  field.setError('Some error');
+
+  same(field.$('[data-error]').html(), 'Some error');
+});
+
+
+
+module('Field#clearError');
+
+test('removes the error CSS class from field element', function() {
+  var field = new Field({ key: 'title' });
+
+  field.errorClassName = 'ERR';
+
+  //Set error
+  field.render();
+  field.setError('foo');
+
+  //Clear error
+  field.clearError();
+
+  //Test
+  same(field.$el.hasClass('ERR'), false);
+});
+
+test('removes error message from data-error placeholder', function() {
+  var field = new Field({ key: 'title' });
+
+  //Set error
+  field.render();
+  field.setError('Some error');
+
+  //Clear error
+  field.clearError();
+
+  //Test
+  same(field.$('[data-error]').html(), '');
+});
+
+
+
+module('Field#commit', {
+  setup: function() {
+    this.sinon = sinon.sandbox.create();
+  },
+
+  teardown: function() {
+    this.sinon.restore();
+  }
+});
+
+test('Calls editor commit', function() {
+  var field = new Field({
+    key: 'title',
+    model: new Backbone.Model()
+  });
+
+  this.sinon.spy(field.editor, 'commit');
+
+  field.commit();
+  
+  same(field.editor.commit.callCount, 1);
+});
+
+test('Returns error from validation', function() {
+  var field = new Field({
+    key: 'title',
+    model: new Backbone.Model()
+  });
+
+  this.sinon.stub(field.editor, 'commit', function() {
+    return { type: 'required' }
+  });
+
+  var result = field.commit();
+  
+  same(result, { type: 'required' });
+});
+
+
+
+module('Field#getValue', {
+  setup: function() {
+    this.sinon = sinon.sandbox.create();
+  },
+
+  teardown: function() {
+    this.sinon.restore();
+  }
+});
+
+test('Returns the value from the editor', function() {
+    var field = new Field({
+      value: 'The Title',
+      key: 'title'
+    }).render();
+
+    this.sinon.spy(field.editor, 'getValue');
+
+    var result = field.getValue();
+    
+    same(field.editor.getValue.callCount, 1);
+    same(result, 'The Title');
+});
+
+
+
+module('Field#setValue', {
+  setup: function() {
+    this.sinon = sinon.sandbox.create();
+  },
+
+  teardown: function() {
+    this.sinon.restore();
+  }
+});
+
+test('Passes the new value to the editor', function() {
+    var field = new Field({ key: 'title' });
+
+    this.sinon.spy(field.editor, 'setValue');
+    
+    field.setValue('New Title');
+    
+    same(field.editor.setValue.callCount, 1);
+    same(field.editor.setValue.args[0][0], 'New Title');
+});
+
+
+
+module('Field#focus', {
+  setup: function() {
+    this.sinon = sinon.sandbox.create();
+  },
+
+  teardown: function() {
+    this.sinon.restore();
+  }
+});
+
+test('Calls focus on editor', function() {
+  var field = new Field({ key: 'title' });
+
+  this.sinon.spy(field.editor, 'focus');
+  
+  field.focus();
+  
+  same(field.editor.focus.callCount, 1);
+});
+
+
+
+module('Field#blur', {
+  setup: function() {
+    this.sinon = sinon.sandbox.create();
+  },
+
+  teardown: function() {
+    this.sinon.restore();
+  }
+});
+
+test('Calls focus on editor', function() {
+  var field = new Field({ key: 'title' });
+
+  this.sinon.spy(field.editor, 'blur');
+  
+  field.blur();
+  
+  same(field.editor.blur.callCount, 1);
+});
+
+
+
+module('Field#remove', {
+  setup: function() {
+    this.sinon = sinon.sandbox.create();
+  },
+
+  teardown: function() {
+    this.sinon.restore();
+  }
+});
+
+test('Removes the editor', function() {
+  var field = new Field({ key: 'title' });
+
+  this.sinon.spy(field.editor, 'remove');
+
+  field.remove();
+
+  same(field.editor.remove.callCount, 1);
+});
+
+test('Removes self', function() {
+  var field = new Field({ key: 'title' });
+
+  this.sinon.spy(Backbone.View.prototype, 'remove');
+
+  field.remove();
+
+  //Called once for editor and once for field:
+  same(Backbone.View.prototype.remove.callCount, 2);
+});
+
+
+})(Backbone.Form, Backbone.Form.Field);

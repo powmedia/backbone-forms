@@ -1,185 +1,549 @@
-;(function(Form, Field, editors) {
+;(function(Form) {
+
+var same = deepEqual;
 
 
-module("Form", {
-    setup: function() {
-        this.sinon = sinon.sandbox.create();
-    },
+module('Form#initialize', {
+  setup: function() {
+    this.sinon = sinon.sandbox.create();
+  },
 
-    teardown: function() {
-        this.sinon.restore();
-    }
-});
-
-test("'schema' option - Schema object is used to create the form", function() {
-    var post = new Post(),
-        customSchema = { name: {} };
-
-    var form = new Form({
-        model: post,
-        schema: customSchema,
-        idPrefix: null
-    }).render();
-
-    //Check correct fields have been added
-    equal($('input', form.el).length, 1);
-    equal($('input:eq(0)', form.el).attr('id'), 'name');
-});
-
-test("'schema' option - If not present, the 'schema' attribute on the model is used", function() {
-    var post = new Post();
-
-    var form = new Form({
-        model: post
-    }).render();
-
-    //Stored correct schema object
-    equal(form.schema, post.schema);
-
-    //Check correct fields have been added
-    equal($('input', form.el).length, 3);
-    equal($('textarea', form.el).length, 1);
-});
-
-test('The schema on the model can be a function', function() {
-  var post = new Post,
-      _schema = post.schema;
-  
-  post.schema = function() {
-    return _schema;
+  teardown: function() {
+    this.sinon.restore();
   }
+});
+
+test('prefers schema from options over model', function() {
+  var model = new Backbone.Model();
+
+  model.schema = { fromModel: 'Text' };
+
+  var schema = { fromOptions: 'Text' };
+
+  var form = new Form({
+    schema: schema,
+    model: model
+  });
+
+  same(form.schema, schema);
+});
+
+test('prefers schema from options over model - when schema is a function', function() {
+  var model = new Backbone.Model();
+
+  model.schema = { fromModel: 'Text' };
+
+  var schema = function() {
+    return { fromOptions: 'Text' };
+  }
+
+  var form = new Form({
+    schema: schema,
+    model: model
+  });
+
+  same(form.schema, schema());
+});
+
+test('uses from model if provided', function() {
+  var model = new Backbone.Model();
+
+  model.schema = { fromModel: 'Text' };
+
+  var form = new Form({
+    model: model
+  });
+
+  same(form.schema, model.schema);
+});
+
+test('uses from model if provided - when schema is a function', function() {
+  var model = new Backbone.Model();
+  
+  model.schema = function() {
+    return { fromModel: 'Text' };
+  }
+
+  var form = new Form({
+    model: model
+  });
+
+  same(form.schema, model.schema());
+});
+
+test('stores important options', function() {
+  var options = {
+    model: new Backbone.Model(),
+    data: { foo: 1 },
+    idPrefix: 'foo'
+  }
+
+  var form = new Form(options);
+
+  same(form.model, options.model);
+  same(form.data, options.data);
+  same(form.idPrefix, options.idPrefix);
+});
+
+test('overrides defaults', function() {
+  var options = {
+    template: _.template('<b></b>'),
+    Fieldset: Form.Fieldset.extend(),
+    Field: Form.Field.extend(),
+    NestedField: Form.NestedField.extend()
+  };
+
+  var form = new Form(options);
+
+  same(form.template, options.template);
+  same(form.Fieldset, options.Fieldset);
+  same(form.Field, options.Field);
+  same(form.NestedField, options.NestedField);
+});
+
+test('uses template stored on form class', function() {
+  var oldTemplate = Form.template;
+
+  var newTemplate = _.template('<form><b data-fieldsets></b></div>');
+
+  Form.template = newTemplate;
+
+  var form = new Form();
+
+  same(form.template, newTemplate);
+
+  Form.template = oldTemplate;
+});
+
+test('uses fieldset and field classes stored on form class', function() {
+  var form = new Form();
+
+  same(form.Fieldset, Form.Fieldset);
+  same(form.Field, Form.Field);
+  same(form.NestedField, Form.NestedField);
+});
+
+test('sets selectedFields - with options.fields', function() {
+  var options = {
+    fields: ['foo', 'bar']
+  };
+
+  var form = new Form(options);
+
+  same(form.selectedFields, options.fields);
+});
+
+test('sets selectedFields - defaults to using all fields in schema', function() {
+  var form = new Form({
+    schema: { name: 'Text', age: 'Number' }
+  });
+
+  same(form.selectedFields, ['name', 'age']);
+});
+
+test('creates fields', function() {
+  this.sinon.spy(Form.prototype, 'createField');
+
+  var form = new Form({
+    schema: { name: 'Text', age: { type: 'Number' } }
+  });
+
+  same(form.createField.callCount, 2);
+  same(_.keys(form.fields), ['name', 'age']);
+
+  //Check createField() was called correctly
+  var args = form.createField.args[0],
+      keyArg = args[0],
+      schemaArg = args[1];
+
+  same(keyArg, 'name');
+  same(schemaArg, 'Text');
+
+  var args = form.createField.args[1],
+      keyArg = args[0],
+      schemaArg = args[1];
+
+  same(keyArg, 'age');
+  same(schemaArg, { type: 'Number' });
+});
+
+test('creates fieldsets - with "fieldsets" option', function() {
+  this.sinon.spy(Form.prototype, 'createFieldset');
+
+  var form = new Form({
+    schema: {
+      name: 'Text',
+      age: { type: 'Number' },
+      password: 'Password'
+    },
+    fieldsets: [
+      ['name', 'age'],
+      ['password']
+    ]
+  });
+
+  same(form.createFieldset.callCount, 2);
+  same(form.fieldsets.length, 2);
+
+  //Check createFieldset() was called correctly
+  var args = form.createFieldset.args[0],
+      schemaArg = args[0];
+
+  same(schemaArg, ['name', 'age']);
+
+  var args = form.createFieldset.args[1],
+      schemaArg = args[0];
+
+  same(schemaArg, ['password']);
+});
+
+test('creates fieldsets - defaults to all fields in one fieldset', function() {  
+  this.sinon.spy(Form.prototype, 'createFieldset');
+
+  var form = new Form({
+    schema: {
+      name: 'Text',
+      age: { type: 'Number' },
+      password: 'Password'
+    }
+  });
+
+  same(form.createFieldset.callCount, 1);
+  same(form.fieldsets.length, 1);
+
+  //Check createFieldset() was called correctly
+  var args = form.createFieldset.args[0],
+      schemaArg = args[0];
+
+  same(schemaArg, ['name', 'age', 'password']);
+});
+
+
+
+module('Form#createFieldset', {
+  setup: function() {
+    this.sinon = sinon.sandbox.create();
+  },
+
+  teardown: function() {
+    this.sinon.restore();
+  }
+});
+
+test('creates a new instance of the Fieldset defined on the form', function() {
+  var MockFieldset = Backbone.View.extend();
   
   var form = new Form({
-    model: post
-  }).render();
-  
-  
+    schema: { name: 'Text', age: 'Number' },
+    Fieldset: MockFieldset
+  });
 
-  //Stored correct schema object
-  equal(form.schema, _schema);
+  this.sinon.spy(MockFieldset.prototype, 'initialize');
+
+  var fieldset = form.createFieldset(['name', 'age']);
+
+  same(fieldset instanceof MockFieldset, true);
+
+  //Check correct options were passed
+  var optionsArg = MockFieldset.prototype.initialize.args[0][0];
+
+  same(optionsArg.schema, ['name', 'age']);
+  same(optionsArg.fields, form.fields);
 });
 
-test("'model' option - Populates the form", function() {
-    var post = new Post();
 
-    var form = new Form({
-        model: post,
-        idPrefix: null
-    }).render();
 
-    equal($('#title', form.el).val(), 'Danger Zone!');
-    equal($('#author', form.el).val(), 'Sterling Archer');
+module('Form#createField', {
+  setup: function() {
+    this.sinon = sinon.sandbox.create();
+
+    this.MockField = Backbone.View.extend({
+      editor: new Backbone.View()
+    });
+  },
+
+  teardown: function() {
+    this.sinon.restore();
+  }
 });
 
-test("'data' option - Used if no model provided. Populates the form.", function() {
-    var data = {
-        title: 'Yuuup', 
-        author: 'Lana Kang'
-    };
+test('creates a new instance of the Field defined on the form - with model', function() {
+  var MockField = this.MockField;
 
-    var form = new Form({
-        data: data,
-        schema: {
-            title: {},
-            author: {}
-        }
-    }).render();
+  var form = new Form({
+    Field: MockField,
+    idPrefix: 'foo',
+    model: new Backbone.Model()
+  });
 
-    equal($('#title', form.el).val(), 'Yuuup');
-    equal($('#author', form.el).val(), 'Lana Kang');
+  this.sinon.spy(MockField.prototype, 'initialize');
+
+  var field = form.createField('name', { type: 'Text' });
+
+  same(field instanceof MockField, true);
+
+  //Check correct options were passed
+  var optionsArg = MockField.prototype.initialize.args[0][0];
+
+  same(optionsArg.form, form);
+  same(optionsArg.key, 'name');
+  same(optionsArg.schema, { type: 'Text' });
+  same(optionsArg.idPrefix, 'foo');
+  same(optionsArg.model, form.model);
 });
 
-test("'fields' option - Allows choosing and ordering fields from the schema", function() {
-    var form = new Form({
-        model: new Post,
-        fields: ['author', 'slug'],
-        idPrefix: null
-    }).render();
-
-    equal($('input:eq(0)', form.el).attr('id'), 'author');
-    equal($('input:eq(1)', form.el).attr('id'), 'slug');
-});
-
-test("'fieldsets' option - Allows choosing and ordering of fields within fieldsets", function () {
-    var form = new Form({
-        model: new Post,
-        fieldsets: [
-            ['slug', 'author'],
-            {'legend': 'Content Section', 'fields': ['title', 'content']}
-        ],
-        idPrefix: null
-    }).render();
-
-    ok(form.$(':nth-child(1)').is('fieldset'), 'First element of the form is not a fieldset');
-    equal(form.$('fieldset:nth-child(1) input:eq(0)').attr('id'), 'slug');
-    equal(form.$('fieldset:nth-child(1) input:eq(1)').attr('id'), 'author');
-    equal(form.$('fieldset:nth-child(2) legend').html(), 'Content Section');
-    equal(form.$('fieldset:nth-child(2) input:eq(0)').attr('id'), 'title');
-    equal(form.$('fieldset:nth-child(2) textarea').attr('id'), 'content');
-});
-
-test("'idPrefix' option - Adds prefix to all DOM element IDs", function() {
-    var form = new Form({
-        model: new Post,
-        idPrefix: 'form_'
-    }).render();
-
-    equal($('#form_title', form.el).length, 1);
-});
-
-test("'template' option - Specifies template", function() {
-  Form.templates.customForm = Form.helpers.createTemplate('<div class="custom-form"><form>{{fieldsets}}</form></div>');
+test('creates a new instance of the Field defined on the form - without model', function() {
+  var MockField = this.MockField;
   
   var form = new Form({
-    model: new Post,
-    template: 'customForm'
-  }).render();
+    Field: MockField,
+    idPrefix: 'foo',
+    data: { name: 'John' }
+  });
+
+  this.sinon.spy(MockField.prototype, 'initialize');
+
+  var field = form.createField('name', { type: 'Text' });
+
+  same(field instanceof MockField, true);
+
+  //Check correct options were passed
+  var optionsArg = MockField.prototype.initialize.args[0][0];
+
+  same(optionsArg.value, 'John');
+});
+
+test('adds listener to all editor events', function() {
+  var MockField = this.MockField;
   
-  ok(form.$el.hasClass('custom-form'));
-})
+  var form = new Form({
+    Field: MockField,
+    idPrefix: 'foo',
+    data: { name: 'John' }
+  });
+
+  this.sinon.stub(form, 'handleEditorEvent', function() {});
+
+  var field = form.createField('name', { type: 'Text' });
+
+  //Trigger events on editor to check they call the handleEditorEvent callback
+  field.editor.trigger('focus');
+  field.editor.trigger('blur');
+  field.editor.trigger('change');
+  field.editor.trigger('foo');
+
+  same(form.handleEditorEvent.callCount, 4);
+});
 
 
-test("validate() - validates the form and returns an errors object", function () {
+
+module('Form#handleEditorEvent', {
+  setup: function() {
+    this.sinon = sinon.sandbox.create();
+  },
+
+  teardown: function() {
+    this.sinon.restore();
+  }
+});
+
+test('triggers editor events on the form, prefixed with the key name', function() {
+  var form = new Form(),
+      editor = new Form.Editor({ key: 'title' });
+
+  var spy = this.sinon.spy();
+
+  form.on('all', spy);
+
+  form.handleEditorEvent('foo', editor);
+
+  same(spy.callCount, 1);
+
+  var args = spy.args[0],
+      eventArg = args[0],
+      formArg = args[1],
+      editorArg = args[2];
+
+  same(eventArg, 'title:foo');
+  same(formArg, form);
+  same(editorArg, editor);
+});
+
+test('triggers general form events', function() {
+  var form = new Form(),
+      editor = new Form.Editor({ key: 'title' });
+
+  //Change
+  var changeSpy = this.sinon.spy()
+
+  form.on('change', changeSpy);
+  form.handleEditorEvent('change', editor);
+
+  same(changeSpy.callCount, 1);
+  same(changeSpy.args[0][0], form);
+
+  //Focus
+  var focusSpy = this.sinon.spy()
+
+  form.on('focus', focusSpy);
+  form.handleEditorEvent('focus', editor);
+
+  same(focusSpy.callCount, 1);
+  same(focusSpy.args[0][0], form);
+
+  //Blur
+  var blurSpy = this.sinon.spy()
+
+  form.hasFocus = true;
+
+  form.on('blur', blurSpy);
+  form.handleEditorEvent('blur', editor);
+
+  setTimeout(function() {
+    same(blurSpy.callCount, 1);
+    same(blurSpy.args[0][0], form);
+  }, 0);
+});
+
+
+
+module('Form#render', {
+  setup: function() {
+    this.sinon = sinon.sandbox.create();
+
+    this.sinon.stub(Form.editors.Text.prototype, 'render', function() {
+      this.setElement($('<input class="'+this.key+'" />'));
+      return this;
+    });
+
+    this.sinon.stub(Form.Field.prototype, 'render', function() {
+      this.setElement($('<field class="'+this.key+'" />'));
+      return this;
+    });
+
+    this.sinon.stub(Form.Fieldset.prototype, 'render', function() {
+      this.setElement($('<fieldset></fieldset>'));
+      return this;
+    });
+  },
+
+  teardown: function() {
+    this.sinon.restore();
+  }
+});
+
+test('returns self', function() {
+  var form = new Form({
+    schema: { name: 'Text', password: 'Password' },
+    template: _.template('<div data-fieldsets></div>')
+  });
+
+  var returnedValue = form.render();
+
+  same(returnedValue, form);
+});
+
+test('with data-editors="*" placeholder, on inner element', function() {
+  var form = new Form({
+    schema: { name: 'Text', password: 'Password' },
+    template: _.template('<div><b data-editors="*"></b></div>')
+  }).render();
+
+  same(form.$el.html(), '<b data-editors="*"><input class="name"><input class="password"></b>');
+});
+
+test('with data-editors="x,y" placeholder, on outermost element', function() {
+  var form = new Form({
+    schema: { name: 'Text', password: 'Password' },
+    template: _.template('<b data-editors="name,password"></b>')
+  }).render();
+
+  same(form.$el.html(), '<input class="name"><input class="password">');
+});
+
+test('with data-fields="*" placeholder, on inner element', function() {
+  var form = new Form({
+    schema: { name: 'Text', password: 'Password' },
+    template: _.template('<div><b data-fields="*"></b></div>')
+  }).render();
+
+  same(form.$el.html(), '<b data-fields="*"><field class="name"></field><field class="password"></field></b>');
+});
+
+test('with data-fields="x,y" placeholder, on outermost element', function() {
+  var form = new Form({
+    schema: { name: 'Text', password: 'Password' },
+    template: _.template('<b data-fields="name,password"></b>')
+  }).render();
+
+  same(form.$el.html(), '<field class="name"></field><field class="password"></field>');
+});
+
+test('with data-fieldsets placeholder, on inner element', function() {
+  var form = new Form({
+    schema: { name: 'Text', password: 'Password' },
+    template: _.template('<div><b data-fieldsets></b></div>')
+  }).render();
+
+  same(form.$el.html(), '<b data-fieldsets=""><fieldset></fieldset></b>');
+});
+
+test('with data-fieldsets placeholder, on outermost element', function() {
+  var form = new Form({
+    schema: { name: 'Text', password: 'Password' },
+    template: _.template('<b data-fieldsets></b>')
+  }).render();
+
+  same(form.$el.html(), '<fieldset></fieldset>');
+});
+
+
+
+module('Form#validate');
+
+test('validates the form and returns an errors object', function () {
   var form = new Form({
     schema: {
       title: {validators: ['required']}
     }
-  }).render();
+  });
   
   var err = form.validate();
 
-  equal(err.title.type, 'required');
-  equal(err.title.message, 'Required');
+  same(err.title.type, 'required');
+  same(err.title.message, 'Required');
 
   form.setValue({title: 'A valid title'});
-  equal(form.validate(), null);
+  same(form.validate(), null);
 });
 
-test('validate() - returns model validation errors', function() {
-  var post = new Post;
+test('returns model validation errors', function() {
+  var model = new Backbone.Model;
   
-  post.validate = function() {
+  model.validate = function() {
     return 'FOO';
   };
   
   var form = new Form({
-    model: post,
+    model: model,
     schema: {
       title: {validators: ['required']}
     }
-  }).render();
+  });
   
   var err = form.validate();
   
-  deepEqual(err, {
-    _others: ['FOO']
-  });
+  same(err._others, ['FOO']);
 });
 
-test('commit() - returns validation errors', function() {
+
+
+module('Form#commit');
+
+test('returns validation errors', function() {
   var form = new Form({
-      model: new Post
-  }).render();
+    model: new Backbone.Model()
+  });
   
   //Mock
   form.validate = function() {
@@ -188,432 +552,245 @@ test('commit() - returns validation errors', function() {
   
   var err = form.commit();
   
-  equal(err.foo, 'bar');
+  same(err.foo, 'bar');
 });
 
-test('commit() - returns model validation errors', function() {
-  var post = new Post;
+test('returns model validation errors', function() {
+  var model = new Backbone.Model();
   
-  post.validate = function() {
+  model.validate = function() {
     return 'ERROR';
   };
   
   var form = new Form({
-      model: post
-  }).render();
+    model: model
+  });
   
   var err = form.commit();
   
-  deepEqual(err, {
-    _others: ['ERROR']
-  });
+  same(err._others, ['ERROR']);
 });
 
-test("commit() - updates the model with form values", function() {
-    var post = new Post();
-
-    var form = new Form({
-        model: post,
-        idPrefix: null
-    }).render();
-
-    //Change the title in the form and save
-    $('#title', form.el).val('New title');        
-    form.commit();
-
-    equal(post.get('title'), 'New title');
-});
-
-test('commit() - triggers model change once', function() {
-  var post = new Post;
+test('updates the model with form values', function() {
+  var model = new Backbone.Model();
 
   var form = new Form({
-      model: post
-  }).render();
+    model: model,
+    idPrefix: null,
+    schema: { title: 'Text' }
+  });
+
+  //Change the title in the form and save
+  form.setValue('title', 'New title');
+  form.commit();
+
+  same(model.get('title'), 'New title');
+});
+
+test('triggers model change once', function() {
+  var model = new Backbone.Model();
+
+  var form = new Form({
+    model: model,
+    schema: { title: 'Text', author: 'Text' }
+  });
   
   //Count change events
   var timesCalled = 0;
-  post.on('change', function() {
+  model.on('change', function() {
     timesCalled ++;
   });
   
-  form.fields.title.setValue('New title');
-  form.fields.author.setValue('New author');
+  form.setValue('title', 'New title');
+  form.setValue('author', 'New author');
   form.commit();
   
-  equal(timesCalled, 1);
+  same(timesCalled, 1);
 });
 
-test('commit() - can silence change event with options', function() {
-    var post = new Post();
+test('can silence change event with options', function() {
+  var model = new Backbone.Model();
 
-    var form = new Form({
-        model: post
-    }).render();
-      
-    //Count change events
-    var timesCalled = 0;
-    post.on('change', function() {
-        timesCalled ++;
-    });
+  var form = new Form({
+    model: model,
+    schema: { title: 'Text', author: 'Text' }
+  });
+    
+  //Count change events
+  var timesCalled = 0;
+  model.on('change', function() {
+    timesCalled ++;
+  });
 
-    form.fields.title.setValue('New title');
+  form.setValue('title', 'New title');
 
-    form.commit({ silent: true });
+  form.commit({ silent: true });
 
-    equal(timesCalled, 0);
+  same(timesCalled, 0);
 });
 
-test("getValue() - returns form value as an object", function() {
-    var data = {
-        title: 'Yuuup', 
-        author: 'Lana Kang'
-    };
 
-    var form = new Form({
-        data: data,
-        schema: {
-            title: {},
-            author: {}
-        }
-    }).render();
 
-    //Change the title in the form and save
-    $('#title', form.el).val('Nooope');
-    
-    var result = form.getValue();
-    
-    equal(result.title, 'Nooope');
-    equal(result.author, 'Lana Kang');
-});
+module('Form#getValue');
 
-test("getValue(key) - returns specific field value", function() {
-    var form = new Form({
-        model: new Post
-    }).render();
-    
-    equal(form.getValue('title'), 'Danger Zone!');
-});
+test('returns form value as an object', function() {
+  var data = {
+    title: 'Nooope', 
+    author: 'Lana Kang'
+  };
 
-test("setValue() - updates form field values", function() {
-    var form = new Form({
-        model: new Post
-    }).render();
-    
-    form.setValue({
-        title: 'Danger Zone 2',
-        slug: 'danger-zone-2'
-    });
-    
-    //Check changed fields
-    equal(form.fields.title.getValue(), 'Danger Zone 2');
-    equal(form.fields.slug.getValue(), 'danger-zone-2');
-    
-    //Check fields that shouldn't have changed
-    equal(form.fields.author.getValue(), 'Sterling Archer');
-    
-    //Check callig with key, val as arguments
-    form.setValue('title', 'Danger Zone 3');
-    
-    //Check changed fields
-    equal(form.fields.title.getValue(), 'Danger Zone 3');
-});
-
-test("setValue() - ignore attributes not in form", function() {
-    var form = new Form({
-        model: new Post
-    }).render();
-    
-    form.setValue({
-      title: 'Danger Zone 3',
-      notInForm: 'Not in my form you don\'t'
-    });
-    
-    //Check changed fields
-    equal(form.fields.title.getValue(), 'Danger Zone 3');
-    
-    //Check fields that shouldn't have changed
-    equal(form.fields.author.getValue(), 'Sterling Archer');
-});
-
-test("focus() - gives focus to form and its first editor", function() {
-    var form = new Form({
-        model: new Post
-    }).render();
-    $(document.body).append(form.el);
-
-    form.focus();
-    
-    ok(form.fields.title.editor.hasFocus);
-    ok(form.hasFocus);
-
-    form.remove();
-});
-
-test("focus() - triggers the 'focus' event", function() {
-    var form = new Form({
-        model: new Post
-    }).render();
-    $(document.body).append(form.el);
-    
-    var spy = this.sinon.spy();
-    
-    form.on('focus', spy);
-    
-    form.focus();
-    
-    ok(spy.called);
-    ok(spy.calledWith(form));
-
-    form.remove();
-});
-
-test("blur() - removes focus from the form and its first editor", function() {
-    var form = new Form({
-        model: new Post
-    }).render();
-    
-    form.focus();
-    
-    form.blur();
-    
-    stop();
-    setTimeout(function() {
-      ok(!form.fields.title.editor.hasFocus);
-      ok(!form.hasFocus);
-      
-      start();
-    }, 0);
-});
-
-test("blur() - triggers the 'blur' event", function() {
-    var form = new Form({
-        model: new Post
-    }).render();
-    $(document.body).append(form.el);
-
-    form.focus();
-    
-    var spy = this.sinon.spy();
-    
-    form.on('blur', spy);
-    
-    form.blur();
-    
-    stop();
-    setTimeout(function() {
-      ok(spy.called);
-      ok(spy.calledWith(form));
-      
-      start();
-    }, 0);
-
-    form.remove();
-});
-
-test("setValue() - updates only field from schema", function() {
-    var form = new Form({
-        model: new Post
-    }).render();
-    
-    form.setValue({
-        title: 'Danger Zone 2',
-        fakeField: 'FakeTest'
-    });
-    
-    // Check undefined schema field
-    equal(typeof form.fields.fakeField, 'undefined');
-});
-
-test("remove() - removes all child views and itself", function() {
-    var counter = 0;
-    
-    //Mock out the remove method so we can tell how many times it was called
-    var _remove = Backbone.View.prototype.remove;
-    Backbone.View.prototype.remove = function() {
-        counter++;
+  var form = new Form({
+    data: data,
+    schema: {
+      title: {},
+      author: {}
     }
-    
-    var form = new Form({
-        model: new Post,
-        fields: ['author', 'title', 'content', 'slug']
-    }).render();
-    
-    form.remove();
-    
-    //remove() should have been called twice for each field (editor and field)
-    //and once for the form itself
-    equal(counter, 9);
-    
-    //Restore remove method
-    Backbone.View.prototype.remove = _remove;
+  }).render();
+  
+  var result = form.getValue();
+  
+  same(result.title, 'Nooope');
+  same(result.author, 'Lana Kang');
 });
 
-test("'change' event - bubbles up from editor", function() {
-    var form = new Form({
-        model: new Post
-    }).render();
-    
-    var spy = this.sinon.spy();
-        
-    form.on('change', spy);
-    
-    form.fields.title.editor.trigger('change', form.fields.title.editor);
-    
-    ok(spy.called);
-    ok(spy.calledWith(form));
-});
+test('returns specific field value', function() {
+  var data = {
+    title: 'Danger Zone!', 
+    author: 'Sterling Archer'
+  };
 
-test("'focus' event - bubbles up from editor when form doesn't have focus", function() {
-    var form = new Form({
-        model: new Post
-    }).render();
-    $(document.body).append(form.el);
-    
-    var spy = this.sinon.spy();
-    
-    form.on('focus', spy);
-    
-    form.fields.title.editor.focus();
-    
-    ok(spy.called);
-    ok(spy.calledWith(form));
-
-    form.remove();
-});
-
-test("'focus' event - doesn't bubble up from editor when form already has focus", function() {
-    var form = new Form({
-        model: new Post
-    }).render();
-    
-    form.focus();
-    
-    var spy = this.sinon.spy();
-    
-    form.on('focus', spy);
-    
-    form.fields.title.editor.focus();
-    
-    ok(!spy.called);
-});
-
-test("'blur' event - bubbles up from editor when form has focus and we're not focusing on another one of the form's editors", function() {
-    var form = new Form({
-        model: new Post
-    }).render();
-    $(document.body).append(form.el);
-    
-    form.focus();
-    
-    var spy = this.sinon.spy();
-    
-    form.on('blur', spy);
-    
-    form.fields.title.editor.blur();
-    
-    stop();
-    setTimeout(function() {
-        ok(spy.called);
-        ok(spy.calledWith(form));
-        
-        start();
-    }, 0);
-
-    form.remove();
-});
-
-test("'blur' event - doesn't bubble up from editor when form has focus and we're focusing on another one of the form's editors", function() {
-    var form = new Form({
-        model: new Post
-    }).render();
-    
-    form.focus();
-    
-    var spy = this.sinon.spy();
-    
-    form.on('blur', spy);
-    
-    form.fields.title.editor.blur();
-    form.fields.author.editor.focus();
-    
-    stop();
-    setTimeout(function() {
-        ok(!spy.called);
-        
-        start();
-    }, 0);
-});
-
-test("'blur' event - doesn't bubble up from editor when form doesn't have focus", function() {
-    var form = new Form({
-        model: new Post
-    }).render();
-    
-    var spy = this.sinon.spy();
-    
-    form.on('blur', spy);
-    
-    form.fields.title.editor.blur();
-    
-    stop();
-    setTimeout(function() {
-        ok(!spy.called);
-        
-        start();
-    }, 0);
-});
-
-test("Events bubbling up from editors", function() {
-    var form = new Form({
-        model: new Post
-    }).render();
-    
-    var spy = this.sinon.spy();
-    
-    form.on('title:whatever', spy);
-    
-    form.fields.title.editor.trigger('whatever', form.fields.title.editor);
-    
-    ok(spy.called);
-    ok(spy.calledWith(form, form.fields.title.editor));
-});
-
-test('Allows access to field views', function() {
-    var form = new Form({
-        model: new Post
-    }).render();
-    
-    ok(form.fields.title instanceof Form.Field);
-    ok(form.fields.author instanceof Form.Field);
-});
-
-test("Supports picking nested fields from within Objects", function() {
-    var Model = Backbone.Model.extend({
-        schema: {
-            title: {},
-            author: { type: 'Object', subSchema: {
-                id: { type: 'Number' },
-                name: { type: 'Object', subSchema: {
-                    first: {},
-                    last: {}
-                }}
-            }}
-        }
-    });
-    
-    var form = new Form({
-        model: new Model,
-        fields: ['title', 'author.id', 'author.name.last']
-    }).render();
-    
-    deepEqual(_.keys(form.fields), ['title', 'author.id', 'author.name.last']);
-    
-    ok(form.fields['title'].editor instanceof Form.editors.Text);
-    ok(form.fields['author.id'].editor instanceof Form.editors.Number);
-    ok(form.fields['author.name.last'].editor instanceof Form.editors.Text);
+  var form = new Form({
+    data: data,
+    schema: {
+      title: {},
+      author: {}
+    }
+  }).render();
+  
+  same(form.getValue('title'), 'Danger Zone!');
 });
 
 
 
-})(Backbone.Form, Backbone.Form.Field, Backbone.Form.editors);
+module('Form#getEditor');
+
+test('returns the editor for a given key', function() {
+  var form = new Form({
+    schema: { title: 'Text', author: 'Text' }
+  });
+
+  same(form.getEditor('author'), form.fields.author.editor);
+});
+
+
+
+module('Form#focus', {
+  setup: function() {
+    this.sinon = sinon.sandbox.create();
+  },
+
+  teardown: function() {
+    this.sinon.restore();
+  }
+});
+
+test('Sets focus on the first editor in the form', function() {
+  var form = new Form({
+    schema: { title: 'Text', author: 'Text' },
+    fieldsets: [
+      ['title'], ['author']
+    ]
+  });
+
+  this.sinon.spy(form.fields.title.editor, 'focus');
+
+  form.focus();
+
+  same(form.fields.title.editor.focus.callCount, 1);
+});
+
+
+
+module('Form#blur', {
+  setup: function() {
+    this.sinon = sinon.sandbox.create();
+  },
+
+  teardown: function() {
+    this.sinon.restore();
+  }
+});
+
+test('Removes focus from the currently focused editor', function() {
+  var form = new Form({
+    schema: { title: 'Text', author: 'Text' }
+  });
+
+  form.hasFocus = true;
+
+  form.fields.author.editor.hasFocus = true;
+
+  this.sinon.spy(form.fields.author.editor, 'blur');
+
+  form.blur();
+
+  same(form.fields.author.editor.blur.callCount, 1);
+});
+
+
+
+module('Form#trigger');
+
+test('Sets hasFocus to true on focus event', function() {
+  var form = new Form();
+
+  form.hasFocus = false;
+
+  form.trigger('focus');
+
+  same(form.hasFocus, true);
+});
+
+test('Sets hasFocus to false on blur event', function() {
+  var form = new Form();
+
+  form.hasFocus = true;
+
+  form.trigger('blur');
+
+  same(form.hasFocus, false);
+});
+
+
+
+module('Form#remove', {
+  setup: function() {
+    this.sinon = sinon.sandbox.create();
+
+    this.sinon.spy(Form.Fieldset.prototype, 'remove');
+    this.sinon.spy(Form.Field.prototype, 'remove');
+  },
+
+  teardown: function() {
+    this.sinon.restore();
+  }
+});
+
+test('removes fieldsets, fields and self', function() {  
+  var form = new Form({
+    schema: { title: 'Text', author: 'Text' },
+    fieldsets: [
+      ['title', 'author']
+    ]
+  });
+  
+  form.remove();
+  
+  same(Form.Fieldset.prototype.remove.callCount, 1);
+
+  //Field.remove is called twice each because is called directly and through fieldset
+  //This is done in case fieldsets are not used, e.g. fields are included directly through template
+  same(Form.Field.prototype.remove.callCount, 4);
+});
+
+})(Backbone.Form);

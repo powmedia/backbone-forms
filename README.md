@@ -9,7 +9,7 @@ A flexible, customisable form framework for Backbone.JS applications.
 - Custom HTML templates
 
 
-###Example
+###Example: Quickly generate forms to edit models
 
     var User = Backbone.Model.extend({
         schema: {
@@ -30,6 +30,49 @@ A flexible, customisable form framework for Backbone.JS applications.
     }).render();
 
     $('body').append(form.el);
+
+
+###Example: Fully customise forms and templates
+
+HTML:
+```
+<script id="formTemplate" type="text/html">
+    <form>
+        <h1>New User</h1>
+        
+        <h2>Main Info</h2>
+        <div data-fields="title,name,birthday"></div>
+        
+        <h2>Account Info</h2>
+        <h3>Email</h3>
+        <div data-fields="email"></div>
+
+        <h3>Password</h3>
+        <p>Must be at least 8 characters long</p>
+        <div data-editors="password"></div>
+    </form>
+</script>
+```
+
+Javascript:
+```js
+var UserForm = Backbone.Form.extend({
+    template: _.template($('#formTemplate').html()),
+    
+    schema: {
+        title:      { type: 'Select', options: ['Mr', 'Mrs', 'Ms'] },
+        name:       'Text',
+        email:      { validators: ['required', 'email'] },
+        password:   'Password'
+    }
+});
+
+var form = new UserForm({
+    model: new User()
+}).render();
+
+$('body').append(form.el);
+```
 
 
 ###Live editable demos
@@ -71,19 +114,18 @@ A flexible, customisable form framework for Backbone.JS applications.
 ##Installation
 
 Dependencies:
-- [Backbone 0.9.10](http://documentcloud.github.com/backbone/)
+- [Backbone 1.0](http://documentcloud.github.com/backbone/)
 
 
-Include backbone-forms.js and backbone-forms.css:
+Include backbone-forms.js:
 
     <script src="backbone-forms/distribution/backbone-forms.min.js"></script>
-    <link href="backbone-forms/distribution/templates/default.css" rel="stylesheet" />
 
 Optionally, you can include the extra editors, for example the List editor:
 
     <script src="backbone-forms/distribution/editors/list.min.js"></script>
 
-To use a custom template pack, e.g. Bootstrap, include the relevants file after backbone-forms.js. You can remove `templates/default.css` and replace it with `templates/bootstrap.css`.
+To use a custom template pack, e.g. Bootstrap, include the relevant files after backbone-forms.js.
 
     <script src="backbone-forms/distribution/templates/bootstrap.js"></script>
     <link href="backbone-forms/distribution/templates/bootstrap.css" rel="stylesheet" />
@@ -99,7 +141,9 @@ Note there is also a distribution file for RequireJS / AMD.
 <a name="usage"/>
 ##Usage
 
-Define a `schema` attribute on your Backbone models. The schema keys should match the attributes that get set on the model. `type` defaults to `Text`.  When you don't need to specify any options you can use the shorthand by passing the editor name as a string.
+Forms are generated from a `schema`, which can be defined on the form itself or on a model.
+
+The schema keys should match the attributes that get set on the model. `type` defaults to `Text`.  When you don't need to specify any options you can use the shorthand by passing the editor name as a string.
 See [schema definition](#schema-definition) for more information.
 
     var User = Backbone.Model.extend({
@@ -144,18 +188,18 @@ To update a field after the form has been rendered, use `form.setValue`:
 You can create a form without tying it to a model. For example, to create a form for a simple object of data:
 
     var form = new Backbone.Form({
-        //Data to populate the form with
-        data: {
-          id: 123,
-          name: 'Rod Kimble',
-          password: 'cool beans'
-        },
-
         //Schema
         schema: {
             id:         'Number',
             name:       'Text',
             password:   'Password'
+        },
+        
+        //Data to populate the form with
+        data: {
+          id: 123,
+          name: 'Rod Kimble',
+          password: 'cool beans'
         }
     }).render();
 
@@ -203,16 +247,7 @@ If a form has a model attached to it, the initial values are taken from the mode
 
 - **`template`**
 
-  The template name to use for generating the form. E.g.:
-
-        Backbone.Form.setTemplates({
-            customForm: '<form class="custom-form">{{fieldsets}}</form>'
-        });
-
-        var form = new Backbone.Form({
-            model: user,
-            template: 'customForm'
-        });
+  The compiled template to use for generating the form.
 
 
 ###Events
@@ -263,10 +298,6 @@ The following default editors are included:
 - [Date](#editor-date)
 - [DateTime](#editor-datetime)
 - [List](#editor-list) An editable list of items (included in a separate file: `distribution/editors/list.min.js`)
-
-
-NOTE:
-The old jQuery editors were broken with the changes to Backbone 0.9.10. As they were unsupported for some time they have been removed. However they are still available on previous tags (e.g. backbone-forms v0.10.0) so can be imported from there.
 
 
 
@@ -711,49 +742,34 @@ If you model provides a `validate` method, then this will be called when you cal
 
 Backbone-Forms comes with a few options for rendering HTML. To use another template pack, such as for [Bootstrap](http://twitter.github.com/bootstrap/), just include the .js file from the `templates` folder, after including `backbone-forms.js`.
 
-You can use your own custom templates by passing your templates (in Mustache syntax) and class names into `Backbone.Form.setTemplates()`. See the included templates files for examples.
+You can change all the default templates by copying the included `distribution/templates/bootstrap.js` file and adapting that. Placeholders are the `data-xxx` attributes, e.g. `data-fieldsets`, `data-fields` and `data-editors`.
 
-You can include different field templates and then use them on a field-by-field basis by passing the `template` option in the field schema.
+To customise forms even further you can pass in a template to the form instance or extend the form and specify the template, e.g.:
 
-####Example
+```
+<script id="formTemplate" type="text/html">
+    <form>
+        <h1>Edit profile</h1>
+        
+        <h2>Name</h2>
+        <div data-editors="firstName"><!-- firstName editor will be added here --></div>
+        <div data-editors="lastName"><!-- lastName editor will be added here --></div>
+        
+        <h2>Password</h2>
+        <div data-editors="password">
+            <div class="notes">Must be at least 7 characters:</div>
+            <!-- password editor will be added here -->
+        </div>
+    </form>
+</script>
+```
 
-    var templates = {
-      //field is the default template used
-      field: '\
-        <div>\
-          <label for="{{id}}">{{title}}</label>\
-          <div>{{editor}}</div> <div>{{help}}</div>\
-        </div>\
-      ',
-
-      //Specify an alternate field template
-      altField: '<div class="altField">{{editor}}</div>'
-    };
-
-    //Set the templates
-    Backbone.Form.setTemplates(templates, classNames);
-
-    var schema = {
-      age: { type: 'Number' }, //Uses the default 'field' template
-      name: { template: 'altField' } //Uses the 'altField' template
-    };
-
-
-####Using custom variables in templates
-You can pass your own template data into templates by overriding the Form.Field.renderingContext method with your own locals.
-
-[Back to top](#top)
-
-
-
-<a name="changing-template-compiler"/>
-###Changing template compiler
-
-You can use your own custom template compiler, like [Handlebars](http://handlebarsjs.com/) by passing a reference to the function into `Backbone.Form.setTemplateCompiler()`.
-
-####Example
-
-    Backbone.Form.setTemplateCompiler(Handlebars.compile);
+```js
+var form = new Backbone.Form({
+    template: _.template($('#formTpl').html()),
+    model: new UserModel() //defined elsewhere
+});
+```
 
 [Back to top](#top)
 
@@ -905,6 +921,8 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 ##Changelog
 
 ###master
+- Update for Backbone 1.0
+- Overhaul templating and rendering
 - List: Set focus on newly added simple list items
 - Select: Add option group support (khepin)
 

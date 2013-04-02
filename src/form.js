@@ -3,391 +3,440 @@
 //FORM
 //==================================================================================================
 
-var Form = (function() {
+var Form = Backbone.View.extend({
 
-  return Backbone.View.extend({
+  /**
+   * Constructor
+   * 
+   * @param {Object} [options.schema]
+   * @param {Backbone.Model} [options.model]
+   * @param {Object} [options.data]
+   * @param {String[]|Object[]} [options.fieldsets]
+   * @param {String[]} [options.fields]
+   * @param {String} [options.idPrefix]
+   * @param {Form.Field} [options.Field]
+   * @param {Form.Fieldset} [options.Fieldset]
+   * @param {Function} [options.template]
+   */
+  initialize: function(options) {
+    var self = this;
 
-    hasFocus: false,
+    options = options || {};
 
-    /**
-     * Creates a new form
-     *
-     * @param {Object} options
-     * @param {Model} [options.model]                 Model the form relates to. Required if options.data is not set
-     * @param {Object} [options.data]                 Date to populate the form. Required if options.model is not set
-     * @param {String[]} [options.fields]             Fields to include in the form, in order
-     * @param {String[]|Object[]} [options.fieldsets] How to divide the fields up by section. E.g. [{ legend: 'Title', fields: ['field1', 'field2'] }]
-     * @param {String} [options.idPrefix]             Prefix for editor IDs. By default, the model's CID is used.
-     * @param {String} [options.template]             Form template key/name
-     * @param {String} [options.fieldsetTemplate]     Fieldset template key/name
-     * @param {String} [options.fieldTemplate]        Field template key/name
-     *
-     * @return {Form}
-     */
-    initialize: function(options) {
-      //Check templates have been loaded
-      if (!Form.templates.form) throw new Error('Templates not loaded');
+    //Find the schema to use
+    var schema = this.schema = (function() {
+      //Prefer schema from options
+      if (options.schema) return _.result(options, 'schema');
 
-      //Get the schema
-      this.schema = (function() {
-        if (options.schema) return options.schema;
-
-        var model = options.model;
-        if (!model) throw new Error('Could not find schema');
-
-        if (_.isFunction(model.schema)) return model.schema();
-
-        return model.schema;
-      })();
-
-      //Option defaults
-      options = _.extend({
-        template: 'form',
-        fieldsetTemplate: 'fieldset',
-        fieldTemplate: 'field'
-      }, options);
-
-      //Determine fieldsets
-      if (!options.fieldsets) {
-        var fields = options.fields || _.keys(this.schema);
-
-        options.fieldsets = [{ fields: fields }];
+      //Then schema on model
+      var model = options.model;
+      if (model && model.schema) {
+        return (_.isFunction(model.schema)) ? model.schema() : model.schema;
       }
 
-      //Store main attributes
-      this.options = options;
-      this.model = options.model;
-      this.data = options.data;
-      this.fields = {};
-    },
-
-    /**
-     * Renders the form and all fields
-     */
-    render: function() {
-      var self = this,
-          options = this.options,
-          template = Form.templates[options.template];
-
-      //Create el from template
-      var $form = Form.helpers.parseHTML(template({
-        fieldsets: '<b class="bbf-tmp"></b>'
-      }));
-
-      //Render fieldsets
-      var $fieldsetContainer = $('.bbf-tmp', $form);
-
-      _.each(options.fieldsets, function(fieldset) {
-        $fieldsetContainer.append(self.renderFieldset(fieldset));
-      });
-
-      $fieldsetContainer.children().unwrap();
-
-      //Set the template contents as the main element; removes the wrapper element
-      this.setElement($form);
-
-      if (this.hasFocus) this.trigger('blur', this);
-
-      return this;
-    },
-
-    /**
-     * Renders a fieldset and the fields within it
-     *
-     * Valid fieldset definitions:
-     * ['field1', 'field2']
-     * { legend: 'Some Fieldset', fields: ['field1', 'field2'] }
-     *
-     * @param {Object|Array} fieldset     A fieldset definition
-     *
-     * @return {jQuery}                   The fieldset DOM element
-     */
-    renderFieldset: function(fieldset) {
-      var self = this,
-          template = Form.templates[this.options.fieldsetTemplate],
-          schema = this.schema,
-          getNested = Form.helpers.getNested;
-
-      //Normalise to object
-      if (_.isArray(fieldset)) {
-        fieldset = { fields: fieldset };
+      //Then built-in schema
+      if (self.schema) {
+        return (_.isFunction(self.schema)) ? self.schema() : self.schema;
       }
 
-      //Concatenating HTML as strings won't work so we need to insert field elements into a placeholder
-      var $fieldset = Form.helpers.parseHTML(template(_.extend({}, fieldset, {
-        legend: '<b class="bbf-tmp-legend"></b>',
-        fields: '<b class="bbf-tmp-fields"></b>'
-      })));
+      //Fallback to empty schema
+      return {};
+    })();
 
-      //Set legend
-      if (fieldset.legend) {
-        $fieldset.find('.bbf-tmp-legend').replaceWith(fieldset.legend);
-      }
-      //or remove the containing tag if there isn't a legend
-      else {
-        $fieldset.find('.bbf-tmp-legend').parent().remove();
-      }
+    //Store important data
+    _.extend(this, _.pick(options, 'model', 'data', 'idPrefix'));
 
-      var $fieldsContainer = $('.bbf-tmp-fields', $fieldset);
+    //Override defaults
+    var constructor = this.constructor;
+    this.template = options.template || constructor.template;
+    this.Fieldset = options.Fieldset || constructor.Fieldset;
+    this.Field = options.Field || constructor.Field;
+    this.NestedField = options.NestedField || constructor.NestedField;
 
-      //Render fields
-      _.each(fieldset.fields, function(key) {
-        //Get the field schema
-        var itemSchema = (function() {
-          //Return a normal key or path key
-          if (schema[key]) return schema[key];
+    //Check which fields will be included (defaults to all)
+    var selectedFields = this.selectedFields = options.fields || _.keys(schema);
 
-          //Return a nested schema, i.e. Object
-          var path = key.replace(/\./g, '.subSchema.');
-          return getNested(schema, path);
-        })();
+    //Create fields
+    var fields = this.fields = {};
 
-        if (!itemSchema) throw "Field '"+key+"' not found in schema";
+    _.each(selectedFields, function(key) {
+      var fieldSchema = schema[key];
+      fields[key] = this.createField(key, fieldSchema);
+    }, this);
 
-        //Create the field
-        var field = self.fields[key] = self.createField(key, itemSchema);
+    //Create fieldsets
+    var fieldsetSchema = options.fieldsets || [selectedFields],
+        fieldsets = this.fieldsets = [];
 
-        //Render the fields with editors, apart from Hidden fields
-        var fieldEl = field.render().el;
+    _.each(fieldsetSchema, function(itemSchema) {
+      this.fieldsets.push(this.createFieldset(itemSchema));
+    }, this);
+  },
 
-        field.editor.on('all', function(event) {
-          // args = ["change", editor]
-          var args = _.toArray(arguments);
-          args[0] = key + ':' + event;
-          args.splice(1, 0, this);
-          // args = ["key:change", this=form, editor]
+  /**
+   * Creates a Fieldset instance
+   *
+   * @param {String[]|Object[]} schema       Fieldset schema
+   *
+   * @return {Form.Fieldset}
+   */
+  createFieldset: function(schema) {
+    var options = {
+      schema: schema,
+      fields: this.fields
+    };
 
-          this.trigger.apply(this, args);
-        }, self);
+    return new this.Fieldset(options);
+  },
 
-        field.editor.on('change', function() {
-          this.trigger('change', self);
-        }, self);
+  /**
+   * Creates a Field instance
+   *
+   * @param {String} key
+   * @param {Object} schema       Field schema
+   *
+   * @return {Form.Field}
+   */
+  createField: function(key, schema) {
+    var options = {
+      form: this,
+      key: key,
+      schema: schema,
+      idPrefix: this.idPrefix
+    };
 
-        field.editor.on('focus', function() {
-          if (this.hasFocus) return;
-          this.trigger('focus', this);
-        }, self);
-        field.editor.on('blur', function() {
-          if (!this.hasFocus) return;
+    if (this.model) {
+      options.model = this.model;
+    } else if (this.data) {
+      options.value = this.data[key];
+    } else {
+      options.value = null;
+    }
+
+    var field = new this.Field(options);
+
+    this.listenTo(field.editor, 'all', this.handleEditorEvent);
+
+    return field;
+  },
+
+  /**
+   * Callback for when an editor event is fired.
+   * Re-triggers events on the form as key:event and triggers additional form-level events
+   *
+   * @param {String} event
+   * @param {Editor} editor
+   */
+  handleEditorEvent: function(event, editor) {
+    //Re-trigger editor events on the form
+    var formEvent = editor.key+':'+event;
+
+    this.trigger.call(this, formEvent, this, editor);
+
+    //Trigger additional events
+    switch (event) {
+      case 'change':
+        this.trigger('change', this);
+        break;
+
+      case 'focus':
+        if (!this.hasFocus) this.trigger('focus', this);
+        break;
+
+      case 'blur':
+        if (this.hasFocus) {
+          //TODO: Is the timeout etc needed?
           var self = this;
           setTimeout(function() {
-            if (_.find(self.fields, function(field) { return field.editor.hasFocus; })) return;
-            self.trigger('blur', self);
-          }, 0);
-        }, self);
-
-        if (itemSchema.type !== 'Hidden') {
-          $fieldsContainer.append(fieldEl);
-        }
-      });
-
-      $fieldsContainer = $fieldsContainer.children().unwrap();
-
-      return $fieldset;
-    },
-
-    /**
-     * Renders a field and returns it
-     *
-     * @param {String} key            The key for the field in the form schema
-     * @param {Object} schema         Field schema
-     *
-     * @return {Field}                The field view
-     */
-    createField: function(key, schema) {
-      schema.template = schema.template || this.options.fieldTemplate;
-
-      var options = {
-        form: this,
-        key: key,
-        schema: schema,
-        idPrefix: this.options.idPrefix,
-        template: this.options.fieldTemplate
-      };
-
-      if (this.model) {
-        options.model = this.model;
-      } else if (this.data) {
-        options.value = this.data[key];
-      } else {
-        options.value = null;
-      }
-
-      return new Form.Field(options);
-    },
-
-    /**
-     * Validate the data
-     *
-     * @return {Object} Validation errors
-     */
-    validate: function() {
-      var self = this,
-          fields = this.fields,
-          model = this.model,
-          errors = {};
-
-      //Collect errors from schema validation
-      _.each(fields, function(field) {
-        var error = field.validate();
-        if (error) {
-          errors[field.key] = error;
-        }
-      });
-
-      //Get errors from default Backbone model validator
-      if (model && model.validate) {
-        var modelErrors = model.validate(this.getValue());
-
-        if (modelErrors) {
-          var isDictionary = _.isObject(modelErrors) && !_.isArray(modelErrors);
-
-          //If errors are not in object form then just store on the error object
-          if (!isDictionary) {
-            errors._others = errors._others || [];
-            errors._others.push(modelErrors);
-          }
-
-          //Merge programmatic errors (requires model.validate() to return an object e.g. { fieldKey: 'error' })
-          if (isDictionary) {
-            _.each(modelErrors, function(val, key) {
-              //Set error on field if there isn't one already
-              if (self.fields[key] && !errors[key]) {
-                self.fields[key].setError(val);
-                errors[key] = val;
-              }
-
-              else {
-                //Otherwise add to '_others' key
-                errors._others = errors._others || [];
-                var tmpErr = {};
-                tmpErr[key] = val;
-                errors._others.push(tmpErr);
-              }
+            var focusedField = _.find(self.fields, function(field) {
+              return field.editor.hasFocus;
             });
-          }
+
+            if (!focusedField) self.trigger('blur', self);
+          }, 0);
         }
-      }
-
-      return _.isEmpty(errors) ? null : errors;
-    },
-
-    /**
-     * Update the model with all latest values.
-     *
-     * @param {Object} [options]  Options to pass to Model#set (e.g. { silent: true })
-     *
-     * @return {Object}  Validation errors
-     */
-    commit: function(options) {
-      //Validate
-      var errors = this.validate();
-      if (errors) return errors;
-
-      //Commit
-      var modelError;
-
-      var setOptions = _.extend({
-        error: function(model, e) {
-          modelError = e;
-        }
-      }, options);
-
-      this.model.set(this.getValue(), setOptions);
-      
-      if (modelError) return modelError;
-    },
-
-    /**
-     * Get all the field values as an object.
-     * Use this method when passing data instead of objects
-     *
-     * @param {String} [key]    Specific field value to get
-     */
-    getValue: function(key) {
-      //Return only given key if specified
-      if (key) return this.fields[key].getValue();
-
-      //Otherwise return entire form
-      var values = {};
-      _.each(this.fields, function(field) {
-        values[field.key] = field.getValue();
-      });
-
-      return values;
-    },
-
-    /**
-     * Update field values, referenced by key
-     * @param {Object|String} key     New values to set, or property to set
-     * @param val                     Value to set
-     */
-    setValue: function(prop, val) {
-      var data = {};
-      if (typeof prop === 'string') {
-        data[prop] = val;
-      } else {
-        data = prop;
-      }
-
-      var key;
-      for (key in this.schema) {
-        if (data[key] !== undefined) {
-          this.fields[key].setValue(data[key]);
-        }
-      }
-    },
-
-    focus: function() {
-      if (this.hasFocus) return;
-
-      var fieldset = this.options.fieldsets[0];
-      if (fieldset) {
-        var field;
-        if (_.isArray(fieldset)) {
-          field = fieldset[0];
-        }
-        else {
-          field = fieldset.fields[0];
-        }
-        if (field) {
-          this.fields[field].editor.focus();
-        }
-      }
-    },
-
-    blur: function() {
-      if (!this.hasFocus) return;
-
-      var focusedField = _.find(this.fields, function(field) { return field.editor.hasFocus; });
-
-      if (focusedField) focusedField.editor.blur();
-    },
-
-    /**
-     * Override default remove function in order to remove embedded views
-     */
-    remove: function() {
-      var fields = this.fields;
-
-      for (var key in fields) {
-        fields[key].remove();
-      }
-
-      Backbone.View.prototype.remove.call(this);
-    },
-
-    trigger: function(event) {
-      if (event === 'focus') {
-        this.hasFocus = true;
-      }
-      else if (event === 'blur') {
-        this.hasFocus = false;
-      }
-
-      return Backbone.View.prototype.trigger.apply(this, arguments);
+        break;
     }
-  });
+  },
 
-})();
+  render: function() {
+    var self = this,
+        fields = this.fields;
+
+    //Render form
+    var $form = $($.trim(this.template(_.result(this, 'templateData'))));
+
+    //Render standalone editors
+    $form.find('[data-editors]').add($form).each(function(i, el) {
+      var $container = $(el),
+          selection = $container.attr('data-editors');
+
+      if (_.isUndefined(selection)) return;
+
+      //Work out which fields to include
+      var keys = (selection == '*')
+        ? self.selectedFields || _.keys(fields)
+        : selection.split(',');
+
+      //Add them
+      _.each(keys, function(key) {
+        var field = fields[key];
+
+        $container.append(field.editor.render().el);
+      });
+    });
+
+    //Render standalone fields
+    $form.find('[data-fields]').add($form).each(function(i, el) {
+      var $container = $(el),
+          selection = $container.attr('data-fields');
+
+      if (_.isUndefined(selection)) return;
+
+      //Work out which fields to include
+      var keys = (selection == '*')
+        ? self.selectedFields || _.keys(fields)
+        : selection.split(',');
+
+      //Add them
+      _.each(keys, function(key) {
+        var field = fields[key];
+
+        $container.append(field.render().el);
+      });
+    });
+
+    //Render fieldsets
+    $form.find('[data-fieldsets]').add($form).each(function(i, el) {
+      var $container = $(el),
+          selection = $container.attr('data-fieldsets');
+
+      if (_.isUndefined(selection)) return;
+
+      _.each(self.fieldsets, function(fieldset) {
+        $container.append(fieldset.render().el);
+      });
+    });
+
+    //Set the main element
+    this.setElement($form);
+
+    return this;
+  },
+
+  /**
+   * Validate the data
+   *
+   * @return {Object}       Validation errors
+   */
+  validate: function() {
+    var self = this,
+        fields = this.fields,
+        model = this.model,
+        errors = {};
+
+    //Collect errors from schema validation
+    _.each(fields, function(field) {
+      var error = field.validate();
+      if (error) {
+        errors[field.key] = error;
+      }
+    });
+
+    //Get errors from default Backbone model validator
+    if (model && model.validate) {
+      var modelErrors = model.validate(this.getValue());
+
+      if (modelErrors) {
+        var isDictionary = _.isObject(modelErrors) && !_.isArray(modelErrors);
+
+        //If errors are not in object form then just store on the error object
+        if (!isDictionary) {
+          errors._others = errors._others || [];
+          errors._others.push(modelErrors);
+        }
+
+        //Merge programmatic errors (requires model.validate() to return an object e.g. { fieldKey: 'error' })
+        if (isDictionary) {
+          _.each(modelErrors, function(val, key) {
+            //Set error on field if there isn't one already
+            if (fields[key] && !errors[key]) {
+              fields[key].setError(val);
+              errors[key] = val;
+            }
+
+            else {
+              //Otherwise add to '_others' key
+              errors._others = errors._others || [];
+              var tmpErr = {};
+              tmpErr[key] = val;
+              errors._others.push(tmpErr);
+            }
+          });
+        }
+      }
+    }
+
+    return _.isEmpty(errors) ? null : errors;
+  },
+
+  /**
+   * Update the model with all latest values.
+   *
+   * @param {Object} [options]  Options to pass to Model#set (e.g. { silent: true })
+   *
+   * @return {Object}  Validation errors
+   */
+  commit: function(options) {
+    //Validate
+    var errors = this.validate();
+    if (errors) return errors;
+
+    //Commit
+    var modelError;
+
+    var setOptions = _.extend({
+      error: function(model, e) {
+        modelError = e;
+      }
+    }, options);
+
+    this.model.set(this.getValue(), setOptions);
+    
+    if (modelError) return modelError;
+  },
+
+  /**
+   * Get all the field values as an object.
+   * Use this method when passing data instead of objects
+   *
+   * @param {String} [key]    Specific field value to get
+   */
+  getValue: function(key) {
+    //Return only given key if specified
+    if (key) return this.fields[key].getValue();
+
+    //Otherwise return entire form
+    var values = {};
+    _.each(this.fields, function(field) {
+      values[field.key] = field.getValue();
+    });
+
+    return values;
+  },
+
+  /**
+   * Update field values, referenced by key
+   *
+   * @param {Object|String} key     New values to set, or property to set
+   * @param val                     Value to set
+   */
+  setValue: function(prop, val) {
+    var data = {};
+    if (typeof prop === 'string') {
+      data[prop] = val;
+    } else {
+      data = prop;
+    }
+
+    var key;
+    for (key in this.schema) {
+      if (data[key] !== undefined) {
+        this.fields[key].setValue(data[key]);
+      }
+    }
+  },
+
+  /**
+   * Returns the editor for a given field key
+   *
+   * @param {String} key
+   *
+   * @return {Editor}
+   */
+  getEditor: function(key) {
+    var field = this.fields[key];
+    if (!field) throw 'Field not found: '+key;
+
+    return field.editor;
+  },
+
+  /**
+   * Gives the first editor in the form focus
+   */
+  focus: function() {
+    if (this.hasFocus) return;
+
+    //Get the first field
+    var fieldset = this.fieldsets[0],
+        field = fieldset.getFieldAt(0);
+
+    if (!field) return;
+
+    //Set focus
+    field.editor.focus();
+  },
+
+  /**
+   * Removes focus from the currently focused editor
+   */
+  blur: function() {
+    if (!this.hasFocus) return;
+
+    var focusedField = _.find(this.fields, function(field) {
+      return field.editor.hasFocus;
+    });
+
+    if (focusedField) focusedField.editor.blur();
+  },
+
+  /**
+   * Manages the hasFocus property
+   *
+   * @param {String} event
+   */
+  trigger: function(event) {
+    if (event === 'focus') {
+      this.hasFocus = true;
+    }
+    else if (event === 'blur') {
+      this.hasFocus = false;
+    }
+
+    return Backbone.View.prototype.trigger.apply(this, arguments);
+  },
+
+  /**
+   * Override default remove function in order to remove embedded views
+   *
+   * TODO: If editors are included directly with data-editors="x", they need to be removed
+   * May be best to use XView to manage adding/removing views
+   */
+  remove: function() {
+    _.each(this.fieldsets, function(fieldset) {
+      fieldset.remove();
+    });
+
+    _.each(this.fields, function(field) {
+      field.remove();
+    });
+
+    Backbone.View.prototype.remove.call(this);
+  }
+
+}, {
+
+  //STATICS
+  template: _.template('\
+    <form data-fieldsets></form>\
+  ', null, this.templateSettings),
+
+  templateSettings: {
+    evaluate: /<%([\s\S]+?)%>/g, 
+    interpolate: /<%=([\s\S]+?)%>/g, 
+    escape: /<%-([\s\S]+?)%>/g
+  },
+
+  editors: {}
+
+});
