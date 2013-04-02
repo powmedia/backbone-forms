@@ -161,19 +161,19 @@ var Form = (function() {
         }, self);
 
         field.editor.on('change', function() {
-          this.trigger('change', self, field.editor);
+          this.trigger('change', self, field);
         }, self);
 
         field.editor.on('focus', function() {
           if (this.hasFocus) return;
-          this.trigger('focus', this, field.editor);
+          this.trigger('focus', this, field);
         }, self);
         field.editor.on('blur', function() {
           if (!this.hasFocus) return;
           var self = this;
           setTimeout(function() {
             if (_.find(self.fields, function(field) { return field.editor.hasFocus; })) return;
-            self.trigger('blur', self, field.editor);
+            self.trigger('blur', self, field);
           }, 0);
         }, self);
 
