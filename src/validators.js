@@ -29,7 +29,7 @@ Form.validators = (function() {
         message: Form.helpers.createTemplate(options.message, options)
       };
       
-      if (value === null || value === undefined || value === false || value === '') return err;
+      if (value === null || value === undefined || value === false || value === '' || value.length === 0) return err;
     };
   };
   
