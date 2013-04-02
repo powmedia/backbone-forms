@@ -746,7 +746,7 @@ You can change all the default templates by copying the included `distribution/t
 
 To customise forms even further you can pass in a template to the form instance or extend the form and specify the template, e.g.:
 
-```html
+```
 <script id="formTemplate" type="text/html">
     <form>
         <h1>Edit profile</h1>
