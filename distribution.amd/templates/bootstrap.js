@@ -61,6 +61,11 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
       <button type="button" class="btn bbf-del" data-action="remove">&times;</button>\
     </li>\
   ');
+  
+
+  Form.editors.List.Object.template = Form.editors.List.NestedModel.template = _.template('\
+    <div class="bbf-list-modal"><%= summary %></div>\
+  ');
 
 
 });

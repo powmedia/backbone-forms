@@ -592,7 +592,7 @@
     //STATICS
     template: _.template('\
       <div><%= summary %></div>\
-    '),
+    ', null, Form.templateSettings),
 
     //The modal adapter that creates and manages the modal dialog.
     //Defaults to BootstrapModal (http://github.com/powmedia/backbone.bootstrap-modal)
@@ -644,7 +644,7 @@
       
       //Otherwise use the model
       return new (schema.model)(value).toString();
-    },
+    }
   });
 
 })(Backbone.Form);

@@ -79,12 +79,10 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
       <div class="bbf-editor-container" data-editor></div>\
     </li>\
   ');
+  
 
-
-  Form.editors.List.Modal.template = _.template('\
-    <div class="bbf-list-modal">\
-      <%= summary %>\
-    </div>\
+  Form.editors.List.Object.template = Form.editors.List.NestedModel.template = _.template('\
+    <div class="bbf-list-modal"><%= summary %></div>\
   ');
 
 
