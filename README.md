@@ -920,7 +920,7 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 <a name="changelog"/>
 ##Changelog
 
-###master
+###0.12.0
 - Update for Backbone 1.0
 - Overhaul templating and rendering
 - List: Set focus on newly added simple list items
