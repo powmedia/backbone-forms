@@ -72,6 +72,17 @@ test('creates the editor', function() {
   same(field.editor instanceof Form.editors.Text, true);
 });
 
+test('uses template defined in schema', function() {
+  var customTemplate = _.template('<div class="myField" data-editor></div>');
+
+  var field = new Field({
+    key: 'title',
+    schema: { type: 'Text', template: customTemplate }
+  });
+
+  same(field.template, customTemplate);
+});
+
 
 
 module('Field#createSchema');

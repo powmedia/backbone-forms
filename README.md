@@ -744,6 +744,23 @@ Backbone-Forms comes with a few options for rendering HTML. To use another templ
 
 You can change all the default templates by copying the included `distribution/templates/bootstrap.js` file and adapting that. Placeholders are the `data-xxx` attributes, e.g. `data-fieldsets`, `data-fields` and `data-editors`.
 
+
+###Alternate field templates
+If only certain fields need a different template this can be done by providing the template in the schema:
+
+```js
+var altFieldTemplate = _.template('<div class="altField" data-editor></div>');
+
+var form = new Backbone.Form({
+  schema: {
+    age: { type: 'Number' },        //Uses the default field template
+    name: { template: altFieldTemplate }  //Uses the custom template
+  }
+});
+```
+
+
+###100% custom forms
 To customise forms even further you can pass in a template to the form instance or extend the form and specify the template, e.g.:
 
 ```
@@ -919,6 +936,10 @@ Writing a custom editor is simple. They must extend from Backbone.Form.editors.B
 
 <a name="changelog"/>
 ##Changelog
+
+###master
+- Allow field template to be defined in schema
+- Fix overriding List modal templates in Bootstrap template pack
 
 ###0.12.0
 - Update for Backbone 1.0
