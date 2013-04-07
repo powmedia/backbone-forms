@@ -67,10 +67,9 @@
     equal(editor.getValue(), 'Cyril');
   });
 
-  test('Throws errors if no options', function () {
-    raises(function () {
-      var editor = new Editor({schema: {}});
-    }, /^Missing required/, 'ERROR: Accepted a new Radio editor with no options.');
+  test('Renders with no options', function () {
+    var editor = new Editor({schema: {}}).render();
+    equal(editor.$el.html(), "", 'Renders with no options');
   });
 
   test('Value from model', function() {

@@ -407,6 +407,22 @@
     equal($(editor.el).val(), 'Lana');
   });
 
+  test("Can use editor without form", function () {
+    var UserModel = Backbone.Model.extend({
+      defaults: {
+        letters: "Bravo"
+      }
+    });
+    var userModel = new UserModel();
+    var select = new Backbone.Form.editors.Select({
+        model: userModel,
+        key: 'letters',
+        options: ['Alpha', 'Bravo', 'Charlie', 'Delta']
+    }).render();
+    select.commit();
+    equal(select.$('option').length, 4, 'Render correct options');
+    equal(select.getValue(), 'Bravo', 'Apply correct selection');
+  });
 
 
   module('Select events', {
