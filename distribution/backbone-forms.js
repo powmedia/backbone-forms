@@ -1498,9 +1498,10 @@ Form.editors.Select = Form.editors.Base.extend({
 
   initialize: function(options) {
     Form.editors.Base.prototype.initialize.call(this, options);
-
-    if (!this.schema || !this.schema.options) throw "Missing required 'schema.options'";
-  },
+    if (!_.isUndefined(options.options)) {
+      this.setOptions(options.options);
+    }
+   },
 
   render: function() {
     this.setOptions(this.schema.options);
@@ -1583,11 +1584,11 @@ Form.editors.Select = Form.editors.Base.extend({
 
     else if (_.isFunction(options)) {
       var newOptions;
-      
+
       options(function(opts) {
         newOptions = opts;
       }, this);
-      
+
       html = this._getOptionsHtml(newOptions);
     }
 

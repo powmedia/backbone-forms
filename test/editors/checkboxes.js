@@ -70,10 +70,9 @@
     equal(_.isEqual(expected, value), true);
   });
 
-  test('Throws errors if no options', function () {
-      raises(function () {
-          var editor = new Editor({schema: {}});
-      }, /^Missing required/, 'ERROR: Accepted a new Checkboxes editor with no options.');
+  test('Renders withno options', function () {
+    var editor = new Editor({schema: {}}).render();
+    equal(editor.$el.html(), "", 'Renders with no options');
   });
 
   // Value from model doesn't work here as the value must be an array.
