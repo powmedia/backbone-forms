@@ -505,17 +505,18 @@
       //Otherwise use the generic method or custom overridden method
       return this.itemToString(value);
     },
-
+    
     openEditor: function() {
-      var self = this,
-          ModalForm = this.form.constructor;
+      var self = this;
 
-      var form = this.modalForm = new ModalForm({
+      var done = _.bind(this.onModalSubmitted, this);
+
+      var form = this.modalForm = new Form({
         schema: this.nestedSchema,
         data: this.value
       });
 
-      var modal = this.modal = new Form.editors.List.Modal.ModalAdapter({
+      var modal = this.modal = new editors.List.Modal.ModalAdapter({
         content: form,
         animate: true
       });
@@ -527,7 +528,15 @@
 
       modal.on('cancel', this.onModalClosed, this);
       
-      modal.on('ok', _.bind(this.onModalSubmitted, this));
+      modal.on('ok', done);
+
+      modal.on('shown', function (event) {
+        $(form.$el).on('submit', function(event) {
+          event.preventDefault();
+          self.modal.close();
+          done();
+        });
+      });
     },
 
     /**
