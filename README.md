@@ -564,17 +564,6 @@ This is a special editor which is in **a separate file and must be included**:
 
   Optional, but recommended when using listType 'Object'. When listType is 'NestedModel', the model's `toString()` method will be used, unless a specific `itemToString()` function is defined on the schema.
 
-- **`listTemplate`**
-
-  Name of the template to hold the list. Edit if you want to customize the 'Add' button, for instance. Optional, defaults to 'list'.
-
-
-- **`listItemTemplate`**
-
-  Name of the template to hold the list item (including the remove item button).
-
-  Optional, defaults to 'listItem'
-
 
 ###Events
 
