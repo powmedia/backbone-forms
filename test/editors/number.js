@@ -163,10 +163,23 @@
     stop();
     setTimeout(function(){
 
-      ok(spy.callCount == 0);
+      ok(spy.callCount === 0);
       start();
 
     }, 0);
+  });
+
+  test("'change' event - is triggered when clicking the spinner ('input' event)", function() {
+    var editor = this.editor;
+
+    var spy = this.sinon.spy();
+
+    editor.on('change', spy);
+
+    editor.$el.val('10');
+    editor.$el.trigger('input');
+
+    ok(spy.callCount === 1);
   });
 
 
