@@ -21,6 +21,14 @@
     equal($(editor.el).attr('type'), 'tel');
   });
 
+  test("previousValue should equal initial value", function() {
+    var editor = new Editor({
+      value: 'Test'
+    }).render();
+
+    equal(editor.previousValue, 'Test');
+  });
+
 
 
   module('Text#getValue()');
@@ -61,6 +69,14 @@
 
     equal(editor.getValue(), 'foobar');
     equal($(editor.el).val(), 'foobar');
+  });
+
+  test("previousValue should equal set value", function() {
+    var editor = new Editor().render();
+
+    editor.setValue('Test');
+
+    equal(editor.previousValue, 'Test');
   });
 
 
