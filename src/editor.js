@@ -28,7 +28,7 @@ Form.Editor = Form.editors.Base = Backbone.View.extend({
       this.value = this.model.get(options.key);
 
       //Handle cases where the value is itself a model
-      if (typeof this.value == 'object') {
+      if (this.value instanceof Backbone.Model) {
         this.value = this.value.id
       }
     }
