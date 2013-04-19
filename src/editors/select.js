@@ -82,6 +82,8 @@ Form.editors.Select = Form.editors.Base.extend({
     var $select = this.$el,
         html;
 
+    this.options = options;
+
     html = this._getOptionsHtml(options);
 
     //Insert options
