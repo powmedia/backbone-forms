@@ -11,26 +11,27 @@ A flexible, customisable form framework for Backbone.JS applications.
 
 ###Example: Quickly generate forms to edit models
 
-    var User = Backbone.Model.extend({
-        schema: {
-            title:      { type: 'Select', options: ['Mr', 'Mrs', 'Ms'] },
-            name:       'Text',
-            email:      { validators: ['required', 'email'] },
-            birthday:   'Date',
-            password:   'Password',
-            address:    { type: 'NestedModel', model: Address },
-            notes:      { type: 'List', listType: 'Text' }
-        }
-    });
+```js
+var User = Backbone.Model.extend({
+    schema: {
+        title:      { type: 'Select', options: ['Mr', 'Mrs', 'Ms'] },
+        name:       'Text',
+        email:      { validators: ['required', 'email'] },
+        birthday:   'Date',
+        password:   'Password',
+        address:    { type: 'NestedModel', model: Address },
+        notes:      { type: 'List', listType: 'Text' }
+    }
+});
 
-    var user = new User();
+var user = new User();
 
-    var form = new Backbone.Form({
-        model: user
-    }).render();
+var form = new Backbone.Form({
+    model: user
+}).render();
 
-    $('body').append(form.el);
-
+$('body').append(form.el);
+```
 
 ###Example: Fully customise forms and templates
 
@@ -146,26 +147,27 @@ Forms are generated from a `schema`, which can be defined on the form itself or 
 The schema keys should match the attributes that get set on the model. `type` defaults to `Text`.  When you don't need to specify any options you can use the shorthand by passing the editor name as a string.
 See [schema definition](#schema-definition) for more information.
 
-    var User = Backbone.Model.extend({
-        schema: {
-            title:      { type: 'Select', options: ['Mr', 'Mrs', 'Ms'] },
-            name:       'Text',
-            email:      { validators: ['required', 'email'] },
-            birthday:   'Date',
-            password:   'Password',
-            address:    { type: 'NestedModel', model: Address },
-            notes:      { type: 'List', listType: 'Text' }
-        }
-    });
+```js
+var User = Backbone.Model.extend({
+    schema: {
+        title:      { type: 'Select', options: ['Mr', 'Mrs', 'Ms'] },
+        name:       'Text',
+        email:      { validators: ['required', 'email'] },
+        birthday:   'Date',
+        password:   'Password',
+        address:    { type: 'NestedModel', model: Address },
+        notes:      { type: 'List', listType: 'Text' }
+    }
+});
 
-    var user = new User();
+var user = new User();
 
-    var form = new Backbone.Form({
-        model: user
-    }).render();
+var form = new Backbone.Form({
+    model: user
+}).render();
 
-    $('body').append(form.el);
-
+$('body').append(form.el);
+```
 
 Once the user is done with the form, call `form.commit()` to apply the updated values to the model. If there are validation errors they will be returned.
 See [validation](#validation) for more information.
@@ -187,21 +189,23 @@ To update a field after the form has been rendered, use `form.setValue`:
 
 You can create a form without tying it to a model. For example, to create a form for a simple object of data:
 
-    var form = new Backbone.Form({
-        //Schema
-        schema: {
-            id:         'Number',
-            name:       'Text',
-            password:   'Password'
-        },
-        
-        //Data to populate the form with
-        data: {
-          id: 123,
-          name: 'Rod Kimble',
-          password: 'cool beans'
-        }
-    }).render();
+```js
+var form = new Backbone.Form({
+    //Schema
+    schema: {
+        id:         'Number',
+        name:       'Text',
+        password:   'Password'
+    },
+    
+    //Data to populate the form with
+    data: {
+      id: 123,
+      name: 'Rod Kimble',
+      password: 'cool beans'
+    }
+}).render();
+```
 
 Then instead of `form.commit()`, do:
 
@@ -695,17 +699,17 @@ You can also override the error message on a field by field basis by passing the
 
 If your models have a `validate()` method the errors will be added to the error object.  To make the most of the validation system, the method should return an error object, keyed by the field object. If an unrecognised field is added, or just a string is returned, it will be added to the `_others` array of errors:
 
-    var User = Backbone.Model.extend({
-        validate: function(attrs) {
-            var errs = {};
+```js
+var User = Backbone.Model.extend({
+    validate: function(attrs) {
+        var errs = {};
 
-            if (usernameTaken(attrs.username)) errs.username = 'The username is taken'
+        if (usernameTaken(attrs.username)) errs.username = 'The username is taken'
 
-            if !_.isEmpty(errs) return errs;
-        }
-    })
-
-
+        if !_.isEmpty(errs) return errs;
+    }
+})
+```
 
 
 ###Schema validators
@@ -715,13 +719,14 @@ If you model provides a `validate` method, then this will be called when you cal
 
 ####Example
 
-    //Schema definition:
-    var schema = {
-        name: { validators: ['required']
-    }
+```js
+//Schema definition:
+var schema = {
+    name: { validators: ['required']
+}
 
-    var errors = form.commit();
-
+var errors = form.commit();
+```
 [Back to top](#top)
 
 
@@ -789,15 +794,16 @@ var form = new Backbone.Form({
 
 You can add editors by themselves, without being part of a form. For example:
 
-    var select = new Backbone.Form.editors.Select({
-        model: user,
-        key: 'country',
-        options: getCountries()
-    }).render();
+```js
+var select = new Backbone.Form.editors.Select({
+    model: user,
+    key: 'country',
+    options: getCountries()
+}).render();
 
-    //When done, apply selection to model:
-    select.commit();
-
+//When done, apply selection to model:
+select.commit();
+```
 
 <a name="nested-fields"/>
 ###Using nested fields
@@ -806,107 +812,112 @@ If you are using a schema with nested attributes (using the `Object` type), you 
 
 However, due to Backbone's lack of support for nested model attributes, getting and setting values will not work out of the box.  For this to work as expected you must adapt your model's get() and set() methods to handle the path names, or simply use [DeepModel](http://github.com/powmedia/backbone-deep-model) which will handle paths for you automatically.
 
-    var Model = Backbone.DeepModel.extend({
-        schema: {
-            title: 'Text',
-            author: { type: 'Object', subSchema: {
-                id: 'Number',
-                name: { type: 'Object', subSchema: {
-                    first: 'Text',
-                    last: 'Text'
-                }}
+```js
+var Model = Backbone.DeepModel.extend({
+    schema: {
+        title: 'Text',
+        author: { type: 'Object', subSchema: {
+            id: 'Number',
+            name: { type: 'Object', subSchema: {
+                first: 'Text',
+                last: 'Text'
             }}
-        }
-    });
+        }}
+    }
+});
 
-    var form = new Backbone.Form({
-        model: new Model,
-        fields: ['title', 'author.id', 'author.name.last']
-    }).render();
+var form = new Backbone.Form({
+    model: new Model,
+    fields: ['title', 'author.id', 'author.name.last']
+}).render();
+```
 
 The following shorthand is also valid:
 
-    var Model = Backbone.DeepModel.extend({
-        schema: {
-            title: 'Text',
-            'author.id': 'Number',
-            'author.name.first': 'Text'
-        }
-    });
+```js
+var Model = Backbone.DeepModel.extend({
+    schema: {
+        title: 'Text',
+        'author.id': 'Number',
+        'author.name.first': 'Text'
+    }
+});
 
-    var form = new Backbone.Form({
-        model: new Model
-    })
-
+var form = new Backbone.Form({
+    model: new Model
+})
+```
 
 <a name="custom-editors"/>
 ###Custom editors
 
 Writing a custom editor is simple. They must extend from Backbone.Form.editors.Base.
 
-    var CustomEditor = Backbone.Form.editors.Base.extend({
+```js
+var CustomEditor = Backbone.Form.editors.Base.extend({
 
-        tagName: 'input',
+    tagName: 'input',
 
-        events: {
-            'change': function() {
-                // The 'change' event should be triggered whenever something happens
-                // that affects the result of `this.getValue()`.
-                this.trigger('change', this);
-            },
-            'focus': function() {
-                // The 'focus' event should be triggered whenever an input within
-                // this editor becomes the `document.activeElement`.
-                this.trigger('focus', this);
-                // This call automatically sets `this.hasFocus` to `true`.
-            },
-            'blur': function() {
-                // The 'blur' event should be triggered whenever an input within
-                // this editor stops being the `document.activeElement`.
-                this.trigger('blur', this);
-                // This call automatically sets `this.hasFocus` to `false`.
-            }
+    events: {
+        'change': function() {
+            // The 'change' event should be triggered whenever something happens
+            // that affects the result of `this.getValue()`.
+            this.trigger('change', this);
         },
-
-        initialize: function(options) {
-            // Call parent constructor
-            Backbone.Form.editors.Base.prototype.initialize.call(this, options);
-
-            // Custom setup code.
-            if (this.schema.customParam) this.doSomething();
+        'focus': function() {
+            // The 'focus' event should be triggered whenever an input within
+            // this editor becomes the `document.activeElement`.
+            this.trigger('focus', this);
+            // This call automatically sets `this.hasFocus` to `true`.
         },
-
-        render: function() {
-            this.setValue(this.value);
-
-            return this;
-        },
-
-        getValue: function() {
-            return this.$el.val();
-        },
-
-        setValue: function(value) {
-            this.$el.val(value);
-        },
-
-        focus: function() {
-            if (this.hasFocus) return;
-
-            // This method call should result in an input within this edior
-            // becoming the `document.activeElement`.
-            // This, in turn, should result in this editor's `focus` event
-            // being triggered, setting `this.hasFocus` to `true`.
-            // See above for more detail.
-            this.$el.focus();
-        },
-
-        blur: function() {
-            if (!this.hasFocus) return;
-
-            this.$el.blur();
+        'blur': function() {
+            // The 'blur' event should be triggered whenever an input within
+            // this editor stops being the `document.activeElement`.
+            this.trigger('blur', this);
+            // This call automatically sets `this.hasFocus` to `false`.
         }
-    });
+    },
+
+    initialize: function(options) {
+        // Call parent constructor
+        Backbone.Form.editors.Base.prototype.initialize.call(this, options);
+
+        // Custom setup code.
+        if (this.schema.customParam) this.doSomething();
+    },
+
+    render: function() {
+        this.setValue(this.value);
+
+        return this;
+    },
+
+    getValue: function() {
+        return this.$el.val();
+    },
+
+    setValue: function(value) {
+        this.$el.val(value);
+    },
+
+    focus: function() {
+        if (this.hasFocus) return;
+
+        // This method call should result in an input within this edior
+        // becoming the `document.activeElement`.
+        // This, in turn, should result in this editor's `focus` event
+        // being triggered, setting `this.hasFocus` to `true`.
+        // See above for more detail.
+        this.$el.focus();
+    },
+
+    blur: function() {
+        if (!this.hasFocus) return;
+
+        this.$el.blur();
+    }
+});
+```
 
 **Notes:**
 
