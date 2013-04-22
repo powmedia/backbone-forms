@@ -1820,10 +1820,12 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
       var itemHtml = '<li>';
       if (_.isObject(option)) {
         var val = (option.val || option.val === 0) ? option.val : '';
-        itemHtml += ('<label class="checkbox" for="'+self.id+'-'+index+'">' + '<input type="checkbox" name="'+self.id+'" value="'+val+'" id="'+self.id+'-'+index+'" />' + option.label+'</label>');
+        itemHtml += ('<input type="checkbox" name="'+self.id+'" value="'+val+'" id="'+self.id+'-'+index+'" />');
+        itemHtml += ('<label for="'+self.id+'-'+index+'">'+option.label+'</label>');
       }
       else {
-        itemHtml += ('<label class="checkbox" for="'+self.id+'-'+index+'">' + '<input type="checkbox" name="'+self.id+'" value="'+option+'" id="'+self.id+'-'+index+'" />' + option+'</label>');
+        itemHtml += ('<input type="checkbox" name="'+self.id+'" value="'+option+'" id="'+self.id+'-'+index+'" />');
+        itemHtml += ('<label for="'+self.id+'-'+index+'">'+option+'</label>');
       }
       itemHtml += '</li>';
       html.push(itemHtml);
