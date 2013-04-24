@@ -27,6 +27,8 @@ Form.editors.Select = Form.editors.Base.extend({
     Form.editors.Base.prototype.initialize.call(this, options);
 
     if (!this.schema || !this.schema.options) throw "Missing required 'schema.options'";
+
+    this.modelAttr = options.schema.modelAttr || 'id';
   },
 
   render: function() {
@@ -148,9 +150,10 @@ Form.editors.Select = Form.editors.Base.extend({
    */
   _collectionToHtml: function(collection) {
     //Convert collection to array first
-    var array = [];
+    var self = this,
+        array = [];
     collection.each(function(model) {
-      array.push({ val: model.id, label: model.toString() });
+      array.push({ val: model.get(self.modelAttr), label: model.toString() });
     });
 
     //Now convert to HTML
