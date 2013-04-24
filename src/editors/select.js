@@ -29,6 +29,14 @@ Form.editors.Select = Form.editors.Base.extend({
     if (!this.schema || !this.schema.options) throw "Missing required 'schema.options'";
 
     this.modelAttr = options.schema.modelAttr || 'id';
+    this.isMultiple = (options.schema.editorAttrs &&
+                       options.schema.editorAttrs.multiple);
+
+    if (options.value instanceof Backbone.Collection) {
+      if (!this.isMultiple) throw "You can't set Collection value to non-multiple select";
+
+      this.value = options.value.pluck(this.modelAttr);
+    }
   },
 
   render: function() {
@@ -124,10 +132,18 @@ Form.editors.Select = Form.editors.Base.extend({
   },
 
   getValue: function() {
-    return this.$el.val();
+    var value = this.$el.val();
+
+    if (this.isMultiple && !value) return [];
+
+    return value;
   },
 
   setValue: function(value) {
+    if (value instanceof Backbone.Collection) {
+      if (!this.isMultiple) throw "You can't set Collection value to non-multiple select";
+      value = value.pluck(this.modelAttr);
+    }
     this.$el.val(value);
   },
 
