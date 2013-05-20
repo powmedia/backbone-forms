@@ -40,7 +40,7 @@ Form.editors.Text = Form.Editor.extend({
 
     if (schema && schema.editorAttrs && schema.editorAttrs.type) type = schema.editorAttrs.type;
     if (schema && schema.dataType) type = schema.dataType;
-
+    if (schema && schema.placeholder) this.$el.attr('placeholder', schema.placeholder);
     this.$el.attr('type', type);
   },
 
