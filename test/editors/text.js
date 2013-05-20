@@ -21,6 +21,14 @@
     equal($(editor.el).attr('type'), 'tel');
   });
 
+  test('Placeholder can be assigned', function() {
+    var editor = new Editor({
+      schema: { placeholder: 'This is a simple placeholder.' }
+    }).render();
+
+    equal($(editor.el).attr('placeholder'), 'This is a simple placeholder.');
+  });
+
 
 
   module('Text#getValue()');

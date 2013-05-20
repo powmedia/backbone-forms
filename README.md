@@ -15,7 +15,7 @@ A flexible, customisable form framework for Backbone.JS applications.
 var User = Backbone.Model.extend({
     schema: {
         title:      { type: 'Select', options: ['Mr', 'Mrs', 'Ms'] },
-        name:       'Text',
+        name:       { type:'Text', placeholder: 'Mr. John Smith' },
         email:      { validators: ['required', 'email'] },
         birthday:   'Date',
         password:   'Password',
