@@ -68,11 +68,11 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
       var itemHtml = '<li>';
       if (_.isObject(option)) {
         var val = (option.val || option.val === 0) ? option.val : '';
-        itemHtml += ('<input type="checkbox" name="'+self.id+'" value="'+val+'" id="'+self.id+'-'+index+'" />');
+        itemHtml += ('<input type="checkbox" name="'+self.getName()+'" value="'+val+'" id="'+self.id+'-'+index+'" />');
         itemHtml += ('<label for="'+self.id+'-'+index+'">'+option.label+'</label>');
       }
       else {
-        itemHtml += ('<input type="checkbox" name="'+self.id+'" value="'+option+'" id="'+self.id+'-'+index+'" />');
+        itemHtml += ('<input type="checkbox" name="'+self.getName()+'" value="'+option+'" id="'+self.id+'-'+index+'" />');
         itemHtml += ('<label for="'+self.id+'-'+index+'">'+option+'</label>');
       }
       itemHtml += '</li>';
