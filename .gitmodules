@@ -1,3 +1,6 @@
 [submodule "lib/backbone.bootstrap-modal"]
 	path = lib/backbone.bootstrap-modal
 	url = git@github.com:powmedia/backbone.bootstrap-modal.git
+[submodule "lib/bootstrap-datepicker"]
+	path = lib/bootstrap-datepicker
+	url = https://github.com/eternicode/bootstrap-datepicker
