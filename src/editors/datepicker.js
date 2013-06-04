@@ -18,6 +18,19 @@
  */
 Form.editors.BackboneDatepicker = Form.editors.Base.extend({
 
+  previousValue: '',
+
+  events: {
+    'hide': "hasChanged"
+  },
+
+  hasChanged: function(currentValue) {
+    if (currentValue !== this.previousValue){
+      this.previousValue = currentValue;
+      this.trigger('change', this);
+    }
+  },
+
   initialize: function(options) {
     Form.editors.Base.prototype.initialize.call(this, options);
     this.template = options.template || this.constructor.template;
