@@ -66,16 +66,14 @@ Form.editors.Radio = Form.editors.Select.extend({
     var self = this;
 
     _.each(array, function(option, index) {
-      var itemHtml = '<li>';
-      if (_.isObject(option)) {
-        var val = (option.val || option.val === 0) ? option.val : '';
-        itemHtml += ('<input type="radio" name="'+self.getName()+'" value="'+val+'" id="'+self.id+'-'+index+'" />');
-        itemHtml += ('<label for="'+self.id+'-'+index+'">'+option.label+'</label>');
-      }
-      else {
-        itemHtml += ('<input type="radio" name="'+self.getName()+'" value="'+option+'" id="'+self.id+'-'+index+'" />');
-        itemHtml += ('<label for="'+self.id+'-'+index+'">'+option+'</label>');
-      }
+      var val   = (_.isObject(option)) ? ((option.val || option.val === 0) ? option.val : '') : option;
+      var label = (_.isObject(option)) ? option.label : option;
+      var cls = 'radio-' + label.toLowerCase().replace(/\W/g, '-');
+
+      var itemHtml = '<li class="' + cls + '">';
+          itemHtml += ('<input type="radio" name="'+self.getName()+'" value="'+ val +'" id="'+self.id+'-'+index+'" />');
+          itemHtml += ('<label for="'+self.id+'-'+index+'">'+ label +'</label>');
+
       itemHtml += '</li>';
       html.push(itemHtml);
     });
