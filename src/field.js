@@ -22,7 +22,7 @@ Form.Field = Backbone.View.extend({
     options = options || {};
 
     //Store important data
-    _.extend(this, _.pick(options, 'form', 'key', 'model', 'value', 'idPrefix'));
+    _.extend(this, _.pick(options, 'form', 'key', 'model', 'value', 'idPrefix', 'fieldClass'));
 
     //Create the full field schema, merging defaults etc.
     var schema = this.schema = this.createSchema(options.schema);
@@ -115,6 +115,25 @@ Form.Field = Backbone.View.extend({
   },
 
   /**
+   * Create class name to use on field wrapper.
+   *
+   * @return {String}
+   */
+  getClass: function() {
+      if (! this.fieldClass) {
+          var name = this.schema.name;
+
+          if (! name) {
+              name = this.createTitle();
+          }
+
+          this.fieldClass = 'input-' + name.toLowerCase().replace(/\W+/g, '-');
+      }
+
+      return this.fieldClass;
+  },
+
+  /**
    * Returns the data to be passed to the template
    *
    * @return {Object}
@@ -128,6 +147,7 @@ Form.Field = Backbone.View.extend({
       fieldAttrs: schema.fieldAttrs,
       editorAttrs: schema.editorAttrs,
       key: this.key,
+      fieldClass: this.getClass(),
       editorId: this.editor.id
     };
   },
@@ -260,7 +280,7 @@ Form.Field = Backbone.View.extend({
   //STATICS
 
   template: _.template('\
-    <div>\
+    <div class="<%= fieldClass %>">\
       <label for="<%= editorId %>"><%= title %></label>\
       <div>\
         <span data-editor></span>\
