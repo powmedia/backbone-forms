@@ -245,6 +245,9 @@ var Form = Backbone.View.extend({
       });
     });
 
+    //Set class
+    $form.addClass(self.className);
+    
     //Set the main element
     this.setElement($form);
 
