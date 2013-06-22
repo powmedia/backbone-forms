@@ -397,7 +397,7 @@
    * Base modal object editor for use with the List editor; used by Object 
    * and NestedModal list types
    */
-  Form.editors.List.Moal = Form.editors.Base.extend({
+  Form.editors.List.Modal = Form.editors.Base.extend({
 
     events: {
       'click': 'openEditor'
@@ -617,7 +617,7 @@
   });
 
 
-  Form.editors.List.NestedModel = Form.editors.List.Modal.extend({
+  Form.editors.List.estedModel = Form.editors.List.Modal.extend({
     initialize: function() {
       Form.editors.List.Modal.prototype.initialize.apply(this, arguments);
 
