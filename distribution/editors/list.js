@@ -397,7 +397,7 @@
    * Base modal object editor for use with the List editor; used by Object 
    * and NestedModal list types
    */
-  Form.editors.List.Modal = Form.editors.Base.extend({
+  Form.editors.List.Moal = Form.editors.Base.extend({
 
     events: {
       'click': 'openEditor'
