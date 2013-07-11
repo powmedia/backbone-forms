@@ -1454,8 +1454,6 @@ Form.editors.Checkbox = Form.editors.Base.extend({
   setValue: function(value) {
     if (value) {
       this.$el.prop('checked', true);
-    }else{
-      this.$el.prop('checked', false);
     }
   },
 
