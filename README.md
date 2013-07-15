@@ -20,7 +20,7 @@ var User = Backbone.Model.extend({
         birthday:   'Date',
         password:   'Password',
         address:    { type: 'NestedModel', model: Address },
-        notes:      { type: 'List', listType: 'Text' }
+        notes:      { type: 'List', itemType: 'Text' }
     }
 });
 
@@ -156,7 +156,7 @@ var User = Backbone.Model.extend({
         birthday:   'Date',
         password:   'Password',
         address:    { type: 'NestedModel', model: Address },
-        notes:      { type: 'List', listType: 'Text' }
+        notes:      { type: 'List', itemType: 'Text' }
     }
 });
 
@@ -547,7 +547,7 @@ This is a special editor which is in **a separate file and must be included**:
 
     <script src="backbone-forms/distribution/editors/list.min.js" />
 
-**If using the `Object` or `NestedModel` listType**, you will need to include a modal adapter on the page. [Backbone.BootstrapModal](http://github.com/powmedia/backbone.bootstrap-modal) is provided for this purpose. It must be included on the page:
+**If using the `Object` or `NestedModel` itemType**, you will need to include a modal adapter on the page. [Backbone.BootstrapModal](http://github.com/powmedia/backbone.bootstrap-modal) is provided for this purpose. It must be included on the page:
 
     <script src="backbone-forms/distribution/adapters/backbone.bootstrap-modal.min.js" />
 
@@ -566,7 +566,7 @@ This is a special editor which is in **a separate file and must be included**:
 
   A function that returns a string representing how the object should be displayed in a list item.
 
-  Optional, but recommended when using listType 'Object'. When listType is 'NestedModel', the model's `toString()` method will be used, unless a specific `itemToString()` function is defined on the schema.
+  Optional, but recommended when using itemType 'Object'. When itemType is 'NestedModel', the model's `toString()` method will be used, unless a specific `itemToString()` function is defined on the schema.
 
 
 ###Events
