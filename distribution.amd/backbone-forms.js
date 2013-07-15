@@ -1376,7 +1376,7 @@ Form.editors.Number = Form.editors.Text.extend({
 /**
  * Hidden editor
  */
-Form.editors.Hidden = Form.editors.Base.extend({
+Form.editors.Hidden = Form.editors.Text.extend({
 
   defaultValue: '',
 
