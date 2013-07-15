@@ -287,7 +287,7 @@
       this.value = options.value;
       this.Editor = options.Editor || Form.editors.Text;
       this.key = options.key;
-      this.template = options.template || this.constructor.template;
+      this.template = options.template || this.schema.itemTemplate || this.constructor.template;
       this.errorClassName = options.errorClassName || this.constructor.errorClassName;
       this.form = options.form;
     },
