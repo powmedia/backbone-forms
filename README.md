@@ -942,6 +942,7 @@ var CustomEditor = Backbone.Form.editors.Base.extend({
 - Allow field template to be defined in schema
 - Fix overriding List modal templates in Bootstrap template pack
 - Add ability to unset checkbox (exussum12)
+- Fix change event on number field when using spinner (clearly)
 
 ###0.12.0
 - Update for Backbone 1.0
