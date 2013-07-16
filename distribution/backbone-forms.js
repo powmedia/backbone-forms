@@ -844,6 +844,11 @@ Form.Field = Backbone.View.extend({
     var schema = this.schema,
         editor = this.editor;
 
+    //Only render the editor if Hidden
+    if (schema.type == Form.editors.Hidden) {
+      return this.setElement(editor.render().el);
+    }
+
     //Render field
     var $field = $($.trim(this.template(_.result(this, 'templateData'))));
 
