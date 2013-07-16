@@ -944,6 +944,7 @@ var CustomEditor = Backbone.Form.editors.Base.extend({
 - Add ability to unset checkbox (exussum12)
 - Fix change event on number field when using spinner (clearly)
 - Render hidden inputs, without labels
+- Remove `type` attribute from TextAreas (#261)
 
 ###0.12.0
 - Update for Backbone 1.0
