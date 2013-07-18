@@ -617,7 +617,7 @@
   });
 
 
-  Form.editors.List.estedModel = Form.editors.List.Modal.extend({
+  Form.editors.List.NestedModel = Form.editors.List.Modal.extend({
     initialize: function() {
       Form.editors.List.Modal.prototype.initialize.apply(this, arguments);
 

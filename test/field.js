@@ -327,6 +327,25 @@ test('calls clearError if validation passes', 1, function() {
   same(field.clearError.callCount, 1);
 });
 
+test('Test required fields title set', 2, function() {
+  var field = new Field({
+    key: 'title',
+    schema: { validators: ['required'] }
+  });
+
+  var data = field.templateData();
+
+  same(data.title, 'Title*');
+
+  var field = new Field({
+    key: 'title',
+  });
+
+  var data = field.templateData();
+
+  same(data.title, 'Title');
+});
+
 
 
 module('Field#setError');
