@@ -72,6 +72,11 @@
 
     deepEqual(editor.getValue(), true);
     deepEqual($(editor.el).prop('checked'), true);
+    
+    editor.setValue(false);
+
+    deepEqual(editor.getValue(), false);
+    deepEqual($(editor.el).prop('checked'), false);
   });
 
 

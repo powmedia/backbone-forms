@@ -244,6 +244,15 @@ module('Field#render', {
   }
 });
 
+test('only renders the editor if hidden', function() {
+  var field = new Field({
+    key: 'title',
+    schema: { type: 'Hidden' }
+  }).render();
+
+  same(field.$el.prop('tagName'), 'INPUT');
+});
+
 test('returns self', function() {
   var field = new Field({
     key: 'title',

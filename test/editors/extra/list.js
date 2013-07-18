@@ -609,6 +609,38 @@ module('List.Item', {
 (function() {
     var List = editors.List;
 
+    test('initialize() - sets the template from options, then schema, then constructor', function() {
+      var optionsTemplate = _.template('<div>Options</div>'),
+          schemaTemplate = _.template('<div>Schema</div>'),
+          constructorTemplate = _.template('<div>Constructor</div>');
+
+      var CustomItem = List.Item.extend({}, {
+        template: constructorTemplate
+      });
+      
+      //Options
+      var item = new CustomItem({
+        template: optionsTemplate,
+        schema: { itemTemplate: schemaTemplate }
+      });
+
+      same(item.template(), '<div>Options</div>');
+
+      //Schema
+      var item = new CustomItem({
+        schema: { itemTemplate: schemaTemplate }
+      });
+
+      same(item.template(), '<div>Schema</div>');
+
+      //Constructor
+      var item = new CustomItem({
+        schema: {}
+      });
+
+      same(item.template(), '<div>Constructor</div>');
+    });
+
     test('render() - creates the editor for the given listType', function() {
         var spy = this.sinon.spy(editors, 'Number');
 

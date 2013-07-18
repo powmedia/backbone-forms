@@ -234,6 +234,9 @@ var Form = Backbone.View.extend({
 
     //Set the main element
     this.setElement($form);
+    
+    //Set class
+    $form.addClass(this.className);
 
     return this;
   },
@@ -828,6 +831,11 @@ Form.Field = Backbone.View.extend({
     var schema = this.schema,
         editor = this.editor;
 
+    //Only render the editor if Hidden
+    if (schema.type == Form.editors.Hidden) {
+      return this.setElement(editor.render().el);
+    }
+
     //Render field
     var $field = $($.trim(this.template(_.result(this, 'templateData'))));
 
@@ -1284,7 +1292,14 @@ Form.editors.Text = Form.Editor.extend({
  */
 Form.editors.TextArea = Form.editors.Text.extend({
 
-  tagName: 'textarea'
+  tagName: 'textarea',
+
+  /**
+   * Override Text constructor so type property isn't set (issue #261)
+   */
+  initialize: function(options) {
+    Form.editors.Base.prototype.initialize.call(this, options);
+  }
 
 });
 
@@ -1311,7 +1326,8 @@ Form.editors.Number = Form.editors.Text.extend({
   defaultValue: 0,
 
   events: _.extend({}, Form.editors.Text.prototype.events, {
-    'keypress': 'onKeyPress'
+    'keypress': 'onKeyPress',
+    'change': 'onKeyPress'
   }),
 
   initialize: function(options) {
@@ -1339,7 +1355,10 @@ Form.editors.Number = Form.editors.Text.extend({
     }
 
     //Get the whole new value so that we can prevent things like double decimals points etc.
-    var newVal = this.$el.val() + String.fromCharCode(event.charCode);
+    var newVal = this.$el.val()
+    if( event.charCode != undefined ) {
+      newVal = newVal + String.fromCharCode(event.charCode);
+    }
 
     var numeric = /^[0-9]*\.?[0-9]*?$/.test(newVal);
 
@@ -1376,7 +1395,7 @@ Form.editors.Number = Form.editors.Text.extend({
 /**
  * Hidden editor
  */
-Form.editors.Hidden = Form.editors.Base.extend({
+Form.editors.Hidden = Form.editors.Text.extend({
 
   defaultValue: '',
 
@@ -1441,6 +1460,8 @@ Form.editors.Checkbox = Form.editors.Base.extend({
   setValue: function(value) {
     if (value) {
       this.$el.prop('checked', true);
+    }else{
+      this.$el.prop('checked', false);
     }
   },
 
@@ -1721,11 +1742,11 @@ Form.editors.Radio = Form.editors.Select.extend({
       var itemHtml = '<li>';
       if (_.isObject(option)) {
         var val = (option.val || option.val === 0) ? option.val : '';
-        itemHtml += ('<input type="radio" name="'+self.id+'" value="'+val+'" id="'+self.id+'-'+index+'" />');
+        itemHtml += ('<input type="radio" name="'+self.getName()+'" value="'+val+'" id="'+self.id+'-'+index+'" />');
         itemHtml += ('<label for="'+self.id+'-'+index+'">'+option.label+'</label>');
       }
       else {
-        itemHtml += ('<input type="radio" name="'+self.id+'" value="'+option+'" id="'+self.id+'-'+index+'" />');
+        itemHtml += ('<input type="radio" name="'+self.getName()+'" value="'+option+'" id="'+self.id+'-'+index+'" />');
         itemHtml += ('<label for="'+self.id+'-'+index+'">'+option+'</label>');
       }
       itemHtml += '</li>';
@@ -1807,11 +1828,11 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
       var itemHtml = '<li>';
       if (_.isObject(option)) {
         var val = (option.val || option.val === 0) ? option.val : '';
-        itemHtml += ('<input type="checkbox" name="'+self.id+'" value="'+val+'" id="'+self.id+'-'+index+'" />');
+        itemHtml += ('<input type="checkbox" name="'+self.getName()+'" value="'+val+'" id="'+self.id+'-'+index+'" />');
         itemHtml += ('<label for="'+self.id+'-'+index+'">'+option.label+'</label>');
       }
       else {
-        itemHtml += ('<input type="checkbox" name="'+self.id+'" value="'+option+'" id="'+self.id+'-'+index+'" />');
+        itemHtml += ('<input type="checkbox" name="'+self.getName()+'" value="'+option+'" id="'+self.id+'-'+index+'" />');
         itemHtml += ('<label for="'+self.id+'-'+index+'">'+option+'</label>');
       }
       itemHtml += '</li>';
