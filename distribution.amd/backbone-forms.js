@@ -241,9 +241,12 @@ var Form = Backbone.View.extend({
   /**
    * Validate the data
    *
+   * @param {Object}  [options]             Options to pass to field.validate()
+   * @param {Boolean} [options.noSetError]  Set to true to disable built-in error setter
+   *
    * @return {Object}       Validation errors
    */
-  validate: function() {
+  validate: function(options) {
     var self = this,
         fields = this.fields,
         model = this.model,
@@ -251,7 +254,7 @@ var Form = Backbone.View.extend({
 
     //Collect errors from schema validation
     _.each(fields, function(field) {
-      var error = field.validate();
+      var error = field.validate(options);
       if (error) {
         errors[field.key] = error;
       }
@@ -814,7 +817,7 @@ Form.Field = Backbone.View.extend({
               name = this.createTitle();
           }
 
-          this.fieldClass = 'input-' + name.toLowerCase().replace(/\W+/g, '-');
+          this.fieldClass = 'form-input input-' + name.toLowerCase().replace(/\W+/g, '-');
       }
 
       return this.fieldClass;
@@ -872,10 +875,17 @@ Form.Field = Backbone.View.extend({
   /**
    * Check the validity of the field
    *
+   * @param {Object}  [options]             Options to pass to field.validate()
+   * @param {Boolean} [options.noSetError]  Set to true to disable built-in error setter
+   *
    * @return {String}
    */
-  validate: function() {
+  validate: function(options) {
     var error = this.editor.validate();
+
+    if (options && options.noSetError) {
+        return error;
+    }
 
     if (error) {
       this.setError(error.message);
@@ -1684,7 +1694,8 @@ Form.editors.Radio = Form.editors.Select.extend({
   tagName: 'ul',
 
   events: {
-    'change input[type=radio]': function() {
+    'change input[type=radio]': function(e) {
+      this._addClasses();
       this.trigger('change', this);
     },
     'focus input[type=radio]': function() {
@@ -1707,6 +1718,7 @@ Form.editors.Radio = Form.editors.Select.extend({
 
   setValue: function(value) {
     this.$('input[type=radio]').val([value]);
+    this._addClasses();
   },
 
   focus: function() {
@@ -1725,6 +1737,11 @@ Form.editors.Radio = Form.editors.Select.extend({
     if (!this.hasFocus) return;
 
     this.$('input[type=radio]:focus').blur();
+  },
+
+  _addClasses: function() {
+    this.$el.find("li").removeClass("selected");
+    this.$el.find(":checked").parents('li:first').addClass("selected");
   },
 
   /**
