@@ -1,4 +1,3 @@
-
 //==================================================================================================
 //FORM
 //==================================================================================================
@@ -424,7 +423,7 @@ var Form = Backbone.View.extend({
       field.remove();
     });
 
-    Backbone.View.prototype.remove.call(this);
+    return Backbone.View.prototype.remove.apply(this, arguments);
   }
 
 }, {
