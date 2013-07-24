@@ -26,6 +26,14 @@ test('uses options.value if options.model not specified', function() {
   same(editor.value, 'Hello');
 });
 
+test('make sure value is not undefined if it is false', function() {
+  var editor = new Editor({
+    value: false
+  });
+  
+  same(editor.value, false);
+});
+
 test('sets to defaultValue if options.model and options.value are not set', function() {
   var editor = new Editor();
 
