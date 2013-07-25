@@ -39,6 +39,12 @@
     ]
   };
 
+  var collectionOptions = new OptionCollection([
+      { id: 'kid1', name: 'Billy' },
+      { id: 'kid2', name: 'Sarah' },
+      { id: 'kid3', name: 'James' }
+    ]);
+
 
 
   test('Default value', function() {
@@ -66,6 +72,59 @@
     }).render();
 
     equal(editor.getValue(), 'Lana');
+  });
+
+  test('Value from collection (not multiple)', function() {
+    var selectedOptions = new OptionCollection([
+      { id: 'kid1', name: 'Billy' },
+      { id: 'kid2', name: 'Sarah' }
+    ]);
+
+    throws(function(){
+      var editor = new Editor({
+        key: 'id',
+        value: selectedOptions,
+        schema: {
+          options: collectionOptions
+        }
+      }).render();
+    },
+    "You can't set Collection value to non-multiple select");
+
+  });
+
+  test('Value from collection (multiple no-selection)', function() {
+    var editor = new Editor({
+      key: 'id',
+      schema: {
+        options: collectionOptions,
+        editorAttrs: {
+          multiple: true
+        }
+      }
+    }).render();
+
+    deepEqual(editor.getValue(), []);
+  });
+
+  test('Value from collection (multiple)', function() {
+    var selectedOptions = new OptionCollection([
+      { id: 'kid1', name: 'Billy' },
+      { id: 'kid2', name: 'Sarah' }
+    ]);
+
+    var editor = new Editor({
+      key: 'id',
+      value: selectedOptions,
+      schema: {
+        options: collectionOptions,
+        editorAttrs: {
+          multiple: true
+        }
+      }
+    }).render();
+
+    deepEqual(editor.getValue(), ['kid1', 'kid2']);
   });
 
   test('Correct type', function() {
@@ -288,6 +347,20 @@
     equal(newOptions.last().html(), 3);
   });
 
+  test('setOptions() - updates the options with Collection', function() {
+    var editor = new Editor({
+      schema: schema
+    }).render();
+
+    editor.setOptions(collectionOptions);
+
+    var newOptions = editor.$el.find('option');
+
+    equal(newOptions.length, 3);
+    equal(newOptions.first().val(), 'kid1');
+    equal(newOptions.last().val(), 'kid3');
+  });
+
   test('Options as array of items', function() {
     var editor = new Editor({
       schema: {
@@ -407,6 +480,37 @@
     equal($(editor.el).val(), 'Lana');
   });
 
+  test("setValue() - updates the input value with Collection", function() {
+    var editor = new Editor({
+      value: 'Pam',
+      schema: schema
+    }).render();
+
+    throws(function() {
+      editor.setValue(collectionOptions);
+    },
+    "You can't set Collection value to non-multiple select");
+  });
+
+  test("setValue() - updates the input value with Collection", function() {
+    var editor = new Editor({
+      value: 'Sarah',
+      schema: {
+        options: collectionOptions,
+        editorAttrs: {
+          multiple: true
+        },
+        modelAttr: 'name'
+      }
+    }).render();
+
+    var newCollection = new OptionCollection(collectionOptions.slice(0, 2));
+
+    editor.setValue(newCollection);
+
+    deepEqual(editor.getValue(), ['Billy', 'Sarah']);
+    deepEqual($(editor.el).val(), ['Billy', 'Sarah']);
+  });
 
 
   module('Select events', {

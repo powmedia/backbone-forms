@@ -27,6 +27,16 @@ Form.editors.Select = Form.editors.Base.extend({
     Form.editors.Base.prototype.initialize.call(this, options);
 
     if (!this.schema || !this.schema.options) throw "Missing required 'schema.options'";
+
+    this.modelAttr = options.schema.modelAttr || Backbone.Model.prototype.idAttribute;
+    this.isMultiple = (options.schema.editorAttrs &&
+                       options.schema.editorAttrs.multiple);
+
+    if (options.value instanceof Backbone.Collection) {
+      if (!this.isMultiple) throw "You can't set Collection value to non-multiple select";
+
+      this.value = options.value.pluck(this.modelAttr);
+    }
   },
 
   render: function() {
@@ -122,10 +132,18 @@ Form.editors.Select = Form.editors.Base.extend({
   },
 
   getValue: function() {
-    return this.$el.val();
+    var value = this.$el.val();
+
+    if (this.isMultiple && !value) return [];
+
+    return value;
   },
 
   setValue: function(value) {
+    if (value instanceof Backbone.Collection) {
+      if (!this.isMultiple) throw "You can't set Collection value to non-multiple select";
+      value = value.pluck(this.modelAttr);
+    }
     this.$el.val(value);
   },
 
@@ -150,8 +168,8 @@ Form.editors.Select = Form.editors.Base.extend({
     //Convert collection to array first
     var array = [];
     collection.each(function(model) {
-      array.push({ val: model.id, label: model.toString() });
-    });
+      array.push({ val: model.get(this.modelAttr), label: model.toString() });
+    }, this);
 
     //Now convert to HTML
     var html = this._arrayToHtml(array);
