@@ -43,6 +43,28 @@
     same(editor.$el.attr('type'), 'number');
   });
 
+  test('Sets step="any" by default', function() {
+    var editor = new Editor().render();
+
+    same(editor.$el.attr('step'), 'any');
+  });
+
+  test('Allows setting a custom step value', function() {
+    var editor = new Editor({
+      schema: { editorAttrs: { step: 5 }}
+    }).render();
+
+    same(editor.$el.attr('step'), '5');
+  });
+
+  test('Allows setting a custom minimum value', function() {
+    var editor = new Editor({
+      schema: { editorAttrs: { min: 150 }}
+    }).render();
+
+    same(editor.$el.attr('min'), '150');
+  });
+
   test("TODO: Restricts non-numeric characters", function() {
     ok(1);
   });
