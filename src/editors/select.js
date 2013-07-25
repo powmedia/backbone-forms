@@ -28,7 +28,7 @@ Form.editors.Select = Form.editors.Base.extend({
 
     if (!this.schema || !this.schema.options) throw "Missing required 'schema.options'";
 
-    this.modelAttr = options.schema.modelAttr || 'id';
+    this.modelAttr = options.schema.modelAttr || Backbone.Model.prototype.idAttribute;
     this.isMultiple = (options.schema.editorAttrs &&
                        options.schema.editorAttrs.multiple);
 
@@ -166,11 +166,10 @@ Form.editors.Select = Form.editors.Base.extend({
    */
   _collectionToHtml: function(collection) {
     //Convert collection to array first
-    var self = this,
-        array = [];
+    var array = [];
     collection.each(function(model) {
-      array.push({ val: model.get(self.modelAttr), label: model.toString() });
-    });
+      array.push({ val: model.get(this.modelAttr), label: model.toString() });
+    }, this);
 
     //Now convert to HTML
     var html = this._arrayToHtml(array);
