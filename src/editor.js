@@ -27,7 +27,7 @@ Form.Editor = Form.editors.Base = Backbone.View.extend({
 
       this.value = this.model.get(options.key);
     }
-    else if (options.value) {
+    else if (options.value !== undefined) {
       this.value = options.value;
     }
 
