@@ -65,18 +65,17 @@ Form.editors.Radio = Form.editors.Select.extend({
     var html = [];
     var self = this;
 
-    _.each(array, function(option, index) {
-      var itemHtml = '<li>';
+     _.each(array, function(option, index) {
+      var itemHtml = '';
       if (_.isObject(option)) {
         var val = (option.val || option.val === 0) ? option.val : '';
-        itemHtml += ('<input type="radio" name="'+self.getName()+'" value="'+val+'" id="'+self.id+'-'+index+'" />');
-        itemHtml += ('<label for="'+self.id+'-'+index+'">'+option.label+'</label>');
+        var isSelected = (option.selected === true) ? " checked='checked'" : "";
+        itemHtml += ('<label class="radio" for="'+self.id+'-'+index+'"><input type="radio" name="'+self.getName()+'" value="'+val+'" id="'+self.id+'-'+index+'"'+isSelected+' /> ');
+        itemHtml += (option.label+'</label><br/>');
+      } else {
+        itemHtml += ('<label class="radio" for="'+self.id+'-'+index+'"><input type="radio" name="'+self.getName()+'" value="'+option+'" id="'+self.id+'-'+index+'"'+isSelected+' /> ');
+        itemHtml += (option+'</label><br/>');
       }
-      else {
-        itemHtml += ('<input type="radio" name="'+self.getName()+'" value="'+option+'" id="'+self.id+'-'+index+'" />');
-        itemHtml += ('<label for="'+self.id+'-'+index+'">'+option+'</label>');
-      }
-      itemHtml += '</li>';
       html.push(itemHtml);
     });
 

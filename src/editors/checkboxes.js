@@ -65,17 +65,15 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
     var self = this;
 
     _.each(array, function(option, index) {
-      var itemHtml = '<li>';
+      var itemHtml = '';
       if (_.isObject(option)) {
         var val = (option.val || option.val === 0) ? option.val : '';
-        itemHtml += ('<input type="checkbox" name="'+self.getName()+'" value="'+val+'" id="'+self.id+'-'+index+'" />');
-        itemHtml += ('<label for="'+self.id+'-'+index+'">'+option.label+'</label>');
+        itemHtml += ('<label class="checkbox" for="'+self.id+'-'+index+'"><input type="checkbox" name="'+self.getName()+'" value="'+option+'" id="'+self.id+'-'+index+'"'+isSelected+' /> ');
+        itemHtml += (option.label+'</label><br/>');
+      } else {
+        itemHtml += ('<label class="checkbox" for="'+self.id+'-'+index+'"><input type="checkbox" name="'+self.getName()+'" value="'+option+'" id="'+self.id+'-'+index+'"'+isSelected+' /> ');
+        itemHtml += (option+'</label><br/>');
       }
-      else {
-        itemHtml += ('<input type="checkbox" name="'+self.getName()+'" value="'+option+'" id="'+self.id+'-'+index+'" />');
-        itemHtml += ('<label for="'+self.id+'-'+index+'">'+option+'</label>');
-      }
-      itemHtml += '</li>';
       html.push(itemHtml);
     });
 
