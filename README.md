@@ -945,6 +945,9 @@ var CustomEditor = Backbone.Form.editors.Base.extend({
 - Fix change event on number field when using spinner (clearly)
 - Render hidden inputs, without labels
 - Remove `type` attribute from TextAreas (#261)
+- Fix error when using template files without list.js (philfreo)
+- Allow overriding 'step' attribute in Number editor (jarek)
+- Allow most falsey values as an Editor value (ewang)
 
 ###0.12.0
 - Update for Backbone 1.0
