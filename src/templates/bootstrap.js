@@ -39,22 +39,26 @@
   ');
 
 
-  Form.editors.List.template = _.template('\
-    <div class="bbf-list">\
-      <ul class="unstyled clearfix" data-items></ul>\
-      <button class="btn bbf-add" data-action="add">Add</button>\
-    </div>\
-  ');
+  if (Form.editors.List) {
+
+    Form.editors.List.template = _.template('\
+      <div class="bbf-list">\
+        <ul class="unstyled clearfix" data-items></ul>\
+        <button class="btn bbf-add" data-action="add">Add</button>\
+      </div>\
+    ');
 
 
-  Form.editors.List.Item.template = _.template('\
-    <li class="clearfix">\
-      <div class="pull-left" data-editor></div>\
-      <button type="button" class="btn bbf-del" data-action="remove">&times;</button>\
-    </li>\
-  ');
-  
+    Form.editors.List.Item.template = _.template('\
+      <li class="clearfix">\
+        <div class="pull-left" data-editor></div>\
+        <button type="button" class="btn bbf-del" data-action="remove">&times;</button>\
+      </li>\
+    ');
+    
 
-  Form.editors.List.Object.template = Form.editors.List.NestedModel.template = _.template('\
-    <div class="bbf-list-modal"><%= summary %></div>\
-  ');
+    Form.editors.List.Object.template = Form.editors.List.NestedModel.template = _.template('\
+      <div class="bbf-list-modal"><%= summary %></div>\
+    ');
+
+  }
