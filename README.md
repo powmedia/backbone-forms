@@ -666,6 +666,18 @@ Validators can be defined in several ways:
     }
 
 
+
+###Required Fields
+
+Required fields are marked with a "\*" suffix as default. This can be overridden by specifing a required option on the form example below
+
+				required:"{{title}}*"
+
+This can also inlclude HTML for example
+
+				required:"<strong>{{title}}</strong>"
+				
+
 ###Handling errors
 
 Error messages will be added to the field's help text area, and a customisable `bbf-error` class will be added to the field element so it can be styled with CSS.

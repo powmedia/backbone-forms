@@ -1,4 +1,3 @@
-
 //==================================================================================================
 //FIELD
 //==================================================================================================
@@ -121,10 +120,15 @@ Form.Field = Backbone.View.extend({
    */
   templateData: function() {
     var schema = this.schema;
-
+		var title = schema.title;
+    if(schema.validators && _.indexOf(schema.validators,"required")>=0){
+        var titleTemplateDefault = "{{title}}*";
+        var titleTemplate = (this.model)?this.model.__proto__.required||titleTemplateDefault:titleTemplateDefault;
+        title = titleTemplate.replace(/{{title}}/g, title);
+    }
     return {
       help: schema.help || '',
-      title: schema.title,
+      title: title,
       fieldAttrs: schema.fieldAttrs,
       editorAttrs: schema.editorAttrs,
       key: this.key,
