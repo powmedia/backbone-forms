@@ -11,6 +11,8 @@ Form.editors.Text = Form.Editor.extend({
 
   previousValue: '',
 
+  firstEdit: 1,
+
   events: {
     'keyup':    'determineChange',
     'keypress': function(event) {
@@ -78,6 +80,10 @@ Form.editors.Text = Form.Editor.extend({
    */
   setValue: function(value) {
     this.$el.val(value);
+    if(this.firstEdit){
+      this.previousValue = value;
+      this.firstEdit = 0;
+    }
   },
 
   focus: function() {
