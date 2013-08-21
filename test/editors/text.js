@@ -294,6 +294,26 @@
     ok(spy.calledOnce);
     ok(spy.alwaysCalledWith(editor));
   });
+  test("'change' event - is triggered when the value is set to ''", function() {
+    var editor = new Editor({
+      value: 'Test'
+    }).render();
+
+    var callCount = 0;
+
+    var spy = this.sinon.spy();
+
+    editor.on('change', spy);
+
+
+    // Cmd+A; Backspace: Deleting everything
+    editor.$el.keyup();
+    editor.$el.val('');
+    editor.$el.keyup();
+    callCount++;
+    ok(spy.callCount == callCount);
+    ok(spy.alwaysCalledWith(editor));
+  });
 
 
 })(Backbone.Form, Backbone.Form.editors.Text);
