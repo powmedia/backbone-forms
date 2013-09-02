@@ -49,6 +49,37 @@
     equal(checkboxes.first().val(), "0");
     equal(checkboxes.last().val(), "2");
   });
+	
+
+  test('Options as array of group objects', function() {
+    var editor = new Editor({
+      schema: {
+        options: [
+          {
+            group: 'North America', options: [
+              { val: 'ca', label: 'Canada' },
+              { val: 'us', label: 'United States' }
+            ],
+          },
+          {
+            group: 'Europe', options: [
+              { val: 'es', label: 'Spain' },
+              { val: 'fr', label: 'France' },
+              { val: 'uk', label: 'United Kingdom' }
+            ]
+          }
+        ]
+      }
+    }).render();
+
+    var checkboxes = editor.$el.find("input[type=checkbox]");
+    var labels = editor.$el.find("label");
+		var fieldset = editor.$el.find("fieldset");
+    equal(checkboxes.length, 5);
+    equal(checkboxes.length, labels.length);
+    equal(fieldset.length, 2);
+		
+  });
 
   test('Default value', function() {
     var editor = new Editor({
