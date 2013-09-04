@@ -75,9 +75,15 @@
     var checkboxes = editor.$el.find("input[type=checkbox]");
     var labels = editor.$el.find("label");
 		var fieldset = editor.$el.find("fieldset");
+    var uniqueLabels = [];
     equal(checkboxes.length, 5);
     equal(checkboxes.length, labels.length);
     equal(fieldset.length, 2);
+    labels.each(function(){
+      if(uniqueLabels.indexOf($(this).attr('for')) == -1 )
+        uniqueLabels.push($(this).attr('for'));
+    });
+    equal(checkboxes.length, uniqueLabels.length);
 		
   });
 

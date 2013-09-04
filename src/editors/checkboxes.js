@@ -11,6 +11,8 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
 
   tagName: 'ul',
 
+  groupNumber: 0,
+
   events: {
     'click input[type=checkbox]': function() {
       this.trigger('change', this);
@@ -69,9 +71,12 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
 			var close = true;
       if (_.isObject(option)) {
         if (option.group) {
+          var originalId = self.id;
+          self.id += "-" + self.groupNumber++; 
           itemHtml = ('<fieldset class="group"> <legend>'+option.group+'</legend>');
           itemHtml += (self._arrayToHtml(option.options));
           itemHtml += ('</fieldset>');
+          self.id = originalId;
 					close = false;
         }else{
           var val = (option.val || option.val === 0) ? option.val : '';
