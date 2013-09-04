@@ -319,6 +319,21 @@
     equal(newOptions.last().html(), 'Lilah');
   });
 
+  test('Options as any object', function() {
+    var editor = new Editor({
+      schema: {
+        options: {y:"Yes",n:"No"}
+      }
+    }).render();
+
+    var newOptions = editor.$el.find('option');
+
+    equal(newOptions.first().val(), 'y');
+    equal(newOptions.last().val(), 'n');
+    equal(newOptions.first().html(), 'Yes');
+    equal(newOptions.last().html(), 'No');
+  });
+  
   test('Options as function that calls back with options', function() {
     var editor = new Editor({
       schema: {
