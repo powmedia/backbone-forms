@@ -393,6 +393,7 @@ Creates and populates a `<select>` element.
     - Array of objects in the form `{ val: 123, label: 'Text' }`
     - A Backbone collection
     - A function that calls back with one of the above
+    - An object e.g. `{ y: 'Yes', n: 'No' }`
 
   **Backbone collection notes**
 
