@@ -938,6 +938,7 @@ var CustomEditor = Backbone.Form.editors.Base.extend({
 ##Changelog
 
 ###master
+- Add checkbox array grouping (exussum12)
 - Fix checkboxes and radio 'name' attributes (#95)
 - Allow field template to be defined in schema
 - Fix overriding List modal templates in Bootstrap template pack
