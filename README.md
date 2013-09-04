@@ -939,6 +939,7 @@ var CustomEditor = Backbone.Form.editors.Base.extend({
 ##Changelog
 
 ###master
+- Give checkboxes unique IDs in groups (exussum12)
 - Allow passing an object to Select (lintaba)
 - Add checkbox array grouping (exussum12)
 - Fix checkboxes and radio 'name' attributes (#95)
