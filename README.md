@@ -761,7 +761,7 @@ To customise forms even further you can pass in a template to the form instance 
 ```
 <script id="formTemplate" type="text/html">
     <form>
-        <h1>Edit profile</h1>
+        <h1><%= heading1 %></h1>
         
         <h2>Name</h2>
         <div data-editors="firstName"><!-- firstName editor will be added here --></div>
@@ -779,7 +779,8 @@ To customise forms even further you can pass in a template to the form instance 
 ```js
 var form = new Backbone.Form({
     template: _.template($('#formTpl').html()),
-    model: new UserModel() //defined elsewhere
+    model: new UserModel(), //defined elsewhere
+    templateData: {heading1: 'Edit profile'}
 });
 ```
 
