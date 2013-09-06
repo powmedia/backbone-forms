@@ -75,7 +75,8 @@ test('stores important options', function() {
   var options = {
     model: new Backbone.Model(),
     data: { foo: 1 },
-    idPrefix: 'foo'
+    idPrefix: 'foo',
+    templateData: { bar: 2 }
   }
 
   var form = new Form(options);
@@ -83,6 +84,7 @@ test('stores important options', function() {
   same(form.model, options.model);
   same(form.data, options.data);
   same(form.idPrefix, options.idPrefix);
+  same(form.templateData, options.templateData);
 });
 
 test('overrides defaults', function() {
