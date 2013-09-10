@@ -157,7 +157,7 @@ var Form = Backbone.View.extend({
     //Re-trigger editor events on the form
     var formEvent = editor.key+':'+event;
 
-    this.trigger.call(this, formEvent, this, editor);
+    this.trigger.call(this, formEvent, this, editor, Array.prototype.slice.call(arguments, 2));
 
     //Trigger additional events
     switch (event) {

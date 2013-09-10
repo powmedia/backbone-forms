@@ -335,7 +335,24 @@ test('adds listener to all editor events', function() {
   same(form.handleEditorEvent.callCount, 4);
 });
 
+test('editor events can be triggered with any number of arguments', function() {
+  var MockField = this.MockField;
 
+  var form = new Form({
+    Field: MockField,
+    idPrefix: 'foo',
+    data: { name: 'John' }
+  });
+
+  this.sinon.stub(form, 'trigger', function() { console.log(arguments)});
+
+  var field = form.createField('name', { type: 'Text' });
+
+  //Trigger events on editor to check they call the handleEditorEvent callback
+  form.handleEditorEvent('focus', field.editor, 'arg1', 'arg2');
+
+  same(form.trigger.calledWith('undefined:focus', form, field.editor, ['arg1', 'arg2']), true);
+});
 
 module('Form#handleEditorEvent', {
   setup: function() {
