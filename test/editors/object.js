@@ -60,6 +60,26 @@
     deepEqual(editor.getValue(), { id: 28, name: 'Pam' });
   });
 
+  test('Nested form class', function(){
+    var agency = new Backbone.Model({
+      spy: {
+        id: 28,
+        name: 'Pam'
+      }
+    });
+
+    var CustomNestedFormClass = Form.extend({});
+
+    var editor = new Editor({
+      form: new Form(),
+      schema: _.extend(schema, {nestedFormClass: CustomNestedFormClass}),
+      model: agency,
+      key: 'spy'
+    }).render();
+
+    ok(editor.nestedForm instanceof CustomNestedFormClass);
+  });
+
   test("TODO: idPrefix is added to child form elements", function() {
     ok(1);
   });

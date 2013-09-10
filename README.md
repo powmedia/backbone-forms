@@ -458,6 +458,10 @@ The Object editor creates an embedded child form representing a Javascript objec
 
   A schema object which defines the field schema for each attribute in the object
 
+- **`nestedFormClass`**
+
+  A custom class to use to instantiate the nested form of this editor. Default to Backbone.Form.
+
 ###Events
 
 - **`<key>:<event>`**

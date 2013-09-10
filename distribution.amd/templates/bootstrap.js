@@ -52,7 +52,7 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
     Form.editors.List.template = _.template('\
       <div class="bbf-list">\
         <ul class="unstyled clearfix" data-items></ul>\
-        <button class="btn bbf-add" data-action="add">Add</button>\
+        <button type="button" class="btn bbf-add" data-action="add">Add</button>\
       </div>\
     ');
 
