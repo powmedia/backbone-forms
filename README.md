@@ -274,8 +274,10 @@ If a form has a model attached to it, the initial values are taken from the mode
 
   Events fired by editors within this form will bubble up and be fired as `<key>:<event>`.
 
-        form.on('title:change', function(form, titleEditor) {
+        form.on('title:change', function(form, titleEditor, extra) {
             console.log('Title changed to "' + titleEditor.getValue() + '".');
+            // where extra is an array of extra arguments that
+            // a custom editor might need
         });
 
 [Back to top](#top)
