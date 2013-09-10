@@ -941,6 +941,7 @@ var CustomEditor = Backbone.Form.editors.Base.extend({
 ##Changelog
 
 ###master
+- Make it possible to trigger editor events with custom arguments (mvergerdelbove)
 - Give checkboxes unique IDs in groups (exussum12)
 - Allow passing an object to Select (lintaba)
 - Add checkbox array grouping (exussum12)
