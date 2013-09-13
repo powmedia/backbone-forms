@@ -248,7 +248,7 @@ var Form = Backbone.View.extend({
     });
 
     //Get errors from default Backbone model validator
-    if (options.validate && model && model.validate) {
+    if (!options.noModelValidation && model && model.validate) {
       var modelErrors = model.validate(this.getValue());
 
       if (modelErrors) {
@@ -296,7 +296,7 @@ var Form = Backbone.View.extend({
     options = options || {};
 
     var validateOptions = {
-        validate: options.validate
+        noModelValidation: !options.validate
     };
 
     var errors = this.validate(validateOptions);
