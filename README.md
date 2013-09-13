@@ -617,7 +617,7 @@ This is a special editor which is in **a separate file and must be included**:
 
 There are 2 levels of validation: schema validators and the regular
 built-in Backbone model validation. Backbone Forms will run both by
-default when `form.validate()` is called, unlesss `{ noModelValidation: true }` is passed. 
+default when `form.validate()` is called, unless `{ noModelValidation: true }` is passed. 
 Calling `form.commit()` will run schema level validation by default, and can also run model validation if `{ validate: true }` is passed.
 
 
