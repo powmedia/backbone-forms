@@ -534,7 +534,7 @@ test('validates the form and returns an errors object', function () {
   same(form.validate(), null);
 });
 
-test('returns model validation errors', function() {
+test('returns model validation errors by default', function() {
   var model = new Backbone.Model;
   
   model.validate = function() {
@@ -551,6 +551,22 @@ test('returns model validation errors', function() {
   var err = form.validate();
   
   same(err._others, ['FOO']);
+});
+
+test('skips model validation if { skipModelValidate: true } is passed', function() {
+  var model = new Backbone.Model();
+  
+  model.validate = function() {
+    return 'ERROR';
+  };
+  
+  var form = new Form({
+    model: model
+  });
+  
+  var err = form.validate({ skipModelValidate: true });
+  
+  same(err, null);
 });
 
 
@@ -572,7 +588,7 @@ test('returns validation errors', function() {
   same(err.foo, 'bar');
 });
 
-test('returns model validation errors', function() {
+test('does not return  model validation errors by default', function() {
   var model = new Backbone.Model();
   
   model.validate = function() {
@@ -584,6 +600,22 @@ test('returns model validation errors', function() {
   });
   
   var err = form.commit();
+  
+  same(err, undefined);
+});
+
+test('returns model validation errors when { validate: true } is passed', function() {
+  var model = new Backbone.Model();
+  
+  model.validate = function() {
+    return 'ERROR';
+  };
+  
+  var form = new Form({
+    model: model
+  });
+  
+  var err = form.commit({ validate: true });
   
   same(err._others, ['ERROR']);
 });
