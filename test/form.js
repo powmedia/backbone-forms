@@ -59,7 +59,7 @@ test('uses from model if provided', function() {
 
 test('uses from model if provided - when schema is a function', function() {
   var model = new Backbone.Model();
-  
+
   model.schema = function() {
     return { fromModel: 'Text' };
   }
@@ -101,6 +101,20 @@ test('overrides defaults', function() {
   same(form.NestedField, options.NestedField);
 });
 
+test('prefers template stored on form prototype over one stored on class', function() {
+  var oldTemplate = Form.template;
+
+  var newTemplate = _.template('<form><b data-fieldsets></b></div>');
+
+  Form.prototype.template = newTemplate;
+
+  var form = new Form();
+
+  same(form.template, newTemplate);
+
+  delete Form.prototype.template;
+});
+
 test('uses template stored on form class', function() {
   var oldTemplate = Form.template;
 
@@ -113,6 +127,26 @@ test('uses template stored on form class', function() {
   same(form.template, newTemplate);
 
   Form.template = oldTemplate;
+});
+
+test('uses fieldset and field classes stored on prototype over those stored on form class', function() {
+  DifferentField = function () {};
+  DifferentFieldset = function () {};
+  DifferentNestedField = function () {};
+
+  Form.prototype.Field = DifferentField;
+  Form.prototype.Fieldset = DifferentFieldset;
+  Form.prototype.NestedField = DifferentNestedField;
+
+  var form = new Form();
+
+  same(form.Fieldset, DifferentFieldset);
+  same(form.Field, DifferentField);
+  same(form.NestedField, DifferentNestedField);
+
+  delete Form.prototype.Field;
+  delete Form.prototype.Fieldset;
+  delete Form.prototype.NestedField;
 });
 
 test('uses fieldset and field classes stored on form class', function() {
@@ -197,7 +231,7 @@ test('creates fieldsets - with "fieldsets" option', function() {
   same(schemaArg, ['password']);
 });
 
-test('creates fieldsets - defaults to all fields in one fieldset', function() {  
+test('creates fieldsets - defaults to all fields in one fieldset', function() {
   this.sinon.spy(Form.prototype, 'createFieldset');
 
   var form = new Form({
@@ -232,7 +266,7 @@ module('Form#createFieldset', {
 
 test('creates a new instance of the Fieldset defined on the form', function() {
   var MockFieldset = Backbone.View.extend();
-  
+
   var form = new Form({
     schema: { name: 'Text', age: 'Number' },
     Fieldset: MockFieldset
@@ -294,7 +328,7 @@ test('creates a new instance of the Field defined on the form - with model', fun
 
 test('creates a new instance of the Field defined on the form - without model', function() {
   var MockField = this.MockField;
-  
+
   var form = new Form({
     Field: MockField,
     idPrefix: 'foo',
@@ -315,7 +349,7 @@ test('creates a new instance of the Field defined on the form - without model', 
 
 test('adds listener to all editor events', function() {
   var MockField = this.MockField;
-  
+
   var form = new Form({
     Field: MockField,
     idPrefix: 'foo',
@@ -524,7 +558,7 @@ test('validates the form and returns an errors object', function () {
       title: {validators: ['required']}
     }
   });
-  
+
   var err = form.validate();
 
   same(err.title.type, 'required');
@@ -536,20 +570,20 @@ test('validates the form and returns an errors object', function () {
 
 test('returns model validation errors', function() {
   var model = new Backbone.Model;
-  
+
   model.validate = function() {
     return 'FOO';
   };
-  
+
   var form = new Form({
     model: model,
     schema: {
       title: {validators: ['required']}
     }
   });
-  
+
   var err = form.validate();
-  
+
   same(err._others, ['FOO']);
 });
 
@@ -561,30 +595,30 @@ test('returns validation errors', function() {
   var form = new Form({
     model: new Backbone.Model()
   });
-  
+
   //Mock
   form.validate = function() {
     return { foo: 'bar' }
   };
-  
+
   var err = form.commit();
-  
+
   same(err.foo, 'bar');
 });
 
 test('returns model validation errors', function() {
   var model = new Backbone.Model();
-  
+
   model.validate = function() {
     return 'ERROR';
   };
-  
+
   var form = new Form({
     model: model
   });
-  
+
   var err = form.commit();
-  
+
   same(err._others, ['ERROR']);
 });
 
@@ -611,17 +645,17 @@ test('triggers model change once', function() {
     model: model,
     schema: { title: 'Text', author: 'Text' }
   });
-  
+
   //Count change events
   var timesCalled = 0;
   model.on('change', function() {
     timesCalled ++;
   });
-  
+
   form.setValue('title', 'New title');
   form.setValue('author', 'New author');
   form.commit();
-  
+
   same(timesCalled, 1);
 });
 
@@ -632,7 +666,7 @@ test('can silence change event with options', function() {
     model: model,
     schema: { title: 'Text', author: 'Text' }
   });
-    
+
   //Count change events
   var timesCalled = 0;
   model.on('change', function() {
@@ -652,7 +686,7 @@ module('Form#getValue');
 
 test('returns form value as an object', function() {
   var data = {
-    title: 'Nooope', 
+    title: 'Nooope',
     author: 'Lana Kang'
   };
 
@@ -663,16 +697,16 @@ test('returns form value as an object', function() {
       author: {}
     }
   }).render();
-  
+
   var result = form.getValue();
-  
+
   same(result.title, 'Nooope');
   same(result.author, 'Lana Kang');
 });
 
 test('returns specific field value', function() {
   var data = {
-    title: 'Danger Zone!', 
+    title: 'Danger Zone!',
     author: 'Sterling Archer'
   };
 
@@ -683,7 +717,7 @@ test('returns specific field value', function() {
       author: {}
     }
   }).render();
-  
+
   same(form.getValue('title'), 'Danger Zone!');
 });
 
@@ -793,16 +827,16 @@ module('Form#remove', {
   }
 });
 
-test('removes fieldsets, fields and self', function() {  
+test('removes fieldsets, fields and self', function() {
   var form = new Form({
     schema: { title: 'Text', author: 'Text' },
     fieldsets: [
       ['title', 'author']
     ]
   });
-  
+
   form.remove();
-  
+
   same(Form.Fieldset.prototype.remove.callCount, 1);
 
   //Field.remove is called twice each because is called directly and through fieldset
