@@ -548,12 +548,12 @@ test('returns model validation errors by default', function() {
     }
   });
   
-  var err = form.validate({ validate: true });
+  var err = form.validate();
   
   same(err._others, ['FOO']);
 });
 
-test('does not return model validation errors if { noModelValidation: true } is passed', function() {
+test('skips model validation if { skipModelValidate: true } is passed', function() {
   var model = new Backbone.Model();
   
   model.validate = function() {
@@ -564,7 +564,7 @@ test('does not return model validation errors if { noModelValidation: true } is 
     model: model
   });
   
-  var err = form.validate({ noModelValidation: true });
+  var err = form.validate({ skipModelValidate: true });
   
   same(err, null);
 });
