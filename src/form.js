@@ -6,7 +6,7 @@ var Form = Backbone.View.extend({
 
   /**
    * Constructor
-   * 
+   *
    * @param {Object} [options.schema]
    * @param {Backbone.Model} [options.model]
    * @param {Object} [options.data]
@@ -100,7 +100,7 @@ var Form = Backbone.View.extend({
     var options = {
       form: this,
       key: key,
-      schema: schema,
+      schema: schema || {},
       idPrefix: this.idPrefix
     };
 
@@ -112,7 +112,9 @@ var Form = Backbone.View.extend({
       options.value = null;
     }
 
-    var field = new this.Field(options);
+    var fieldConstructor = options.schema.field || this.Field;
+
+    var field = new fieldConstructor(options);
 
     this.listenTo(field.editor, 'all', this.handleEditorEvent);
 
@@ -219,7 +221,7 @@ var Form = Backbone.View.extend({
 
     //Set the main element
     this.setElement($form);
-    
+
     //Set class
     $form.addClass(this.className);
 
@@ -304,7 +306,7 @@ var Form = Backbone.View.extend({
     }, options);
 
     this.model.set(this.getValue(), setOptions);
-    
+
     if (modelError) return modelError;
   },
 
@@ -434,8 +436,8 @@ var Form = Backbone.View.extend({
   ', null, this.templateSettings),
 
   templateSettings: {
-    evaluate: /<%([\s\S]+?)%>/g, 
-    interpolate: /<%=([\s\S]+?)%>/g, 
+    evaluate: /<%([\s\S]+?)%>/g,
+    interpolate: /<%=([\s\S]+?)%>/g,
     escape: /<%-([\s\S]+?)%>/g
   },
 
