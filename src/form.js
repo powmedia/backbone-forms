@@ -57,6 +57,7 @@ var Form = Backbone.View.extend({
     this.Fieldset = options.Fieldset || this.Fieldset || constructor.Fieldset;
     this.Field = options.Field || this.Field || constructor.Field;
     this.NestedField = options.NestedField || this.NestedField || constructor.NestedField;
+    this.NestedForm = options.NestedForm || this.NestedForm || constructor.NestedForm;
 
     //Check which fields will be included (defaults to all)
     var selectedFields = this.selectedFields = options.fields || _.keys(schema);
