@@ -89,7 +89,7 @@ Form.editors.Select = Form.editors.Base.extend({
     $select.html(html);
 
     //Select correct option
-    this.setValue(this.value);
+    this.setValue(this.value.id || this.value);
   },
 
   _getOptionsHtml: function(options) {
