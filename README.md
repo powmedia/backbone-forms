@@ -941,6 +941,7 @@ var CustomEditor = Backbone.Form.editors.Base.extend({
 ##Changelog
 
 ###master
+- Fix form.commit() to only run model-level validation if {validate:true} passed (cmaher)
 - Allow for setting defaults on the prototype (patbenatar)
 - Make it possible to trigger editor events with custom arguments (mvergerdelbove)
 - Give checkboxes unique IDs in groups (exussum12)
