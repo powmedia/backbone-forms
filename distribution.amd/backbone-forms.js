@@ -245,11 +245,13 @@ var Form = Backbone.View.extend({
    *
    * @return {Object}       Validation errors
    */
-  validate: function() {
+  validate: function(options) {
     var self = this,
         fields = this.fields,
         model = this.model,
         errors = {};
+
+    options = options || {};
 
     //Collect errors from schema validation
     _.each(fields, function(field) {
@@ -260,7 +262,7 @@ var Form = Backbone.View.extend({
     });
 
     //Get errors from default Backbone model validator
-    if (model && model.validate) {
+    if (!options.skipModelValidate && model && model.validate) {
       var modelErrors = model.validate(this.getValue());
 
       if (modelErrors) {
@@ -305,7 +307,13 @@ var Form = Backbone.View.extend({
    */
   commit: function(options) {
     //Validate
-    var errors = this.validate();
+    options = options || {};
+
+    var validateOptions = {
+        skipModelValidate: !options.validate
+    };
+
+    var errors = this.validate(validateOptions);
     if (errors) return errors;
 
     //Commit
