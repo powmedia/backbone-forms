@@ -1,0 +1,119 @@
+<!--
+  TESTS FOR DEVELOPMENT
+  These use the individual source files. Use this while developing
+-->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+  <!-- SRC LIB FILES -->
+  <script src="lib/jquery.js"></script>
+  <script src="lib/underscore-1.5.2.js"></script>
+  <script src="lib/backbone-1.1.0.js"></script>
+  <script src="lib/backbone-deep-model-0.10.1.js"></script>
+  <script src="../distribution/backbone-forms.js"></script>
+  <script src="../src/editors/extra/list.js"></script>
+
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.css">
+
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.css">
+
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.js"></script>
+
+  <script src="../distribution/templates/bootstrap.v3.js"></script>
+  <link rel="stylesheet" href="../distribution/templates/bootstrap.v3.css" />
+
+
+  <script src="../distribution/adapters/backbone.bootstrap-modal.js"></script>
+  <script>
+    Backbone.Form.editors.List.Modal.ModalAdapter = Backbone.BootstrapModal;
+  </script>
+
+  <style type="text/css">
+    body {
+      width: 1200px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+
+  <script>
+    $(function() {
+      var NestedModel = Backbone.Model.extend({
+        schema: {
+          name: { validators: ['required']},
+          email: { validators: ['required', 'email'] }
+        }
+      });
+
+      var schema = {
+        email:      { dataType: 'email', validators: ['required', 'email'] },
+        tel:        { type: 'Text', dataType: 'tel', validators: ['required'], help: 'Include area code' },
+        number:     { type: 'Number', validators: [/[0-9]+(?:\.[0-9]*)?/] },
+        hidden:     { type: 'Hidden' },
+        checkbox:   { type: 'Checkbox' },
+        radio:      { type: 'Radio', options: ['Opt 1', 'Opt 2'] },
+        select:     { type: 'Select', options: ['Opt 1', 'Opt 2'] },
+        groupSelect: { type: 'Select', options: [
+          {
+            group: 'North America', options: [
+              { val: 'ca', label: 'Canada' },
+              { val: 'us', label: 'United States' }
+            ],
+          },
+          {
+            group: 'Europe', options: [
+              { val: 'es', label: 'Spain' },
+              { val: 'fr', label: 'France' },
+              { val: 'uk', label: 'United Kingdom' }
+            ]
+          }
+        ] },
+        checkboxes: { type: 'Checkboxes', options: ['Sterling', 'Lana', 'Cyril', 'Cheryl', 'Pam'] },
+        object:     { type: 'Object', subSchema: {
+          name: {},
+          age:  { type: 'Number' }
+        }},
+        nestedModel: { type: 'NestedModel', model: NestedModel },
+        shorthand: 'Password',
+        date: { type: 'Date' },
+        dateTime: { type: 'DateTime', yearStart: 2000, yearEnd: 1980 },
+
+        //List
+        textList: { type: 'List', itemType: 'Text', validators: ['required', 'email'] },
+        objList: { type: 'List', itemType: 'Object', subSchema: {
+          name: { type: 'Text', validators: ['required'] },
+          age: 'Number'
+        } }
+      };
+
+      var model = new Backbone.Model({
+        number: null,
+        hidden: 'secret!',
+        checkbox: true,
+        textList: ['item1', 'item2', 'item3']
+      });
+
+      var form = new Backbone.Form({
+        options: { editorRender: 'replaceWith' },
+        model: model,
+        schema: schema,
+        fieldsets: [
+          ['email', 'tel', 'number', 'hidden', 'checkbox', 'radio', 'select', 'groupSelect', 'checkboxes', 'customTemplate', 'shorthand', 'date', 'dateTime'],
+          { legend: 'Lists', fields: ['textList', 'objList'] },
+          { legend: 'Nested editors', fields: ['object', 'nestedModel'] }
+        ]
+      });
+
+      window.form = form;
+
+      $('body').html(form.render().el);
+    });
+  </script>
+</body>
+</html>
