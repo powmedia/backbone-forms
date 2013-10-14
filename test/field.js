@@ -282,9 +282,10 @@ test('supports editor rendering options', function() {
     options: { editorRender: 'replaceWith' },
     schema: schema
   });
-
   var $form = form.render().$el;
-  same(form.fields.fromOptions.editor.el,$form.find('[data-editor]').get(0));
+
+  //Field's $el should have replace the placeholder element.
+  same(form.fields.fromOptions.editor.el, $form.find('[data-editor]').get(0));
 });
 
 
