@@ -865,7 +865,7 @@ Form.Field = Backbone.View.extend({
       var $el = editor.render().$el;
 
       if (_this.form && _this.form.options.editorRender == 'replaceWith') {
-        //Copy elements of [data-editor] element to input
+        //Copy data-attributes and append classnames
         var attributes = $container.prop('attributes');
         $.each(attributes, function() {
             if (this.name.indexOf('data') == 0) {
