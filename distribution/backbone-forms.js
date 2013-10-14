@@ -31,6 +31,10 @@
 
 var Form = Backbone.View.extend({
 
+  defaultOptions: {
+    editorRender: 'append'
+  },
+
   /**
    * Constructor
    * 
@@ -71,6 +75,7 @@ var Form = Backbone.View.extend({
 
     //Store important data
     _.extend(this, _.pick(options, 'model', 'data', 'idPrefix'));
+    this.options = _.extend({}, this.defaultOptions, options.options || {});
 
     //Override defaults
     var constructor = this.constructor;
@@ -849,7 +854,8 @@ Form.Field = Backbone.View.extend({
    */
   render: function() {
     var schema = this.schema,
-        editor = this.editor;
+        editor = this.editor,
+        _this = this;
 
     //Only render the editor if Hidden
     if (schema.type == Form.editors.Hidden) {
@@ -869,7 +875,22 @@ Form.Field = Backbone.View.extend({
 
       if (_.isUndefined(selection)) return;
 
-      $container.append(editor.render().el);
+      var $el = editor.render().$el;
+
+      if (_this.form && _this.form.options.editorRender == 'replaceWith') {
+        //Copy data-attributes and append classnames
+        var attributes = $container.prop('attributes');
+        $.each(attributes, function() {
+            if (this.name.indexOf('data') == 0) {
+              $el.attr(this.name, this.value);
+            } else if (this.name.indexOf('class') == 0) {
+              $el.addClass(this.value);
+            }
+        });
+        $container.replaceWith($el);
+      } else {
+        $container.append($el);
+      }
     });
 
     this.setElement($field);

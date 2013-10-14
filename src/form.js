@@ -4,6 +4,10 @@
 
 var Form = Backbone.View.extend({
 
+  defaultOptions: {
+    editorRender: 'append'
+  },
+
   /**
    * Constructor
    * 
@@ -44,6 +48,7 @@ var Form = Backbone.View.extend({
 
     //Store important data
     _.extend(this, _.pick(options, 'model', 'data', 'idPrefix'));
+    this.options = _.extend({}, this.defaultOptions, options.options || {});
 
     //Override defaults
     var constructor = this.constructor;
