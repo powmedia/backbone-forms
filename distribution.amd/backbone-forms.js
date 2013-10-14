@@ -862,16 +862,16 @@ Form.Field = Backbone.View.extend({
 
       if (_.isUndefined(selection)) return;
 
+      var $el = editor.render().$el;
+
       if (_this.form && _this.form.options.editorRender == 'replaceWith') {
         var attributes = $container.prop('attributes');
-        var $el = editor.render().$el;
         $.each(attributes, function() {
             $el.attr(this.name, this.value);
         });
         $container.replaceWith($el);
-
       } else {
-        $container.append(editor.render().el);
+        $container.append($el);
       }
     });
 
