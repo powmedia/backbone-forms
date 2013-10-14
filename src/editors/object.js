@@ -79,6 +79,11 @@ Form.editors.Object = Form.editors.Base.extend({
     return this.nestedForm.validate();
   },
 
+  getBaseClassName:function () {
+    //Since this is not really an editor, but a set of sub-editors
+    return '';
+  },
+
   _observeFormEvents: function() {
     if (!this.nestedForm) return;
     

@@ -13,7 +13,6 @@
     <form role="form" data-fieldsets></form>\
   ');
 
-
   Form.Fieldset.template = _.template('\
     <fieldset data-fields>\
       <% if (legend) { %>\
@@ -32,6 +31,22 @@
     </div>\
   ');
 
+  Form.editors.Date.template = _.template('\
+    <div class="bbf-date">\
+      <select class="form-control" data-type="date"><%= dates %></select>\
+      <select class="form-control" data-type="month"><%= months %></select>\
+      <select class="form-control" data-type="year"><%= years %></select>\
+    </div>\
+  ');
+
+  Form.editors.DateTime.template = _.template('\
+    <div class="bbf-datetime">\
+      <div class="bbf-date-container" data-date></div>\
+      <select data-type="hour" class="form-control"><%= hours %></select>\
+      :\
+      <select data-type="min" class="form-control"><%= mins %></select>\
+    </div>\
+  ');
 
   Form.NestedField.template = _.template('\
     <div class="form-group field-<%= key %>">\

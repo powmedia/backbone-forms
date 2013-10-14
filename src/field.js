@@ -29,7 +29,7 @@ Form.Field = Backbone.View.extend({
 
     //Override defaults
     this.template = options.template || schema.template || this.constructor.template;
-    this.errorClassName = options.errorClassName || this.constructor.errorClassName;
+    this.errorClassName = options.errorClassName || this.form.options.errorClassName || this.constructor.errorClassName;
 
     //Create editor
     this.editor = this.createEditor();

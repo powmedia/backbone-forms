@@ -308,7 +308,11 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
       //Create main element
       var $el = $($.trim(this.template()));
 
-      $el.find('[data-editor]').append(this.editor.el);
+      if (this.form && this.form.options.editorRender == 'replaceWith') {
+        $el.find('[data-editor]').replaceWith(this.editor.el);
+      } else {
+        $el.find('[data-editor]').append(this.editor.el);
+      }
 
       //Replace the entire element so there isn't a wrapper tag
       this.setElement($el);
@@ -379,6 +383,11 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
     clearError: function() {
       this.$el.removeClass(this.errorClassName);
       this.$el.attr('title', null);
+    },
+
+    getBaseClassName:function () {
+      //Since this is not really an editor, but a set of sub-editors
+      return '';
     }
   }, {
 

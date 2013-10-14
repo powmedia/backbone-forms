@@ -55,6 +55,11 @@ Form.editors.Radio = Form.editors.Select.extend({
     this.$('input[type=radio]:focus').blur();
   },
 
+  getBaseClassName:function () {
+    //Since this is not really an editor, but a set of sub-editors
+    return 'radio';
+  },
+
   /**
    * Create the radio list HTML
    * @param {Array}   Options as a simple array e.g. ['option1', 'option2']

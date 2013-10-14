@@ -36,7 +36,7 @@
   <style type="text/css">
     body {
       width: 1200px;
-      margin: 0 auto;
+      margin: 20px auto;
     }
   </style>
 </head>
@@ -100,7 +100,7 @@
       });
 
       var form = new Backbone.Form({
-        options: { editorRender: 'replaceWith' },
+        options: { editorRender: 'replaceWith', errorClassName: 'has-error' },
         model: model,
         schema: schema,
         fieldsets: [
@@ -113,6 +113,13 @@
       window.form = form;
 
       $('body').html(form.render().el);
+
+      $submit = $('<a class"btn btn-submit">Submit</a>').click(function() {
+
+      });
+
+      $('body > form').append($submit);
+
     });
   </script>
 </body>
