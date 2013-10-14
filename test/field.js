@@ -275,6 +275,17 @@ test('with data-editor and data-error placeholders', function() {
   same(field.$el.html(), 'Title<b data-editor=""><input class="title"></b><i data-error=""></i>');
 });
 
+test('supports editor rendering options', function() {
+  var schema = { fromOptions: 'Text' };
+
+  var form = new Form({
+    options: { editorRender: 'replaceWith' },
+    schema: schema
+  });
+
+  var $form = form.render().$el;
+  same(form.fields.fromOptions.editor.el,$form.find('[data-editor]').get(0));
+});
 
 
 module('Field#validate', {
