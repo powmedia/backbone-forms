@@ -29,7 +29,7 @@ Form.validators = (function() {
         message: _.isFunction(options.message) ? options.message(options) : options.message
       };
       
-      if (value === null || value === undefined || value === false || value === '') return err;
+      if (value === null || value === undefined || value === false || value === '' || (typeof value =="object" && value.length == 0) ) return err;
     };
   };
   
