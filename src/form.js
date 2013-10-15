@@ -18,32 +18,25 @@ var Form = Backbone.View.extend({
    * @param {Function} [options.template]
    */
   initialize: function(options) {
-    var self = this;
-
     options = options || {};
-
+    
+    //Store important data
+    _.extend(this, _.pick(options, 'model', 'data', 'idPrefix'));
+    
     //Find the schema to use
-    var schema = this.schema = (function() {
+    var schema = this.schema = function() {
       //Prefer schema from options
       if (options.schema) return _.result(options, 'schema');
 
       //Then schema on model
-      var model = options.model;
-      if (model && model.schema) {
-        return (_.isFunction(model.schema)) ? model.schema() : model.schema;
-      }
+      if (this.model && this.model.schema) return _.result(this.model, 'schema');
 
       //Then built-in schema
-      if (self.schema) {
-        return (_.isFunction(self.schema)) ? self.schema() : self.schema;
-      }
+      if (this.schema) return _.result(this, 'schema');
 
       //Fallback to empty schema
       return {};
-    })();
-
-    //Store important data
-    _.extend(this, _.pick(options, 'model', 'data', 'idPrefix'));
+    }.call(this);
 
     //Override defaults
     var constructor = this.constructor;
