@@ -55,6 +55,11 @@ Form.editors.NestedModel = Form.editors.Object.extend({
     }
 
     return Form.editors.Object.prototype.commit.call(this);
+  },
+
+  getBaseClassName:function () {
+    //Since this is not really an editor, but a set of sub-editors
+    return '';
   }
 
 });

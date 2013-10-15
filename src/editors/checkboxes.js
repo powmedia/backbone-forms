@@ -56,6 +56,11 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
     this.$('input[type=checkbox]:focus').blur();
   },
 
+  getBaseClassName:function () {
+    //Since this is not really an editor, but a set of sub-editors
+    return 'checkboxes';
+  },
+
   /**
    * Create the checkbox list HTML
    * @param {Array}   Options as a simple array e.g. ['option1', 'option2']
@@ -67,7 +72,7 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
     var self = this;
 
     _.each(array, function(option, index) {
-      var itemHtml = '<li>';
+      var itemHtml = '<li class="checkbox">';
 			var close = true;
       if (_.isObject(option)) {
         if (option.group) {

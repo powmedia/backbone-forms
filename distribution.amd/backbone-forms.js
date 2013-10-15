@@ -18,6 +18,10 @@ define(['jquery', 'underscore', 'backbone'], function($, _, Backbone) {
 
 var Form = Backbone.View.extend({
 
+  defaultOptions: {
+    editorRender: 'append'
+  },
+
   /**
    * Constructor
    * 
@@ -58,6 +62,7 @@ var Form = Backbone.View.extend({
 
     //Store important data
     _.extend(this, _.pick(options, 'model', 'data', 'idPrefix'));
+    this.options = _.extend({}, this.defaultOptions, options.options || {});
 
     //Override defaults
     var constructor = this.constructor;
@@ -726,7 +731,11 @@ Form.Field = Backbone.View.extend({
 
     //Override defaults
     this.template = options.template || schema.template || this.constructor.template;
-    this.errorClassName = options.errorClassName || this.constructor.errorClassName;
+    if (this.form) {
+      this.errorClassName = options.errorClassName || this.form.options.errorClassName || this.constructor.errorClassName;
+    } else {
+      this.errorClassName = options.errorClassName || this.constructor.errorClassName;
+    }
 
     //Create editor
     this.editor = this.createEditor();
@@ -836,7 +845,8 @@ Form.Field = Backbone.View.extend({
    */
   render: function() {
     var schema = this.schema,
-        editor = this.editor;
+        editor = this.editor,
+        _this = this;
 
     //Only render the editor if Hidden
     if (schema.type == Form.editors.Hidden) {
@@ -856,7 +866,22 @@ Form.Field = Backbone.View.extend({
 
       if (_.isUndefined(selection)) return;
 
-      $container.append(editor.render().el);
+      var $el = editor.render().$el;
+
+      if (_this.form && _this.form.options.editorRender == 'replaceWith') {
+        //Copy data-attributes and append classnames
+        var attributes = $container.prop('attributes');
+        $.each(attributes, function() {
+            if (this.name.indexOf('data') == 0) {
+              $el.attr(this.name, this.value);
+            } else if (this.name.indexOf('class') == 0) {
+              $el.addClass(this.value);
+            }
+        });
+        $container.replaceWith($el);
+      } else {
+        $container.append($el);
+      }
     });
 
     this.setElement($field);
@@ -1040,9 +1065,14 @@ Form.Editor = Form.editors.Base = Backbone.View.extend({
 
     this.validators = options.validators || schema.validators;
 
+    if (this.template) {
+      this.setElement(this.template(this.templateData));
+    }
+
     //Main attributes
     this.$el.attr('id', this.id);
     this.$el.attr('name', this.getName());
+    this.$el.addClass(this.getBaseClassName());
     if (schema.editorClass) this.$el.addClass(schema.editorClass);
     if (schema.editorAttrs) this.$el.attr(schema.editorAttrs);
   },
@@ -1191,7 +1221,23 @@ Form.Editor = Form.editors.Base = Backbone.View.extend({
     
     //Unkown validator type
     throw new Error('Invalid validator: ' + validator);
+  },
+
+  getBaseClassName: function() {
+    return Form.Editor.baseClassName;
+  },
+
+  templateData: function() {
+    return {
+      foo: 'bar'
+    }
   }
+
+}, {
+
+  //override in template JS to add classname to all simple editors
+  baseClassName: ''
+
 });
 
 /**
@@ -1768,6 +1814,11 @@ Form.editors.Radio = Form.editors.Select.extend({
     this.$('input[type=radio]:focus').blur();
   },
 
+  getBaseClassName:function () {
+    //Since this is not really an editor, but a set of sub-editors
+    return 'radios';
+  },
+
   /**
    * Create the radio list HTML
    * @param {Array}   Options as a simple array e.g. ['option1', 'option2']
@@ -1779,7 +1830,7 @@ Form.editors.Radio = Form.editors.Select.extend({
     var self = this;
 
     _.each(array, function(option, index) {
-      var itemHtml = '<li>';
+      var itemHtml = '<li class="radio">';
       if (_.isObject(option)) {
         var val = (option.val || option.val === 0) ? option.val : '';
         itemHtml += ('<input type="radio" name="'+self.getName()+'" value="'+val+'" id="'+self.id+'-'+index+'" />');
@@ -1856,6 +1907,11 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
     this.$('input[type=checkbox]:focus').blur();
   },
 
+  getBaseClassName:function () {
+    //Since this is not really an editor, but a set of sub-editors
+    return 'checkboxes';
+  },
+
   /**
    * Create the checkbox list HTML
    * @param {Array}   Options as a simple array e.g. ['option1', 'option2']
@@ -1867,7 +1923,7 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
     var self = this;
 
     _.each(array, function(option, index) {
-      var itemHtml = '<li>';
+      var itemHtml = '<li class="checkbox">';
 			var close = true;
       if (_.isObject(option)) {
         if (option.group) {
@@ -1980,6 +2036,11 @@ Form.editors.Object = Form.editors.Base.extend({
     return this.nestedForm.validate();
   },
 
+  getBaseClassName:function () {
+    //Since this is not really an editor, but a set of sub-editors
+    return '';
+  },
+
   _observeFormEvents: function() {
     if (!this.nestedForm) return;
     
@@ -2052,6 +2113,11 @@ Form.editors.NestedModel = Form.editors.Object.extend({
     }
 
     return Form.editors.Object.prototype.commit.call(this);
+  },
+
+  getBaseClassName:function () {
+    //Since this is not really an editor, but a set of sub-editors
+    return '';
   }
 
 });

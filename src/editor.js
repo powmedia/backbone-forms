@@ -40,9 +40,14 @@ Form.Editor = Form.editors.Base = Backbone.View.extend({
 
     this.validators = options.validators || schema.validators;
 
+    if (this.template) {
+      this.setElement(this.template(this.templateData));
+    }
+
     //Main attributes
     this.$el.attr('id', this.id);
     this.$el.attr('name', this.getName());
+    this.$el.addClass(this.getBaseClassName());
     if (schema.editorClass) this.$el.addClass(schema.editorClass);
     if (schema.editorAttrs) this.$el.attr(schema.editorAttrs);
   },
@@ -191,5 +196,14 @@ Form.Editor = Form.editors.Base = Backbone.View.extend({
     
     //Unkown validator type
     throw new Error('Invalid validator: ' + validator);
+  },
+
+  getBaseClassName: function() {
+    return Form.Editor.baseClassName;
   }
+}, {
+
+  //override in template JS to add classname to all simple editors
+  baseClassName: ''
+
 });
