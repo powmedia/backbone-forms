@@ -114,8 +114,8 @@
 
       $('body').html(form.render().el);
 
-      $submit = $('<a class"btn btn-submit">Submit</a>').click(function() {
-
+      $submit = $('<a class="btn btn-primary">Submit</a>').click(function() {
+        window.form.validate()
       });
 
       $('body > form').append($submit);

@@ -3,8 +3,10 @@
     margin-top: 1em
 }
 
-ul.radio, ul.checkboxes {
+ul.radios, ul.checkboxes {
     list-style-type: none;
+    margin: 0;
+    padding: 0;
 }
 
 /* Date */
@@ -31,12 +33,6 @@ ul.radio, ul.checkboxes {
   width: 4em;
 }
 
-
-/* List */
-.bbf-list .bbf-add {
-  margin-top: -10px
-}
-
 .bbf-list li {
   margin-bottom: 5px
 }
@@ -44,7 +40,6 @@ ul.radio, ul.checkboxes {
 .bbf-list .bbf-del {
   margin-left: 4px
 }
-
 
 /* List.Modal */
 .bbf-list-modal {
@@ -54,4 +49,9 @@ ul.radio, ul.checkboxes {
   border-radius: 3px;
   padding: 4px;
   color: #555;
+}
+
+.modal-body, .modal-footer {
+    background: white;
+    max-width: 800px;
 }

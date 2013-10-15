@@ -1812,7 +1812,7 @@ Form.editors.Radio = Form.editors.Select.extend({
 
   getBaseClassName:function () {
     //Since this is not really an editor, but a set of sub-editors
-    return 'radio';
+    return 'radios';
   },
 
   /**
@@ -1826,7 +1826,7 @@ Form.editors.Radio = Form.editors.Select.extend({
     var self = this;
 
     _.each(array, function(option, index) {
-      var itemHtml = '<li>';
+      var itemHtml = '<li class="radio">';
       if (_.isObject(option)) {
         var val = (option.val || option.val === 0) ? option.val : '';
         itemHtml += ('<input type="radio" name="'+self.getName()+'" value="'+val+'" id="'+self.id+'-'+index+'" />');
