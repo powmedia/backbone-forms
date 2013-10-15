@@ -200,14 +200,7 @@ Form.Editor = Form.editors.Base = Backbone.View.extend({
 
   getBaseClassName: function() {
     return Form.Editor.baseClassName;
-  },
-
-  templateData: function() {
-    return {
-      foo: 'bar'
-    }
   }
-
 }, {
 
   //override in template JS to add classname to all simple editors
