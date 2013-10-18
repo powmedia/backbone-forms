@@ -72,7 +72,7 @@ module('Fieldset#createSchema', {
   }
 });
 
-test('converts an array schema into an object with legend', function() {
+test('converts an array schema into an object with legend and cssClass', function() {
   var options = {
     fields: {
       title: new Form.Field({ key: 'title' }),
@@ -85,7 +85,7 @@ test('converts an array schema into an object with legend', function() {
 
   var schema = fs.createSchema(options.schema);
 
-  same(schema, { legend:null, fields: ['title', 'author'] });
+  same(schema, { cssClass: null, legend:null, fields: ['title', 'author'] });
 });
 
 test('returns fully formed schema as is', function() {
@@ -183,6 +183,28 @@ test('with data-fields placeholder, on inner element', function() {
   same(fs.$el.html(), 'Main<b data-fields=""><field class="title"></field><field class="author"></field></b>');
 });
 
+test('has a cssClass', function() {
+  var UserForm = Backbone.Form.extend({
+      schema: {
+          title:      { type: 'Select', options: ['Mr', 'Mrs', 'Ms'] },
+          name:       'Text',
+          email:      { validators: ['required', 'email'] },
+          password:   'Password'
+      },
+
+      fieldsets: [
+        {fields: ['title', 'name'], cssClass: 'pull-right'},
+        {fields: ['email', 'password']}
+      ]
+  });
+
+  var form = new UserForm();
+
+  form.render();
+
+  same(form.$el.html(), '<fieldset class=\"pull-right\" data-fields=\"\">          <field class=\"title\"></field><field class=\"name\"></field></fieldset><fieldset data-fields=\"\">          <field class=\"email\"></field><field class=\"password\"></field></fieldset>');
+});
+
 test('with data-fields placeholder, on outermost element', function() {
   var fs = new Fieldset({
     fields: {
@@ -212,7 +234,7 @@ module('Form#remove', {
   }
 });
 
-test('removes fieldsets, fields and self', function() {  
+test('removes fieldsets, fields and self', function() {
   var fs = new Fieldset({
     fields: {
       title: new Form.Field({ key: 'title' }),
@@ -220,7 +242,7 @@ test('removes fieldsets, fields and self', function() {
     },
     schema: { legend: 'Main', fields: ['title', 'author'] }
   });
-  
+
   fs.remove();
 
   same(Form.Field.prototype.remove.callCount, 2);
