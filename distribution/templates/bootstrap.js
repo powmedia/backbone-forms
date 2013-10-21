@@ -5,6 +5,7 @@
  */
 ;(function(Form) {
 
+    Form.editors.Base.editorClass = 'form-control';
   
   /**
    * Bootstrap templates for Backbone Forms

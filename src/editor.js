@@ -43,8 +43,8 @@ Form.Editor = Form.editors.Base = Backbone.View.extend({
     //Main attributes
     this.$el.attr('id', this.id);
     this.$el.attr('name', this.getName());
-    if (schema.editorClass) this.$el.addClass(schema.editorClass);
-    if (schema.editorAttrs) this.$el.attr(schema.editorAttrs);
+    this.$el.addClass(schema.editorClass || this.constructor.editorClass || Form.Editor.editorClass);
+    this.$el.attr(schema.editorAttrs || this.constructor.editorAttrs || Form.Editor.editorAttrs);
   },
 
   /**
@@ -192,4 +192,7 @@ Form.Editor = Form.editors.Base = Backbone.View.extend({
     //Unkown validator type
     throw new Error('Invalid validator: ' + validator);
   }
+}, {
+    editorClass: "",
+    editorAttrs: {}
 });

@@ -6,6 +6,7 @@
 define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Backbone) {
   var Form = Backbone.Form;
 
+    Form.editors.Base.editorClass = 'form-control';
   
   /**
    * Bootstrap templates for Backbone Forms
