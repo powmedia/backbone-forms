@@ -35,4 +35,4 @@
   //Exports
   Backbone.Form = Form;
 
-})(this);
+})(window || global || this);
