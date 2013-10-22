@@ -2439,5 +2439,6 @@ Form.editors.DateTime = Form.editors.Base.extend({
 
   //Exports
   Backbone.Form = Form;
+  if (typeof exports !== 'undefined') exports = Form;
 
-})(this);
+})(window || global || this);
