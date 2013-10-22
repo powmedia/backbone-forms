@@ -13,5 +13,6 @@
     "underscore": "latest",
     "uglify-js": "latest"
   },
-  "main": "distribution.amd/backbone-forms.js"
+  "main": "distribution.amd/backbone-forms.js",
+  "browser": "distribution/backbone-forms.js"
 }
