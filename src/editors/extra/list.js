@@ -96,11 +96,20 @@
         Editor: this.Editor,
         key: this.key
       }).render();
-      
+
+			var sortItems = function(a,b){
+				if (a.getValue() == null || a.getValue() == "") return -1;
+				if (b.getValue() == null|| b.getValue() == "") return -1;
+
+				return a.getValue().localeCompare(b.getValue());
+			}
+
       var _addItem = function() {
         self.items.push(item);
+
         self.$list.append(item.el);
-        
+			//self must get over ridden somewhere ? make a copy called that
+       var that=self; 
         item.editor.on('all', function(event) {
           if (event === 'change') return;
 
@@ -127,6 +136,15 @@
           this.trigger('focus', this);
         }, self);
         item.editor.on('blur', function() {
+
+				if(that.schema.sort === true || typeof that.schema.sort == "function"){
+					var sortFunction = (that.schema.sort === true)?sortItems:that.schema.sort;
+					that.items.sort(sortFunction);
+					_.each(that.items, function(listItem){
+						listItem.$el.detach().appendTo(that.$list);
+
+					});
+				}
           if (!this.hasFocus) return;
           var self = this;
           setTimeout(function() {
