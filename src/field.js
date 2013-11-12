@@ -148,7 +148,9 @@ Form.Field = Backbone.View.extend({
       editorAttrs: schema.editorAttrs,
       key: this.key,
       fieldClass: this.getClass(),
-      editorId: this.editor.id
+      editorId: this.editor.id,
+      fieldPrefix: schema.fieldPrefix,
+      fieldSuffix: schema.fieldSuffix
     };
   },
 
@@ -288,12 +290,14 @@ Form.Field = Backbone.View.extend({
 
   template: _.template('\
     <div class="<%= fieldClass %>">\
+      <%= fieldPrefix %>\
       <label for="<%= editorId %>"><%= title %></label>\
       <div>\
         <span data-editor></span>\
         <div data-error></div>\
         <div><%= help %></div>\
       </div>\
+      <%= fieldSuffix %>\
     </div>\
   ', null, Form.templateSettings),
 
