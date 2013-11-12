@@ -20,7 +20,7 @@ var User = Backbone.Model.extend({
         birthday:   'Date',
         password:   'Password',
         address:    { type: 'NestedModel', model: Address },
-        notes:      { type: 'List', listType: 'Text' }
+        notes:      { type: 'List', itemType: 'Text' }
     }
 });
 
@@ -77,7 +77,7 @@ $('body').append(form.el);
 
 
 ###Live editable demos
-- [User form](http://jsfiddle.net/evilcelery/VkUFu/)
+- [User form](http://jsfiddle.net/evilcelery/dW2Qu/)
 - [Form with Bootstrap templates and an Object list](http://jsfiddle.net/evilcelery/4XZMb/)
 - [Update form elements based on user input](http://jsfiddle.net/evilcelery/c5QHr/)
 
@@ -115,7 +115,7 @@ $('body').append(form.el);
 ##Installation
 
 Dependencies:
-- [Backbone 1.0](http://documentcloud.github.com/backbone/)
+- [Backbone 1.0+](http://documentcloud.github.com/backbone/)
 
 
 Include backbone-forms.js:
@@ -156,7 +156,7 @@ var User = Backbone.Model.extend({
         birthday:   'Date',
         password:   'Password',
         address:    { type: 'NestedModel', model: Address },
-        notes:      { type: 'List', listType: 'Text' }
+        notes:      { type: 'List', itemType: 'Text' }
     }
 });
 
@@ -274,8 +274,10 @@ If a form has a model attached to it, the initial values are taken from the mode
 
   Events fired by editors within this form will bubble up and be fired as `<key>:<event>`.
 
-        form.on('title:change', function(form, titleEditor) {
+        form.on('title:change', function(form, titleEditor, extra) {
             console.log('Title changed to "' + titleEditor.getValue() + '".');
+            // where extra is an array of extra arguments that
+            // a custom editor might need
         });
 
 [Back to top](#top)
@@ -393,6 +395,7 @@ Creates and populates a `<select>` element.
     - Array of objects in the form `{ val: 123, label: 'Text' }`
     - A Backbone collection
     - A function that calls back with one of the above
+    - An object e.g. `{ y: 'Yes', n: 'No' }`
 
   **Backbone collection notes**
 
@@ -547,7 +550,7 @@ This is a special editor which is in **a separate file and must be included**:
 
     <script src="backbone-forms/distribution/editors/list.min.js" />
 
-**If using the `Object` or `NestedModel` listType**, you will need to include a modal adapter on the page. [Backbone.BootstrapModal](http://github.com/powmedia/backbone.bootstrap-modal) is provided for this purpose. It must be included on the page:
+**If using the `Object` or `NestedModel` itemType**, you will need to include a modal adapter on the page. [Backbone.BootstrapModal](http://github.com/powmedia/backbone.bootstrap-modal) is provided for this purpose. It must be included on the page:
 
     <script src="backbone-forms/distribution/adapters/backbone.bootstrap-modal.min.js" />
 
@@ -566,7 +569,7 @@ This is a special editor which is in **a separate file and must be included**:
 
   A function that returns a string representing how the object should be displayed in a list item.
 
-  Optional, but recommended when using listType 'Object'. When listType is 'NestedModel', the model's `toString()` method will be used, unless a specific `itemToString()` function is defined on the schema.
+  Optional, but recommended when using itemType 'Object'. When itemType is 'NestedModel', the model's `toString()` method will be used, unless a specific `itemToString()` function is defined on the schema.
 
 
 ###Events
@@ -937,10 +940,24 @@ var CustomEditor = Backbone.Form.editors.Base.extend({
 <a name="changelog"/>
 ##Changelog
 
-###master
+###0.13.0
+- Confirming compatibility with Backbone 1.1.0 (still supporting 1.0.0)
+- Fix form.commit() to only run model-level validation if {validate:true} passed (cmaher)
+- Allow for setting defaults on the prototype (patbenatar)
+- Make it possible to trigger editor events with custom arguments (mvergerdelbove)
+- Give checkboxes unique IDs in groups (exussum12)
+- Allow passing an object to Select (lintaba)
+- Add checkbox array grouping (exussum12)
 - Fix checkboxes and radio 'name' attributes (#95)
 - Allow field template to be defined in schema
 - Fix overriding List modal templates in Bootstrap template pack
+- Add ability to unset checkbox (exussum12)
+- Fix change event on number field when using spinner (clearly)
+- Render hidden inputs, without labels
+- Remove `type` attribute from TextAreas (#261)
+- Fix error when using template files without list.js (philfreo)
+- Allow overriding 'step' attribute in Number editor (jarek)
+- Allow most falsey values as an Editor value (ewang)
 
 ###0.12.0
 - Update for Backbone 1.0

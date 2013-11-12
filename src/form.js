@@ -1,4 +1,3 @@
-
 //==================================================================================================
 //FORM
 //==================================================================================================
@@ -48,10 +47,10 @@ var Form = Backbone.View.extend({
 
     //Override defaults
     var constructor = this.constructor;
-    this.template = options.template || constructor.template;
-    this.Fieldset = options.Fieldset || constructor.Fieldset;
-    this.Field = options.Field || constructor.Field;
-    this.NestedField = options.NestedField || constructor.NestedField;
+    this.template = options.template || this.template || constructor.template;
+    this.Fieldset = options.Fieldset || this.Fieldset || constructor.Fieldset;
+    this.Field = options.Field || this.Field || constructor.Field;
+    this.NestedField = options.NestedField || this.NestedField || constructor.NestedField;
 
     //Check which fields will be included (defaults to all)
     var selectedFields = this.selectedFields = options.fields || _.keys(schema);
@@ -131,7 +130,7 @@ var Form = Backbone.View.extend({
     //Re-trigger editor events on the form
     var formEvent = editor.key+':'+event;
 
-    this.trigger.call(this, formEvent, this, editor);
+    this.trigger.call(this, formEvent, this, editor, Array.prototype.slice.call(arguments, 2));
 
     //Trigger additional events
     switch (event) {
@@ -220,6 +219,9 @@ var Form = Backbone.View.extend({
 
     //Set the main element
     this.setElement($form);
+    
+    //Set class
+    $form.addClass(this.className);
 
     return this;
   },
@@ -238,6 +240,8 @@ var Form = Backbone.View.extend({
         model = this.model,
         errors = {};
 
+    options = options || {};
+
     //Collect errors from schema validation
     _.each(fields, function(field) {
       var error = field.validate(options);
@@ -247,7 +251,7 @@ var Form = Backbone.View.extend({
     });
 
     //Get errors from default Backbone model validator
-    if (model && model.validate) {
+    if (!options.skipModelValidate && model && model.validate) {
       var modelErrors = model.validate(this.getValue());
 
       if (modelErrors) {
@@ -292,7 +296,13 @@ var Form = Backbone.View.extend({
    */
   commit: function(options) {
     //Validate
-    var errors = this.validate();
+    options = options || {};
+
+    var validateOptions = {
+        skipModelValidate: !options.validate
+    };
+
+    var errors = this.validate(validateOptions);
     if (errors) return errors;
 
     //Commit
@@ -424,7 +434,7 @@ var Form = Backbone.View.extend({
       field.remove();
     });
 
-    Backbone.View.prototype.remove.call(this);
+    return Backbone.View.prototype.remove.apply(this, arguments);
   }
 
 }, {

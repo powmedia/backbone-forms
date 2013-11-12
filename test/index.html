@@ -15,8 +15,8 @@
   <!-- SRC LIB FILES -->
   <script src="lib/jquery.js"></script>
 
-  <script src="lib/underscore-1.4.4.js"></script>
-  <script src="lib/backbone-1.0.0.js"></script>
+  <script src="lib/underscore-1.5.2.js"></script>
+  <script src="lib/backbone-1.1.0.js"></script>
   <script src="lib/backbone-deep-model-0.10.1.js"></script>
 
   <!-- SOURCE FILES -->
@@ -95,6 +95,7 @@
         email:      { dataType: 'email', validators: ['required', 'email'] },
         tel:        { type: 'Text', dataType: 'tel', validators: ['required'], help: 'Include area code' },
         number:     { type: 'Number', validators: [/[0-9]+(?:\.[0-9]*)?/] },
+        hidden:     { type: 'Hidden' },
         checkbox:   { type: 'Checkbox' },
         radio:      { type: 'Radio', options: ['Opt 1', 'Opt 2'] },
         select:     { type: 'Select', options: ['Opt 1', 'Opt 2'] },
@@ -133,6 +134,7 @@
       
       var model = new Backbone.Model({
         number: null,
+        hidden: 'secret!',
         checkbox: true,
         textList: ['item1', 'item2', 'item3']
       });
@@ -141,7 +143,7 @@
         model: model,
         schema: schema,
         fieldsets: [
-          ['email', 'tel', 'number', 'checkbox', 'radio', 'select', 'groupSelect', 'checkboxes', 'customTemplate', 'shorthand', 'date', 'dateTime'],
+          ['email', 'tel', 'number', 'hidden', 'checkbox', 'radio', 'select', 'groupSelect', 'checkboxes', 'customTemplate', 'shorthand', 'date', 'dateTime'],
           { legend: 'Lists', fields: ['textList', 'objList'] },
           { legend: 'Nested editors', fields: ['object', 'nestedModel'] }
         ]

@@ -77,6 +77,7 @@ Form.editors.Select = Form.editors.Base.extend({
    * @param {Mixed}   Options as a simple array e.g. ['option1', 'option2']
    *                      or as an array of objects e.g. [{val: 543, label: 'Title for object 543'}]
    *                      or as a string of <option> HTML to insert into the <select>
+   *                      or any object
    */
   renderOptions: function(options) {
     var $select = this.$el,
@@ -110,16 +111,20 @@ Form.editors.Select = Form.editors.Base.extend({
 
     else if (_.isFunction(options)) {
       var newOptions;
-      
+
       options(function(opts) {
         newOptions = opts;
       }, this);
-      
+
       html = this._getOptionsHtml(newOptions);
+    //Or any object
+    }else{
+      html=this._objectToHtml(options);
     }
 
     return html;
   },
+
 
   getValue: function() {
     return this.$el.val();
@@ -158,6 +163,27 @@ Form.editors.Select = Form.editors.Base.extend({
 
     return html;
   },
+  /**
+   * Transforms an object into HTML ready to use in the renderOptions method
+   * @param {Object}
+   * @return {String}
+   */
+  _objectToHtml: function(obj) {
+    //Convert object to array first
+    var array = [];
+    for(var key in obj){
+      if( obj.hasOwnProperty( key ) ) {
+        array.push({ val: key, label: obj[key] });
+      }
+    }
+
+    //Now convert to HTML
+    var html = this._arrayToHtml(array);
+
+    return html;
+  },
+
+
 
   /**
    * Create the <option> HTML

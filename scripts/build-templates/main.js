@@ -34,5 +34,6 @@
 
   //Exports
   Backbone.Form = Form;
+  if (typeof exports !== 'undefined') exports = Form;
 
-})(this);
+})(window || global || this);
