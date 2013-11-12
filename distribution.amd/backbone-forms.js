@@ -838,7 +838,9 @@ Form.Field = Backbone.View.extend({
       editorAttrs: schema.editorAttrs,
       key: this.key,
       fieldClass: this.getClass(),
-      editorId: this.editor.id
+      editorId: this.editor.id,
+      fieldPrefix: schema.fieldPrefix,
+      fieldSuffix: schema.fieldSuffix
     };
   },
 
@@ -880,7 +882,7 @@ Form.Field = Backbone.View.extend({
    *
    * @return {String}
    */
-  validate: function(options) {
+  validate: function() {
     var error = this.editor.validate();
 
     if (options && options.noSetError) {
@@ -978,12 +980,14 @@ Form.Field = Backbone.View.extend({
 
   template: _.template('\
     <div class="<%= fieldClass %>">\
+      <%= fieldPrefix %>\
       <label for="<%= editorId %>"><%= title %></label>\
       <div>\
         <span data-editor></span>\
         <div data-error></div>\
         <div><%= help %></div>\
       </div>\
+      <%= fieldSuffix %>\
     </div>\
   ', null, Form.templateSettings),
 
@@ -1696,7 +1700,6 @@ Form.editors.Radio = Form.editors.Select.extend({
   events: {
     'change input[type=radio]': function(e) {
       this._addClasses();
-      this.trigger('change', this);
     },
     'focus input[type=radio]': function() {
       if (this.hasFocus) return;
