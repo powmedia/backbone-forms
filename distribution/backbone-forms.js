@@ -1,5 +1,5 @@
 /**
- * Backbone Forms v0.12.0
+ * Backbone Forms v0.13.0
  *
  * Copyright (c) 2013 Charles Davison, Pow Media Ltd
  *
@@ -25,8 +25,7 @@
 
 
   //SOURCE
-  
-//==================================================================================================
+  //==================================================================================================
 //FORM
 //==================================================================================================
 
@@ -75,10 +74,10 @@ var Form = Backbone.View.extend({
 
     //Override defaults
     var constructor = this.constructor;
-    this.template = options.template || constructor.template;
-    this.Fieldset = options.Fieldset || constructor.Fieldset;
-    this.Field = options.Field || constructor.Field;
-    this.NestedField = options.NestedField || constructor.NestedField;
+    this.template = options.template || this.template || constructor.template;
+    this.Fieldset = options.Fieldset || this.Fieldset || constructor.Fieldset;
+    this.Field = options.Field || this.Field || constructor.Field;
+    this.NestedField = options.NestedField || this.NestedField || constructor.NestedField;
 
     //Check which fields will be included (defaults to all)
     var selectedFields = this.selectedFields = options.fields || _.keys(schema);
@@ -158,7 +157,7 @@ var Form = Backbone.View.extend({
     //Re-trigger editor events on the form
     var formEvent = editor.key+':'+event;
 
-    this.trigger.call(this, formEvent, this, editor);
+    this.trigger.call(this, formEvent, this, editor, Array.prototype.slice.call(arguments, 2));
 
     //Trigger additional events
     switch (event) {
@@ -247,6 +246,9 @@ var Form = Backbone.View.extend({
 
     //Set the main element
     this.setElement($form);
+    
+    //Set class
+    $form.addClass(this.className);
 
     return this;
   },
@@ -265,6 +267,8 @@ var Form = Backbone.View.extend({
         model = this.model,
         errors = {};
 
+    options = options || {};
+
     //Collect errors from schema validation
     _.each(fields, function(field) {
       var error = field.validate(options);
@@ -274,7 +278,7 @@ var Form = Backbone.View.extend({
     });
 
     //Get errors from default Backbone model validator
-    if (model && model.validate) {
+    if (!options.skipModelValidate && model && model.validate) {
       var modelErrors = model.validate(this.getValue());
 
       if (modelErrors) {
@@ -319,7 +323,13 @@ var Form = Backbone.View.extend({
    */
   commit: function(options) {
     //Validate
-    var errors = this.validate();
+    options = options || {};
+
+    var validateOptions = {
+        skipModelValidate: !options.validate
+    };
+
+    var errors = this.validate(validateOptions);
     if (errors) return errors;
 
     //Commit
@@ -451,7 +461,7 @@ var Form = Backbone.View.extend({
       field.remove();
     });
 
-    Backbone.View.prototype.remove.call(this);
+    return Backbone.View.prototype.remove.apply(this, arguments);
   }
 
 }, {
@@ -866,6 +876,11 @@ Form.Field = Backbone.View.extend({
     var schema = this.schema,
         editor = this.editor;
 
+    //Only render the editor if Hidden
+    if (schema.type == Form.editors.Hidden) {
+      return this.setElement(editor.render().el);
+    }
+
     //Render field
     var $field = $($.trim(this.template(_.result(this, 'templateData'))));
 
@@ -1059,7 +1074,7 @@ Form.Editor = Form.editors.Base = Backbone.View.extend({
 
       this.value = this.model.get(options.key);
     }
-    else if (options.value) {
+    else if (options.value !== undefined) {
       this.value = options.value;
     }
 
@@ -1331,7 +1346,14 @@ Form.editors.Text = Form.Editor.extend({
  */
 Form.editors.TextArea = Form.editors.Text.extend({
 
-  tagName: 'textarea'
+  tagName: 'textarea',
+
+  /**
+   * Override Text constructor so type property isn't set (issue #261)
+   */
+  initialize: function(options) {
+    Form.editors.Base.prototype.initialize.call(this, options);
+  }
 
 });
 
@@ -1358,14 +1380,22 @@ Form.editors.Number = Form.editors.Text.extend({
   defaultValue: 0,
 
   events: _.extend({}, Form.editors.Text.prototype.events, {
-    'keypress': 'onKeyPress'
+    'keypress': 'onKeyPress',
+    'change': 'onKeyPress'
   }),
 
   initialize: function(options) {
     Form.editors.Text.prototype.initialize.call(this, options);
 
+    var schema = this.schema;
+
     this.$el.attr('type', 'number');
-    this.$el.attr('step', 'any');
+
+    if (!schema || !schema.editorAttrs || !schema.editorAttrs.step) {
+      // provide a default for `step` attr,
+      // but don't overwrite if already specified
+      this.$el.attr('step', 'any');
+    }
   },
 
   /**
@@ -1386,7 +1416,10 @@ Form.editors.Number = Form.editors.Text.extend({
     }
 
     //Get the whole new value so that we can prevent things like double decimals points etc.
-    var newVal = this.$el.val() + String.fromCharCode(event.charCode);
+    var newVal = this.$el.val()
+    if( event.charCode != undefined ) {
+      newVal = newVal + String.fromCharCode(event.charCode);
+    }
 
     var numeric = /^[0-9]*\.?[0-9]*?$/.test(newVal);
 
@@ -1423,7 +1456,7 @@ Form.editors.Number = Form.editors.Text.extend({
 /**
  * Hidden editor
  */
-Form.editors.Hidden = Form.editors.Base.extend({
+Form.editors.Hidden = Form.editors.Text.extend({
 
   defaultValue: '',
 
@@ -1488,6 +1521,8 @@ Form.editors.Checkbox = Form.editors.Base.extend({
   setValue: function(value) {
     if (value) {
       this.$el.prop('checked', true);
+    }else{
+      this.$el.prop('checked', false);
     }
   },
 
@@ -1584,6 +1619,7 @@ Form.editors.Select = Form.editors.Base.extend({
    * @param {Mixed}   Options as a simple array e.g. ['option1', 'option2']
    *                      or as an array of objects e.g. [{val: 543, label: 'Title for object 543'}]
    *                      or as a string of <option> HTML to insert into the <select>
+   *                      or any object
    */
   renderOptions: function(options) {
     var $select = this.$el,
@@ -1617,16 +1653,20 @@ Form.editors.Select = Form.editors.Base.extend({
 
     else if (_.isFunction(options)) {
       var newOptions;
-      
+
       options(function(opts) {
         newOptions = opts;
       }, this);
-      
+
       html = this._getOptionsHtml(newOptions);
+    //Or any object
+    }else{
+      html=this._objectToHtml(options);
     }
 
     return html;
   },
+
 
   getValue: function() {
     return this.$el.val();
@@ -1665,6 +1705,27 @@ Form.editors.Select = Form.editors.Base.extend({
 
     return html;
   },
+  /**
+   * Transforms an object into HTML ready to use in the renderOptions method
+   * @param {Object}
+   * @return {String}
+   */
+  _objectToHtml: function(obj) {
+    //Convert object to array first
+    var array = [];
+    for(var key in obj){
+      if( obj.hasOwnProperty( key ) ) {
+        array.push({ val: key, label: obj[key] });
+      }
+    }
+
+    //Now convert to HTML
+    var html = this._arrayToHtml(array);
+
+    return html;
+  },
+
+
 
   /**
    * Create the <option> HTML
@@ -1712,6 +1773,7 @@ Form.editors.Radio = Form.editors.Select.extend({
 
   events: {
     'change input[type=radio]': function(e) {
+      this.trigger('change', this);
       this._addClasses();
     },
     'focus input[type=radio]': function() {
@@ -1801,6 +1863,8 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
 
   tagName: 'ul',
 
+  groupNumber: 0,
+
   events: {
     'click input[type=checkbox]': function() {
       this.trigger('change', this);
@@ -1856,16 +1920,29 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
 
     _.each(array, function(option, index) {
       var itemHtml = '<li>';
+			var close = true;
       if (_.isObject(option)) {
-        var val = (option.val || option.val === 0) ? option.val : '';
-        itemHtml += ('<input type="checkbox" name="'+self.getName()+'" value="'+val+'" id="'+self.id+'-'+index+'" />');
-        itemHtml += ('<label for="'+self.id+'-'+index+'">'+option.label+'</label>');
+        if (option.group) {
+          var originalId = self.id;
+          self.id += "-" + self.groupNumber++; 
+          itemHtml = ('<fieldset class="group"> <legend>'+option.group+'</legend>');
+          itemHtml += (self._arrayToHtml(option.options));
+          itemHtml += ('</fieldset>');
+          self.id = originalId;
+					close = false;
+        }else{
+          var val = (option.val || option.val === 0) ? option.val : '';
+          itemHtml += ('<input type="checkbox" name="'+self.getName()+'" value="'+val+'" id="'+self.id+'-'+index+'" />');
+          itemHtml += ('<label for="'+self.id+'-'+index+'">'+option.label+'</label>');
+        }
       }
       else {
         itemHtml += ('<input type="checkbox" name="'+self.getName()+'" value="'+option+'" id="'+self.id+'-'+index+'" />');
         itemHtml += ('<label for="'+self.id+'-'+index+'">'+option+'</label>');
       }
-      itemHtml += '</li>';
+			if(close){
+				itemHtml += '</li>';
+			}
       html.push(itemHtml);
     });
 
@@ -2396,10 +2473,11 @@ Form.editors.DateTime = Form.editors.Base.extend({
 
 
   //Metadata
-  Form.VERSION = '0.12.0';
+  Form.VERSION = '0.13.0';
 
 
   //Exports
   Backbone.Form = Form;
+  if (typeof exports !== 'undefined') exports = Form;
 
-})(this);
+})(window || global || this);

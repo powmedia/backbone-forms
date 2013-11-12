@@ -13,6 +13,7 @@ Form.editors.Radio = Form.editors.Select.extend({
 
   events: {
     'change input[type=radio]': function(e) {
+      this.trigger('change', this);
       this._addClasses();
     },
     'focus input[type=radio]': function() {
