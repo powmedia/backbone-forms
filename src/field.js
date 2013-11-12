@@ -192,7 +192,7 @@ Form.Field = Backbone.View.extend({
    *
    * @return {String}
    */
-  validate: function() {
+  validate: function(options) {
     var error = this.editor.validate();
 
     if (options && options.noSetError) {
