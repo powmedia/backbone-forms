@@ -227,9 +227,12 @@ var Form = Backbone.View.extend({
   /**
    * Validate the data
    *
+   * @param {Object}  [options]             Options to pass to field.validate()
+   * @param {Boolean} [options.noSetError]  Set to true to disable built-in error setter
+   *
    * @return {Object}       Validation errors
    */
-  validate: function() {
+  validate: function(options) {
     var self = this,
         fields = this.fields,
         model = this.model,
@@ -237,7 +240,7 @@ var Form = Backbone.View.extend({
 
     //Collect errors from schema validation
     _.each(fields, function(field) {
-      var error = field.validate();
+      var error = field.validate(options);
       if (error) {
         errors[field.key] = error;
       }

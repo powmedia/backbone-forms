@@ -127,7 +127,7 @@ Form.Field = Backbone.View.extend({
               name = this.createTitle();
           }
 
-          this.fieldClass = 'input-' + name.toLowerCase().replace(/\W+/g, '-');
+          this.fieldClass = 'form-input input-' + name.toLowerCase().replace(/\W+/g, '-');
       }
 
       return this.fieldClass;
@@ -185,10 +185,17 @@ Form.Field = Backbone.View.extend({
   /**
    * Check the validity of the field
    *
+   * @param {Object}  [options]             Options to pass to field.validate()
+   * @param {Boolean} [options.noSetError]  Set to true to disable built-in error setter
+   *
    * @return {String}
    */
   validate: function() {
     var error = this.editor.validate();
+
+    if (options && options.noSetError) {
+        return error;
+    }
 
     if (error) {
       this.setError(error.message);
