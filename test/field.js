@@ -199,7 +199,13 @@ test('replaces periods with underscores', function() {
   same(field.createEditorId(), 'user_name_first');
 });
 
+test('set correct class names for wrapper element', function() {
+  var field = new Field({
+    key: 'user.name.first'
+  });
 
+  same(field.getClass(), 'form-input input-user-name-first');
+});
 
 module('Field#createTitle');
 
@@ -273,6 +279,25 @@ test('with data-editor and data-error placeholders', function() {
   }).render();
 
   same(field.$el.html(), 'Title<b data-editor=""><input class="title"></b><i data-error=""></i>');
+});
+
+test('includes prefix and suffix in rendered html', function() {
+  var field = new Field({
+    key: 'title',
+    schema: { type: 'Text', fieldPrefix: 'prefix', fieldSuffix: 'suffix' }
+  }).render();
+
+  ok(field.$el.html().indexOf('prefix') > -1, 'Prefix not found in rendered HTML');
+  ok(field.$el.html().indexOf('suffix') > -1, 'Suffix not found in rendered HTML');
+});
+
+test('check correct classes applied to wrapper element', function() {
+  var field = new Field({
+    key: 'title',
+    schema: { type: 'Text' }
+  }).render();
+
+  same(field.$el.attr('class'), 'form-input input-title');
 });
 
 

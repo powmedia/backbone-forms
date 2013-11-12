@@ -603,7 +603,20 @@ test('skips model validation if { skipModelValidate: true } is passed', function
   same(err, null);
 });
 
+test('skips showing validation errors if { noSetError: true } is passed', function() {
+  var form = new Form({
+    schema: {
+      title: {validators: ['required']}
+    }
+  }).render();
 
+  var err = form.validate({ noSetError: true });
+
+  same(err.title.type, 'required');
+  same(err.title.message, 'Required');
+
+  ok(form.$el.html().indexOf('Required') === -1, "Validation message was found.");
+});
 
 module('Form#commit');
 

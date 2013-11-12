@@ -321,4 +321,11 @@
     }, 0);
   });
 
+  test("'change' event - set 'selected' class for checkbox's parent <li>", function() {
+    var editor = this.editor;
+    editor.$("input[type=radio]:not(:checked)").first().click();
+    ok(editor.$("input[type=radio]:checked").first().parents('li').first().hasClass("selected"));
+  });
+
+
 })(Backbone.Form, Backbone.Form.editors.Radio);
