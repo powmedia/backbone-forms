@@ -108,7 +108,7 @@
   });
 
   test('Throws errors if no options', function () {
-      raises(function () {
+      throws(function () {
           var editor = new Editor({schema: {}});
       }, /^Missing required/, 'ERROR: Accepted a new Checkboxes editor with no options.');
   });
