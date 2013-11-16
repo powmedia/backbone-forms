@@ -940,6 +940,9 @@ var CustomEditor = Backbone.Form.editors.Base.extend({
 <a name="changelog"/>
 ##Changelog
 
+###master
+- Being consistent with throwing `Error`s rather than strings (philfreo)
+
 ###0.13.0
 - Confirming compatibility with Backbone 1.1.0 (still supporting 1.0.0)
 - Fix form.commit() to only run model-level validation if {validate:true} passed (cmaher)
