@@ -20,7 +20,7 @@ Form.editors.Object = Form.editors.Base.extend({
     Form.editors.Base.prototype.initialize.call(this, options);
 
     //Check required options
-    if (!this.form) throw 'Missing required option "form"';
+    if (!this.form) throw new Error('Missing required option "form"');
     if (!this.schema.subSchema) throw new Error("Missing required 'schema.subSchema' option for Object editor");
   },
 

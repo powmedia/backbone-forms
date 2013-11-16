@@ -28,7 +28,7 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
       editors.Base.prototype.initialize.call(this, options);
 
       var schema = this.schema;
-      if (!schema) throw "Missing required option 'schema'";
+      if (!schema) throw new Error("Missing required option 'schema'");
 
       this.template = options.template || this.constructor.template;
 
@@ -419,10 +419,10 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
       Form.editors.Base.prototype.initialize.call(this, options);
       
       //Dependencies
-      if (!Form.editors.List.Modal.ModalAdapter) throw 'A ModalAdapter is required';
+      if (!Form.editors.List.Modal.ModalAdapter) throw new Error('A ModalAdapter is required');
 
       this.form = options.form;
-      if (!options.form) throw 'Missing required option: "form"';
+      if (!options.form) throw new Error('Missing required option: "form"');
 
       //Template
       this.template = options.template || this.constructor.template;
@@ -612,7 +612,7 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
 
       var schema = this.schema;
 
-      if (!schema.subSchema) throw 'Missing required option "schema.subSchema"';
+      if (!schema.subSchema) throw new Error('Missing required option "schema.subSchema"');
 
       this.nestedSchema = schema.subSchema;
     }
@@ -625,7 +625,7 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
 
       var schema = this.schema;
 
-      if (!schema.model) throw 'Missing required option "schema.model"';
+      if (!schema.model) throw new Error('Missing required option "schema.model"');
 
       var nestedSchema = schema.model.prototype.schema;
 

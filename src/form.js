@@ -366,7 +366,7 @@ var Form = Backbone.View.extend({
    */
   getEditor: function(key) {
     var field = this.fields[key];
-    if (!field) throw 'Field not found: '+key;
+    if (!field) throw new Error('Field not found: '+key);
 
     return field.editor;
   },

@@ -10,8 +10,8 @@ Form.editors.NestedModel = Form.editors.Object.extend({
   initialize: function(options) {
     Form.editors.Base.prototype.initialize.call(this, options);
 
-    if (!this.form) throw 'Missing required option "form"';
-    if (!options.schema.model) throw 'Missing required "schema.model" option for NestedModel editor';
+    if (!this.form) throw new Error('Missing required option "form"');
+    if (!options.schema.model) throw new Error('Missing required "schema.model" option for NestedModel editor');
   },
 
   render: function() {

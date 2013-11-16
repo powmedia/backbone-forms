@@ -1,5 +1,5 @@
 /**
- * Backbone Forms v0.12.0
+ * Backbone Forms v0.13.0
  *
  * NOTE:
  * This version is for use with RequireJS
@@ -380,7 +380,7 @@ var Form = Backbone.View.extend({
    */
   getEditor: function(key) {
     var field = this.fields[key];
-    if (!field) throw 'Field not found: '+key;
+    if (!field) throw new Error('Field not found: '+key);
 
     return field.editor;
   },
@@ -1021,7 +1021,7 @@ Form.Editor = Form.editors.Base = Backbone.View.extend({
 
     //Set initial value
     if (options.model) {
-      if (!options.key) throw "Missing option: 'key'";
+      if (!options.key) throw new Error("Missing option: 'key'");
 
       this.model = options.model;
 
@@ -1086,7 +1086,7 @@ Form.Editor = Form.editors.Base = Backbone.View.extend({
    * Extend and override this method
    */
   focus: function() {
-    throw 'Not implemented';
+    throw new Error('Not implemented');
   },
   
   /**
@@ -1094,7 +1094,7 @@ Form.Editor = Form.editors.Base = Backbone.View.extend({
    * Extend and override this method
    */
   blur: function() {
-    throw 'Not implemented';
+    throw new Error('Not implemented');
   },
 
   /**
@@ -1521,7 +1521,7 @@ Form.editors.Select = Form.editors.Base.extend({
   initialize: function(options) {
     Form.editors.Base.prototype.initialize.call(this, options);
 
-    if (!this.schema || !this.schema.options) throw "Missing required 'schema.options'";
+    if (!this.schema || !this.schema.options) throw new Error("Missing required 'schema.options'");
   },
 
   render: function() {
@@ -1921,7 +1921,7 @@ Form.editors.Object = Form.editors.Base.extend({
     Form.editors.Base.prototype.initialize.call(this, options);
 
     //Check required options
-    if (!this.form) throw 'Missing required option "form"';
+    if (!this.form) throw new Error('Missing required option "form"');
     if (!this.schema.subSchema) throw new Error("Missing required 'schema.subSchema' option for Object editor");
   },
 
@@ -2007,8 +2007,8 @@ Form.editors.NestedModel = Form.editors.Object.extend({
   initialize: function(options) {
     Form.editors.Base.prototype.initialize.call(this, options);
 
-    if (!this.form) throw 'Missing required option "form"';
-    if (!options.schema.model) throw 'Missing required "schema.model" option for NestedModel editor';
+    if (!this.form) throw new Error('Missing required option "form"');
+    if (!options.schema.model) throw new Error('Missing required "schema.model" option for NestedModel editor');
   },
 
   render: function() {
@@ -2421,7 +2421,7 @@ Form.editors.DateTime = Form.editors.Base.extend({
 
 
   //Metadata
-  Form.VERSION = '0.12.0';
+  Form.VERSION = '0.13.0';
 
   //Exports
   Backbone.Form = Form;
