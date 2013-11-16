@@ -110,7 +110,7 @@
   test('Throws errors if no options', function () {
       throws(function () {
           var editor = new Editor({schema: {}});
-      }, /^Missing required/, 'ERROR: Accepted a new Checkboxes editor with no options.');
+      }, /Missing required/, 'ERROR: Accepted a new Checkboxes editor with no options.');
   });
 
   // Value from model doesn't work here as the value must be an array.

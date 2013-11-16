@@ -70,7 +70,7 @@
   test('Throws errors if no options', function () {
     throws(function () {
       var editor = new Editor({schema: {}});
-    }, /^Missing required/, 'ERROR: Accepted a new Radio editor with no options.');
+    }, /Missing required/, 'ERROR: Accepted a new Radio editor with no options.');
   });
 
   test('Value from model', function() {

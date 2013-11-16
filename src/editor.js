@@ -21,7 +21,7 @@ Form.Editor = Form.editors.Base = Backbone.View.extend({
 
     //Set initial value
     if (options.model) {
-      if (!options.key) throw "Missing option: 'key'";
+      if (!options.key) throw new Error("Missing option: 'key'");
 
       this.model = options.model;
 
@@ -86,7 +86,7 @@ Form.Editor = Form.editors.Base = Backbone.View.extend({
    * Extend and override this method
    */
   focus: function() {
-    throw 'Not implemented';
+    throw new Error('Not implemented');
   },
   
   /**
@@ -94,7 +94,7 @@ Form.Editor = Form.editors.Base = Backbone.View.extend({
    * Extend and override this method
    */
   blur: function() {
-    throw 'Not implemented';
+    throw new Error('Not implemented');
   },
 
   /**
