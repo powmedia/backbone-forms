@@ -70,7 +70,7 @@ var Form = Backbone.View.extend({
     })();
 
     //Store important data
-    _.extend(this, _.pick(options, 'model', 'data', 'idPrefix'));
+    _.extend(this, _.pick(options, 'model', 'data', 'idPrefix', 'templateData'));
 
     //Override defaults
     var constructor = this.constructor;

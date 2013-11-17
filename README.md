@@ -943,6 +943,7 @@ var CustomEditor = Backbone.Form.editors.Base.extend({
 
 ###master
 - Being consistent with throwing `Error`s rather than strings (philfreo)
+- Save templateData when passed as an option (BradDenver)
 
 ###0.13.0
 - Confirming compatibility with Backbone 1.1.0 (still supporting 1.0.0)
