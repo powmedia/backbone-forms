@@ -1,6 +1,6 @@
 #backbone-forms
 
-A flexible, customisable form framework for Backbone.JS applications.
+A flexible, customisable form framework for Backbone.js applications.
 
 - Simple schema definition to auto-generate forms
 - Validation
