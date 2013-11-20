@@ -942,6 +942,7 @@ var CustomEditor = Backbone.Form.editors.Base.extend({
 ##Changelog
 
 ###master
+- Add Bootstrap 3 templates (powmedia)
 - Being consistent with throwing `Error`s rather than strings (philfreo)
 - Save templateData when passed as an option (BradDenver)
 
