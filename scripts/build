@@ -84,7 +84,7 @@ builder(baseDir)
 
 
 //Templates
-['old', 'bootstrap'].forEach(function(name) {
+['old', 'bootstrap', 'bootstrap3'].forEach(function(name) {
   //HTML
   builder(baseDir)
     .load('src/templates/'+name+'.js')

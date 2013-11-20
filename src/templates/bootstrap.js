@@ -1,6 +1,6 @@
 
   /**
-   * Bootstrap templates for Backbone Forms
+   * Bootstrap 2 templates
    */
   Form.template = _.template('\
     <form class="form-horizontal" data-fieldsets></form>\
