@@ -525,7 +525,7 @@ Form.validators = (function() {
       if (value === null || value === undefined || value === '') return;
       
       //Create RegExp from string if it's valid
-      if ('string' === typeof options.regexp) options.regexp = new RegExp(options.regexp);
+      if ('string' === typeof options.regexp) options.regexp = new RegExp(options.regexp, options.flags);
 
       if (!options.regexp.test(value)) return err;
     };
