@@ -941,6 +941,9 @@ var CustomEditor = Backbone.Form.editors.Base.extend({
 <a name="changelog"/>
 ##Changelog
 
+###master
+- Support regexp validator as string (gregsabia)
+
 ###0.14.0
 - Add Bootstrap 3 templates (powmedia)
 - Being consistent with throwing `Error`s rather than strings (philfreo)
