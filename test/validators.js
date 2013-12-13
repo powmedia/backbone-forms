@@ -57,6 +57,11 @@
     regexp: /foo/
   });
 
+  var fnStr = Form.validators.regexp({
+    regexp : '^(foo|bar)$',
+    flags : 'i'
+  });
+
   test('passes empty values', function() {
     equal(fn(''), undefined)
     equal(fn(null), undefined)
@@ -71,6 +76,19 @@
   test('passes valid strings', function() {
     equal(fn('foo'), undefined)
     equal(fn('_foo_'), undefined)
+  })
+
+  test('fails string input', function() {
+    equal(fnStr(''), undefined)
+    equal(fnStr('food').type, 'regexp')
+    equal(fnStr('food').message, 'Invalid')
+    equal(fnStr('bars').type, 'regexp')
+    equal(fnStr('bars').message, 'Invalid')
+  })
+
+  test('passes string input', function() {
+    equal(fnStr('foo'), undefined)
+    equal(fnStr('bar'), undefined)
   })
 
 })();
