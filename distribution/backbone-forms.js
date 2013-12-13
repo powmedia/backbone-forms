@@ -1,5 +1,5 @@
 /**
- * Backbone Forms v0.13.0
+ * Backbone Forms v0.14.0
  *
  * Copyright (c) 2013 Charles Davison, Pow Media Ltd
  *
@@ -531,7 +531,7 @@ Form.validators = (function() {
       
       //Don't check empty values (add a 'required' validator for this)
       if (value === null || value === undefined || value === '') return;
-      
+
       //Create RegExp from string if it's valid
       if ('string' === typeof options.regexp) options.regexp = new RegExp(options.regexp, options.flags);
 
@@ -2437,7 +2437,7 @@ Form.editors.DateTime = Form.editors.Base.extend({
 
 
   //Metadata
-  Form.VERSION = '0.13.0';
+  Form.VERSION = '0.14.0';
 
 
   //Exports
