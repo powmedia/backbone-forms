@@ -100,6 +100,10 @@
     equal(fnMatch('foo'), undefined)
   })
 
+  test('fails strings with match option', function() {
+    equal(fnMatch('bar').message, 'Invalid')
+  })
+
 })();
 
 
