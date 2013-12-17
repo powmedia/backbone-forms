@@ -62,6 +62,11 @@
     flags : 'i'
   });
 
+  var fnMatch = Form.validators.regexp({
+    regexp: /foo/,
+    match: false
+  });  
+
   test('passes empty values', function() {
     equal(fn(''), undefined)
     equal(fn(null), undefined)
@@ -89,6 +94,10 @@
   test('passes string input', function() {
     equal(fnStr('foo'), undefined)
     equal(fnStr('bar'), undefined)
+  })
+
+  test('passes valid strings with match option', function() {
+    equal(fnMatch('foo'), undefined)
   })
 
 })();
