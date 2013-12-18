@@ -943,6 +943,7 @@ var CustomEditor = Backbone.Form.editors.Base.extend({
 
 ###master
 - Support regexp validator as string (gregsabia)
+- Fix bootstrap3 class list name #329
 
 ###0.14.0
 - Add Bootstrap 3 templates (powmedia)
