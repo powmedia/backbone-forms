@@ -53,7 +53,7 @@
 
     Form.editors.List.template = _.template('\
       <div class="bbf-list">\
-        <ul class="unstyled clearfix" data-items></ul>\
+        <ul class="list-unstyled clearfix" data-items></ul>\
         <button type="button" class="btn bbf-add" data-action="add">Add</button>\
       </div>\
     ');
