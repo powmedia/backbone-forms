@@ -52,20 +52,11 @@
 ;(function() {
 
   module('regexp')
-  
+
+  //Main  
   var fn = Form.validators.regexp({
     regexp: /foo/
   });
-
-  var fnStr = Form.validators.regexp({
-    regexp : '^(foo|bar)$',
-    flags : 'i'
-  });
-
-  var fnMatch = Form.validators.regexp({
-    regexp: /foo/,
-    match: false
-  });  
 
   test('passes empty values', function() {
     equal(fn(''), undefined)
@@ -83,26 +74,67 @@
     equal(fn('_foo_'), undefined)
   })
 
+  //regexp as string
   test('fails string input', function() {
-    equal(fnStr(''), undefined)
-    equal(fnStr('food').type, 'regexp')
-    equal(fnStr('food').message, 'Invalid')
-    equal(fnStr('bars').type, 'regexp')
-    equal(fnStr('bars').message, 'Invalid')
+    var fn = Form.validators.regexp({
+      regexp : '^(foo|bar)$',
+      flags : 'i'
+    });
+
+    equal(fn(''), undefined)
+    equal(fn('food').type, 'regexp')
+    equal(fn('food').message, 'Invalid')
+    equal(fn('bars').type, 'regexp')
+    equal(fn('bars').message, 'Invalid')
   })
 
   test('passes string input', function() {
-    equal(fnStr('foo'), undefined)
-    equal(fnStr('bar'), undefined)
+    var fn = Form.validators.regexp({
+      regexp : '^(foo|bar)$',
+      flags : 'i'
+    });
+
+    equal(fn('foo'), undefined)
+    equal(fn('bar'), undefined)
   })
 
-  test('passes valid strings with match option', function() {
-    equal(fnMatch('foo'), undefined)
-  })
 
-  test('fails strings with match option', function() {
-    equal(fnMatch('bar').message, 'Invalid')
-  })
+  //match option
+  test('passes valid strings with match=true', function() {
+    var fn = Form.validators.regexp({
+      regexp: /foo/,
+      match: true
+    });
+
+    equal(fn('foo'), undefined)
+  });
+
+  test('fails strings with match=true', function() {
+    var fn = Form.validators.regexp({
+      regexp: /foo/,
+      match: true
+    });
+
+    equal(fn('bar').message, 'Invalid')
+  });
+
+  test('passes valid strings with match=false', function() {
+    var fn = Form.validators.regexp({
+      regexp: /foo/,
+      match: false
+    });
+
+    equal(fn('foo').message, 'Invalid');
+  });
+
+  test('fails strings with match=false', function() {
+    var fn = Form.validators.regexp({
+      regexp: /foo/,
+      match: false
+    });
+
+    equal(fn('bar'), undefined);
+  });
 
 })();
 
