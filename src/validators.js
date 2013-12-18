@@ -38,6 +38,7 @@ Form.validators = (function() {
   
     options = _.extend({
       type: 'regexp',
+      match: true,
       message: this.errMessages.regexp
     }, options);
     
@@ -55,7 +56,7 @@ Form.validators = (function() {
       //Create RegExp from string if it's valid
       if ('string' === typeof options.regexp) options.regexp = new RegExp(options.regexp, options.flags);
 
-      if (!options.regexp.test(value)) return err;
+       if ((options.match) ? !options.regexp.test(value) : options.regexp.test(value)) return err;
     };
   };
   
