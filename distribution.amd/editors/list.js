@@ -512,10 +512,14 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
       var self = this,
           ModalForm = this.form.constructor;
 
-      var form = this.modalForm = new ModalForm({
-        schema: this.nestedSchema,
-        data: this.value
-      });
+      var formAttrs = { schema: this.nestedSchema };
+      if (this.value instanceof Backbone.Model) {
+        formAttrs.model = this.value;
+      }
+      else {
+        formAttrs.data = this.value;
+      }
+      var form = this.modalForm = new ModalForm(formAttrs);
 
       var modal = this.modal = new Form.editors.List.Modal.ModalAdapter({
         content: form,
@@ -546,7 +550,12 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
       if (error) return modal.preventClose();
 
       //Store form value
-      this.value = form.getValue();
+      if (this.value instanceof Backbone.Model) {
+        form.commit();
+      }
+      else {
+        this.value = form.getValue();
+      }
 
       //Render item
       this.renderSummary();
