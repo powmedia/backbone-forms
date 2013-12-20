@@ -91,6 +91,27 @@
   });
 
 
+  module('#getTemplate()');
+
+  test('returns schema template first', function() {
+    var template = _.template('<div>');
+
+    var editor = new Editor({
+      schema: { template: template, options: [] }
+    });
+
+    equal(editor.getTemplate(), template);
+  });
+
+  test('then constructor template', function() {
+    var editor = new Editor({
+      schema: { options: [] }
+    });
+
+    equal(editor.getTemplate(), Editor.template);
+  });
+
+
 
   module('Radio events', {
     setup: function() {

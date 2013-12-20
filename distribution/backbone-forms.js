@@ -1759,6 +1759,15 @@ Form.editors.Radio = Form.editors.Select.extend({
     }
   },
 
+  /**
+   * Returns the template. Override for custom templates
+   *
+   * @return {Function}       Compiled template
+   */
+  getTemplate: function() {
+    return this.schema.template || this.constructor.template;
+  },
+
   getValue: function() {
     return this.$('input[type=radio]:checked').val();
   },
@@ -1792,26 +1801,45 @@ Form.editors.Radio = Form.editors.Select.extend({
    * @return {String} HTML
    */
   _arrayToHtml: function (array) {
-    var html = [];
     var self = this;
 
-    _.each(array, function(option, index) {
-      var itemHtml = '<li>';
+    var template = this.getTemplate(),
+        name = self.getName(),
+        id = self.id;
+
+    var items = _.map(array, function(option, index) {
+      var item = {
+        name: name,
+        id: id + '-' + index
+      }
+
       if (_.isObject(option)) {
-        var val = (option.val || option.val === 0) ? option.val : '';
-        itemHtml += ('<input type="radio" name="'+self.getName()+'" value="'+val+'" id="'+self.id+'-'+index+'" />');
-        itemHtml += ('<label for="'+self.id+'-'+index+'">'+option.label+'</label>');
+        item.value = (option.val || option.val === 0) ? option.val : '';
+        item.label = option.label;
+      } else {
+        item.value = option;
+        item.label = option;
       }
-      else {
-        itemHtml += ('<input type="radio" name="'+self.getName()+'" value="'+option+'" id="'+self.id+'-'+index+'" />');
-        itemHtml += ('<label for="'+self.id+'-'+index+'">'+option+'</label>');
-      }
-      itemHtml += '</li>';
-      html.push(itemHtml);
+
+      return item;
     });
 
-    return html.join('');
+    return template({ items: items });
   }
+
+}, {
+
+  //STATICS
+  template: _.template('\
+    <ul>\
+      <% _.each(items, function(item) { %>\
+        <li>\
+          <input type="radio" name="<%= item.name %>" value="<%= item.value %>" id="<%= item.id %>" />\
+          <label for="<%= item.id %>"><%= item.label %></label>\
+        </li>\
+      <% }); %>\
+    </ul>\
+  ', null, Form.templateSettings)
 
 });
 
