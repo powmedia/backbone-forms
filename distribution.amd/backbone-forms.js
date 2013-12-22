@@ -2019,20 +2019,20 @@ Form.editors.NestedModel = Form.editors.Object.extend({
     //Get the constructor for creating the nested form; i.e. the same constructor as used by the parent form
     var NestedForm = this.form.constructor;
 
-    var data = this.value || {},
+    var self = this,
+        data = this.value || {},
         key = this.key,
         nestedModel = this.schema.model;
 
     //Wrap the data in a model if it isn't already a model instance
     var modelInstance = (data.constructor === nestedModel) ? data : new nestedModel(data);
 
-    this.nestedForm = new NestedForm({
-      model: modelInstance,
-      idPrefix: this.id + '_'
+    var attrs = {model: data, idPrefix: this.id + '_'};
+    // Pass fields down to the NestedForm
+    _.each(['template', 'templateData', 'fields'], function(key) {
+      if (self.schema[key]) attrs[key] = self.schema[key];
     });
-    if (this.schema.template) {
-      this.nestedForm.template = this.schema.template;
-    }
+    this.nestedForm = new NestedForm(attrs);
 
     this._observeFormEvents();
 
