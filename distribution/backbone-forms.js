@@ -2040,7 +2040,7 @@ Form.editors.NestedModel = Form.editors.Object.extend({
     //Wrap the data in a model if it isn't already a model instance
     var modelInstance = (data.constructor === nestedModel) ? data : new nestedModel(data);
 
-    var attrs = {model: data, idPrefix: this.id + '_'};
+    var attrs = {model: modelInstance, idPrefix: this.id + '_'};
     // Pass fields down to the NestedForm
     _.each(['template', 'templateData', 'fields'], function(key) {
       if (self.schema[key]) attrs[key] = self.schema[key];
