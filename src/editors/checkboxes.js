@@ -72,7 +72,7 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
       if (_.isObject(option)) {
         if (option.group) {
           var originalId = self.id;
-          self.id += "-" + self.groupNumber++; 
+          self.id += "-" + self.groupNumber++;
           itemHtml = ('<fieldset class="group"> <legend>'+option.group+'</legend>');
           itemHtml += (self._arrayToHtml(option.options));
           itemHtml += ('</fieldset>');

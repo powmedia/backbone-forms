@@ -1,6 +1,6 @@
 /**
  * NUMBER
- * 
+ *
  * Normal text input that only allows a number. Letters etc. are not entered.
  */
 Form.editors.Number = Form.editors.Text.extend({

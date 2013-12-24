@@ -18,16 +18,16 @@
     float: left;
     width: 25%;
   }
-  
+
   .bbf-field .bbf-editor {
     margin-left: 25%;
     width: 74%;
   }
-      
+
     .bbf-field input, .bbf-field textarea, .bbf-field select {
       width: 100%;
     }
-  
+
   .bbf-field .bbf-help {
     margin-left: 25%;
     width: 74%;

@@ -11,7 +11,7 @@
   <!-- TEST LIB FILES -->
   <script type="text/javascript" src="lib/qunit.js"></script>
   <script type="text/javascript" src="lib/sinon.js"></script>
-  
+
   <!-- SRC LIB FILES -->
   <script src="lib/jquery.js"></script>
 
@@ -56,8 +56,8 @@
   <script src="editors/datetime.js"></script>
 
   <script src="editors/extra/list.js"></script>
-  
-  
+
+
   <div id="uiTest" style="height: 400px; overflow: auto; border: 1px solid #ccc">
     <div id="formContainer"></div>
     <button class="validate">Validate</button>
@@ -70,7 +70,7 @@
           email: { validators: ['required', 'email'] }
         }
       });
-        
+
       var schema = {
         email:      { dataType: 'email', validators: ['required', 'email'] },
         tel:        { type: 'Text', dataType: 'tel', validators: ['required'], help: 'Include area code' },
@@ -110,7 +110,7 @@
           age: 'Number'
         } }
       };
-      
+
       var model = new Backbone.Model({
         number: null,
         checkbox: true,
@@ -126,7 +126,7 @@
           { legend: 'Nested editors', fields: ['object', 'nestedModel'] }
         ]
       });
-      
+
       window.form = form;
 
       $('#uiTest #formContainer').html(form.render().el);
@@ -138,7 +138,7 @@
 
         console.log(form.getValue(key))
       });
-      
+
       $('#uiTest button.validate').click(function() { form.validate() });
     });
   </script>

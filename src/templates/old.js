@@ -1,4 +1,4 @@
-  
+
   /**
    * Templates to match those used previous versions of Backbone Form, i.e. <= 0.11.0.
    * NOTE: These templates are deprecated.
@@ -58,23 +58,23 @@
 
 
   if (Form.editors.List) {
-  
+
     Form.editors.List.template = _.template('\
       <div class="bbf-list">\
         <ul data-items></ul>\
         <div class="bbf-actions"><button type="button" data-action="add">Add</div>\
       </div>\
     ');
-   
-   
+
+
     Form.editors.List.Item.template = _.template('\
       <li>\
         <button type="button" data-action="remove" class="bbf-remove">&times;</button>\
         <div class="bbf-editor-container" data-editor></div>\
       </li>\
     ');
-    
-   
+
+
     Form.editors.List.Object.template = Form.editors.List.NestedModel.template = _.template('\
       <div class="bbf-list-modal"><%= summary %></div>\
     ');
