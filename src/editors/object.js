@@ -81,7 +81,7 @@ Form.editors.Object = Form.editors.Base.extend({
 
   _observeFormEvents: function() {
     if (!this.nestedForm) return;
-    
+
     this.nestedForm.on('all', function() {
       // args = ["key:change", form, fieldEditor]
       var args = _.toArray(arguments);

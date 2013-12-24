@@ -1,6 +1,6 @@
 /**
  * Text
- * 
+ *
  * Text input with focus, blur and change events
  */
 Form.editors.Text = Form.Editor.extend({

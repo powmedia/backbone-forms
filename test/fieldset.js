@@ -212,7 +212,7 @@ module('Form#remove', {
   }
 });
 
-test('removes fieldsets, fields and self', function() {  
+test('removes fieldsets, fields and self', function() {
   var fs = new Fieldset({
     fields: {
       title: new Form.Field({ key: 'title' }),
@@ -220,7 +220,7 @@ test('removes fieldsets, fields and self', function() {
     },
     schema: { legend: 'Main', fields: ['title', 'author'] }
   });
-  
+
   fs.remove();
 
   same(Form.Field.prototype.remove.callCount, 2);
