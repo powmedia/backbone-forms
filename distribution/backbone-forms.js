@@ -1,5 +1,5 @@
 /**
- * Backbone Forms v0.14.1
+ * Backbone Forms v0.14.2
  *
  * Copyright (c) 2013 Charles Davison, Pow Media Ltd
  *
@@ -2469,7 +2469,7 @@ Form.editors.DateTime = Form.editors.Base.extend({
 
 
   //Metadata
-  Form.VERSION = '0.14.1';
+  Form.VERSION = '0.14.2';
 
 
   //Exports

@@ -4,7 +4,7 @@
   "author": {
     "name": "Charles Davison"
   },
-  "version": "0.14.1",
+  "version": "0.14.2",
   "dependencies": {
     "backbone": ">=1.0.0"
   },
