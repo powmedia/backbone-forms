@@ -1,5 +1,5 @@
 /**
- * Backbone Forms v0.14.0
+ * Backbone Forms v0.14.2
  *
  * NOTE:
  * This version is for use with RequireJS
@@ -1630,7 +1630,10 @@ Form.editors.Select = Form.editors.Base.extend({
   },
 
   setValue: function(value) {
-    this.$el.val(value);
+    var
+      val = (value instanceof Backbone.Model) ? value.id : value;
+
+    this.$el.val(val);
   },
 
   focus: function() {
@@ -2056,7 +2059,7 @@ Form.editors.NestedModel = Form.editors.Object.extend({
 
     this.nestedForm = new NestedForm({
       model: modelInstance,
-      idPrefix: this.id + '_',
+      idPrefix: modelInstance.cid + '_',
       fieldTemplate: 'nestedField'
     });
 
@@ -2453,7 +2456,7 @@ Form.editors.DateTime = Form.editors.Base.extend({
 
 
   //Metadata
-  Form.VERSION = '0.14.0';
+  Form.VERSION = '0.14.2';
 
   //Exports
   Backbone.Form = Form;
