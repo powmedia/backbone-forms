@@ -131,7 +131,10 @@ Form.editors.Select = Form.editors.Base.extend({
   },
 
   setValue: function(value) {
-    this.$el.val(value);
+    var
+      val = (value instanceof Backbone.Model) ? value.id : value;
+
+    this.$el.val(val);
   },
 
   focus: function() {
