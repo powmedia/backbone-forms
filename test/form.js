@@ -76,7 +76,7 @@ test('prefers fieldsets from options over model', function() {
 
   model.fieldsets = [{ fromModel: 'Text' }];
 
-  var fieldsets = [{ legend: 'Default', fields: ['fromModel'] }];
+  var fieldsets = [{ legend: 'Default', fields: ['fromModel'], cssClass: null }];
 
   var form = new Form({
     fieldsets: fieldsets,
@@ -91,7 +91,7 @@ test('prefers fieldsets from options over model - when fieldsets is a function',
   model.fieldsets = [{ fromModel: 'Text' }];
 
   var fieldsets = function() {
-    return [{ legend: 'Default', fields: ['fromModel'] }];
+    return [{ legend: 'Default', fields: ['fromModel'], cssClass: null }];
   }
 
   var form = new Form({
@@ -105,7 +105,7 @@ test('prefers fieldsets from options over model - when fieldsets is a function',
 test('uses fieldsets from model if provided', function() {
   var model = new Backbone.Model();
 
-  model.fieldsets = [{ legend: 'Default', fields: ['fromModel'] }];
+  model.fieldsets = [{ legend: 'Default', fields: ['fromModel'], cssClass: null }];
 
   var form = new Form({
     model: model
@@ -118,7 +118,7 @@ test('uses from model if provided - when fieldsets is a function', function() {
   var model = new Backbone.Model();
 
   model.fieldsets = function() {
-    return [{ legend: 'Default', fields: ['fromModel'] }];
+    return [{ legend: 'Default', fields: ['fromModel'], cssClass: null }];
   }
 
   var form = new Form({
