@@ -41,10 +41,10 @@ HTML:
 <script id="formTemplate" type="text/html">
     <form>
         <h1>New User</h1>
-        
+
         <h2>Main Info</h2>
         <div data-fields="title,name,birthday"></div>
-        
+
         <h2>Account Info</h2>
         <h3>Email</h3>
         <div data-fields="email"></div>
@@ -60,7 +60,7 @@ Javascript:
 ```js
 var UserForm = Backbone.Form.extend({
     template: _.template($('#formTemplate').html()),
-    
+
     schema: {
         title:      { type: 'Select', options: ['Mr', 'Mrs', 'Ms'] },
         name:       'Text',
@@ -208,7 +208,7 @@ var form = new Backbone.Form({
         name:       'Text',
         password:   'Password'
     },
-    
+
     //Data to populate the form with
     data: {
       id: 123,
@@ -248,7 +248,7 @@ If a form has a model attached to it, the initial values are taken from the mode
 
 - **`fieldsets`**
 
-  An array of fieldsets descriptions. A fieldset is either a list of field names, or an object with `legend` and `fields` attributes. The `legend` will be inserted at the top of the fieldset inside a `<legend>` tag; the list of fields will be treated as `fields` is below. `fieldsets` takes priority over `fields`. You can also define it in the model.
+  An array of fieldsets descriptions. A fieldset is either a list of field names, or an object with `legend`, `cssClass` and `fields` attributes. The `legend` will be inserted at the top of the fieldset inside a `<legend>` tag; the list of fields will be treated as `fields` is below. `fieldsets` takes priority over `fields`. You can also define it in the model.
 
 - **`fields`**
 
@@ -774,12 +774,17 @@ To customise forms even further you can pass in a template to the form instance 
 ```
 <script id="formTemplate" type="text/html">
     <form>
+<<<<<<< HEAD
         <h1><%= heading1 %></h1>
         
+=======
+        <h1>Edit profile</h1>
+
+>>>>>>> 4bfbee79b3367c1daec4fed65d7a9be0b0604645
         <h2>Name</h2>
         <div data-editors="firstName"><!-- firstName editor will be added here --></div>
         <div data-editors="lastName"><!-- lastName editor will be added here --></div>
-        
+
         <h2>Password</h2>
         <div data-editors="password">
             <div class="notes">Must be at least 7 characters:</div>

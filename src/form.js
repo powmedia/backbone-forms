@@ -6,7 +6,7 @@ var Form = Backbone.View.extend({
 
   /**
    * Constructor
-   * 
+   *
    * @param {Object} [options.schema]
    * @param {Backbone.Model} [options.model]
    * @param {Object} [options.data]
@@ -229,7 +229,7 @@ var Form = Backbone.View.extend({
 
     //Set the main element
     this.setElement($form);
-    
+
     //Set class
     $form.addClass(this.className);
 
@@ -322,7 +322,7 @@ var Form = Backbone.View.extend({
     }, options);
 
     this.model.set(this.getValue(), setOptions);
-    
+
     if (modelError) return modelError;
   },
 
@@ -452,8 +452,8 @@ var Form = Backbone.View.extend({
   ', null, this.templateSettings),
 
   templateSettings: {
-    evaluate: /<%([\s\S]+?)%>/g, 
-    interpolate: /<%=([\s\S]+?)%>/g, 
+    evaluate: /<%([\s\S]+?)%>/g,
+    interpolate: /<%=([\s\S]+?)%>/g,
     escape: /<%-([\s\S]+?)%>/g
   },
 
