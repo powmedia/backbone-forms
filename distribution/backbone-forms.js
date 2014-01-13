@@ -33,7 +33,7 @@ var Form = Backbone.View.extend({
 
   /**
    * Constructor
-   * 
+   *
    * @param {Object} [options.schema]
    * @param {Backbone.Model} [options.model]
    * @param {Object} [options.data]
@@ -87,8 +87,22 @@ var Form = Backbone.View.extend({
     }, this);
 
     //Create fieldsets
-    var fieldsetSchema = options.fieldsets || [selectedFields],
-        fieldsets = this.fieldsets = [];
+    //Find the fieldsets to use
+    var fieldsetSchema = this.fieldsetSchema = (function() {
+      //Prefer fieldsets from options
+      if (options.fieldsets) return _.result(options, 'fieldsets');
+
+      //Then fieldsets on model
+      var model = options.model;
+      if (model && model.fieldsets && (model.fieldsets.length > 0 || _.isFunction(model.fieldsets))) {
+        return (_.isFunction(model.fieldsets)) ? model.fieldsets() : model.fieldsets;
+      }
+
+      //Fallback to all fields
+      return [selectedFields];
+    })();
+
+    var fieldsets = this.fieldsets = [];
 
     _.each(fieldsetSchema, function(itemSchema) {
       this.fieldsets.push(this.createFieldset(itemSchema));
@@ -242,7 +256,7 @@ var Form = Backbone.View.extend({
 
     //Set the main element
     this.setElement($form);
-    
+
     //Set class
     $form.addClass(this.className);
 
@@ -335,7 +349,7 @@ var Form = Backbone.View.extend({
     }, options);
 
     this.model.set(this.getValue(), setOptions);
-    
+
     if (modelError) return modelError;
   },
 
@@ -465,8 +479,8 @@ var Form = Backbone.View.extend({
   ', null, this.templateSettings),
 
   templateSettings: {
-    evaluate: /<%([\s\S]+?)%>/g, 
-    interpolate: /<%=([\s\S]+?)%>/g, 
+    evaluate: /<%([\s\S]+?)%>/g,
+    interpolate: /<%=([\s\S]+?)%>/g,
     escape: /<%-([\s\S]+?)%>/g
   },
 
@@ -609,7 +623,7 @@ Form.Fieldset = Backbone.View.extend({
 
     //Store the fields for this fieldset
     this.fields = _.pick(options.fields, schema.fields);
-    
+
     //Override defaults
     this.template = options.template || this.constructor.template;
   },
@@ -629,6 +643,7 @@ Form.Fieldset = Backbone.View.extend({
 
     //Add null legend to prevent template error
     schema.legend = schema.legend || null;
+    schema.cssClass = schema.cssClass || null;
 
     return schema;
   },
@@ -694,12 +709,12 @@ Form.Fieldset = Backbone.View.extend({
 
     Backbone.View.prototype.remove.call(this);
   }
-  
+
 }, {
   //STATICS
 
   template: _.template('\
-    <fieldset data-fields>\
+    <fieldset <% if (cssClass) { %>class="<%= cssClass %>"<% } %> data-fields>\
       <% if (legend) { %>\
         <legend><%= legend %></legend>\
       <% } %>\
