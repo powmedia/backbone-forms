@@ -22,6 +22,7 @@ var User = Backbone.Model.extend({
         address:    { type: 'NestedModel', model: Address },
         notes:      { type: 'List', itemType: 'Text' }
     }
+  }
 });
 
 var user = new User();
@@ -157,7 +158,17 @@ var User = Backbone.Model.extend({
         password:   'Password',
         address:    { type: 'NestedModel', model: Address },
         notes:      { type: 'List', itemType: 'Text' }
-    }
+    },
+    fieldsets: [
+        {
+          legend: 'Full Title',
+          fields: ['title', 'name']
+        },
+        {
+          legend: 'Default',
+          fields: ['email', 'birthday', 'password', 'address', 'notes']
+      }
+    ]
 });
 
 var user = new User();
@@ -237,7 +248,7 @@ If a form has a model attached to it, the initial values are taken from the mode
 
 - **`fieldsets`**
 
-  An array of fieldsets descriptions. A fieldset is either a list of field names, or an object with `legend` and `fields` attributes. The `legend` will be inserted at the top of the fieldset inside a `<legend>` tag; the list of fields will be treated as `fields` is below. `fieldsets` takes priority over `fields`.
+  An array of fieldsets descriptions. A fieldset is either a list of field names, or an object with `legend` and `fields` attributes. The `legend` will be inserted at the top of the fieldset inside a `<legend>` tag; the list of fields will be treated as `fields` is below. `fieldsets` takes priority over `fields`. You can also define it in the model.
 
 - **`fields`**
 

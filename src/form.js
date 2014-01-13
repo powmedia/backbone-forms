@@ -60,8 +60,22 @@ var Form = Backbone.View.extend({
     }, this);
 
     //Create fieldsets
-    var fieldsetSchema = options.fieldsets || [selectedFields],
-        fieldsets = this.fieldsets = [];
+    //Find the fieldsets to use
+    var fieldsetSchema = this.fieldsetSchema = (function() {
+      //Prefer fieldsets from options
+      if (options.fieldsets) return _.result(options, 'fieldsets');
+
+      //Then fieldsets on model
+      var model = options.model;
+      if (model && model.fieldsets && (model.fieldsets.length > 0 || _.isFunction(model.fieldsets))) {
+        return (_.isFunction(model.fieldsets)) ? model.fieldsets() : model.fieldsets;
+      }
+
+      //Fallback to all fields
+      return [selectedFields];
+    })();
+
+    var fieldsets = this.fieldsets = [];
 
     _.each(fieldsetSchema, function(itemSchema) {
       this.fieldsets.push(this.createFieldset(itemSchema));

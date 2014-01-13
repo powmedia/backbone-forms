@@ -71,6 +71,63 @@ test('uses from model if provided - when schema is a function', function() {
   same(form.schema, model.schema());
 });
 
+test('prefers fieldsets from options over model', function() {
+  var model = new Backbone.Model();
+
+  model.fieldsets = [{ fromModel: 'Text' }];
+
+  var fieldsets = [{ legend: 'Default', fields: ['fromModel'] }];
+
+  var form = new Form({
+    fieldsets: fieldsets,
+    model: model
+  });
+  same(form.fieldsetSchema, fieldsets);
+});
+
+test('prefers fieldsets from options over model - when fieldsets is a function', function() {
+  var model = new Backbone.Model();
+
+  model.fieldsets = [{ fromModel: 'Text' }];
+
+  var fieldsets = function() {
+    return [{ legend: 'Default', fields: ['fromModel'] }];
+  }
+
+  var form = new Form({
+    fieldsets: fieldsets,
+    model: model
+  });
+
+  same(form.fieldsetSchema, fieldsets());
+});
+
+test('uses fieldsets from model if provided', function() {
+  var model = new Backbone.Model();
+
+  model.fieldsets = [{ legend: 'Default', fields: ['fromModel'] }];
+
+  var form = new Form({
+    model: model
+  });
+  
+  same(form.fieldsetSchema, model.fieldsets);
+});
+
+test('uses from model if provided - when fieldsets is a function', function() {
+  var model = new Backbone.Model();
+
+  model.fieldsets = function() {
+    return [{ legend: 'Default', fields: ['fromModel'] }];
+  }
+
+  var form = new Form({
+    model: model
+  });
+
+  same(form.fieldsetSchema, model.fieldsets());
+});
+
 test('stores important options', function() {
   var options = {
     model: new Backbone.Model(),
