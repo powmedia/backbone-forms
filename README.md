@@ -774,13 +774,7 @@ To customise forms even further you can pass in a template to the form instance 
 ```
 <script id="formTemplate" type="text/html">
     <form>
-<<<<<<< HEAD
         <h1><%= heading1 %></h1>
-        
-=======
-        <h1>Edit profile</h1>
-
->>>>>>> 4bfbee79b3367c1daec4fed65d7a9be0b0604645
         <h2>Name</h2>
         <div data-editors="firstName"><!-- firstName editor will be added here --></div>
         <div data-editors="lastName"><!-- lastName editor will be added here --></div>
