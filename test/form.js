@@ -132,9 +132,9 @@ test('uses template stored on form class', function() {
 });
 
 test('uses fieldset and field classes stored on prototype over those stored on form class', function() {
-  DifferentField = function () {};
-  DifferentFieldset = function () {};
-  DifferentNestedField = function () {};
+  var DifferentField = function () {};
+  var DifferentFieldset = function () {};
+  var DifferentNestedField = function () {};
 
   Form.prototype.Field = DifferentField;
   Form.prototype.Fieldset = DifferentFieldset;
