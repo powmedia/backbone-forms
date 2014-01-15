@@ -725,7 +725,7 @@ If you model provides a `validate` method, then this will be called when you cal
 ```js
 //Schema definition:
 var schema = {
-    name: { validators: ['required']
+    name: { validators: ['required'] }
 }
 
 var errors = form.commit();
