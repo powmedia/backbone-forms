@@ -203,15 +203,22 @@ test('creates fields', function() {
   same(schemaArg, { type: 'Number' });
 });
 
-test('creates fieldsets - with "fieldsets" option', function() {
+test('creates fieldsets - first with "fieldsets" option', function() {
   this.sinon.spy(Form.prototype, 'createFieldset');
 
-  var form = new Form({
+  var MyForm = Form.extend({
     schema: {
       name: 'Text',
       age: { type: 'Number' },
       password: 'Password'
     },
+
+    fieldsets: [
+      ['age', 'name']
+    ]
+  });
+
+  var form = new MyForm({
     fieldsets: [
       ['name', 'age'],
       ['password']
@@ -231,6 +238,33 @@ test('creates fieldsets - with "fieldsets" option', function() {
       schemaArg = args[0];
 
   same(schemaArg, ['password']);
+});
+
+test('creates fieldsets - second with prototype.fieldsets', function() {
+  this.sinon.spy(Form.prototype, 'createFieldset');
+
+  var MyForm = Form.extend({
+    schema: {
+      name: 'Text',
+      age: { type: 'Number' },
+      password: 'Password'
+    },
+
+    fieldsets: [
+      ['age', 'name']
+    ]
+  });
+
+  var form = new MyForm();
+
+  same(form.createFieldset.callCount, 1);
+  same(form.fieldsets.length, 1);
+
+  //Check createFieldset() was called correctly
+  var args = form.createFieldset.args[0],
+      schemaArg = args[0];
+
+  same(schemaArg, ['age', 'name']);
 });
 
 test('creates fieldsets - defaults to all fields in one fieldset', function() {
