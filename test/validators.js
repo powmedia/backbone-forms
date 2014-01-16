@@ -140,6 +140,32 @@
 
 
 ;(function() {
+  module('number')
+  
+  var fn = Form.validators.number()
+  
+  test('passes empty values', function() {
+    equal(fn(''), undefined)
+    equal(fn(null), undefined)
+    equal(fn(undefined), undefined)
+  })
+  
+  test('fails non-number values', function() {
+    ok(fn('foo'))
+    ok(fn('123a'))
+  })
+  
+  test('accepts numbers', function() {
+    equal(fn('123'), undefined)
+    equal(fn(456), undefined)
+    equal(fn(123.3), undefined)
+    equal(fn('123.5'), undefined)
+  })
+  
+})();
+
+
+;(function() {
   module('email')
   
   var fn = Form.validators.email()

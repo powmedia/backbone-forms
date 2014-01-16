@@ -633,6 +633,7 @@ Validators can be defined in several ways:
 ###Built-in validators
 
 - **required**: Checks the field has been filled in
+- **number**: Checks it is a number, allowing a decimal point
 - **email**: Checks it is a valid email address
 - **url**: Checks it is a valid URL
 - **match**: Checks that the field matches another. The other field name must be set in the `field` option.
@@ -942,6 +943,7 @@ var CustomEditor = Backbone.Form.editors.Base.extend({
 ##Changelog
 
 ###master
+- Added the `number` validator
 - Support specifying fieldsets on the Form prototype
 - Support specifying field and fieldset templates in their prototypes; allows extending Form, Field and Fieldset to create custom forms
 - Support regexp validator as string (gregsabia)
