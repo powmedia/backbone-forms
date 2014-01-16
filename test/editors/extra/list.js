@@ -641,7 +641,7 @@ module('List.Item', {
       same(item.template(), '<div>Constructor</div>');
     });
 
-    test('render() - creates the editor for the given listType', function() {
+    test('render() - creates the editor for the given itemType', function() {
         var spy = this.sinon.spy(editors, 'Number');
 
         var form = new Form();
