@@ -32,4 +32,6 @@
 
   //Metadata
   Form.VERSION = '{{version}}';
+
+  return Form;
 }));
