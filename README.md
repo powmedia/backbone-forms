@@ -279,6 +279,10 @@ If a form has a model attached to it, the initial values are taken from the mode
             // a custom editor might need
         });
 
+- **`submit`**
+
+  Fired when the form is submitted. The native Event is passed as an argument, so you can do event.preventDefault() to stop the form from submitting.
+
 [Back to top](#top)
 
 

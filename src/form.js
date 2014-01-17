@@ -4,6 +4,12 @@
 
 var Form = Backbone.View.extend({
 
+  events: {
+    'submit': function(event) {
+      this.trigger('submit', event);
+    }
+  },
+
   /**
    * Constructor
    * 

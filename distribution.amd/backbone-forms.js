@@ -18,6 +18,12 @@ define(['jquery', 'underscore', 'backbone'], function($, _, Backbone) {
 
 var Form = Backbone.View.extend({
 
+  events: {
+    'submit': function(event) {
+      this.trigger('submit', event);
+    }
+  },
+
   /**
    * Constructor
    * 

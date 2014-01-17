@@ -492,6 +492,23 @@ test('triggers general form events', function() {
   }, 0);
 });
 
+test('triggers the submit event', function() {
+  var form = new Form();
+
+  var spy = sinon.spy(),
+      submitEvent;
+
+  form.on('submit', function(event) {
+    submitEvent = event;
+    spy(event);
+  });
+
+  form.$el.submit();
+
+  same(spy.callCount, 1);
+  same(spy.args[0][0], submitEvent);
+});
+
 
 
 module('Form#render', {
