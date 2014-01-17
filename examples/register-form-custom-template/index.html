@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>  
+
+<title>Backbone.Form example</title>
+
+<script src="http://code.jquery.com/jquery.min.js"></script>
+<script src="http://underscorejs.org/underscore.js"></script>
+<script src="http://backbonejs.org/backbone.js"></script>
+
+<script src="../../distribution/backbone-forms.js"></script>
+<script src="../../distribution/templates/bootstrap3.js"></script>
+
+<script src="./main.js"></script>
+
+<link href="http://getbootstrap.com/dist/css/bootstrap.css" rel="stylesheet" type="text/css" />
+
+</head>
+<body>
+
+<script id="formTemplate" type="text/html">
+  <form action="submit.html">
+    <h1>Register</h1>
+
+    <h2>About you</h2>
+    <div data-fields="title,name,birthday"></div>
+
+    <h2>Login details</h2>
+    <div data-fields="email,password,confirmPassword"></div>
+
+    <input type="submit" class="btn btn-primary submit" />
+  </form>
+</script>
+  
+</body>
+</html>
