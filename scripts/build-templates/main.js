@@ -1,7 +1,7 @@
 /**
  * Backbone Forms v{{version}}
  *
- * Copyright (c) 2013 Charles Davison, Pow Media Ltd
+ * Copyright (c) 2014 Charles Davison, Pow Media Ltd
  *
  * License and more information at:
  * http://github.com/powmedia/backbone-forms
@@ -10,19 +10,18 @@
 
   // Set up Backbone.Form appropriately for the environment. Start with AMD.
   if (typeof define === 'function' && define.amd) {
-    define(['backbone', 'underscore', 'jquery', 'exports'], function(Backbone, _, $, exports) {
-      exports = factory(root, _, Backbone, $);
+    define(['underscore', 'backbone', 'exports'], function(_, Backbone, exports) {
+      exports = factory(root, _, Backbone, Backbone.$);
     });
 
   // Next for Node.js or CommonJS. jQuery may not be needed as a module.
   } else if (typeof exports !== 'undefined') {
-    var _ = require('underscore'), Backbone = require('backbone'), $;
-    try { $ = require('jquery'); } catch(e) {}
-    module.exports = exports = factory(root, _, Backbone, $);
+    var _ = require('underscore'), Backbone = require('backbone');
+    module.exports = exports = factory(root, _, Backbone, Backbone.$);
 
   // Finally, as a browser global.
   } else {
-    root.Backbone.Form = factory(root, root._, root.Backbone, (root.jQuery || root.Zepto || root.ender || root.$));
+    root.Backbone.Form = factory(root, root._, root.Backbone, root.Backbone.$);
   }
 
 }(this, function(root, _, Backbone, $) {
