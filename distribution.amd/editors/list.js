@@ -155,7 +155,7 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
       //Most editors can be added automatically
       else {
         _addItem();
-        item.editor.focus();
+        if (userInitiated) item.editor.focus();
       }
       
       return item;
