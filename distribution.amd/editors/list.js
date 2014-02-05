@@ -50,14 +50,30 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
     },
 
     render: function() {
-      var self = this,
-          value = this.value || [];
-
       //Create main element
       var $el = $($.trim(this.template()));
 
       //Store a reference to the list (item container)
       this.$list = $el.is('[data-items]') ? $el : $el.find('[data-items]');
+
+      this.renderItems();
+
+      this.setElement($el);
+      this.$el.attr('id', this.id);
+      this.$el.attr('name', this.key);
+            
+      if (this.hasFocus) this.trigger('blur', this);
+      
+      return this;
+    },
+
+    renderItems: function() {
+      var self = this,
+          value = this.value || [];
+
+      // Remove any old items
+      this.items = [];
+      this.$list.empty();
 
       //Add existing items
       if (value.length) {
@@ -70,14 +86,6 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
       else {
         if (!this.Editor.isAsync) this.addItem();
       }
-
-      this.setElement($el);
-      this.$el.attr('id', this.id);
-      this.$el.attr('name', this.key);
-            
-      if (this.hasFocus) this.trigger('blur', this);
-      
-      return this;
     },
 
     /**
@@ -194,7 +202,7 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
 
     setValue: function(value) {
       this.value = value;
-      this.render();
+      this.renderItems();
     },
     
     focus: function() {
