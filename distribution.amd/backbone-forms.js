@@ -675,14 +675,18 @@ Form.Fieldset = Backbone.View.extend({
       var $container = $(el),
           selection = $container.attr('data-fields');
 
-      if (_.isUndefined(selection)) return;
+      if (_.isUndefined(selection)) {
+      	return;
+      }
       
       //Work out which fields to include (_compact used to trim empty string selection)
       var keys = _.compact((selection == '*') ? self.selectedFields || _.keys(fields) : selection.split(','));
       
       //include all keys if not specified
-      if (!keys.length)
-          keys = _.keys(fields);
+      if (!keys.length){
+      	keys = _.keys(fields);
+      }
+          
 
       //Add them
       _.each(keys, function(key) {
