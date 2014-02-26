@@ -43,6 +43,7 @@ Form.editors.Radio = Form.editors.Select.extend({
   },
 
   setValue: function(value) {
+    this.value = value;
     this.$('input[type=radio]').val([value]);
   },
 

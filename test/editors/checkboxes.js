@@ -134,6 +134,17 @@
     equal($(editor.el).find('input[type=checkbox]:checked').length, 1);
   });
 
+  test('setting model value with one item', function() {
+    var editor = new Editor({
+      schema: schema
+    }).render();
+
+    editor.setValue(['Lana']);
+    editor.render();
+    deepEqual(editor.getValue(), ['Lana']);
+    equal($(editor.el).find('input[type=checkbox]:checked').length, 1);
+  });
+
   test('setting value with multiple items, including a value with a space', function() {
     var editor = new Editor({
       schema: schema

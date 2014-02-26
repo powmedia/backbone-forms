@@ -80,6 +80,18 @@
     same(editor.getValue(), 2.4);
     equal($(editor.el).val(), 2.4);
   });
+  test("setValue() - updates the model value", function() {
+    var editor = new Editor({
+      model: new Backbone.Model(),
+      key: 'title'
+    }).render();
+
+    editor.setValue('2.4');
+    editor.render();
+
+    same(editor.getValue(), 2.4);
+    equal($(editor.el).val(), 2.4);
+  });
 
   test('setValue() - handles different types', function() {
     var editor = new Editor().render();
