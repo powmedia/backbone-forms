@@ -946,6 +946,7 @@ var CustomEditor = Backbone.Form.editors.Base.extend({
 ##Changelog
 
 ###master
+- Fix CommonJS backend issues (ndrsn)
 - Added the `number` validator
 - Support specifying fieldsets on the Form prototype
 - Support specifying field and fieldset templates in their prototypes; allows extending Form, Field and Fieldset to create custom forms
