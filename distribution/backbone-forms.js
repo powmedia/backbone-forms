@@ -14,6 +14,7 @@
     var $ = root.jQuery || root.Zepto || root.ender || require('jquery'),
         _ = root._ || require('underscore'),
         Backbone = root.Backbone || require('backbone');
+        Backbone.$ = $;
   }
 
   //Browser
@@ -2484,6 +2485,6 @@ Form.editors.DateTime = Form.editors.Base.extend({
 
   //Exports
   Backbone.Form = Form;
-  if (typeof exports !== 'undefined') exports = Form;
+  if (typeof module !== 'undefined') module.exports = Form;
 
 })(window || global || this);

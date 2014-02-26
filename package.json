@@ -11,7 +11,8 @@
   "devDependencies": {
     "buildify": "latest",
     "underscore": "latest",
-    "uglify-js": "latest"
+    "uglify-js": "latest",
+    "jquery": "~2.1.0"
   },
   "main": "distribution.amd/backbone-forms.js",
   "browser": "distribution/backbone-forms.js",
