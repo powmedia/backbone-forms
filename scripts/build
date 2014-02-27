@@ -61,6 +61,7 @@ builder(baseDir)
   //Save regular dev and mini versions
   builder(baseDir)
     .load('src/editors/extra/'+name+'.js')
+    .wrap('scripts/build-templates/editors.'+name+'.js', templateData)
     .save('distribution/editors/'+name+'.js')
     .uglify()
     .save('distribution/editors/'+name+'.min.js');
