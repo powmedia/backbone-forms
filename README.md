@@ -391,7 +391,7 @@ Creates and populates a `<select>` element.
 
   Options to populate the `<select>`.
 
-  Can be either:
+  Can be any of:
     - String of HTML `<option>`s
     - Array of strings/numbers
     - An array of option groups in the form `[{group: 'Option Group Label', options: <any of the forms from this list (except the option groups)>}]`
