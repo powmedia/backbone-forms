@@ -176,7 +176,8 @@ var Form = Backbone.View.extend({
 
   render: function() {
     var self = this,
-        fields = this.fields;
+        fields = this.fields,
+        $ = Backbone.$;
 
     //Render form
     var $form = $($.trim(this.template(_.result(this, 'templateData'))));
@@ -666,7 +667,8 @@ Form.Fieldset = Backbone.View.extend({
    */
   render: function() {
     var schema = this.schema,
-        fields = this.fields;
+        fields = this.fields,
+        $ = Backbone.$;
 
     //Render fieldset
     var $fieldset = $($.trim(this.template(_.result(this, 'templateData'))));
@@ -853,7 +855,8 @@ Form.Field = Backbone.View.extend({
    */
   render: function() {
     var schema = this.schema,
-        editor = this.editor;
+        editor = this.editor,
+        $ = Backbone.$;
 
     //Only render the editor if Hidden
     if (schema.type == Form.editors.Hidden) {
@@ -1003,7 +1006,7 @@ Form.Field = Backbone.View.extend({
 
 Form.NestedField = Form.Field.extend({
 
-  template: _.template($.trim('\
+  template: _.template('\
     <div>\
       <span data-editor></span>\
       <% if (help) { %>\
@@ -1011,7 +1014,7 @@ Form.NestedField = Form.Field.extend({
       <% } %>\
       <div data-error></div>\
     </div>\
-  '), null, Form.templateSettings)
+  ', null, Form.templateSettings)
 
 });
 
@@ -2173,7 +2176,8 @@ Form.editors.Date = Form.editors.Base.extend({
 
   render: function() {
     var options = this.options,
-        schema = this.schema;
+        schema = this.schema,
+        $ = Backbone.$;
 
     var datesOptions = _.map(_.range(1, 32), function(date) {
       return '<option value="'+date+'">' + date + '</option>';
@@ -2346,7 +2350,8 @@ Form.editors.DateTime = Form.editors.Base.extend({
       return n < 10 ? '0' + n : n;
     }
 
-    var schema = this.schema;
+    var schema = this.schema,
+        $ = Backbone.$;
 
     //Create options
     var hoursOptions = _.map(_.range(0, 24), function(hour) {

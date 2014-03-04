@@ -130,7 +130,7 @@ To use a custom template pack, e.g. Bootstrap, include the relevant files after 
     <script src="backbone-forms/distribution/templates/bootstrap.js"></script>
     <link href="backbone-forms/distribution/templates/bootstrap.css" rel="stylesheet" />
 
-If you use Backbone with node.js, you can just `require('backbone-forms');` in your index file.
+If you use Backbone with browserify or node.js, you can just `require('backbone-forms');` in your index file.  If doing this you will need to set `Backbone.$`, e.g. `Backbone.$ = require('jquery')`.
 
 Note there is also a distribution file for RequireJS / AMD.
 
@@ -946,6 +946,7 @@ var CustomEditor = Backbone.Form.editors.Base.extend({
 ##Changelog
 
 ###master
+- No longer require jquery from within the CommonJS module. NOTE: You must now set Backbone.$ yourself if using CommonJS e.g. browserify
 - Fix CommonJS backend issues (ndrsn)
 - Added the `number` validator
 - Support specifying fieldsets on the Form prototype
