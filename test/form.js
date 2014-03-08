@@ -71,13 +71,28 @@ test('uses from model if provided - when schema is a function', function() {
   same(form.schema, model.schema());
 });
 
+test('Model attributes are accessible on template', function() {
+  var model = new Backbone.Model({
+    'fromModel': 'model'
+  });
+
+  var options = {
+    model: model,
+    templateData: {'fromOptions': 'options'},
+    template: _.template('<p><%= fromModel %>, <%= fromOptions %></p>')
+  };
+
+  var form = new Form(options).render();
+  same(form.$el.html(), 'model, options');
+});
+
 test('stores important options', function() {
   var options = {
     model: new Backbone.Model(),
     data: { foo: 1 },
     idPrefix: 'foo',
     templateData: { bar: 2 }
-  }
+  };
 
   var form = new Form(options);
 

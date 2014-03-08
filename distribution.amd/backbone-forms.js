@@ -180,7 +180,8 @@ var Form = Backbone.View.extend({
         $ = Backbone.$;
 
     //Render form
-    var $form = $($.trim(this.template(_.result(this, 'templateData'))));
+    var templateData = _.extend(this.model ? this.model.attributes : {}, _.result(this, 'templateData'));
+    var $form = $($.trim(this.template(templateData)));
 
     //Render standalone editors
     $form.find('[data-editors]').add($form).each(function(i, el) {
