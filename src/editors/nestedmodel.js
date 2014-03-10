@@ -13,7 +13,7 @@ Form.editors.NestedModel = Form.editors.Object.extend({
     if (!this.form) throw new Error('Missing required option "form"');
     if (!options.schema.model) throw new Error('Missing required "schema.model" option for NestedModel editor');
 
-    this._setValue(null);
+    this._setValue(this.value);
   },
 
   _setValue: function(value) {
