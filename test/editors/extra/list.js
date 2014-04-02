@@ -87,6 +87,16 @@ var same = deepEqual;
         same(list.getValue(), ['a', 'b', 'c']);
     });
 
+    test('setValue() - updates input value - more than once', function() {
+        var list = new List().render();
+
+        list.setValue(['a', 'b', 'c']);
+        same(list.getValue(), ['a', 'b', 'c']);
+
+        list.setValue(['d', 'e', 'f']);
+        same(list.getValue(), ['d', 'e', 'f']);
+    });
+
     test('validate() - returns validation errors', function() {
         var list = new List({
             schema: { validators: ['required', 'email'] },
