@@ -101,14 +101,12 @@ Form.editors.Radio = Form.editors.Select.extend({
 
   //STATICS
   template: _.template('\
-    <ul>\
-      <% _.each(items, function(item) { %>\
-        <li>\
-          <input type="radio" name="<%= item.name %>" value="<%= item.value %>" id="<%= item.id %>" />\
-          <label for="<%= item.id %>"><%= item.label %></label>\
-        </li>\
-      <% }); %>\
-    </ul>\
+    <% _.each(items, function(item) { %>\
+      <li>\
+        <input type="radio" name="<%= item.name %>" value="<%= item.value %>" id="<%= item.id %>" />\
+        <label for="<%= item.id %>"><%= item.label %></label>\
+      </li>\
+    <% }); %>\
   ', null, Form.templateSettings)
 
 });
