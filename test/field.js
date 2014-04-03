@@ -72,15 +72,78 @@ test('creates the editor', function() {
   same(field.editor instanceof Form.editors.Text, true);
 });
 
-test('uses template defined in schema', function() {
-  var customTemplate = _.template('<div class="myField" data-editor></div>');
+test('first, uses template defined in options', function() {
+  var optionsTemplate = _.template('<div class="options" data-editor></div>'),
+      schemaTemplate = _.template('<div class="schema" data-editor></div>'),
+      protoTemplate = _.template('<div class="prototype" data-editor></div>'),
+      constructorTemplate = _.template('<div class="constructor" data-editor></div>');
 
-  var field = new Field({
-    key: 'title',
-    schema: { type: 'Text', template: customTemplate }
+  var CustomField = Field.extend({
+    template: protoTemplate
+  }, {
+    template: constructorTemplate
   });
 
-  same(field.template, customTemplate);
+  var field = new CustomField({
+    key: 'title',
+    template: optionsTemplate,
+    schema: { type: 'Text', template: schemaTemplate }
+  });
+
+  same(field.template, optionsTemplate);
+});
+
+test('second, uses template defined in schema', function() {
+  var schemaTemplate = _.template('<div class="schema" data-editor></div>'),
+      protoTemplate = _.template('<div class="prototype" data-editor></div>'),
+      constructorTemplate = _.template('<div class="constructor" data-editor></div>');
+
+  var CustomField = Field.extend({
+    template: protoTemplate
+  }, {
+    template: constructorTemplate
+  });
+
+  var field = new CustomField({
+    key: 'title',
+    schema: { type: 'Text', template: schemaTemplate }
+  });
+
+  same(field.template, schemaTemplate);
+});
+
+test('third, uses template defined on prototype', function() {
+  var protoTemplate = _.template('<div class="prototype" data-editor></div>'),
+      constructorTemplate = _.template('<div class="constructor" data-editor></div>');
+
+  var CustomField = Field.extend({
+    template: protoTemplate
+  }, {
+    template: constructorTemplate
+  });
+
+  var field = new CustomField({
+    key: 'title',
+    schema: { type: 'Text' }
+  });
+
+  same(field.template, protoTemplate);
+});
+
+test('fourth, uses template defined on constructor', function() {
+  var constructorTemplate = _.template('<div class="constructor" data-editor></div>');
+
+  var CustomField = Field.extend({
+  }, {
+    template: constructorTemplate
+  });
+
+  var field = new CustomField({
+    key: 'title',
+    schema: { type: 'Text' },
+  });
+
+  same(field.template, constructorTemplate);
 });
 
 

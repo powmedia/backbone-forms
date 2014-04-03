@@ -1,6 +1,6 @@
 #backbone-forms
 
-A flexible, customisable form framework for Backbone.JS applications.
+A flexible, customisable form framework for Backbone.js applications.
 
 - Simple schema definition to auto-generate forms
 - Validation
@@ -78,7 +78,6 @@ $('body').append(form.el);
 
 ###Live editable demos
 - [User form](http://jsfiddle.net/evilcelery/dW2Qu/)
-- [Form with Bootstrap templates and an Object list](http://jsfiddle.net/evilcelery/4XZMb/)
 - [Update form elements based on user input](http://jsfiddle.net/evilcelery/c5QHr/)
 
 
@@ -131,7 +130,7 @@ To use a custom template pack, e.g. Bootstrap, include the relevant files after 
     <script src="backbone-forms/distribution/templates/bootstrap.js"></script>
     <link href="backbone-forms/distribution/templates/bootstrap.css" rel="stylesheet" />
 
-If you use Backbone with node.js, you can just `require('backbone-forms');` in your index file.
+If you use Backbone with browserify or node.js, you can just `require('backbone-forms');` in your index file.  If doing this you will need to set `Backbone.$`, e.g. `Backbone.$ = require('jquery')`.
 
 Note there is also a distribution file for RequireJS / AMD.
 
@@ -280,6 +279,10 @@ If a form has a model attached to it, the initial values are taken from the mode
             // a custom editor might need
         });
 
+- **`submit`**
+
+  Fired when the form is submitted. The native Event is passed as an argument, so you can do event.preventDefault() to stop the form from submitting.
+
 [Back to top](#top)
 
 
@@ -396,7 +399,7 @@ Creates and populates a `<select>` element.
 
   Options to populate the `<select>`.
 
-  Can be either:
+  Can be any of:
     - String of HTML `<option>`s
     - Array of strings/numbers
     - An array of option groups in the form `[{group: 'Option Group Label', options: <any of the forms from this list (except the option groups)>}]`
@@ -641,10 +644,11 @@ Validators can be defined in several ways:
 ###Built-in validators
 
 - **required**: Checks the field has been filled in
+- **number**: Checks it is a number, allowing a decimal point
 - **email**: Checks it is a valid email address
 - **url**: Checks it is a valid URL
 - **match**: Checks that the field matches another. The other field name must be set in the `field` option.
-- **regexp**: Runs a regular expression. Requires the `regexp` option, which takes a compiled regular expression.
+- **regexp**: Runs a regular expression. Requires the `regexp` option, which takes a compiled regular expression. Setting the `match` option to `false` ensures that the regexp does NOT pass.
 
 ####Examples
 
@@ -734,7 +738,7 @@ If you model provides a `validate` method, then this will be called when you cal
 ```js
 //Schema definition:
 var schema = {
-    name: { validators: ['required']
+    name: { validators: ['required'] }
 }
 
 var errors = form.commit();
@@ -772,7 +776,7 @@ To customise forms even further you can pass in a template to the form instance 
 ```
 <script id="formTemplate" type="text/html">
     <form>
-        <h1>Edit profile</h1>
+        <h1><%= heading1 %></h1>
         
         <h2>Name</h2>
         <div data-editors="firstName"><!-- firstName editor will be added here --></div>
@@ -790,7 +794,8 @@ To customise forms even further you can pass in a template to the form instance 
 ```js
 var form = new Backbone.Form({
     template: _.template($('#formTpl').html()),
-    model: new UserModel() //defined elsewhere
+    model: new UserModel(), //defined elsewhere
+    templateData: {heading1: 'Edit profile'}
 });
 ```
 
@@ -948,6 +953,21 @@ var CustomEditor = Backbone.Form.editors.Base.extend({
 
 <a name="changelog"/>
 ##Changelog
+
+###master
+- No longer require jquery from within the CommonJS module. NOTE: You must now set Backbone.$ yourself if using CommonJS e.g. browserify
+- Fix CommonJS backend issues (ndrsn)
+- Added the `number` validator
+- Support specifying fieldsets on the Form prototype
+- Support specifying field and fieldset templates in their prototypes; allows extending Form, Field and Fieldset to create custom forms
+- Support regexp validator as string (gregsabia)
+- Fix bootstrap3 class list name #329
+- Add 'match' option to regexp validator
+
+###0.14.0
+- Add Bootstrap 3 templates (powmedia)
+- Being consistent with throwing `Error`s rather than strings (philfreo)
+- Save templateData when passed as an option (BradDenver)
 
 ###0.13.0
 - Confirming compatibility with Backbone 1.1.0 (still supporting 1.0.0)

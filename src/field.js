@@ -28,8 +28,8 @@ Form.Field = Backbone.View.extend({
     var schema = this.schema = this.createSchema(options.schema);
 
     //Override defaults
-    this.template = options.template || schema.template || this.constructor.template;
-    this.errorClassName = options.errorClassName || this.constructor.errorClassName;
+    this.template = options.template || schema.template || this.template || this.constructor.template;
+    this.errorClassName = options.errorClassName || this.errorClassName || this.constructor.errorClassName;
 
     //Create editor
     this.editor = this.createEditor();
@@ -161,7 +161,8 @@ Form.Field = Backbone.View.extend({
    */
   render: function() {
     var schema = this.schema,
-        editor = this.editor;
+        editor = this.editor,
+        $ = Backbone.$;
 
     //Only render the editor if Hidden
     if (schema.type == Form.editors.Hidden) {

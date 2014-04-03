@@ -68,9 +68,9 @@
   });
 
   test('Throws errors if no options', function () {
-    raises(function () {
+    throws(function () {
       var editor = new Editor({schema: {}});
-    }, /^Missing required/, 'ERROR: Accepted a new Radio editor with no options.');
+    }, /Missing required/, 'ERROR: Accepted a new Radio editor with no options.');
   });
 
   test('Value from model', function() {
@@ -88,6 +88,27 @@
     }).render();
     equal($(editor.el).get(0).tagName, 'UL');
     notEqual($(editor.el).find('input[type=radio]').length, 0);
+  });
+
+
+  module('#getTemplate()');
+
+  test('returns schema template first', function() {
+    var template = _.template('<div>');
+
+    var editor = new Editor({
+      schema: { template: template, options: [] }
+    });
+
+    equal(editor.getTemplate(), template);
+  });
+
+  test('then constructor template', function() {
+    var editor = new Editor({
+      schema: { options: [] }
+    });
+
+    equal(editor.getTemplate(), Editor.template);
   });
 
 

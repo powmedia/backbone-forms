@@ -62,6 +62,79 @@ test('overrides defaults', function() {
 
 
 
+
+test('first, uses template defined in options', function() {
+  var optionsTemplate = _.template('<div class="options" data-fields></div>'),
+      schemaTemplate = _.template('<div class="schema" data-fields></div>'),
+      protoTemplate = _.template('<div class="prototype" data-fields></div>'),
+      constructorTemplate = _.template('<div class="constructor" data-fields></div>');
+
+  var CustomFieldset = Fieldset.extend({
+    template: protoTemplate
+  }, {
+    template: constructorTemplate
+  });
+
+  var fieldset = new CustomFieldset({
+    template: optionsTemplate,
+    schema: { fields: [], template: schemaTemplate }
+  });
+
+  same(fieldset.template, optionsTemplate);
+});
+
+test('second, uses template defined in schema', function() {
+  var schemaTemplate = _.template('<div class="schema" data-fields></div>'),
+      protoTemplate = _.template('<div class="prototype" data-fields></div>'),
+      constructorTemplate = _.template('<div class="constructor" data-fields></div>');
+
+  var CustomFieldset = Fieldset.extend({
+    template: protoTemplate
+  }, {
+    template: constructorTemplate
+  });
+
+  var fieldset = new CustomFieldset({
+    schema: { fields: [], template: schemaTemplate }
+  });
+
+  same(fieldset.template, schemaTemplate);
+});
+
+test('third, uses template defined on prototype', function() {
+  var protoTemplate = _.template('<div class="prototype" data-fields></div>'),
+      constructorTemplate = _.template('<div class="constructor" data-fields></div>');
+
+  var CustomFieldset = Fieldset.extend({
+    template: protoTemplate
+  }, {
+    template: constructorTemplate
+  });
+
+  var fieldset = new CustomFieldset({
+    schema: { fields: [] }
+  });
+
+  same(fieldset.template, protoTemplate);
+});
+
+test('fourth, uses template defined on constructor', function() {
+  var constructorTemplate = _.template('<div class="constructor" data-fields></div>');
+
+  var CustomFieldset = Fieldset.extend({
+  }, {
+    template: constructorTemplate
+  });
+
+  var fieldset = new CustomFieldset({
+    schema: { fields: [] },
+  });
+
+  same(fieldset.template, constructorTemplate);
+});
+
+
+
 module('Fieldset#createSchema', {
   setup: function() {
     this.sinon = sinon.sandbox.create();

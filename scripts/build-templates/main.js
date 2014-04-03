@@ -1,7 +1,7 @@
 /**
  * Backbone Forms v{{version}}
  *
- * Copyright (c) 2013 Charles Davison, Pow Media Ltd
+ * Copyright (c) 2014 Charles Davison, Pow Media Ltd
  *
  * License and more information at:
  * http://github.com/powmedia/backbone-forms
@@ -11,15 +11,13 @@
   //DEPENDENCIES
   //CommonJS
   if (typeof exports !== 'undefined' && typeof require !== 'undefined') {
-    var $ = root.jQuery || root.Zepto || root.ender || require('jquery'),
-        _ = root._ || require('underscore'),
+    var _ = root._ || require('underscore'),
         Backbone = root.Backbone || require('backbone');
   }
 
   //Browser
   else {
-    var $ = root.jQuery,
-        _ = root._,
+    var _ = root._,
         Backbone = root.Backbone;
   }
 
@@ -34,6 +32,6 @@
 
   //Exports
   Backbone.Form = Form;
-  if (typeof exports !== 'undefined') exports = Form;
+  if (typeof module !== 'undefined') module.exports = Form;
 
 })(window || global || this);

@@ -10,6 +10,7 @@ Form.validators = (function() {
   validators.errMessages = {
     required: 'Required',
     regexp: 'Invalid',
+    number: 'Must be a number',
     email: 'Invalid email address',
     url: 'Invalid URL',
     match: _.template('Must match field "<%= field %>"', null, Form.templateSettings)
@@ -38,6 +39,7 @@ Form.validators = (function() {
   
     options = _.extend({
       type: 'regexp',
+      match: true,
       message: this.errMessages.regexp
     }, options);
     
@@ -52,8 +54,21 @@ Form.validators = (function() {
       //Don't check empty values (add a 'required' validator for this)
       if (value === null || value === undefined || value === '') return;
 
-      if (!options.regexp.test(value)) return err;
+      //Create RegExp from string if it's valid
+      if ('string' === typeof options.regexp) options.regexp = new RegExp(options.regexp, options.flags);
+
+      if ((options.match) ? !options.regexp.test(value) : options.regexp.test(value)) return err;
     };
+  };
+
+  validators.number = function(options) {
+    options = _.extend({
+      type: 'number',
+      message: this.errMessages.number,
+      regexp: /^[0-9]*\.?[0-9]*?$/
+    }, options);
+    
+    return validators.regexp(options);
   };
   
   validators.email = function(options) {

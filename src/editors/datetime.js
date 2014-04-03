@@ -54,7 +54,8 @@ Form.editors.DateTime = Form.editors.Base.extend({
       return n < 10 ? '0' + n : n;
     }
 
-    var schema = this.schema;
+    var schema = this.schema,
+        $ = Backbone.$;
 
     //Create options
     var hoursOptions = _.map(_.range(0, 24), function(hour) {

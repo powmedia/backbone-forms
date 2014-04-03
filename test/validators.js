@@ -52,7 +52,8 @@
 ;(function() {
 
   module('regexp')
-  
+
+  //Main  
   var fn = Form.validators.regexp({
     regexp: /foo/
   });
@@ -73,6 +74,94 @@
     equal(fn('_foo_'), undefined)
   })
 
+  //regexp as string
+  test('fails string input', function() {
+    var fn = Form.validators.regexp({
+      regexp : '^(foo|bar)$',
+      flags : 'i'
+    });
+
+    equal(fn(''), undefined)
+    equal(fn('food').type, 'regexp')
+    equal(fn('food').message, 'Invalid')
+    equal(fn('bars').type, 'regexp')
+    equal(fn('bars').message, 'Invalid')
+  })
+
+  test('passes string input', function() {
+    var fn = Form.validators.regexp({
+      regexp : '^(foo|bar)$',
+      flags : 'i'
+    });
+
+    equal(fn('foo'), undefined)
+    equal(fn('bar'), undefined)
+  })
+
+
+  //match option
+  test('passes valid strings with match=true', function() {
+    var fn = Form.validators.regexp({
+      regexp: /foo/,
+      match: true
+    });
+
+    equal(fn('foo'), undefined)
+  });
+
+  test('fails strings with match=true', function() {
+    var fn = Form.validators.regexp({
+      regexp: /foo/,
+      match: true
+    });
+
+    equal(fn('bar').message, 'Invalid')
+  });
+
+  test('passes valid strings with match=false', function() {
+    var fn = Form.validators.regexp({
+      regexp: /foo/,
+      match: false
+    });
+
+    equal(fn('foo').message, 'Invalid');
+  });
+
+  test('fails strings with match=false', function() {
+    var fn = Form.validators.regexp({
+      regexp: /foo/,
+      match: false
+    });
+
+    equal(fn('bar'), undefined);
+  });
+
+})();
+
+
+;(function() {
+  module('number')
+  
+  var fn = Form.validators.number()
+  
+  test('passes empty values', function() {
+    equal(fn(''), undefined)
+    equal(fn(null), undefined)
+    equal(fn(undefined), undefined)
+  })
+  
+  test('fails non-number values', function() {
+    ok(fn('foo'))
+    ok(fn('123a'))
+  })
+  
+  test('accepts numbers', function() {
+    equal(fn('123'), undefined)
+    equal(fn(456), undefined)
+    equal(fn(123.3), undefined)
+    equal(fn('123.5'), undefined)
+  })
+  
 })();
 
 

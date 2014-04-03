@@ -26,7 +26,7 @@ Form.editors.Select = Form.editors.Base.extend({
   initialize: function(options) {
     Form.editors.Base.prototype.initialize.call(this, options);
 
-    if (!this.schema || !this.schema.options) throw "Missing required 'schema.options'";
+    if (!this.schema || !this.schema.options) throw new Error("Missing required 'schema.options'");
   },
 
   render: function() {

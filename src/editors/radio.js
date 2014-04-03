@@ -12,7 +12,7 @@ Form.editors.Radio = Form.editors.Select.extend({
   tagName: 'ul',
 
   events: {
-    'change input[type=radio]': function(e) {
+    'change input[type=radio]': function() {
       this.trigger('change', this);
       this._addClasses();
     },
@@ -28,6 +28,15 @@ Form.editors.Radio = Form.editors.Select.extend({
         self.trigger('blur', self);
       }, 0);
     }
+  },
+
+  /**
+   * Returns the template. Override for custom templates
+   *
+   * @return {Function}       Compiled template
+   */
+  getTemplate: function() {
+    return this.schema.template || this.constructor.template;
   },
 
   getValue: function() {
@@ -69,23 +78,44 @@ Form.editors.Radio = Form.editors.Select.extend({
    * @return {String} HTML
    */
   _arrayToHtml: function (array) {
-    var html = [];
     var self = this;
 
-    _.each(array, function(option, index) {
-      var val   = (_.isObject(option)) ? ((option.val || option.val === 0) ? option.val : '') : option;
-      var label = (_.isObject(option)) ? option.label : option;
-      var cls = 'radio-' + label.toLowerCase().replace(/\W/g, '-');
+    var template = this.getTemplate(),
+        name = self.getName(),
+        id = self.id;
 
-      var itemHtml = '<li class="' + cls + '">';
-          itemHtml += ('<input type="radio" name="'+self.getName()+'" value="'+ val +'" id="'+self.id+'-'+index+'" />');
-          itemHtml += ('<label for="'+self.id+'-'+index+'">'+ label +'</label>');
+    var items = _.map(array, function(option, index) {
+      var item = {
+        name: name,
+        id: id + '-' + index
+      }
 
-      itemHtml += '</li>';
-      html.push(itemHtml);
+      if (_.isObject(option)) {
+        item.value = (option.val || option.val === 0) ? option.val : '';
+        item.label = option.label;
+      } else {
+        item.value = option;
+        item.label = option;
+      }
+
+      return item;
     });
 
-    return html.join('');
+    return template({ items: items });
   }
+
+}, {
+
+  //STATICS
+  template: _.template('\
+    <ul>\
+      <% _.each(items, function(item) { %>\
+        <li>\
+          <input type="radio" name="<%= item.name %>" value="<%= item.value %>" id="<%= item.id %>" />\
+          <label for="<%= item.id %>"><%= item.label %></label>\
+        </li>\
+      <% }); %>\
+    </ul>\
+  ', null, Form.templateSettings)
 
 });

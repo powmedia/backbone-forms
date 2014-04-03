@@ -25,7 +25,7 @@ Form.Fieldset = Backbone.View.extend({
     this.fields = _.pick(options.fields, schema.fields);
     
     //Override defaults
-    this.template = options.template || this.constructor.template;
+    this.template = options.template || schema.template || this.template || this.constructor.template;
   },
 
   /**
@@ -76,7 +76,8 @@ Form.Fieldset = Backbone.View.extend({
    */
   render: function() {
     var schema = this.schema,
-        fields = this.fields;
+        fields = this.fields,
+        $ = Backbone.$;
 
     //Render fieldset
     var $fieldset = $($.trim(this.template(_.result(this, 'templateData'))));
