@@ -3,7 +3,8 @@
    * Bootstrap 2 templates
    */
   Form.template = _.template('\
-    <form class="form-horizontal" data-fieldsets>\
+    <form class="form-horizontal">\
+      <div data-fieldsets></div>\
       <% if (submitButton) { %>\
         <button type="submit" class="btn"><%= submitButton %></button>\
       <% } %>\

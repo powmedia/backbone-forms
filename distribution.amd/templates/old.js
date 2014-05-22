@@ -12,7 +12,12 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
    * NOTE: These templates are deprecated.
    */
   Form.template = _.template('\
-    <form class="bbf-form" data-fieldsets></form>\
+    <form class="bbf-form">\
+      <div data-fieldsets></div>\
+      <% if (submitButton) { %>\
+        <button type="submit"><%= submitButton %></button>\
+      <% } %>\
+    </form>\
   ');
 
 
