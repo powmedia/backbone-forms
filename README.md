@@ -243,6 +243,10 @@ If a form has a model attached to it, the initial values are taken from the mode
 
   An array of field names (keys). Only the fields defined here will be added to the form. You can also use this to re-order the fields.
 
+- **`submitButton {String}`**
+
+  If provided, creates a submit button at the bottom of the form using the provided text
+
 - **`idPrefix`**
 
   A string that will be prefixed to the form DOM element IDs. Useful if you will have multiple forms on the same page. E.g. `idPrefix: 'user-'` will result in IDs like 'user-name', 'user-email', etc.
@@ -947,6 +951,7 @@ var CustomEditor = Backbone.Form.editors.Base.extend({
 ##Changelog
 
 ###master
+- Add `submitButton` to form constructor. Adds a submit button with given text.
 - No longer require jquery from within the CommonJS module. NOTE: You must now set Backbone.$ yourself if using CommonJS e.g. browserify
 - Fix CommonJS backend issues (ndrsn)
 - Added the `number` validator

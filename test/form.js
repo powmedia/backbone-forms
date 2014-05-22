@@ -288,6 +288,39 @@ test('creates fieldsets - defaults to all fields in one fieldset', function() {
   same(schemaArg, ['name', 'age', 'password']);
 });
 
+test('submitButton option: missing - does not create button', function() {
+  var form = new Form({
+    schema: { name: 'Text' }
+  }).render();
+
+  var $btn = form.$('button');
+
+  same($btn.length, 0);
+});
+
+test('submitButton option: false - does not create button', function() {
+  var form = new Form({
+    schema: { name: 'Text' },
+    submitButton: false
+  }).render();
+
+  var $btn = form.$('button');
+
+  same($btn.length, 0);
+});
+
+test('submitButton option: string - creates button with given text', function() {
+  var form = new Form({
+    schema: { name: 'Text' },
+    submitButton: 'Next'
+  }).render();
+
+  var $btn = form.$('button[type="submit"]');
+
+  same($btn.length, 1);
+  same($btn.html(), 'Next');
+});
+
 
 
 module('Form#createFieldset', {
