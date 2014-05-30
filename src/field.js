@@ -124,7 +124,7 @@ Form.Field = Backbone.View.extend({
 
     return {
       help: schema.help || '',
-      title: schema.title,
+      title: (typeof schema.title === 'function') ? schema.title() : schema.title,
       fieldAttrs: schema.fieldAttrs,
       editorAttrs: schema.editorAttrs,
       key: this.key,
