@@ -10,6 +10,10 @@
     
     "backbone": "1.0"
     
+  },
+  
+  "devDependencies": {
+    
   }
   
 }
