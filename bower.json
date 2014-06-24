@@ -1,0 +1,15 @@
+{
+  
+  "name": "backbone-forms",
+  
+  "version": "master",
+  
+  "main": "distribution/backbone-forms.js",
+  
+  "dependencies": {
+    
+    "backbone": "1.0"
+    
+  }
+  
+}
