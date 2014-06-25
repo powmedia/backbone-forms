@@ -32,6 +32,13 @@
     ok(required())
     ok(required(false))
   })
+
+  test('error if field is a string that contains only whitespace', function() {
+    ok(required(" "))
+    ok(required("  "))
+    ok(required(" "))
+    ok(required("   "))
+  })
   
   test('error if field is empty string', function() {
     ok(required(''))
@@ -44,6 +51,13 @@
   
   test('ok if field is boolean true', function() {
     equal(required(true), undefined)
+  })
+
+  test('ok if field is string', function() {
+    equal(required('test'), undefined)
+    equal(required(' test'), undefined)
+    equal(required('test '), undefined)
+    equal(required(' test '), undefined)
   })
 
 })();
