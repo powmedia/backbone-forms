@@ -95,7 +95,8 @@
         schema: this.schema,
         value: value,
         Editor: this.Editor,
-        key: this.key
+        key: this.key + '.' + self.items.length,
+        id: this.id + '_' + self.items.length
       }).render();
       
       var _addItem = function() {
@@ -288,6 +289,7 @@
       this.value = options.value;
       this.Editor = options.Editor || Form.editors.Text;
       this.key = options.key;
+      this.id = this.id;
       this.template = options.template || this.schema.itemTemplate || this.constructor.template;
       this.errorClassName = options.errorClassName || this.constructor.errorClassName;
       this.form = options.form;
@@ -299,6 +301,7 @@
       //Create editor
       this.editor = new this.Editor({
         key: this.key,
+        id: this.id,
         schema: this.schema,
         value: this.value,
         list: this.list,
