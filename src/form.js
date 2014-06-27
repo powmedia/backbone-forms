@@ -70,7 +70,7 @@ var Form = Backbone.View.extend({
     }, this);
 
     //Create fieldsets
-    var fieldsetSchema = options.fieldsets || _.result(this, 'fieldsets') || [selectedFields],
+    var fieldsetSchema = options.fieldsets || _.result(this, 'fieldsets') || _.result(this.model, 'fieldsets') || [selectedFields],
         fieldsets = this.fieldsets = [];
 
     _.each(fieldsetSchema, function(itemSchema) {
