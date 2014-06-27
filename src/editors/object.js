@@ -55,7 +55,7 @@ Form.editors.Object = Form.editors.Base.extend({
   setValue: function(value) {
     this.value = value;
 
-    this.render();
+    this.nestedForm.setValue(this.value);
   },
 
   focus: function() {
