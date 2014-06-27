@@ -30,18 +30,6 @@ Form.editors.NestedModel = Form.editors.Object.extend({
     });
   },
 
-  render: function() {
-
-    this._observeFormEvents();
-
-    //Render form
-    this.$el.html(this.nestedForm.render().el);
-
-    if (this.hasFocus) this.trigger('blur', this);
-
-    return this;
-  },
-
   /**
    * Update the embedded model, checking for nested validation errors and pass them up
    * Then update the main model if all OK
