@@ -88,7 +88,8 @@ var Form = Backbone.View.extend({
   createFieldset: function(schema) {
     var options = {
       schema: schema,
-      fields: this.fields
+      fields: this.fields,
+      legend: schema.legend || null
     };
 
     return new this.Fieldset(options);

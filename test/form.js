@@ -45,7 +45,7 @@ test('prefers schema from options over model - when schema is a function', funct
   same(form.schema, schema());
 });
 
-test('uses from model if provided', function() {
+test('uses schema from model if provided', function() {
   var model = new Backbone.Model();
 
   model.schema = { fromModel: 'Text' };
@@ -55,6 +55,20 @@ test('uses from model if provided', function() {
   });
 
   same(form.schema, model.schema);
+});
+
+test('uses fieldsets from model if provided', function() {
+  var model = new Backbone.Model();
+
+  model.schema = { fromModel: 'Text' };
+  model.fieldsets = [{legend: 'from model',
+                      fields: ['fromModel']}];
+
+  var form = new Form({
+    model: model
+  });
+
+  same(form.fieldsets[0].schema, model.fieldsets[0]);
 });
 
 test('uses from model if provided - when schema is a function', function() {
