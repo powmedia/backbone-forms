@@ -153,6 +153,9 @@
   test('fails non-number values', function() {
     ok(fn('foo'))
     ok(fn('123a'))
+    ok(fn('-.'))
+    ok(fn('.5'))
+    ok(fn('5.'))
   })
   
   test('accepts numbers', function() {
@@ -160,6 +163,9 @@
     equal(fn(456), undefined)
     equal(fn(123.3), undefined)
     equal(fn('123.5'), undefined)
+    equal(fn('-123.5'), undefined)
+    equal(fn(-123.5), undefined)
+    equal(fn(0.5), undefined)
   })
   
 })();
