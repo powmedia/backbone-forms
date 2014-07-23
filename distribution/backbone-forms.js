@@ -510,6 +510,7 @@ Form.validators = (function() {
     required: 'Required',
     regexp: 'Invalid',
     number: 'Must be a number',
+    range: _.template('Must be a number between <%= min %> and <%= max %>', null, Form.templateSettings),
     email: 'Invalid email address',
     url: 'Invalid URL',
     match: _.template('Must match field "<%= field %>"', null, Form.templateSettings)
@@ -564,11 +565,40 @@ Form.validators = (function() {
     options = _.extend({
       type: 'number',
       message: this.errMessages.number,
-      regexp: /^[0-9]*\.?[0-9]*?$/
+      regexp: /^-?[0-9]+(\.[0-9]+)?$/
     }, options);
     
     return validators.regexp(options);
   };
+
+  validators.range = function(options) {
+    options = _.extend({
+      type: 'range',
+      message: this.errMessages.range,
+      numberMessage: this.errMessages.number,
+      min: 0,
+      max: 100
+    }, options);
+
+    return function range(value) {
+      options.value = value;
+      var err = {
+        type: options.type,
+        message: _.isFunction(options.message) ? options.message(options) : options.message
+      };
+
+      //Don't check empty values (add a 'required' validator for this)
+      if (value === null || value === undefined || value === '') return;
+
+      // check value is a number
+      var numberCheck = validators.number({message: options.numberMessage})(value);
+      if (numberCheck) return numberCheck;
+
+      // check value is in range
+      var number = parseFloat(options.value);
+      if (number < options.min || number > options.max) return err;
+    }
+  }
   
   validators.email = function(options) {
     options = _.extend({
