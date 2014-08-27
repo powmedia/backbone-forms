@@ -10,6 +10,7 @@
     }
   });
 
+  var same = deepEqual;
 
   var schema = {
     options: ['Sterling', 'Lana', 'Cyril', 'Cheryl', 'Pam']
@@ -340,6 +341,66 @@
 
       start();
     }, 0);
+  });
+
+
+
+  module('Radio Text Escaping', {
+    setup: function() {
+      this.sinon = sinon.sandbox.create();
+
+      this.options = [
+        {
+          val: '"/><script>throw("XSS Success");</script>',
+          label: '"/><script>throw("XSS Success");</script>'
+        },
+        {
+          val: '\"?\'\/><script>throw("XSS Success");</script>',
+          label: '\"?\'\/><script>throw("XSS Success");</script>',
+        },
+        {
+          val: '><b>HTML</b><',
+          label: '><div class=>HTML</b><',
+        }
+      ];
+
+      this.editor = new Editor({
+        schema: {
+          options: this.options
+        }
+      }).render();
+
+      $('body').append(this.editor.el);
+    },
+
+    teardown: function() {
+      this.sinon.restore();
+
+      this.editor.remove();
+    }
+  });
+
+  test('options content gets properly escaped', function() {
+
+    same( this.editor.schema.options, this.options );
+
+    //What an awful string.
+    //CAN'T have white-space on the left, or the string will no longer match
+    //If this bothers you aesthetically, can switch it to concat syntax
+    var escapedHTML = "          <li>        <input type=\"radio\" name=\"\" value=\"&quot;/>\
+<script>throw(&quot;XSS Success&quot;);</script>\" id=\"undefined-0\">        \
+<label for=\"undefined-0\">\"/&gt;&lt;script&gt;throw(\"XSS Success\");&lt;/script&gt;</label>      \
+</li>          <li>        <input type=\"radio\" name=\"\" value=\"&quot;?'/><script>throw(&quot;\
+XSS Success&quot;);</script>\" id=\"undefined-1\">        <label for=\"undefined-1\">\"?'/&gt;&lt\
+;script&gt;throw(\"XSS Success\");&lt;/script&gt;</label>      </li>          <li>        <input \
+type=\"radio\" name=\"\" value=\"><b>HTML</b><\" id=\"undefined-2\">        <label for=\"undefined\
+-2\">&gt;&lt;div class=&gt;HTML&lt;/b&gt;&lt;</label>      </li>      ";
+
+    same( this.editor.$el.html(), escapedHTML );
+
+    same( this.editor.$('input').val(), this.options[0].val );
+    same( this.editor.$('label').first().text(), this.options[0].label );
+    same( this.editor.$('label').text(), "\"/><script>throw(\"XSS Success\");</script>\"?'/><script>throw(\"XSS Success\");</script>><div class=>HTML</b><" );
   });
 
 })(Backbone.Form, Backbone.Form.editors.Radio);

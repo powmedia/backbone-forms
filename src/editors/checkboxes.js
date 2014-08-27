@@ -68,7 +68,6 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
 
     _.each(array, function(option, index) {
       var itemHtml = $('<li>');
-      var close = true;
       if (_.isObject(option)) {
         if (option.group) {
           var originalId = self.id;
