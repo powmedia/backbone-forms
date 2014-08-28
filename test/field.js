@@ -646,8 +646,8 @@ test('TitleHTML property can be set to true to allow HTML through', function() {
   var field = new Field({
     key: 'XSS',
     schema: {
-      title: '<b>some HTML</b>',
-      titleHTML: true
+      titleHTML: '<b>some HTML</b>',
+      title: 'will be ignored'
     }
   }).render();
 

@@ -269,7 +269,7 @@ Form.Field = Backbone.View.extend({
   template: _.template('\
     <div>\
       <label for="<%= editorId %>">\
-        <% if (titleHTML){ %><%= title %>\
+        <% if (titleHTML){ %><%= titleHTML %>\
         <% } else { %><%- title %><% } %>\
       </label>\
       <div>\
