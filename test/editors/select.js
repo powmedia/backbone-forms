@@ -636,4 +636,48 @@ class=&gt;HTML&lt;/b&gt;&lt;</option>";
     same( this.editor.$('option').text(), "\"/><script>throw(\"XSS Success\");</script>\"?'/><script>throw(\"XSS Success\");</script>><div class=>HTML</b><" );
   });
 
+  test('option groups content gets properly escaped', function() {
+    var options = [{
+      group: '"/><script>throw("XSS Success");</script>',
+      options: [
+        {
+          val: '"/><script>throw("XSS Success");</script>',
+          label: '"/><script>throw("XSS Success");</script>'
+        },
+        {
+          val: '\"?\'\/><script>throw("XSS Success");</script>',
+          label: '\"?\'\/><script>throw("XSS Success");</script>',
+        },
+        {
+          val: '><b>HTML</b><',
+          label: '><div class=>HTML</b><',
+        }
+      ]
+    }];
+    var editor = new Editor({
+      schema: {
+        options: options
+      }
+    }).render();
+
+    same( editor.schema.options, options );
+
+    //What an awful string.
+    //CAN'T have white-space on the left, or the string will no longer match
+    //If this bothers you aesthetically, can switch it to concat syntax
+    var escapedHTML = "<optgroup label=\"&quot;/>\<script>throw(&quot;XSS \
+Success&quot;);</script>\"><option value=\"&quot;/>\
+<script>throw(&quot;XSS Success&quot;);</script>\">\"/&gt;&lt;script&gt;throw\
+(\"XSS Success\");&lt;/script&gt;</option><option value=\"&quot;?'/><script>\
+throw(&quot;XSS Success&quot;);</script>\">\"?'/&gt;&lt;script&gt;throw(\"XSS \
+Success\");&lt;/script&gt;</option><option value=\"><b>HTML</b><\">&gt;&lt;\
+div class=&gt;HTML&lt;/b&gt;&lt;</option></optgroup>";
+
+    same( editor.$el.html(), escapedHTML );
+
+    same( editor.$('option').val(), options[0].options[0].val );
+    same( editor.$('option').first().text(), options[0].options[0].label );
+    same( editor.$('option').text(), "\"/><script>throw(\"XSS Success\");</script>\"?'/><script>throw(\"XSS Success\");</script>><div class=>HTML</b><" );
+  });
+
 })(Backbone.Form, Backbone.Form.editors.Select);

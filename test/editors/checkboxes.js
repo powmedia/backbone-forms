@@ -414,4 +414,50 @@ for=\"undefined-2\">&gt;&lt;div class=&gt;HTML&lt;/b&gt;&lt;</label></li>";
     same( this.editor.$('label').text(), "\"/><script>throw(\"XSS Success\");</script>\"?'/><script>throw(\"XSS Success\");</script>><div class=>HTML</b><" );
   });
 
+  test('option groups content gets properly escaped', function() {
+    var options = [{
+      group: '"/><script>throw("XSS Success");</script>',
+      options: [
+        {
+          val: '"/><script>throw("XSS Success");</script>',
+          label: '"/><script>throw("XSS Success");</script>'
+        },
+        {
+          val: '\"?\'\/><script>throw("XSS Success");</script>',
+          label: '\"?\'\/><script>throw("XSS Success");</script>',
+        },
+        {
+          val: '><b>HTML</b><',
+          label: '><div class=>HTML</b><',
+        }
+      ]
+    }];
+    var editor = new Editor({
+      schema: {
+        options: options
+      }
+    }).render();
+
+    same( editor.schema.options, options );
+
+    //What an awful string.
+    //CAN'T have white-space on the left, or the string will no longer match
+    //If this bothers you aesthetically, can switch it to concat syntax
+    var escapedHTML = "<fieldset class=\"group\"><legend>\"/&gt;&lt;script&gt;\
+throw(\"XSS Success\");&lt;/script&gt;</legend><li><input type=\"checkbox\" \
+name=\"\" id=\"undefined-0-0\" value=\"&quot;/><script>throw(&quot;XSS Success&quot;)\
+;</script>\"><label for=\"undefined-0-0\">\"/&gt;&lt;script&gt;throw(\"XSS Success\");\
+&lt;/script&gt;</label></li><li><input type=\"checkbox\" name=\"\" id=\"undefined-0-1\" \
+value=\"&quot;?'/><script>throw(&quot;XSS Success&quot;);</script>\"><label for=\"undefined-\
+0-1\">\"?'/&gt;&lt;script&gt;throw(\"XSS Success\");&lt;/script&gt;</label></li><li>\
+<input type=\"checkbox\" name=\"\" id=\"undefined-0-2\" value=\"><b>HTML</b><\"><label \
+for=\"undefined-0-2\">&gt;&lt;div class=&gt;HTML&lt;/b&gt;&lt;</label></li></fieldset>";
+
+    same( editor.$el.html(), escapedHTML );
+
+    same( editor.$('input').val(), options[0].options[0].val );
+    same( editor.$('label').first().text(), options[0].options[0].label );
+    same( editor.$('label').text(), "\"/><script>throw(\"XSS Success\");</script>\"?'/><script>throw(\"XSS Success\");</script>><div class=>HTML</b><" );
+  });
+
 })(Backbone.Form, Backbone.Form.editors.Checkboxes);
