@@ -40,10 +40,10 @@ HTML:
 <script id="formTemplate" type="text/html">
     <form>
         <h1>New User</h1>
-        
+
         <h2>Main Info</h2>
         <div data-fields="title,name,birthday"></div>
-        
+
         <h2>Account Info</h2>
         <h3>Email</h3>
         <div data-fields="email"></div>
@@ -59,7 +59,7 @@ Javascript:
 ```js
 var UserForm = Backbone.Form.extend({
     template: _.template($('#formTemplate').html()),
-    
+
     schema: {
         title:      { type: 'Select', options: ['Mr', 'Mrs', 'Ms'] },
         name:       'Text',
@@ -197,7 +197,7 @@ var form = new Backbone.Form({
         name:       'Text',
         password:   'Password'
     },
-    
+
     //Data to populate the form with
     data: {
       id: 123,
@@ -329,6 +329,12 @@ For each field definition in the schema you can use the following optional attri
 
   Defines the text that appears in a form field's `<label>`. If not defined, defaults to a formatted version of the camelCased field key. E.g. `firstName` becomes `First Name`. This behaviour can be changed by assigning your own function to `Backbone.Form.helpers.keyToTitle`.
 
+  Title is escaped by default, to allow using special characters such as < and >, as well as to prevent possible XSS vulnerabilities in user generated content.
+
+- **`titleHTML`**
+
+  This by default will not be escaped, allowing you to use HTML tags. Will over-ride title if defined.
+
 - **`validators`**
 
   A list of validators. See [Validation](#validation) for more information
@@ -405,6 +411,8 @@ Creates and populates a `<select>` element.
     - A function that calls back with one of the above
     - An object e.g. `{ y: 'Yes', n: 'No' }`
 
+  By default, options values and labels are escaped when rendered, to allow using special characters such as < and >, as well as to prevent possible XSS vulnerabilities in user generated content. Since Select HTML elements can't contain arbitrary HTML inside of them, there is no option on Select to NOT encode the text. Custom Editors that extend Select should factor in the possibility of labels that contain HTML.
+
   **Backbone collection notes**
 
   If using a Backbone collection as the `options` attribute, models in the collection must implement a `toString()` method. This populates the label of the `<option>`. The ID of the model populates the `value` attribute.
@@ -448,12 +456,38 @@ Creates and populates a `<select>` element.
 
 Creates and populates a list of radio inputs. Behaves the same way and has the same options as a `Select`.
 
+When the Radio's is given options as an array of objects, each item's `label` may be replaced with `labelHTML`. This content will not be escaped, so that HTML may be used to style the label.
+If it uses object syntax, this option is not possible.
+
+#### Example
+
+    var schema = {
+        radios: {
+            type: "Radio",
+            options: [
+                { label: "<b>Will be escaped</b>", val: "Text is not bold, but <b> and </b> text is visible"},
+                { labelHTML: "<b>Will NOT be escaped</b>", val: "Text is bold, and HTML tags are invisible"}
+            ]
+        }
+    };
+
+    var schema = {
+        radios: {
+            type: "Radio",
+            options: {
+                value1: "<b>Text is not bold, but <b> and </b> text is visible</b>",
+                value2: "There is no way to unescape this text"
+            }
+        }
+    };
+
 
 <a name="editor-checkboxes"/>
 ##Checkboxes
 
 Creates and populates a list of checkbox inputs. Behaves the same way and has the same options as a `Select`. To set defaults for this editor, use an array of values.
 
+Checkboxes options array has the same labelHTML option as Radio.
 
 <a name="editor-object"/>
 ##Object
@@ -773,11 +807,11 @@ To customise forms even further you can pass in a template to the form instance 
 <script id="formTemplate" type="text/html">
     <form>
         <h1><%= heading1 %></h1>
-        
+
         <h2>Name</h2>
         <div data-editors="firstName"><!-- firstName editor will be added here --></div>
         <div data-editors="lastName"><!-- lastName editor will be added here --></div>
-        
+
         <h2>Password</h2>
         <div data-editors="password">
             <div class="notes">Must be at least 7 characters:</div>
