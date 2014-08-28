@@ -180,7 +180,7 @@ module('Field#createEditor', {
   }
 });
 
-test('creates a new instance of the Editor defined in the schema', function() {  
+test('creates a new instance of the Editor defined in the schema', function() {
   var field = new Field({
     key: 'password',
     schema: { type: 'Password' },
@@ -216,12 +216,12 @@ test('uses idPrefix if defined', function() {
     idPrefix: 'foo_',
     key: 'name'
   });
-  
+
   var numberPrefixField = new Field({
     idPrefix: 123,
     key: 'name'
   });
-  
+
   same(numberPrefixField.createEditorId(), '123name');
 });
 
@@ -230,7 +230,7 @@ test('adds no prefix if idPrefix is null', function() {
     idPrefix: null,
     key: 'name'
   });
-  
+
   same(field.createEditorId(), 'name');
 });
 
@@ -242,7 +242,7 @@ test('uses model cid if no idPrefix is set', function() {
     key: 'name',
     model: model
   });
-  
+
   same(field.createEditorId(), 'foo_name');
 });
 
@@ -250,7 +250,7 @@ test('adds no prefix if idPrefix is null and there is no model', function() {
   var field = new Field({
     key: 'name'
   });
-  
+
   same(field.createEditorId(), 'name');
 });
 
@@ -357,11 +357,11 @@ test('calls setError if validation fails', 4, function() {
   });
 
   this.sinon.spy(field, 'setError');
-  
+
   //Make validation fail
   field.setValue(null);
   var err = field.validate();
-  
+
   //Test
   same(field.setError.callCount, 1);
   same(field.setError.args[0][0], 'Required');
@@ -377,15 +377,15 @@ test('calls clearError if validation passes', 1, function() {
   });
 
   this.sinon.spy(field, 'clearError');
-  
+
   //Trigger error to appear
   field.setValue(null);
   field.validate();
-    
+
   //Trigger validation to pass
   field.setValue('ok');
   field.validate();
-  
+
   //Test
   same(field.clearError.callCount, 1);
 });
@@ -481,7 +481,7 @@ test('Calls editor commit', function() {
   this.sinon.spy(field.editor, 'commit');
 
   field.commit();
-  
+
   same(field.editor.commit.callCount, 1);
 });
 
@@ -496,7 +496,7 @@ test('Returns error from validation', function() {
   });
 
   var result = field.commit();
-  
+
   same(result, { type: 'required' });
 });
 
@@ -521,7 +521,7 @@ test('Returns the value from the editor', function() {
     this.sinon.spy(field.editor, 'getValue');
 
     var result = field.getValue();
-    
+
     same(field.editor.getValue.callCount, 1);
     same(result, 'The Title');
 });
@@ -542,9 +542,9 @@ test('Passes the new value to the editor', function() {
     var field = new Field({ key: 'title' });
 
     this.sinon.spy(field.editor, 'setValue');
-    
+
     field.setValue('New Title');
-    
+
     same(field.editor.setValue.callCount, 1);
     same(field.editor.setValue.args[0][0], 'New Title');
 });
@@ -565,9 +565,9 @@ test('Calls focus on editor', function() {
   var field = new Field({ key: 'title' });
 
   this.sinon.spy(field.editor, 'focus');
-  
+
   field.focus();
-  
+
   same(field.editor.focus.callCount, 1);
 });
 
@@ -587,9 +587,9 @@ test('Calls focus on editor', function() {
   var field = new Field({ key: 'title' });
 
   this.sinon.spy(field.editor, 'blur');
-  
+
   field.blur();
-  
+
   same(field.editor.blur.callCount, 1);
 });
 
@@ -626,5 +626,33 @@ test('Removes self', function() {
   same(Backbone.View.prototype.remove.callCount, 2);
 });
 
+
+
+module('Field#escape title text');
+
+test('Title HTML gets escaped by default', function() {
+  var field = new Field({
+    key: 'XSS',
+    schema: {
+      title: '      "/><script>throw("XSS Success");</script>      '
+    }
+  }).render();
+
+  same( field.$('label').text(), '              \"/><script>throw(\"XSS Success\");</script>            ' );
+  same( field.$('label').html(), '              \"/&gt;&lt;script&gt;throw(\"XSS Success\");&lt;/script&gt;            ' );
+});
+
+test('TitleHTML property can be set to true to allow HTML through', function() {
+  var field = new Field({
+    key: 'XSS',
+    schema: {
+      title: '<b>some HTML</b>',
+      titleHTML: true
+    }
+  }).render();
+
+  same( field.$('label').text(), '        some HTML              ' );
+  same( field.$('label').html(), '        <b>some HTML</b>              ' );
+});
 
 })(Backbone.Form, Backbone.Form.Field);
