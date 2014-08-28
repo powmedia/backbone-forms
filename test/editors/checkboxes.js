@@ -415,6 +415,37 @@ for=\"undefined-2\">&gt;&lt;div class=&gt;HTML&lt;/b&gt;&lt;</label></li>";
     same( this.editor.$('label').text(), "\"/><script>throw(\"XSS Success\");</script>\"?'/><script>throw(\"XSS Success\");</script>><div class=>HTML</b><" );
   });
 
+  test('options object content gets properly escaped', function() {
+
+      var options = {
+        key1: '><b>HTML</b><',
+        key2: '><div class=>HTML</b><'
+      };
+
+      var editor = new Editor({
+        schema: {
+          options: options
+        }
+      }).render();
+
+    same( editor.schema.options, options );
+
+    //What an awful string.
+    //CAN'T have white-space on the left, or the string will no longer match
+    //If this bothers you aesthetically, can switch it to concat syntax
+    var escapedHTML = "<li><input type=\"checkbox\" name=\"\" id=\"undefined-0\" \
+value=\"key1\"><label for=\"undefined-0\">&gt;&lt;b&gt;HTML&lt;/b&gt;&lt;</label>\
+</li><li><input type=\"checkbox\" name=\"\" id=\"undefined-1\" value=\"key2\">\
+<label for=\"undefined-1\">&gt;&lt;div class=&gt;HTML&lt;/b&gt;&lt;</label></li>";
+
+    same( editor.$el.html(), escapedHTML );
+
+    same( editor.$('input').val(), _.keys(options)[0] );
+    same( editor.$('label').first().text(), options.key1 );
+    same( editor.$('label').first().html(), '&gt;&lt;b&gt;HTML&lt;/b&gt;&lt;' );
+    same( editor.$('label').text(), '><b>HTML</b><><div class=>HTML</b><' );
+  });
+
   test('options labels can be labelHTML, which will not be escaped', function() {
 
       var options = [

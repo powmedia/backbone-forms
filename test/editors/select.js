@@ -637,6 +637,35 @@ class=&gt;HTML&lt;/b&gt;&lt;</option>";
     same( this.editor.$('option').text(), "\"/><script>throw(\"XSS Success\");</script>\"?'/><script>throw(\"XSS Success\");</script>><div class=>HTML</b><" );
   });
 
+  test('options object content gets properly escaped', function() {
+
+      var options = {
+        key1: '><b>HTML</b><',
+        key2: '><div class=>HTML</b><'
+      };
+
+      var editor = new Editor({
+        schema: {
+          options: options
+        }
+      }).render();
+
+    same( editor.schema.options, options );
+
+    //What an awful string.
+    //CAN'T have white-space on the left, or the string will no longer match
+    //If this bothers you aesthetically, can switch it to concat syntax
+    var escapedHTML = "<option value=\"key1\">&gt;&lt;b&gt;HTML&lt;/b&gt;&lt;</option>\
+<option value=\"key2\">&gt;&lt;div class=&gt;HTML&lt;/b&gt;&lt;</option>";
+
+    same( editor.$el.html(), escapedHTML );
+
+    same( editor.$('option').val(), _.keys(options)[0] );
+    same( editor.$('option').first().text(), options.key1 );
+    same( editor.$('option').first().html(), '&gt;&lt;b&gt;HTML&lt;/b&gt;&lt;' );
+    same( editor.$('option').text(), '><b>HTML</b><><div class=>HTML</b><' );
+  });
+
   test('option groups content gets properly escaped', function() {
     var options = [{
       group: '"/><script>throw("XSS Success");</script>',
