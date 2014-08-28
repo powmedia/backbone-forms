@@ -400,6 +400,7 @@ type=\"radio\" name=\"\" value=\"><b>HTML</b><\" id=\"undefined-2\">        <lab
 
     same( this.editor.$('input').val(), this.options[0].val );
     same( this.editor.$('label').first().text(), this.options[0].label );
+    same( this.editor.$('label').first().html(), '\"/&gt;&lt;script&gt;throw(\"XSS Success\");&lt;/script&gt;' );
     same( this.editor.$('label').text(), "\"/><script>throw(\"XSS Success\");</script>\"?'/><script>throw(\"XSS Success\");</script>><div class=>HTML</b><" );
   });
 

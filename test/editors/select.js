@@ -633,6 +633,7 @@ class=&gt;HTML&lt;/b&gt;&lt;</option>";
 
     same( this.editor.$('option').val(), this.options[0].val );
     same( this.editor.$('option').first().text(), this.options[0].label );
+    same( this.editor.$('option').first().html(), '\"/&gt;&lt;script&gt;throw(\"XSS Success\");&lt;/script&gt;' );
     same( this.editor.$('option').text(), "\"/><script>throw(\"XSS Success\");</script>\"?'/><script>throw(\"XSS Success\");</script>><div class=>HTML</b><" );
   });
 
@@ -677,6 +678,7 @@ div class=&gt;HTML&lt;/b&gt;&lt;</option></optgroup>";
 
     same( editor.$('option').val(), options[0].options[0].val );
     same( editor.$('option').first().text(), options[0].options[0].label );
+    same( editor.$('option').first().html(), '\"/&gt;&lt;script&gt;throw(\"XSS Success\");&lt;/script&gt;' );
     same( editor.$('option').text(), "\"/><script>throw(\"XSS Success\");</script>\"?'/><script>throw(\"XSS Success\");</script>><div class=>HTML</b><" );
   });
 

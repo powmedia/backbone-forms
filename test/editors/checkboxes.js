@@ -411,7 +411,8 @@ for=\"undefined-2\">&gt;&lt;div class=&gt;HTML&lt;/b&gt;&lt;</label></li>";
 
     same( this.editor.$('input').val(), this.options[0].val );
     same( this.editor.$('label').first().text(), this.options[0].label );
-    same( this.editor.$('label').text(), "\"/><script>throw(\"XSS Success\");</script>\"?'/><script>throw(\"XSS Success\");</script>><div class=>HTML</b><" );
+    same( this.editor.$('label').first().html(), '\"/&gt;&lt;script&gt;throw(\"XSS Success\");&lt;/script&gt;' );
+        same( this.editor.$('label').text(), "\"/><script>throw(\"XSS Success\");</script>\"?'/><script>throw(\"XSS Success\");</script>><div class=>HTML</b><" );
   });
 
   test('option groups content gets properly escaped', function() {
@@ -457,6 +458,7 @@ for=\"undefined-0-2\">&gt;&lt;div class=&gt;HTML&lt;/b&gt;&lt;</label></li></fie
 
     same( editor.$('input').val(), options[0].options[0].val );
     same( editor.$('label').first().text(), options[0].options[0].label );
+    same( editor.$('label').first().html(), '\"/&gt;&lt;script&gt;throw(\"XSS Success\");&lt;/script&gt;' );
     same( editor.$('label').text(), "\"/><script>throw(\"XSS Success\");</script>\"?'/><script>throw(\"XSS Success\");</script>><div class=>HTML</b><" );
   });
 
