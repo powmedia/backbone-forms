@@ -404,4 +404,40 @@ type=\"radio\" name=\"\" value=\"><b>HTML</b><\" id=\"undefined-2\">        <lab
     same( this.editor.$('label').text(), "\"/><script>throw(\"XSS Success\");</script>\"?'/><script>throw(\"XSS Success\");</script>><div class=>HTML</b><" );
   });
 
+  test('options labels can be labelHTML, which will not be escaped', function() {
+
+      var options = [
+        {
+          val: '><b>HTML</b><',
+          labelHTML: '><div class=>HTML</b><',
+          label: 'will be ignored'
+        }
+      ];
+
+      var editor = new Editor({
+        schema: {
+          options: options
+        }
+      }).render();
+
+    same( editor.schema.options, options );
+
+    //What an awful string.
+    //CAN'T have white-space on the left, or the string will no longer match
+    //If this bothers you aesthetically, can switch it to concat syntax
+    var escapedHTML = "          <li>        <input type=\"radio\" name=\"\" value=\">\
+<b>HTML</b><\" id=\"undefined-0\">        <label for=\"undefined-0\">&gt;\
+<div class=\"\">HTML&lt;      </div></label></li>      ";
+
+    same( editor.$el.html(), escapedHTML );
+
+    same( editor.$('input').val(), options[0].val );
+
+    //Note that in these 3 results, the labelHTML has
+    //been transformed because the HTML was invalid
+    same( editor.$('label').first().text(), ">HTML<      " );
+    same( editor.$('label').first().html(), '&gt;<div class=\"\">HTML&lt;      </div>' );
+    same( editor.$('label').text(), '>HTML<      ' );
+  });
+
 })(Backbone.Form, Backbone.Form.editors.Radio);

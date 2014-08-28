@@ -79,7 +79,12 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
         }else{
           var val = (option.val || option.val === 0) ? option.val : '';
           itemHtml.append( $('<input type="checkbox" name="'+self.getName()+'" id="'+self.id+'-'+index+'" />').val(val) );
-          itemHtml.append( $('<label for="'+self.id+'-'+index+'">').text(option.label) );
+          if (option.labelHTML){
+            itemHtml.append( $('<label for="'+self.id+'-'+index+'">').html(option.labelHTML) );
+          }
+          else {
+            itemHtml.append( $('<label for="'+self.id+'-'+index+'">').text(option.label) );
+          }
         }
       }
       else {
