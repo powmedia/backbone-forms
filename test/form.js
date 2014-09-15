@@ -45,7 +45,7 @@ test('prefers schema from options over model - when schema is a function', funct
   same(form.schema, schema());
 });
 
-test('uses from model if provided', function() {
+test('uses schema from model if provided', function() {
   var model = new Backbone.Model();
 
   model.schema = { fromModel: 'Text' };
@@ -55,6 +55,20 @@ test('uses from model if provided', function() {
   });
 
   same(form.schema, model.schema);
+});
+
+test('uses fieldsets from model if provided', function() {
+  var model = new Backbone.Model();
+
+  model.schema = { fromModel: 'Text' };
+  model.fieldsets = [{legend: 'from model',
+                      fields: ['fromModel']}];
+
+  var form = new Form({
+    model: model
+  });
+
+  same(form.fieldsets[0].schema, model.fieldsets[0]);
 });
 
 test('uses from model if provided - when schema is a function', function() {
@@ -286,6 +300,39 @@ test('creates fieldsets - defaults to all fields in one fieldset', function() {
       schemaArg = args[0];
 
   same(schemaArg, ['name', 'age', 'password']);
+});
+
+test('submitButton option: missing - does not create button', function() {
+  var form = new Form({
+    schema: { name: 'Text' }
+  }).render();
+
+  var $btn = form.$('button');
+
+  same($btn.length, 0);
+});
+
+test('submitButton option: false - does not create button', function() {
+  var form = new Form({
+    schema: { name: 'Text' },
+    submitButton: false
+  }).render();
+
+  var $btn = form.$('button');
+
+  same($btn.length, 0);
+});
+
+test('submitButton option: string - creates button with given text', function() {
+  var form = new Form({
+    schema: { name: 'Text' },
+    submitButton: 'Next'
+  }).render();
+
+  var $btn = form.$('button[type="submit"]');
+
+  same($btn.length, 1);
+  same($btn.html(), 'Next');
 });
 
 

@@ -5,7 +5,7 @@
 
 Form.NestedField = Form.Field.extend({
 
-  template: _.template($.trim('\
+  template: _.template('\
     <div>\
       <span data-editor></span>\
       <% if (help) { %>\
@@ -13,6 +13,6 @@ Form.NestedField = Form.Field.extend({
       <% } %>\
       <div data-error></div>\
     </div>\
-  '), null, Form.templateSettings)
+  ', null, Form.templateSettings)
 
 });

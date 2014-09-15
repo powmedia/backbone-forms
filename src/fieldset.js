@@ -76,7 +76,8 @@ Form.Fieldset = Backbone.View.extend({
    */
   render: function() {
     var schema = this.schema,
-        fields = this.fields;
+        fields = this.fields,
+        $ = Backbone.$;
 
     //Render fieldset
     var $fieldset = $($.trim(this.template(_.result(this, 'templateData'))));

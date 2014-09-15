@@ -505,6 +505,52 @@
     ok(spy.alwaysCalledWith(editor));
   });
 
+  test("'change' event - is triggered when value of select changes", function() {
+    var editor = this.editor;
+
+    var callCount = 0;
+
+    var spy = this.sinon.spy();
+
+    editor.on('change', spy);
+    // Pressing a key
+    editor.$el.keypress();
+    editor.$el.val('a');
+
+    stop();
+    setTimeout(function(){
+      callCount++;
+
+      editor.$el.keyup();
+
+      // Keeping a key pressed for a longer time
+      editor.$el.keypress();
+      editor.$el.val('Pam');
+
+      setTimeout(function(){
+        callCount++;
+
+        editor.$el.keypress();
+        editor.$el.val('Cheryl');
+
+        setTimeout(function(){
+          callCount++;
+
+          editor.$el.keyup();
+
+          // Left; Right: Pointlessly moving around
+          editor.$el.keyup();
+          editor.$el.keyup();
+
+          ok(spy.callCount == callCount);
+          ok(spy.alwaysCalledWith(editor));
+
+          start();
+        }, 0);
+      }, 0);
+    }, 0);
+  });
+
   test("'focus' event - bubbles up from the selectbox", function() {
     var editor = this.editor;
 

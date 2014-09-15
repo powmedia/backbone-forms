@@ -11,7 +11,12 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
    * Bootstrap 3 templates
    */
   Form.template = _.template('\
-    <form class="form-horizontal" role="form" data-fieldsets></form>\
+    <form class="form-horizontal" role="form">\
+      <div data-fieldsets></div>\
+      <% if (submitButton) { %>\
+        <button type="submit" class="btn"><%= submitButton %></button>\
+      <% } %>\
+    </form>\
   ');
 
 

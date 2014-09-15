@@ -139,7 +139,8 @@ Form.Field = Backbone.View.extend({
    */
   render: function() {
     var schema = this.schema,
-        editor = this.editor;
+        editor = this.editor,
+        $ = Backbone.$;
 
     //Only render the editor if Hidden
     if (schema.type == Form.editors.Hidden) {

@@ -79,6 +79,7 @@ $('body').append(form.el);
 ###Live editable demos
 - [User form](http://jsfiddle.net/evilcelery/dW2Qu/)
 - [Update form elements based on user input](http://jsfiddle.net/evilcelery/c5QHr/)
+- [Validate on blur](http://jsfiddle.net/evilcelery/FqLR2/)
 
 
 
@@ -130,7 +131,7 @@ To use a custom template pack, e.g. Bootstrap, include the relevant files after 
     <script src="backbone-forms/distribution/templates/bootstrap.js"></script>
     <link href="backbone-forms/distribution/templates/bootstrap.css" rel="stylesheet" />
 
-If you use Backbone with node.js, you can just `require('backbone-forms');` in your index file.
+If you use Backbone with browserify or node.js, you can just `require('backbone-forms');` in your index file.  If doing this you will need to set `Backbone.$`, e.g. `Backbone.$ = require('jquery')`.
 
 Note there is also a distribution file for RequireJS / AMD.
 
@@ -241,6 +242,10 @@ If a form has a model attached to it, the initial values are taken from the mode
 - **`fields`**
 
   An array of field names (keys). Only the fields defined here will be added to the form. You can also use this to re-order the fields.
+
+- **`submitButton {String}`**
+
+  If provided, creates a submit button at the bottom of the form using the provided text
 
 - **`idPrefix`**
 
@@ -391,7 +396,7 @@ Creates and populates a `<select>` element.
 
   Options to populate the `<select>`.
 
-  Can be either:
+  Can be any of:
     - String of HTML `<option>`s
     - Array of strings/numbers
     - An array of option groups in the form `[{group: 'Option Group Label', options: <any of the forms from this list (except the option groups)>}]`
@@ -946,6 +951,10 @@ var CustomEditor = Backbone.Form.editors.Base.extend({
 ##Changelog
 
 ###master
+- Allow `fieldsets` to be defined on model (fonji)
+- Add `submitButton` to form constructor. Adds a submit button with given text.
+- No longer require jquery from within the CommonJS module. NOTE: You must now set Backbone.$ yourself if using CommonJS e.g. browserify
+- Fix CommonJS backend issues (ndrsn)
 - Added the `number` validator
 - Support specifying fieldsets on the Form prototype
 - Support specifying field and fieldset templates in their prototypes; allows extending Form, Field and Fieldset to create custom forms

@@ -51,7 +51,8 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
 
     render: function() {
       var self = this,
-          value = this.value || [];
+          value = this.value || [],
+          $ = Backbone.$;
 
       //Create main element
       var $el = $($.trim(this.template()));
@@ -295,6 +296,8 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
     },
 
     render: function() {
+      var $ = Backbone.$;
+      
       //Create editor
       this.editor = new this.Editor({
         key: this.key,

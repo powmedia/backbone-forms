@@ -11,7 +11,16 @@ Form.editors.Select = Form.editors.Base.extend({
 
   tagName: 'select',
 
+  previousValue: '',
+
   events: {
+    'keyup':    'determineChange',
+    'keypress': function(event) {
+      var self = this;
+      setTimeout(function() {
+        self.determineChange();
+      }, 0);
+    },
     'change': function(event) {
       this.trigger('change', this);
     },
@@ -125,6 +134,16 @@ Form.editors.Select = Form.editors.Base.extend({
     return html;
   },
 
+  determineChange: function(event) {
+    var currentValue = this.getValue();
+    var changed = (currentValue !== this.previousValue);
+
+    if (changed) {
+      this.previousValue = currentValue;
+
+      this.trigger('change', this);
+    }
+  },
 
   getValue: function() {
     return this.$el.val();

@@ -70,7 +70,8 @@ Form.editors.Date = Form.editors.Base.extend({
 
   render: function() {
     var options = this.options,
-        schema = this.schema;
+        schema = this.schema,
+        $ = Backbone.$;
 
     var datesOptions = _.map(_.range(1, 32), function(date) {
       return '<option value="'+date+'">' + date + '</option>';
