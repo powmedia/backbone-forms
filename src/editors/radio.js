@@ -81,11 +81,12 @@ Form.editors.Radio = Form.editors.Select.extend({
       var item = {
         name: name,
         id: id + '-' + index
-      }
+      };
 
       if (_.isObject(option)) {
         item.value = (option.val || option.val === 0) ? option.val : '';
         item.label = option.label;
+        item.labelHTML = option.labelHTML;
       } else {
         item.value = option;
         item.label = option;
@@ -103,8 +104,8 @@ Form.editors.Radio = Form.editors.Select.extend({
   template: _.template('\
     <% _.each(items, function(item) { %>\
       <li>\
-        <input type="radio" name="<%= item.name %>" value="<%= item.value %>" id="<%= item.id %>" />\
-        <label for="<%= item.id %>"><%= item.label %></label>\
+        <input type="radio" name="<%= item.name %>" value="<%- item.value %>" id="<%= item.id %>" />\
+        <label for="<%= item.id %>"><% if (item.labelHTML){ %><%= item.labelHTML %><% }else{ %><%- item.label %><% } %></label>\
       </li>\
     <% }); %>\
   ', null, Form.templateSettings)

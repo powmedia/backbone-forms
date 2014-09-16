@@ -7,7 +7,7 @@ Form.Field = Backbone.View.extend({
 
   /**
    * Constructor
-   * 
+   *
    * @param {Object} options.key
    * @param {Object} options.form
    * @param {Object} [options.schema]
@@ -125,6 +125,7 @@ Form.Field = Backbone.View.extend({
     return {
       help: schema.help || '',
       title: schema.title,
+      titleHTML: schema.titleHTML,
       fieldAttrs: schema.fieldAttrs,
       editorAttrs: schema.editorAttrs,
       key: this.key,
@@ -267,7 +268,10 @@ Form.Field = Backbone.View.extend({
 
   template: _.template('\
     <div>\
-      <label for="<%= editorId %>"><%= title %></label>\
+      <label for="<%= editorId %>">\
+        <% if (titleHTML){ %><%= titleHTML %>\
+        <% } else { %><%- title %><% } %>\
+      </label>\
       <div>\
         <span data-editor></span>\
         <div data-error></div>\

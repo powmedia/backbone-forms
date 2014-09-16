@@ -128,7 +128,7 @@ Form.editors.Select = Form.editors.Base.extend({
       html = this._getOptionsHtml(newOptions);
     //Or any object
     }else{
-      html=this._objectToHtml(options);
+      html = this._objectToHtml(options);
     }
 
     return html;
@@ -211,26 +211,27 @@ Form.editors.Select = Form.editors.Base.extend({
    * @return {String} HTML
    */
   _arrayToHtml: function(array) {
-    var html = [];
+    var html = $();
 
     //Generate HTML
     _.each(array, function(option) {
       if (_.isObject(option)) {
         if (option.group) {
-          html.push('<optgroup label="'+option.group+'">');
-          html.push(this._getOptionsHtml(option.options))
-          html.push('</optgroup>');
+          var optgroup = $("<optgroup>")
+            .attr("label",option.group)
+            .html( this._getOptionsHtml(option.options) );
+          html = html.add(optgroup);
         } else {
           var val = (option.val || option.val === 0) ? option.val : '';
-          html.push('<option value="'+val+'">'+option.label+'</option>');
+          html = html.add( $('<option>').val(val).text(option.label) );
         }
       }
       else {
-        html.push('<option>'+option+'</option>');
+        html = html.add( $('<option>').text(option) );
       }
     }, this);
 
-    return html.join('');
+    return html;
   }
 
 });
