@@ -10,6 +10,7 @@
     }
   });
 
+  var same = deepEqual;
 
   var schema = {
     options: ['Sterling', 'Lana', 'Cyril', 'Cheryl', 'Pam']
@@ -340,6 +341,134 @@
 
       start();
     }, 0);
+  });
+
+
+
+  module('Radio Text Escaping', {
+    setup: function() {
+      this.sinon = sinon.sandbox.create();
+
+      this.options = [
+        {
+          val: '"/><script>throw("XSS Success");</script>',
+          label: '"/><script>throw("XSS Success");</script>'
+        },
+        {
+          val: '\"?\'\/><script>throw("XSS Success");</script>',
+          label: '\"?\'\/><script>throw("XSS Success");</script>',
+        },
+        {
+          val: '><b>HTML</b><',
+          label: '><div class=>HTML</b><',
+        }
+      ];
+
+      this.editor = new Editor({
+        schema: {
+          options: this.options
+        }
+      }).render();
+
+      $('body').append(this.editor.el);
+    },
+
+    teardown: function() {
+      this.sinon.restore();
+
+      this.editor.remove();
+    }
+  });
+
+  test('options array content gets properly escaped', function() {
+
+    same( this.editor.schema.options, this.options );
+
+    //What an awful string.
+    //CAN'T have white-space on the left, or the string will no longer match
+    //If this bothers you aesthetically, can switch it to concat syntax
+    var escapedHTML = "          <li>        <input type=\"radio\" name=\"\" value=\"&quot;/>\
+<script>throw(&quot;XSS Success&quot;);</script>\" id=\"undefined-0\">        \
+<label for=\"undefined-0\">\"/&gt;&lt;script&gt;throw(\"XSS Success\");&lt;/script&gt;</label>      \
+</li>          <li>        <input type=\"radio\" name=\"\" value=\"&quot;?'/><script>throw(&quot;\
+XSS Success&quot;);</script>\" id=\"undefined-1\">        <label for=\"undefined-1\">\"?'/&gt;&lt\
+;script&gt;throw(\"XSS Success\");&lt;/script&gt;</label>      </li>          <li>        <input \
+type=\"radio\" name=\"\" value=\"><b>HTML</b><\" id=\"undefined-2\">        <label for=\"undefined\
+-2\">&gt;&lt;div class=&gt;HTML&lt;/b&gt;&lt;</label>      </li>      ";
+
+    same( this.editor.$el.html(), escapedHTML );
+
+    same( this.editor.$('input').val(), this.options[0].val );
+    same( this.editor.$('label').first().text(), this.options[0].label );
+    same( this.editor.$('label').first().html(), '\"/&gt;&lt;script&gt;throw(\"XSS Success\");&lt;/script&gt;' );
+    same( this.editor.$('label').text(), "\"/><script>throw(\"XSS Success\");</script>\"?'/><script>throw(\"XSS Success\");</script>><div class=>HTML</b><" );
+  });
+
+  test('options object content gets properly escaped', function() {
+
+      var options = {
+        key1: '><b>HTML</b><',
+        key2: '><div class=>HTML</b><'
+      };
+
+      var editor = new Editor({
+        schema: {
+          options: options
+        }
+      }).render();
+
+    same( editor.schema.options, options );
+
+    //What an awful string.
+    //CAN'T have white-space on the left, or the string will no longer match
+    //If this bothers you aesthetically, can switch it to concat syntax
+    var escapedHTML = "          <li>        <input type=\"radio\" name=\"\" value=\"key1\" \
+id=\"undefined-0\">        <label for=\"undefined-0\">&gt;&lt;b&gt;HTML&lt;/b&gt;&lt;</label>      \
+</li>          <li>        <input type=\"radio\" name=\"\" value=\"key2\" id=\"undefined-1\">        \
+<label for=\"undefined-1\">&gt;&lt;div class=&gt;HTML&lt;/b&gt;&lt;</label>      </li>      ";
+
+    same( editor.$el.html(), escapedHTML );
+
+    same( editor.$('input').val(), _.keys(options)[0] );
+    same( editor.$('label').first().text(), options.key1 );
+    same( editor.$('label').first().html(), '&gt;&lt;b&gt;HTML&lt;/b&gt;&lt;' );
+    same( editor.$('label').text(), '><b>HTML</b><><div class=>HTML</b><' );
+  });
+
+  test('options labels can be labelHTML, which will not be escaped', function() {
+
+      var options = [
+        {
+          val: '><b>HTML</b><',
+          labelHTML: '><div class=>HTML</b><',
+          label: 'will be ignored'
+        }
+      ];
+
+      var editor = new Editor({
+        schema: {
+          options: options
+        }
+      }).render();
+
+    same( editor.schema.options, options );
+
+    //What an awful string.
+    //CAN'T have white-space on the left, or the string will no longer match
+    //If this bothers you aesthetically, can switch it to concat syntax
+    var escapedHTML = "          <li>        <input type=\"radio\" name=\"\" value=\">\
+<b>HTML</b><\" id=\"undefined-0\">        <label for=\"undefined-0\">&gt;\
+<div class=\"\">HTML&lt;      </div></label></li>      ";
+
+    same( editor.$el.html(), escapedHTML );
+
+    same( editor.$('input').val(), options[0].val );
+
+    //Note that in these 3 results, the labelHTML has
+    //been transformed because the HTML was invalid
+    same( editor.$('label').first().text(), ">HTML<      " );
+    same( editor.$('label').first().html(), '&gt;<div class=\"\">HTML&lt;      </div>' );
+    same( editor.$('label').text(), '>HTML<      ' );
   });
 
 })(Backbone.Form, Backbone.Form.editors.Radio);
