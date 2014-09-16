@@ -2071,7 +2071,11 @@ Form.editors.Object = Form.editors.Base.extend({
   },
 
   validate: function() {
-    return this.nestedForm.validate();
+    var errors = _.extend({}, 
+      Form.editors.Base.prototype.validate.call(this),
+      this.nestedForm.validate()
+    );
+    return _.isEmpty(errors)?false:errors;
   },
 
   _observeFormEvents: function() {
