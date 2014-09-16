@@ -93,7 +93,9 @@
   });
 
   test('validate() - returns validation errors', function() {
-    var schema = {};
+    var schema = {
+      validators: [function a(a,b) { return {modelCheck:true}}]
+    };
     schema.subSchema = {
       id:     { validators: ['required'] },
       name:   {},
@@ -113,6 +115,7 @@
 
     equal(errs.id.type, 'required');
     equal(errs.email.type, 'email');
+    equal(errs.modelCheck, true);
   });
 
 
