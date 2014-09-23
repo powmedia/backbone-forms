@@ -23,7 +23,10 @@
 
   Form.Field.template = _.template('\
     <div class="form-group field-<%= key %>">\
-      <label class="col-sm-2 control-label" for="<%= editorId %>"><%= title %></label>\
+      <label class="col-sm-2 control-label" for="<%= editorId %>">\
+        <% if (titleHTML){ %><%= titleHTML %>\
+        <% } else { %><%- title %><% } %>\
+      </label>\
       <div class="col-sm-10">\
         <span data-editor></span>\
         <p class="help-block" data-error></p>\
@@ -35,7 +38,7 @@
 
   Form.NestedField.template = _.template('\
     <div class="field-<%= key %>">\
-      <div title="<%= title %>" class="input-xlarge">\
+      <div title="<% if (titleHTML){ %><%= titleHTML %><% } else { %><%- title %><% } %>" class="input-xlarge">\
         <span data-editor></span>\
         <div class="help-inline" data-error></div>\
       </div>\
