@@ -595,6 +595,85 @@ test('Calls focus on editor', function() {
 
 
 
+module('Field#disable', {
+  setup: function() {
+    this.sinon = sinon.sandbox.create();
+  },
+
+  teardown: function() {
+    this.sinon.restore();
+  }
+});
+
+test('Calls disable on editor if method exists', function() {
+  Form.editors.Disabler = Form.editors.Text.extend({
+    disable: function(){}
+  });
+  var field = new Field({
+    schema: { type: "Disabler" },
+    key: 'title'
+  });
+
+  this.sinon.spy(field.editor, 'disable');
+
+  field.disable();
+
+  same(field.editor.disable.callCount, 1);
+});
+
+test('If disable method does not exist on editor, disable all inputs inside it', function() {
+  var field = new Field({ key: 'title' });
+
+  field.render();
+
+  field.disable();
+
+  same(field.$("input").is(":disabled"),true);
+});
+
+
+
+module('Field#enable', {
+  setup: function() {
+    this.sinon = sinon.sandbox.create();
+  },
+
+  teardown: function() {
+    this.sinon.restore();
+  }
+});
+
+test('Calls enable on editor if method exists', function() {
+  Form.editors.Enabler = Form.editors.Text.extend({
+    enable: function(){}
+  });
+  var field = new Field({
+    schema: { type: "Enabler" },
+    key: 'title'
+  });
+
+  this.sinon.spy(field.editor, 'enable');
+
+  field.enable();
+
+  same(field.editor.enable.callCount, 1);
+});
+
+test('If enable method does not exist on editor, enable all inputs inside it', function() {
+  var field = new Field({ key: 'title' });
+
+  field.$("input").attr("disabled",true);
+
+  field.render();
+
+  field.enable();
+
+  same(field.$("input").is(":disabled"),false);
+});
+
+
+
+
 module('Field#remove', {
   setup: function() {
     this.sinon = sinon.sandbox.create();
