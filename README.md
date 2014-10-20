@@ -985,6 +985,7 @@ var CustomEditor = Backbone.Form.editors.Base.extend({
 ##Changelog
 
 ###master
+- Add ability to skip wrapping field for certain editors via the `noField` property
 - Allow `fieldsets` to be defined on model (fonji)
 - Add `submitButton` to form constructor. Adds a submit button with given text.
 - No longer require jquery from within the CommonJS module. NOTE: You must now set Backbone.$ yourself if using CommonJS e.g. browserify

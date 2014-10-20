@@ -307,7 +307,7 @@ module('Field#render', {
   }
 });
 
-test('only renders the editor if hidden', function() {
+test('only renders the editor if noField property is true', function() {
   var field = new Field({
     key: 'title',
     schema: { type: 'Hidden' }
