@@ -143,8 +143,8 @@ Form.Field = Backbone.View.extend({
         editor = this.editor,
         $ = Backbone.$;
 
-    //Only render the editor if Hidden
-    if (schema.type == Form.editors.Hidden) {
+    //Only render the editor if isHidden property of editor specified
+    if (this.editor.isHidden) {
       return this.setElement(editor.render().el);
     }
 

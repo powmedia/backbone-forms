@@ -888,8 +888,8 @@ Form.Field = Backbone.View.extend({
         editor = this.editor,
         $ = Backbone.$;
 
-    //Only render the editor if Hidden
-    if (schema.type == Form.editors.Hidden) {
+    //Only render the editor if isHidden property of editor specified
+    if (this.editor.isHidden) {
       return this.setElement(editor.render().el);
     }
 
@@ -1501,6 +1501,8 @@ Form.editors.Number = Form.editors.Text.extend({
 Form.editors.Hidden = Form.editors.Text.extend({
 
   defaultValue: '',
+
+  isHidden: true,
 
   initialize: function(options) {
     Form.editors.Text.prototype.initialize.call(this, options);
