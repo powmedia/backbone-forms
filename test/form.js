@@ -44,7 +44,7 @@ test('prefers schema from options over model - when schema is a function', funct
 
   var schema = function() {
     return { fromOptions: 'Text' };
-  };
+  }
 
   var form = new Form({
     schema: schema,
