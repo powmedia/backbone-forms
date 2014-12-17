@@ -150,6 +150,9 @@ Form.editors.Select = Form.editors.Base.extend({
   },
 
   setValue: function(value) {
+    if(_.isObject(value)){
+        value = value[Backbone.Model.prototype.idAttribute];
+    }
     this.$el.val(value);
   },
 
