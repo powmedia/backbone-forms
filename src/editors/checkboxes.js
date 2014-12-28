@@ -63,6 +63,7 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
    * @return {String} HTML
    */
   _arrayToHtml: function (array) {
+    var $ = Backbone.$;
     var html = $();
     var self = this;
 
