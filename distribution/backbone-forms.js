@@ -47,11 +47,15 @@ var Form = Backbone.View.extend({
    * @param {Form.Field} [options.Field]
    * @param {Form.Fieldset} [options.Fieldset]
    * @param {Function} [options.template]
+   * @param {Boolean|String} [options.submitButton]
    */
   initialize: function(options) {
     var self = this;
 
-    options = options || {};
+    //Merge default options
+    options = this.options = _.extend({
+      submitButton: false
+    }, options);
 
     //Find the schema to use
     var schema = this.schema = (function() {
@@ -91,7 +95,7 @@ var Form = Backbone.View.extend({
     }, this);
 
     //Create fieldsets
-    var fieldsetSchema = options.fieldsets || _.result(this, 'fieldsets') || [selectedFields],
+    var fieldsetSchema = options.fieldsets || _.result(this, 'fieldsets') || _.result(this.model, 'fieldsets') || [selectedFields],
         fieldsets = this.fieldsets = [];
 
     _.each(fieldsetSchema, function(itemSchema) {
@@ -109,7 +113,8 @@ var Form = Backbone.View.extend({
   createFieldset: function(schema) {
     var options = {
       schema: schema,
-      fields: this.fields
+      fields: this.fields,
+      legend: schema.legend || null
     };
 
     return new this.Fieldset(options);
@@ -182,6 +187,14 @@ var Form = Backbone.View.extend({
           }, 0);
         }
         break;
+    }
+  },
+
+  templateData: function() {
+    var options = this.options;
+
+    return {
+      submitButton: options.submitButton
     }
   },
 
@@ -469,7 +482,12 @@ var Form = Backbone.View.extend({
 
   //STATICS
   template: _.template('\
-    <form data-fieldsets></form>\
+    <form>\
+     <div data-fieldsets></div>\
+      <% if (submitButton) { %>\
+        <button type="submit"><%= submitButton %></button>\
+      <% } %>\
+    </form>\
   ', null, this.templateSettings),
 
   templateSettings: {
@@ -737,7 +755,7 @@ Form.Field = Backbone.View.extend({
 
   /**
    * Constructor
-   * 
+   *
    * @param {Object} options.key
    * @param {Object} options.form
    * @param {Object} [options.schema]
@@ -874,6 +892,7 @@ Form.Field = Backbone.View.extend({
     return {
       help: schema.help || '',
       title: schema.title,
+      titleHTML: schema.titleHTML,
       fieldAttrs: schema.fieldAttrs,
       editorAttrs: schema.editorAttrs,
       key: this.key,
@@ -894,8 +913,8 @@ Form.Field = Backbone.View.extend({
         editor = this.editor,
         $ = Backbone.$;
 
-    //Only render the editor if Hidden
-    if (schema.type == Form.editors.Hidden) {
+    //Only render the editor if requested
+    if (this.editor.noField === true) {
       return this.setElement(editor.render().el);
     }
 
@@ -918,6 +937,38 @@ Form.Field = Backbone.View.extend({
     this.setElement($field);
 
     return this;
+  },
+
+  /**
+   * Disable the field's editor
+   * Will call the editor's disable method if it exists
+   * Otherwise will add the disabled attribute to all inputs in the editor
+   */
+  disable: function(){
+    if ( _.isFunction(this.editor.disable) ){
+      this.editor.disable();
+    }
+    else {
+      $input = this.editor.$el;
+      $input = $input.is("input") ? $input : $input.find("input");
+      $input.attr("disabled",true);
+    }
+  },
+
+  /**
+   * Enable the field's editor
+   * Will call the editor's disable method if it exists
+   * Otherwise will remove the disabled attribute to all inputs in the editor
+   */
+  enable: function(){
+    if ( _.isFunction(this.editor.enable) ){
+      this.editor.enable();
+    }
+    else {
+      $input = this.editor.$el;
+      $input = $input.is("input") ? $input : $input.find("input");
+      $input.attr("disabled",false);
+    }
   },
 
   /**
@@ -1025,9 +1076,12 @@ Form.Field = Backbone.View.extend({
   //STATICS
 
   template: _.template('\
-    <div class="<%= fieldClass %>">\
+    <div>\
       <%= fieldPrefix %>\
-      <label for="<%= editorId %>"><%= title %></label>\
+      <label for="<%= editorId %>">\
+        <% if (titleHTML){ %><%= titleHTML %>\
+        <% } else { %><%- title %><% } %>\
+      </label>\
       <div>\
         <span data-editor></span>\
         <div data-error></div>\
@@ -1053,11 +1107,15 @@ Form.NestedField = Form.Field.extend({
 
   template: _.template('\
     <div>\
-      <span data-editor></span>\
-      <% if (help) { %>\
-        <div><%= help %></div>\
-      <% } %>\
-      <div data-error></div>\
+      <label for="<%= editorId %>">\
+        <% if (titleHTML){ %><%= titleHTML %>\
+        <% } else { %><%- title %><% } %>\
+      </label>\
+      <div>\
+        <span data-editor></span>\
+        <div class="error-text" data-error></div>\
+        <div class="error-help"><%= help %></div>\
+      </div>\
     </div>\
   ', null, Form.templateSettings)
 
@@ -1478,6 +1536,8 @@ Form.editors.Hidden = Form.editors.Text.extend({
 
   defaultValue: '',
 
+  noField: true,
+
   initialize: function(options) {
     Form.editors.Text.prototype.initialize.call(this, options);
 
@@ -1571,7 +1631,16 @@ Form.editors.Select = Form.editors.Base.extend({
 
   tagName: 'select',
 
+  previousValue: '',
+
   events: {
+    'keyup':    'determineChange',
+    'keypress': function(event) {
+      var self = this;
+      setTimeout(function() {
+        self.determineChange();
+      }, 0);
+    },
     'change': function(event) {
       this.trigger('change', this);
     },
@@ -1679,12 +1748,22 @@ Form.editors.Select = Form.editors.Base.extend({
       html = this._getOptionsHtml(newOptions);
     //Or any object
     }else{
-      html=this._objectToHtml(options);
+      html = this._objectToHtml(options);
     }
 
     return html;
   },
 
+  determineChange: function(event) {
+    var currentValue = this.getValue();
+    var changed = (currentValue !== this.previousValue);
+
+    if (changed) {
+      this.previousValue = currentValue;
+
+      this.trigger('change', this);
+    }
+  },
 
   getValue: function() {
     return this.$el.val();
@@ -1752,26 +1831,27 @@ Form.editors.Select = Form.editors.Base.extend({
    * @return {String} HTML
    */
   _arrayToHtml: function(array) {
-    var html = [];
+    var html = $();
 
     //Generate HTML
     _.each(array, function(option) {
       if (_.isObject(option)) {
         if (option.group) {
-          html.push('<optgroup label="'+option.group+'">');
-          html.push(this._getOptionsHtml(option.options))
-          html.push('</optgroup>');
+          var optgroup = $("<optgroup>")
+            .attr("label",option.group)
+            .html( this._getOptionsHtml(option.options) );
+          html = html.add(optgroup);
         } else {
           var val = (option.val || option.val === 0) ? option.val : '';
-          html.push('<option value="'+val+'">'+option.label+'</option>');
+          html = html.add( $('<option>').val(val).text(option.label) );
         }
       }
       else {
-        html.push('<option>'+option+'</option>');
+        html = html.add( $('<option>').text(option) );
       }
     }, this);
 
-    return html.join('');
+    return html;
   }
 
 });
@@ -1866,11 +1946,12 @@ Form.editors.Radio = Form.editors.Select.extend({
       var item = {
         name: name,
         id: id + '-' + index
-      }
+      };
 
       if (_.isObject(option)) {
         item.value = (option.val || option.val === 0) ? option.val : '';
         item.label = option.label;
+        item.labelHTML = option.labelHTML;
       } else {
         item.value = option;
         item.label = option;
@@ -1886,14 +1967,12 @@ Form.editors.Radio = Form.editors.Select.extend({
 
   //STATICS
   template: _.template('\
-    <ul>\
-      <% _.each(items, function(item) { %>\
-        <li>\
-          <input type="radio" name="<%= item.name %>" value="<%= item.value %>" id="<%= item.id %>" />\
-          <label for="<%= item.id %>"><%= item.label %></label>\
-        </li>\
-      <% }); %>\
-    </ul>\
+    <% _.each(items, function(item) { %>\
+      <li>\
+        <input type="radio" name="<%= item.name %>" value="<%- item.value %>" id="<%= item.id %>" />\
+        <label for="<%= item.id %>"><% if (item.labelHTML){ %><%= item.labelHTML %><% }else{ %><%- item.label %><% } %></label>\
+      </li>\
+    <% }); %>\
   ', null, Form.templateSettings)
 
 });
@@ -1963,38 +2042,38 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
    * @return {String} HTML
    */
   _arrayToHtml: function (array) {
-    var html = [];
+    var html = $();
     var self = this;
 
     _.each(array, function(option, index) {
-      var itemHtml = '<li>';
-			var close = true;
+      var itemHtml = $('<li>');
       if (_.isObject(option)) {
         if (option.group) {
           var originalId = self.id;
-          self.id += "-" + self.groupNumber++; 
-          itemHtml = ('<fieldset class="group"> <legend>'+option.group+'</legend>');
-          itemHtml += (self._arrayToHtml(option.options));
-          itemHtml += ('</fieldset>');
+          self.id += "-" + self.groupNumber++;
+          itemHtml = $('<fieldset class="group">').append( $('<legend>').text(option.group) );
+          itemHtml = itemHtml.append( self._arrayToHtml(option.options) );
           self.id = originalId;
-					close = false;
+          close = false;
         }else{
           var val = (option.val || option.val === 0) ? option.val : '';
-          itemHtml += ('<input type="checkbox" name="'+self.getName()+'" value="'+val+'" id="'+self.id+'-'+index+'" />');
-          itemHtml += ('<label for="'+self.id+'-'+index+'">'+option.label+'</label>');
+          itemHtml.append( $('<input type="checkbox" name="'+self.getName()+'" id="'+self.id+'-'+index+'" />').val(val) );
+          if (option.labelHTML){
+            itemHtml.append( $('<label for="'+self.id+'-'+index+'">').html(option.labelHTML) );
+          }
+          else {
+            itemHtml.append( $('<label for="'+self.id+'-'+index+'">').text(option.label) );
+          }
         }
       }
       else {
-        itemHtml += ('<input type="checkbox" name="'+self.getName()+'" value="'+option+'" id="'+self.id+'-'+index+'" />');
-        itemHtml += ('<label for="'+self.id+'-'+index+'">'+option+'</label>');
+        itemHtml.append( $('<input type="checkbox" name="'+self.getName()+'" id="'+self.id+'-'+index+'" />').val(option) );
+        itemHtml.append( $('<label for="'+self.id+'-'+index+'">').text(option) );
       }
-			if(close){
-				itemHtml += '</li>';
-			}
-      html.push(itemHtml);
+      html = html.add(itemHtml);
     });
 
-    return html.join('');
+    return html;
   }
 
 });
@@ -2077,7 +2156,11 @@ Form.editors.Object = Form.editors.Base.extend({
   },
 
   validate: function() {
-    return this.nestedForm.validate();
+    var errors = _.extend({}, 
+      Form.editors.Base.prototype.validate.call(this),
+      this.nestedForm.validate()
+    );
+    return _.isEmpty(errors)?false:errors;
   },
 
   _observeFormEvents: function() {

@@ -4,7 +4,12 @@
    * NOTE: These templates are deprecated.
    */
   Form.template = _.template('\
-    <form class="bbf-form" data-fieldsets></form>\
+    <form class="bbf-form">\
+      <div data-fieldsets></div>\
+      <% if (submitButton) { %>\
+        <button type="submit"><%= submitButton %></button>\
+      <% } %>\
+    </form>\
   ');
 
 
@@ -20,7 +25,10 @@
 
   Form.Field.template = _.template('\
     <li class="bbf-field field-<%= key %>">\
-      <label for="<%= editorId %>"><%= title %></label>\
+      <label for="<%= editorId %>">\
+        <% if (titleHTML){ %><%= titleHTML %>\
+        <% } else { %><%- title %><% } %>\
+      </label>\
       <div class="bbf-editor" data-editor></div>\
       <div class="bbf-help"><%= help %></div>\
       <div class="bbf-error" data-error></div>\
@@ -30,7 +38,10 @@
 
   Form.NestedField.template = _.template('\
     <li class="bbf-field bbf-nested-field field-<%= key %>">\
-      <label for="<%= editorId %>"><%= title %></label>\
+      <label for="<%= editorId %>">\
+        <% if (titleHTML){ %><%= titleHTML %>\
+        <% } else { %><%- title %><% } %>\
+      </label>\
       <div class="bbf-editor" data-editor></div>\
       <div class="bbf-help"><%= help %></div>\
       <div class="bbf-error" data-error></div>\

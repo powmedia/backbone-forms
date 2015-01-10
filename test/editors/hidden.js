@@ -19,4 +19,10 @@
     equal(editor.getValue(), '');
   });
 
+  test('sets noField property so that the wrapping field is not rendered', function() {
+    var editor = new Editor();
+
+    same(editor.noField, true);
+  });
+
 })(Backbone.Form, Backbone.Form.editors.Hidden);

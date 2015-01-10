@@ -22,11 +22,15 @@ var Form = Backbone.View.extend({
    * @param {Form.Field} [options.Field]
    * @param {Form.Fieldset} [options.Fieldset]
    * @param {Function} [options.template]
+   * @param {Boolean|String} [options.submitButton]
    */
   initialize: function(options) {
     var self = this;
 
-    options = options || {};
+    //Merge default options
+    options = this.options = _.extend({
+      submitButton: false
+    }, options);
 
     //Find the schema to use
     var schema = this.schema = (function() {
@@ -66,7 +70,7 @@ var Form = Backbone.View.extend({
     }, this);
 
     //Create fieldsets
-    var fieldsetSchema = options.fieldsets || _.result(this, 'fieldsets') || [selectedFields],
+    var fieldsetSchema = options.fieldsets || _.result(this, 'fieldsets') || _.result(this.model, 'fieldsets') || [selectedFields],
         fieldsets = this.fieldsets = [];
 
     _.each(fieldsetSchema, function(itemSchema) {
@@ -84,7 +88,8 @@ var Form = Backbone.View.extend({
   createFieldset: function(schema) {
     var options = {
       schema: schema,
-      fields: this.fields
+      fields: this.fields,
+      legend: schema.legend || null
     };
 
     return new this.Fieldset(options);
@@ -157,6 +162,14 @@ var Form = Backbone.View.extend({
           }, 0);
         }
         break;
+    }
+  },
+
+  templateData: function() {
+    var options = this.options;
+
+    return {
+      submitButton: options.submitButton
     }
   },
 
@@ -444,7 +457,12 @@ var Form = Backbone.View.extend({
 
   //STATICS
   template: _.template('\
-    <form data-fieldsets></form>\
+    <form>\
+     <div data-fieldsets></div>\
+      <% if (submitButton) { %>\
+        <button type="submit"><%= submitButton %></button>\
+      <% } %>\
+    </form>\
   ', null, this.templateSettings),
 
   templateSettings: {

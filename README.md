@@ -40,10 +40,10 @@ HTML:
 <script id="formTemplate" type="text/html">
     <form>
         <h1>New User</h1>
-        
+
         <h2>Main Info</h2>
         <div data-fields="title,name,birthday"></div>
-        
+
         <h2>Account Info</h2>
         <h3>Email</h3>
         <div data-fields="email"></div>
@@ -59,7 +59,7 @@ Javascript:
 ```js
 var UserForm = Backbone.Form.extend({
     template: _.template($('#formTemplate').html()),
-    
+
     schema: {
         title:      { type: 'Select', options: ['Mr', 'Mrs', 'Ms'] },
         name:       'Text',
@@ -79,6 +79,7 @@ $('body').append(form.el);
 ###Live editable demos
 - [User form](http://jsfiddle.net/evilcelery/dW2Qu/)
 - [Update form elements based on user input](http://jsfiddle.net/evilcelery/c5QHr/)
+- [Validate on blur](http://jsfiddle.net/evilcelery/FqLR2/)
 
 
 
@@ -196,7 +197,7 @@ var form = new Backbone.Form({
         name:       'Text',
         password:   'Password'
     },
-    
+
     //Data to populate the form with
     data: {
       id: 123,
@@ -241,6 +242,10 @@ If a form has a model attached to it, the initial values are taken from the mode
 - **`fields`**
 
   An array of field names (keys). Only the fields defined here will be added to the form. You can also use this to re-order the fields.
+
+- **`submitButton {String}`**
+
+  If provided, creates a submit button at the bottom of the form using the provided text
 
 - **`idPrefix`**
 
@@ -323,6 +328,12 @@ For each field definition in the schema you can use the following optional attri
 - **`title`**
 
   Defines the text that appears in a form field's `<label>`. If not defined, defaults to a formatted version of the camelCased field key. E.g. `firstName` becomes `First Name`. This behaviour can be changed by assigning your own function to `Backbone.Form.helpers.keyToTitle`.
+
+  Title is escaped by default, to allow using special characters such as < and >, as well as to prevent possible XSS vulnerabilities in user generated content.
+
+- **`titleHTML`**
+
+  This by default will not be escaped, allowing you to use HTML tags. Will over-ride title if defined.
 
 - **`validators`**
 
@@ -408,6 +419,8 @@ Creates and populates a `<select>` element.
     - A function that calls back with one of the above
     - An object e.g. `{ y: 'Yes', n: 'No' }`
 
+  By default, options values and labels are escaped when rendered, to allow using special characters such as < and >, as well as to prevent possible XSS vulnerabilities in user generated content. Since Select HTML elements can't contain arbitrary HTML inside of them, there is no option on Select to NOT encode the text. Custom Editors that extend Select should factor in the possibility of labels that contain HTML.
+
   **Backbone collection notes**
 
   If using a Backbone collection as the `options` attribute, models in the collection must implement a `toString()` method. This populates the label of the `<option>`. The ID of the model populates the `value` attribute.
@@ -451,12 +464,38 @@ Creates and populates a `<select>` element.
 
 Creates and populates a list of radio inputs. Behaves the same way and has the same options as a `Select`.
 
+When the Radio's is given options as an array of objects, each item's `label` may be replaced with `labelHTML`. This content will not be escaped, so that HTML may be used to style the label.
+If it uses object syntax, this option is not possible.
+
+#### Example
+
+    var schema = {
+        radios: {
+            type: "Radio",
+            options: [
+                { label: "<b>Will be escaped</b>", val: "Text is not bold, but <b> and </b> text is visible"},
+                { labelHTML: "<b>Will NOT be escaped</b>", val: "Text is bold, and HTML tags are invisible"}
+            ]
+        }
+    };
+
+    var schema = {
+        radios: {
+            type: "Radio",
+            options: {
+                value1: "<b>Text is not bold, but <b> and </b> text is visible</b>",
+                value2: "There is no way to unescape this text"
+            }
+        }
+    };
+
 
 <a name="editor-checkboxes"/>
 ##Checkboxes
 
 Creates and populates a list of checkbox inputs. Behaves the same way and has the same options as a `Select`. To set defaults for this editor, use an array of values.
 
+Checkboxes options array has the same labelHTML option as Radio.
 
 <a name="editor-object"/>
 ##Object
@@ -639,7 +678,7 @@ Validators can be defined in several ways:
 - **As a string** - Shorthand for adding a built-in validator. You can add custom validators to this list by adding them to `Backbone.Form.validators`. See the source for more information.
 - **As an object** - For adding a built-in validator with options, e.g. overriding the default error message.
 - **As a function** - Runs a custom validation function. Each validator the following arguments: `value` and `formValues`
-- **As a regular expression** - Runs the built-in `regexp` validator with a custom regular expresssion.
+- **As a regular expression** - Runs the built-in `regexp` validator with a custom regular expression.
 
 ###Built-in validators
 
@@ -777,11 +816,11 @@ To customise forms even further you can pass in a template to the form instance 
 <script id="formTemplate" type="text/html">
     <form>
         <h1><%= heading1 %></h1>
-        
+
         <h2>Name</h2>
         <div data-editors="firstName"><!-- firstName editor will be added here --></div>
         <div data-editors="lastName"><!-- lastName editor will be added here --></div>
-        
+
         <h2>Password</h2>
         <div data-editors="password">
             <div class="notes">Must be at least 7 characters:</div>
@@ -920,7 +959,7 @@ var CustomEditor = Backbone.Form.editors.Base.extend({
     focus: function() {
         if (this.hasFocus) return;
 
-        // This method call should result in an input within this edior
+        // This method call should result in an input within this editor
         // becoming the `document.activeElement`.
         // This, in turn, should result in this editor's `focus` event
         // being triggered, setting `this.hasFocus` to `true`.
@@ -955,6 +994,9 @@ var CustomEditor = Backbone.Form.editors.Base.extend({
 ##Changelog
 
 ###master
+- Add ability to skip wrapping field for certain editors via the `noField` property
+- Allow `fieldsets` to be defined on model (fonji)
+- Add `submitButton` to form constructor. Adds a submit button with given text.
 - No longer require jquery from within the CommonJS module. NOTE: You must now set Backbone.$ yourself if using CommonJS e.g. browserify
 - Fix CommonJS backend issues (ndrsn)
 - Added the `number` validator
