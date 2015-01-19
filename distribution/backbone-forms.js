@@ -1447,7 +1447,7 @@ Form.editors.Number = Form.editors.Text.extend({
   }),
 
   setElAttributes: function() {
-    Form.editors.Text.prototype.setElAttributes.call(this);    
+    Form.editors.Text.prototype.setElAttributes.call(this);
 
     this.$el.prop('type', 'number');
 

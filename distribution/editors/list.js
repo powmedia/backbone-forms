@@ -28,6 +28,10 @@
       var schema = this.schema;
       if (!schema) throw new Error("Missing required option 'schema'");
 
+      this.schema = _.extend({
+        addLabel: 'Add'
+      }, schema);
+
       if (schema.readonly && this.readonlyTemplate)
         this.template = this.readonlyTemplate;
 
@@ -57,7 +61,9 @@
           $ = Backbone.$;
 
       //Create main element
-      var $el = $($.trim(this.template()));
+      var $el = $($.trim(this.template({
+        addLabel: this.schema.addLabel
+      })));
 
       //Store a reference to the list (item container)
       this.$list = $el.is('[data-items]') ? $el : $el.find('[data-items]');
@@ -262,7 +268,7 @@
     template: _.template('\
       <div>\
         <div data-items></div>\
-        <button type="button" data-action="add">Add</button>\
+        <button type="button" data-action="add"><%= addLabel %></button>\
       </div>\
     ', null, Form.templateSettings)
 
