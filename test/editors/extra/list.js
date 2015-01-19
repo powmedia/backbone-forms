@@ -70,6 +70,20 @@ var same = deepEqual;
         same(list.getValue(), [1,2,3]);
     });
 
+    test('Add label default value', function() {
+        var list = new List().render();
+
+        same(list.$('[data-action="add"]').text(), 'Add');
+    });
+
+    test('Add label can be customized', function() {
+        var list = new List({
+            schema: { addLabel: 'Agregar' }
+        }).render();
+        
+        same(list.$('[data-action="add"]').text(), 'Agregar');
+    });
+
     test('Value from model', function() {
         var list = new List({
             model: new Post,
