@@ -63,7 +63,7 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
    * @return {String} HTML
    */
   _arrayToHtml: function (array) {
-    var html = $();
+    var html = document.createDocumentFragment();
     var self = this;
 
     _.each(array, function(option, index) {
@@ -91,7 +91,7 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
         itemHtml.append( $('<input type="checkbox" name="'+self.getName()+'" id="'+self.id+'-'+index+'" />').val(option) );
         itemHtml.append( $('<label for="'+self.id+'-'+index+'">').text(option) );
       }
-      html = html.add(itemHtml);
+      html.appendChild(itemHtml[0]);
     });
 
     return html;

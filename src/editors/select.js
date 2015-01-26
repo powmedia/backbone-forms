@@ -211,7 +211,7 @@ Form.editors.Select = Form.editors.Base.extend({
    * @return {String} HTML
    */
   _arrayToHtml: function(array) {
-    var html = $();
+    var html = document.createDocumentFragment();
 
     //Generate HTML
     _.each(array, function(option) {
@@ -220,14 +220,14 @@ Form.editors.Select = Form.editors.Base.extend({
           var optgroup = $("<optgroup>")
             .attr("label",option.group)
             .html( this._getOptionsHtml(option.options) );
-          html = html.add(optgroup);
+          html.appendChild(optgroup[0]);
         } else {
           var val = (option.val || option.val === 0) ? option.val : '';
-          html = html.add( $('<option>').val(val).text(option.label) );
+          html.appendChild( $('<option>').val(val).text(option.label)[0] );
         }
       }
       else {
-        html = html.add( $('<option>').text(option) );
+        html.appendChild( $('<option>').text(option)[0] );
       }
     }, this);
 
