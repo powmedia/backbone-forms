@@ -89,8 +89,8 @@ Form.Fieldset = Backbone.View.extend({
 
       if (_.isUndefined(selection)) return;
 
-      _.each(fields, function(field) {
-        $container.append(field.render().el);
+      _.each(schema.fields, function(fieldName) {
+      $container.append(fields[fieldName].render().el);
       });
     });
 
