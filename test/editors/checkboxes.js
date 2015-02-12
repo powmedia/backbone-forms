@@ -10,6 +10,7 @@
     }
   });
 
+  same = deepEqual;
 
   var schema = {
     options: ['Sterling', 'Lana', 'Cyril', 'Cheryl', 'Pam', 'Doctor Krieger']
@@ -49,7 +50,7 @@
     equal(checkboxes.first().val(), "0");
     equal(checkboxes.last().val(), "2");
   });
-	
+
 
   test('Options as array of group objects', function() {
     var editor = new Editor({
@@ -84,7 +85,7 @@
         uniqueLabels.push($(this).attr('for'));
     });
     equal(checkboxes.length, uniqueLabels.length);
-		
+
   });
 
   test('Default value', function() {
@@ -354,6 +355,177 @@
 
       start();
     }, 0);
+  });
+
+  module('Checkboxes Text Escaping', {
+    setup: function() {
+      this.sinon = sinon.sandbox.create();
+
+      this.options = [
+        {
+          val: '"/><script>throw("XSS Success");</script>',
+          label: '"/><script>throw("XSS Success");</script>'
+        },
+        {
+          val: '\"?\'\/><script>throw("XSS Success");</script>',
+          label: '\"?\'\/><script>throw("XSS Success");</script>',
+        },
+        {
+          val: '><b>HTML</b><',
+          label: '><div class=>HTML</b><',
+        }
+      ];
+
+      this.editor = new Editor({
+        schema: {
+          options: this.options
+        }
+      }).render();
+
+      $('body').append(this.editor.el);
+    },
+
+    teardown: function() {
+      this.sinon.restore();
+
+      this.editor.remove();
+    }
+  });
+
+  test('options content gets properly escaped', function() {
+
+    same( this.editor.schema.options, this.options );
+
+    //What an awful string.
+    //CAN'T have white-space on the left, or the string will no longer match
+    //If this bothers you aesthetically, can switch it to concat syntax
+    var escapedHTML = "<li><input type=\"checkbox\" name=\"\" id=\"undefined-0\" value=\"&quot;\
+/><script>throw(&quot;XSS Success&quot;);</script>\"><label for=\"undefined-0\">\"/&gt;&lt;script\
+&gt;throw(\"XSS Success\");&lt;/script&gt;</label></li><li><input type=\"checkbox\" name=\"\" \
+id=\"undefined-1\" value=\"&quot;?'/><script>throw(&quot;XSS Success&quot;);</script>\"><label \
+for=\"undefined-1\">\"?'/&gt;&lt;script&gt;throw(\"XSS Success\");&lt;/script&gt;</label></li><li>\
+<input type=\"checkbox\" name=\"\" id=\"undefined-2\" value=\"><b>HTML</b><\"><label \
+for=\"undefined-2\">&gt;&lt;div class=&gt;HTML&lt;/b&gt;&lt;</label></li>";
+
+    same( this.editor.$el.html(), escapedHTML );
+
+    same( this.editor.$('input').val(), this.options[0].val );
+    same( this.editor.$('label').first().text(), this.options[0].label );
+    same( this.editor.$('label').first().html(), '\"/&gt;&lt;script&gt;throw(\"XSS Success\");&lt;/script&gt;' );
+    same( this.editor.$('label').text(), "\"/><script>throw(\"XSS Success\");</script>\"?'/><script>throw(\"XSS Success\");</script>><div class=>HTML</b><" );
+  });
+
+  test('options object content gets properly escaped', function() {
+
+      var options = {
+        key1: '><b>HTML</b><',
+        key2: '><div class=>HTML</b><'
+      };
+
+      var editor = new Editor({
+        schema: {
+          options: options
+        }
+      }).render();
+
+    same( editor.schema.options, options );
+
+    //What an awful string.
+    //CAN'T have white-space on the left, or the string will no longer match
+    //If this bothers you aesthetically, can switch it to concat syntax
+    var escapedHTML = "<li><input type=\"checkbox\" name=\"\" id=\"undefined-0\" \
+value=\"key1\"><label for=\"undefined-0\">&gt;&lt;b&gt;HTML&lt;/b&gt;&lt;</label>\
+</li><li><input type=\"checkbox\" name=\"\" id=\"undefined-1\" value=\"key2\">\
+<label for=\"undefined-1\">&gt;&lt;div class=&gt;HTML&lt;/b&gt;&lt;</label></li>";
+
+    same( editor.$el.html(), escapedHTML );
+
+    same( editor.$('input').val(), _.keys(options)[0] );
+    same( editor.$('label').first().text(), options.key1 );
+    same( editor.$('label').first().html(), '&gt;&lt;b&gt;HTML&lt;/b&gt;&lt;' );
+    same( editor.$('label').text(), '><b>HTML</b><><div class=>HTML</b><' );
+  });
+
+  test('options labels can be labelHTML, which will not be escaped', function() {
+
+      var options = [
+        {
+          val: '><b>HTML</b><',
+          labelHTML: '><div class=>HTML</b><',
+          label: 'will be ignored'
+        }
+      ];
+
+      var editor = new Editor({
+        schema: {
+          options: options
+        }
+      }).render();
+
+    same( editor.schema.options, options );
+
+    //What an awful string.
+    //CAN'T have white-space on the left, or the string will no longer match
+    //If this bothers you aesthetically, can switch it to concat syntax
+    var escapedHTML = "<li><input type=\"checkbox\" name=\"\" id=\"undefined-0\" value=\"><b>\
+HTML</b><\"><label for=\"undefined-0\">&gt;<div class=\"\">HTML&lt;</div></label></li>";
+
+    same( editor.$el.html(), escapedHTML );
+
+    same( editor.$('input').val(), options[0].val );
+
+    //Note that in these 3 results, the labelHTML has
+    //been transformed because the HTML was invalid
+    same( editor.$('label').first().text(), ">HTML<" );
+    same( editor.$('label').first().html(), '&gt;<div class=\"\">HTML&lt;</div>' );
+    same( editor.$('label').text(), '>HTML<' );
+  });
+
+  test('option groups content gets properly escaped', function() {
+    var options = [{
+      group: '"/><script>throw("XSS Success");</script>',
+      options: [
+        {
+          val: '"/><script>throw("XSS Success");</script>',
+          label: '"/><script>throw("XSS Success");</script>'
+        },
+        {
+          val: '\"?\'\/><script>throw("XSS Success");</script>',
+          label: '\"?\'\/><script>throw("XSS Success");</script>',
+        },
+        {
+          val: '><b>HTML</b><',
+          label: '><div class=>HTML</b><',
+        }
+      ]
+    }];
+    var editor = new Editor({
+      schema: {
+        options: options
+      }
+    }).render();
+
+    same( editor.schema.options, options );
+
+    //What an awful string.
+    //CAN'T have white-space on the left, or the string will no longer match
+    //If this bothers you aesthetically, can switch it to concat syntax
+    var escapedHTML = "<fieldset class=\"group\"><legend>\"/&gt;&lt;script&gt;\
+throw(\"XSS Success\");&lt;/script&gt;</legend><li><input type=\"checkbox\" \
+name=\"\" id=\"undefined-0-0\" value=\"&quot;/><script>throw(&quot;XSS Success&quot;)\
+;</script>\"><label for=\"undefined-0-0\">\"/&gt;&lt;script&gt;throw(\"XSS Success\");\
+&lt;/script&gt;</label></li><li><input type=\"checkbox\" name=\"\" id=\"undefined-0-1\" \
+value=\"&quot;?'/><script>throw(&quot;XSS Success&quot;);</script>\"><label for=\"undefined-\
+0-1\">\"?'/&gt;&lt;script&gt;throw(\"XSS Success\");&lt;/script&gt;</label></li><li>\
+<input type=\"checkbox\" name=\"\" id=\"undefined-0-2\" value=\"><b>HTML</b><\"><label \
+for=\"undefined-0-2\">&gt;&lt;div class=&gt;HTML&lt;/b&gt;&lt;</label></li></fieldset>";
+
+    same( editor.$el.html(), escapedHTML );
+
+    same( editor.$('input').val(), options[0].options[0].val );
+    same( editor.$('label').first().text(), options[0].options[0].label );
+    same( editor.$('label').first().html(), '\"/&gt;&lt;script&gt;throw(\"XSS Success\");&lt;/script&gt;' );
+    same( editor.$('label').text(), "\"/><script>throw(\"XSS Success\");</script>\"?'/><script>throw(\"XSS Success\");</script>><div class=>HTML</b><" );
   });
 
 })(Backbone.Form, Backbone.Form.editors.Checkboxes);
