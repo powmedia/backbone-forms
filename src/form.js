@@ -239,6 +239,11 @@ var Form = Backbone.View.extend({
     //Set class
     $form.addClass(this.className);
 
+    //Set attributes
+    if (this.attributes) {
+      $form.attr(this.attributes)
+    }
+
     return this;
   },
 
