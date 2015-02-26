@@ -41,7 +41,7 @@
         if (editors.List[type]) return editors.List[type];
 
         //Or whichever was passed
-        return editors[type];
+        return (_.isString(type)) ? editors[type] : type;
       })();
 
       this.items = [];
