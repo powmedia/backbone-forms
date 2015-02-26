@@ -3,10 +3,10 @@
  */
 Form.editors.Password = Form.editors.Text.extend({
 
-  initialize: function(options) {
-    Form.editors.Text.prototype.initialize.call(this, options);
+  setElAttributes: function() {
+    Form.editors.Text.prototype.setElAttributes.call(this);
 
-    this.$el.attr('type', 'password');
+    this.$el.prop('type', 'password');
   }
 
 });

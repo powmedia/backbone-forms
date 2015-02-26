@@ -1126,14 +1126,28 @@ Form.Editor = Form.editors.Base = Backbone.View.extend({
     _.extend(this, _.pick(options, 'key', 'form'));
 
     var schema = this.schema = options.schema || {};
+    
+    this.setElAttributes();
 
     this.validators = options.validators || schema.validators;
+  },
 
-    //Main attributes
+  setElAttributes: function() {
     this.$el.attr('id', this.id);
     this.$el.attr('name', this.getName());
-    if (schema.editorClass) this.$el.addClass(schema.editorClass);
-    if (schema.editorAttrs) this.$el.attr(schema.editorAttrs);
+
+    //Main attributes
+    if (this.schema.editorClass) this.$el.addClass(this.schema.editorClass);
+    if (this.schema.editorAttrs) this.$el.attr(this.schema.editorAttrs);
+  },
+
+  render: function() {
+    if (this.schema.readonly && this.readonlyTemplate) {
+      var $el = $($.trim(this.readonlyTemplate()));
+      this.setElement($el);
+      this.setElAttributes();
+    }
+    return this;
   },
 
   /**
@@ -1315,26 +1329,24 @@ Form.editors.Text = Form.Editor.extend({
     }
   },
 
-  initialize: function(options) {
-    Form.editors.Base.prototype.initialize.call(this, options);
-
-    var schema = this.schema;
+  setElAttributes: function() {
+    Form.editors.Base.prototype.setElAttributes.call(this);
 
     //Allow customising text type (email, phone etc.) for HTML5 browsers
     var type = 'text';
 
-    if (schema && schema.editorAttrs && schema.editorAttrs.type) type = schema.editorAttrs.type;
-    if (schema && schema.dataType) type = schema.dataType;
+    if (this.schema && this.schema.editorAttrs && this.schema.editorAttrs.type) type = this.schema.editorAttrs.type;
+    if (this.schema && this.schema.dataType) type = this.schema.dataType;
 
-    this.$el.attr('type', type);
+    this.$el.prop('type', type);
   },
 
   /**
    * Adds the editor to the DOM
    */
   render: function() {
+    Form.editors.Base.prototype.render.call(this);
     this.setValue(this.value);
-
     return this;
   },
 
@@ -1379,7 +1391,9 @@ Form.editors.Text = Form.Editor.extend({
 
   select: function() {
     this.$el.select();
-  }
+  },
+
+  readonlyTemplate: _.template('<input readonly></input>', null, Form.templateSettings)
 
 });
 
@@ -1395,7 +1409,13 @@ Form.editors.TextArea = Form.editors.Text.extend({
    */
   initialize: function(options) {
     Form.editors.Base.prototype.initialize.call(this, options);
-  }
+  },
+
+  setElAttributes: function() {
+    Form.editors.Base.prototype.setElAttributes.call(this);
+  }, 
+
+  readonlyTemplate: _.template('<textarea readonly></textarea>', null, Form.templateSettings)
 
 });
 
@@ -1404,10 +1424,10 @@ Form.editors.TextArea = Form.editors.Text.extend({
  */
 Form.editors.Password = Form.editors.Text.extend({
 
-  initialize: function(options) {
-    Form.editors.Text.prototype.initialize.call(this, options);
+  setElAttributes: function() {
+    Form.editors.Text.prototype.setElAttributes.call(this);
 
-    this.$el.attr('type', 'password');
+    this.$el.prop('type', 'password');
   }
 
 });
@@ -1426,14 +1446,12 @@ Form.editors.Number = Form.editors.Text.extend({
     'change': 'onKeyPress'
   }),
 
-  initialize: function(options) {
-    Form.editors.Text.prototype.initialize.call(this, options);
+  setElAttributes: function() {
+    Form.editors.Text.prototype.setElAttributes.call(this);    
 
-    var schema = this.schema;
+    this.$el.prop('type', 'number');
 
-    this.$el.attr('type', 'number');
-
-    if (!schema || !schema.editorAttrs || !schema.editorAttrs.step) {
+    if (!this.schema || !this.schema.editorAttrs || !this.schema.editorAttrs.step) {
       // provide a default for `step` attr,
       // but don't overwrite if already specified
       this.$el.attr('step', 'any');
@@ -1504,10 +1522,10 @@ Form.editors.Hidden = Form.editors.Text.extend({
 
   noField: true,
 
-  initialize: function(options) {
-    Form.editors.Text.prototype.initialize.call(this, options);
-
-    this.$el.attr('type', 'hidden');
+  setElAttributes: function() {
+    Form.editors.Text.prototype.setElAttributes.call(this);
+    
+    this.$el.prop('type', 'hidden');
   },
 
   focus: function() {
@@ -1543,18 +1561,17 @@ Form.editors.Checkbox = Form.editors.Base.extend({
     }
   },
 
-  initialize: function(options) {
-    Form.editors.Base.prototype.initialize.call(this, options);
-
-    this.$el.attr('type', 'checkbox');
+  setElAttributes: function() {
+    Form.editors.Base.prototype.setElAttributes.call(this);
+    this.$el.prop('type', 'checkbox');
   },
 
   /**
    * Adds the editor to the DOM
    */
   render: function() {
+    Form.editors.Base.prototype.render.call(this);
     this.setValue(this.value);
-
     return this;
   },
 
@@ -1580,7 +1597,9 @@ Form.editors.Checkbox = Form.editors.Base.extend({
     if (!this.hasFocus) return;
 
     this.$el.blur();
-  }
+  },
+
+  readonlyTemplate: _.template('<input disabled></input>', null, Form.templateSettings)
 
 });
 
@@ -1625,6 +1644,10 @@ Form.editors.Select = Form.editors.Base.extend({
   },
 
   render: function() {
+    if (this.schema.readonly && this.readonlyTemplate) {
+      var $el = $($.trim(this.readonlyTemplate()));
+      this.setElement($el);
+    }
     this.setOptions(this.schema.options);
 
     return this;
@@ -1751,6 +1774,9 @@ Form.editors.Select = Form.editors.Base.extend({
     this.$el.blur();
   },
 
+  readonlyTemplate: _.template('<select disabled></select>', null, Form.templateSettings),
+
+
   /**
    * Transforms a collection into HTML ready to use in the renderOptions method
    * @param {Backbone.Collection}
@@ -1853,12 +1879,21 @@ Form.editors.Radio = Form.editors.Select.extend({
     }
   },
 
+  render: function() {
+    this.setOptions(this.schema.options);
+
+    return this;
+  },
+
   /**
    * Returns the template. Override for custom templates
    *
    * @return {Function}       Compiled template
    */
   getTemplate: function() {
+    if(this.schema.readonly && this.readonlyTemplate)
+      return this.readonlyTemplate;
+
     return this.schema.template || this.constructor.template;
   },
 
@@ -1920,7 +1955,16 @@ Form.editors.Radio = Form.editors.Select.extend({
     });
 
     return template({ items: items });
-  }
+  },
+
+  readonlyTemplate: _.template('\
+    <% _.each(items, function(item) { %>\
+      <li>\
+        <input type="radio" disabled name="<%= item.name %>" value="<%- item.value %>" id="<%= item.id %>" />\
+        <label for="<%= item.id %>"><% if (item.labelHTML){ %><%= item.labelHTML %><% }else{ %><%- item.label %><% } %></label>\
+      </li>\
+    <% }); %>\
+  ', null, Form.templateSettings)
 
 }, {
 
@@ -1994,6 +2038,12 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
     this.$('input[type=checkbox]:focus').blur();
   },
 
+  render: function() {
+    this.setOptions(this.schema.options);
+
+    return this;
+  },
+
   /**
    * Create the checkbox list HTML
    * @param {Array}   Options as a simple array e.g. ['option1', 'option2']
@@ -2003,6 +2053,7 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
   _arrayToHtml: function (array) {
     var html = $();
     var self = this;
+    var readonlyAttr = this.schema.readonly ? 'disabled' : '';
 
     _.each(array, function(option, index) {
       var itemHtml = $('<li>');
@@ -2016,7 +2067,7 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
           close = false;
         }else{
           var val = (option.val || option.val === 0) ? option.val : '';
-          itemHtml.append( $('<input type="checkbox" name="'+self.getName()+'" id="'+self.id+'-'+index+'" />').val(val) );
+          itemHtml.append( $('<input type="checkbox" name="'+self.getName()+'" id="'+self.id+'-'+index+'" ' + readonlyAttr + ' />').val(val) );
           if (option.labelHTML){
             itemHtml.append( $('<label for="'+self.id+'-'+index+'">').html(option.labelHTML) );
           }
@@ -2026,7 +2077,7 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
         }
       }
       else {
-        itemHtml.append( $('<input type="checkbox" name="'+self.getName()+'" id="'+self.id+'-'+index+'" />').val(option) );
+        itemHtml.append( $('<input type="checkbox" name="'+self.getName()+'" id="'+self.id+'-'+index+'" ' + readonlyAttr + ' />').val(option) );
         itemHtml.append( $('<label for="'+self.id+'-'+index+'">').text(option) );
       }
       html = html.add(itemHtml);
@@ -2265,7 +2316,11 @@ Form.editors.Date = Form.editors.Base.extend({
     }
 
     //Template
-    this.template = options.template || this.constructor.template;
+    if (this.schema.readonly && this.readonlyTemplate)
+      this.template = this.readonlyTemplate;
+
+    else
+      this.template = options.template || this.constructor.template;
   },
 
   render: function() {
@@ -2368,7 +2423,15 @@ Form.editors.Date = Form.editors.Base.extend({
     if (_.isDate(val)) val = val.toISOString();
 
     this.$hidden.val(val);
-  }
+  },
+
+  readonlyTemplate: _.template('\
+    <div>\
+      <select disabled data-type="date"><%= dates %></select>\
+      <select disabled data-type="month"><%= months %></select>\
+      <select disabled data-type="year"><%= years %></select>\
+    </div>\
+  ', null, Form.templateSettings)
 
 }, {
   //STATICS
@@ -2436,7 +2499,11 @@ Form.editors.DateTime = Form.editors.Base.extend({
     this.value = this.dateEditor.value;
 
     //Template
-    this.template = options.template || this.constructor.template;
+    if (this.schema.readonly && this.readonlyTemplate)
+      this.template = this.readonlyTemplate;
+    
+    else
+      this.template = options.template || this.constructor.template;
   },
 
   render: function() {
@@ -2545,7 +2612,16 @@ Form.editors.DateTime = Form.editors.Base.extend({
     this.dateEditor.remove();
 
     Form.editors.Base.prototype.remove.call(this);
-  }
+  },
+
+  readonlyTemplate: _.template('\
+    <div class="bbf-datetime">\
+      <div class="bbf-date-container" data-date></div>\
+      <select disabled data-type="hour"><%= hours %></select>\
+      :\
+      <select disabled data-type="min"><%= mins %></select>\
+    </div>\
+  ', null, Form.templateSettings)
 
 }, {
   //STATICS

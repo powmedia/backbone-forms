@@ -124,6 +124,20 @@
     notEqual($(editor.el).find('input[type=checkbox]').length, 0);
   });
 
+  test('Readonly renders disabled inputs', function() {
+    var editor = new Editor({
+      schema: { 
+        readonly: true,
+        options: ['a', 'b', 'c']
+      },
+    }).render();
+
+    var checkboxInputs = $(editor.el).find('input[type=checkbox]');
+    for(var i = 0; i < checkboxInputs.length; i++) {
+      same($(checkboxInputs[i]).attr('disabled'), 'disabled');
+    }
+  });
+
   test('setting value with one item', function() {
     var editor = new Editor({
       schema: schema

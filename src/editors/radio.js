@@ -29,12 +29,21 @@ Form.editors.Radio = Form.editors.Select.extend({
     }
   },
 
+  render: function() {
+    this.setOptions(this.schema.options);
+
+    return this;
+  },
+
   /**
    * Returns the template. Override for custom templates
    *
    * @return {Function}       Compiled template
    */
   getTemplate: function() {
+    if(this.schema.readonly && this.readonlyTemplate)
+      return this.readonlyTemplate;
+
     return this.schema.template || this.constructor.template;
   },
 
@@ -96,7 +105,16 @@ Form.editors.Radio = Form.editors.Select.extend({
     });
 
     return template({ items: items });
-  }
+  },
+
+  readonlyTemplate: _.template('\
+    <% _.each(items, function(item) { %>\
+      <li>\
+        <input type="radio" disabled name="<%= item.name %>" value="<%- item.value %>" id="<%= item.id %>" />\
+        <label for="<%= item.id %>"><% if (item.labelHTML){ %><%= item.labelHTML %><% }else{ %><%- item.label %><% } %></label>\
+      </li>\
+    <% }); %>\
+  ', null, Form.templateSettings)
 
 }, {
 

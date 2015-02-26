@@ -21,18 +21,17 @@ Form.editors.Checkbox = Form.editors.Base.extend({
     }
   },
 
-  initialize: function(options) {
-    Form.editors.Base.prototype.initialize.call(this, options);
-
-    this.$el.attr('type', 'checkbox');
+  setElAttributes: function() {
+    Form.editors.Base.prototype.setElAttributes.call(this);
+    this.$el.prop('type', 'checkbox');
   },
 
   /**
    * Adds the editor to the DOM
    */
   render: function() {
+    Form.editors.Base.prototype.render.call(this);
     this.setValue(this.value);
-
     return this;
   },
 
@@ -58,6 +57,8 @@ Form.editors.Checkbox = Form.editors.Base.extend({
     if (!this.hasFocus) return;
 
     this.$el.blur();
-  }
+  },
+
+  readonlyTemplate: _.template('<input disabled></input>', null, Form.templateSettings)
 
 });

@@ -30,26 +30,24 @@ Form.editors.Text = Form.Editor.extend({
     }
   },
 
-  initialize: function(options) {
-    Form.editors.Base.prototype.initialize.call(this, options);
-
-    var schema = this.schema;
+  setElAttributes: function() {
+    Form.editors.Base.prototype.setElAttributes.call(this);
 
     //Allow customising text type (email, phone etc.) for HTML5 browsers
     var type = 'text';
 
-    if (schema && schema.editorAttrs && schema.editorAttrs.type) type = schema.editorAttrs.type;
-    if (schema && schema.dataType) type = schema.dataType;
+    if (this.schema && this.schema.editorAttrs && this.schema.editorAttrs.type) type = this.schema.editorAttrs.type;
+    if (this.schema && this.schema.dataType) type = this.schema.dataType;
 
-    this.$el.attr('type', type);
+    this.$el.prop('type', type);
   },
 
   /**
    * Adds the editor to the DOM
    */
   render: function() {
+    Form.editors.Base.prototype.render.call(this);
     this.setValue(this.value);
-
     return this;
   },
 
@@ -94,6 +92,8 @@ Form.editors.Text = Form.Editor.extend({
 
   select: function() {
     this.$el.select();
-  }
+  },
+
+  readonlyTemplate: _.template('<input readonly></input>', null, Form.templateSettings)
 
 });
