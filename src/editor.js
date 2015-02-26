@@ -37,14 +37,28 @@ Form.Editor = Form.editors.Base = Backbone.View.extend({
     _.extend(this, _.pick(options, 'key', 'form'));
 
     var schema = this.schema = options.schema || {};
+    
+    this.setElAttributes();
 
     this.validators = options.validators || schema.validators;
+  },
 
-    //Main attributes
+  setElAttributes: function() {
     this.$el.attr('id', this.id);
     this.$el.attr('name', this.getName());
-    if (schema.editorClass) this.$el.addClass(schema.editorClass);
-    if (schema.editorAttrs) this.$el.attr(schema.editorAttrs);
+
+    //Main attributes
+    if (this.schema.editorClass) this.$el.addClass(this.schema.editorClass);
+    if (this.schema.editorAttrs) this.$el.attr(this.schema.editorAttrs);
+  },
+
+  render: function() {
+    if (this.schema.readonly && this.readonlyTemplate) {
+      var $el = $($.trim(this.readonlyTemplate()));
+      this.setElement($el);
+      this.setElAttributes();
+    }
+    return this;
   },
 
   /**

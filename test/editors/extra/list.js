@@ -55,6 +55,23 @@ var same = deepEqual;
         same(list.Editor, editors.Number);
     });
 
+    test('Add button is disabled in readonly mode', function() {
+        var list = new List({
+            schema: { readonly: true }
+        }).render();
+
+        same(list.$('[data-action="add"]').attr('disabled'), 'disabled');
+    });
+
+    test('Remove button is disabled in readonly mode', function() {
+        var list = new List({
+            schema: { readonly: true },
+            data: ['A', 'B']
+        }).render();
+
+        same(list.$('[data-action="remove"]').attr('disabled'), 'disabled');
+    });
+
     test('Default value', function() {
         var list = new List().render();
 

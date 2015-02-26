@@ -49,6 +49,14 @@
     deepEqual($(editor.el).attr('type'), 'checkbox');
   });
 
+  test('readonly schema adds disabled attribute', function() {
+    var editor = new Editor({
+      schema: { readonly: true }
+    }).render();
+    
+    same(editor.$el.attr('disabled'), 'disabled');
+  });
+
   test("getValue() - returns boolean", function() {
     var editor1 = new Editor({
       value: true

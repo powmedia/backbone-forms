@@ -103,6 +103,16 @@
     same(editor.$year.find('option:last').html(), editor.schema.yearEnd.toString());
   });
 
+  test('render() - selects are disabled in readonly mode', function() {
+    var editor = new Editor({
+      schema: { readonly: true }
+    }).render();
+
+    same(editor.$date.attr('disabled'), 'disabled');
+    same(editor.$month.attr('disabled'), 'disabled');
+    same(editor.$year.attr('disabled'), 'disabled');
+  });
+
   test('getValue() - returns a Date', function() {
     var date = new Date(2010, 5, 5),
         editor = new Editor({ value: date }).render();

@@ -39,6 +39,10 @@ Form.editors.Select = Form.editors.Base.extend({
   },
 
   render: function() {
+    if (this.schema.readonly && this.readonlyTemplate) {
+      var $el = $($.trim(this.readonlyTemplate()));
+      this.setElement($el);
+    }
     this.setOptions(this.schema.options);
 
     return this;
@@ -164,6 +168,9 @@ Form.editors.Select = Form.editors.Base.extend({
 
     this.$el.blur();
   },
+
+  readonlyTemplate: _.template('<select disabled></select>', null, Form.templateSettings),
+
 
   /**
    * Transforms a collection into HTML ready to use in the renderOptions method
