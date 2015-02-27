@@ -44,6 +44,8 @@
         return (_.isString(type)) ? editors[type] : type;
       })();
 
+      this.ListItem = schema.itemClass || editors.List.Item;
+
       this.items = [];
     },
 
@@ -89,7 +91,7 @@
           editors = Form.editors;
 
       //Create the item
-      var item = new editors.List.Item({
+      var item = new this.ListItem({
         list: this,
         form: this.form,
         schema: this.schema,

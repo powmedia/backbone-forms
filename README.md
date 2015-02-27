@@ -613,6 +613,11 @@ This is a special editor which is in **a separate file and must be included**:
 
   Optional, but recommended when using itemType 'Object'. When itemType is 'NestedModel', the model's `toString()` method will be used, unless a specific `itemToString()` function is defined on the schema.
 
+- **`itemClass`**
+
+  A class to use instead of `List.Item`
+
+  The default class wraps each editor in a `<div>` and adds a "delete" button on each row. Provide this argument and `List` will use your custom item class, allowing you to customize this behavior.
 
 ###Events
 
