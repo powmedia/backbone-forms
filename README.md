@@ -594,13 +594,13 @@ This is a special editor which is in **a separate file and must be included**:
 
 ###Modal Adapter
 
-By default, the `List` editor uses modal views to render editors for `Object` or `Nested Model` item types. To use the default modal adapater, you must include the [`Backbone.BootstrapModal`](http://github.com/powmedia/backbone.bootstrap-modal) library on the page:
+By default, the `List` editor uses modal views to render editors for `Object` or `Nested Model` item types. To use the default modal adapter, you must include the [`Backbone.BootstrapModal`](http://github.com/powmedia/backbone.bootstrap-modal) library on the page:
 
 ```html
 <script src="backbone-forms/distribution/adapters/backbone.bootstrap-modal.min.js" />
 ```
 
-You may also specify your own modal adapater, as long use you follow the interface of the `Backbone.BootstrapModal` class.
+You may also specify your own modal adapter, as long use you follow the interface of the `Backbone.BootstrapModal` class.
 
 ```js
 var MyModalAdapter = Backbone.BootstrapModal.extend({
