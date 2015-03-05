@@ -47,6 +47,8 @@
   ');
 
   Form.editors.Base.prototype.className = 'form-control';
+  Form.editors.Checkbox.prototype.className = 'checkbox';
+  Form.editors.Checkboxes.prototype.className = 'checkbox';
   Form.Field.errorClassName = 'has-error';
 
 
