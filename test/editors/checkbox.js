@@ -79,6 +79,22 @@
     deepEqual($(editor.el).prop('checked'), false);
   });
 
+  test("setValue() - updates the model value", function() {
+    var editor = new Editor({
+      model: new Model,
+      key: 'enabled'
+    }).render();
+
+    editor.setValue(true);
+    editor.render();
+    deepEqual(editor.getValue(), true);
+    deepEqual($(editor.el).prop('checked'), true);
+    
+    editor.setValue(false);
+
+    deepEqual(editor.getValue(), false);
+    deepEqual($(editor.el).prop('checked'), false);
+  });
 
 
   module('Checkbox events', {

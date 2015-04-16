@@ -132,6 +132,25 @@
     same(editor.getValue().getTime(), date.getTime());
   });
 
+  test('setValue() updates model', function() {
+    var date = new Date(2015, 1, 4);
+
+    var editor = new Editor({
+      schema: {
+        yearStart: 2000,
+        yearEnd: 2020
+      }
+    }).render();
+
+    editor.setValue(date);
+    editor.render();
+    same(editor.$date.val(), '4');
+    same(editor.$month.val(), '1');
+    same(editor.$year.val(), '2015');
+
+    same(editor.getValue().getTime(), date.getTime());
+  });
+
   test('updates the hidden input when a value changes', function() {
     var date = new Date(2012, 2, 5);
 
