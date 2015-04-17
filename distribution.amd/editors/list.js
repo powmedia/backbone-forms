@@ -62,9 +62,15 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
 
       //Add existing items
       if (value.length) {
-        _.each(value, function(itemValue) {
-          self.addItem(itemValue);
-        });
+        if(value instanceof Array) {
+          _.each(value, function (itemValue) {
+              self.addItem(itemValue);
+          });
+        }else{
+          _.each(value.models, function (itemValue) {
+              self.addItem(itemValue);
+          });
+        }
       }
 
       //If no existing items create an empty one, unless the editor specifies otherwise
