@@ -711,4 +711,14 @@ div class=&gt;HTML&lt;/b&gt;&lt;</option></optgroup>";
     same( editor.$('option').text(), "\"/><script>throw(\"XSS Success\");</script>\"?'/><script>throw(\"XSS Success\");</script>><div class=>HTML</b><" );
   });
 
+  module('Select#render');
+
+  test('readonly schema adds disabled attribute', function() {
+    var editor = new Editor({
+      schema: $.extend({ readonly: true }, schema)
+    }).render();
+    
+    same(editor.$el.attr('disabled'), 'disabled');
+  });
+
 })(Backbone.Form, Backbone.Form.editors.Select);

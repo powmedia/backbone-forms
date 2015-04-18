@@ -92,6 +92,15 @@
     same(editor.$min.find('option:last').html(), '59');
   });
 
+  test('render() - selects are disabled in readonly mode', function() {
+    var editor = new Editor({
+      schema: { readonly: true }
+    }).render();
+
+    same(editor.$hour.attr('disabled'), 'disabled');
+    same(editor.$min.attr('disabled'), 'disabled');
+  });
+
   test('getValue() - returns a Date', function() {
     var date = new Date(2010, 5, 5, 14, 30),
         editor = new Editor({ value: date }).render();

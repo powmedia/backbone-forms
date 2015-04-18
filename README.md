@@ -613,6 +613,10 @@ This is a special editor which is in **a separate file and must be included**:
 
   Optional, but recommended when using itemType 'Object'. When itemType is 'NestedModel', the model's `toString()` method will be used, unless a specific `itemToString()` function is defined on the schema.
 
+- **`addLabel`**
+
+  Label of the button used to add a new item in the list. Defaults to 'Add'.
+
 
 ###Events
 

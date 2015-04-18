@@ -22,6 +22,16 @@
   });
 
 
+  module('Text#render');
+
+  test('readonly schema adds readonly attribute', function() {
+    var editor = new Editor({
+      schema: { readonly: true }
+    }).render();
+    
+    same(editor.$el.attr('readonly'), 'readonly');
+  });
+
 
   module('Text#getValue()');
 

@@ -28,7 +28,15 @@
       var schema = this.schema;
       if (!schema) throw new Error("Missing required option 'schema'");
 
-      this.template = options.template || this.constructor.template;
+      this.schema = _.extend({
+        addLabel: 'Add'
+      }, schema);
+
+      if (schema.readonly && this.readonlyTemplate)
+        this.template = this.readonlyTemplate;
+
+      else
+        this.template = options.template || this.constructor.template;
 
       //Determine the editor to use
       this.Editor = (function() {
@@ -53,7 +61,9 @@
           $ = Backbone.$;
 
       //Create main element
-      var $el = $($.trim(this.template()));
+      var $el = $($.trim(this.template({
+        addLabel: this.schema.addLabel
+      })));
 
       //Store a reference to the list (item container)
       this.$list = $el.is('[data-items]') ? $el : $el.find('[data-items]');
@@ -244,14 +254,21 @@
       };
 
       return fieldError;
-    }
+    },
+
+    readonlyTemplate: _.template('\
+      <div>\
+        <div data-items></div>\
+        <button type="button" disabled data-action="add">Add</button>\
+      </div>\
+    ', null, Form.templateSettings)
   }, {
 
     //STATICS
     template: _.template('\
       <div>\
         <div data-items></div>\
-        <button type="button" data-action="add">Add</button>\
+        <button type="button" data-action="add"><%= addLabel %></button>\
       </div>\
     ', null, Form.templateSettings)
 
@@ -288,9 +305,14 @@
       this.value = options.value;
       this.Editor = options.Editor || Form.editors.Text;
       this.key = options.key;
-      this.template = options.template || this.schema.itemTemplate || this.constructor.template;
       this.errorClassName = options.errorClassName || this.constructor.errorClassName;
       this.form = options.form;
+
+      if (this.schema.readonly && this.readonlyTemplate)
+        this.template = this.readonlyTemplate;
+
+      else
+        this.template = options.template || this.schema.itemTemplate || this.constructor.template;
     },
 
     render: function() {
@@ -380,7 +402,14 @@
     clearError: function() {
       this.$el.removeClass(this.errorClassName);
       this.$el.attr('title', null);
-    }
+    },
+
+    readonlyTemplate: _.template('\
+      <div>\
+        <span data-editor></span>\
+        <button type="button" disabled data-action="remove">&times;</button>\
+      </div>\
+    ', null, Form.templateSettings)
   }, {
 
     //STATICS

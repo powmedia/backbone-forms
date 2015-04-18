@@ -55,6 +55,23 @@ var same = deepEqual;
         same(list.Editor, editors.Number);
     });
 
+    test('Add button is disabled in readonly mode', function() {
+        var list = new List({
+            schema: { readonly: true }
+        }).render();
+
+        same(list.$('[data-action="add"]').attr('disabled'), 'disabled');
+    });
+
+    test('Remove button is disabled in readonly mode', function() {
+        var list = new List({
+            schema: { readonly: true },
+            data: ['A', 'B']
+        }).render();
+
+        same(list.$('[data-action="remove"]').attr('disabled'), 'disabled');
+    });
+
     test('Default value', function() {
         var list = new List().render();
 
@@ -68,6 +85,20 @@ var same = deepEqual;
         }).render();
 
         same(list.getValue(), [1,2,3]);
+    });
+
+    test('Add label default value', function() {
+        var list = new List().render();
+
+        same(list.$('[data-action="add"]').text(), 'Add');
+    });
+
+    test('Add label can be customized', function() {
+        var list = new List({
+            schema: { addLabel: 'Agregar' }
+        }).render();
+        
+        same(list.$('[data-action="add"]').text(), 'Agregar');
     });
 
     test('Value from model', function() {
