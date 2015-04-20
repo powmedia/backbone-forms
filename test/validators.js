@@ -38,6 +38,11 @@
     equal(required('test', undefined))
   })
   
+  test('error if empty array', function() {
+    ok(required([]))
+    equal(required(['test'], undefined))
+  })
+
   test('ok if field is number 0', function() {
     equal(required(0), undefined)
   })
