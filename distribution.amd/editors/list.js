@@ -55,7 +55,7 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
           $ = Backbone.$;
 
       //Create main element
-      var $el = $($.trim(this.template()));
+      var $el = $($.trim(this.template(_.result(this, 'templateData'))));
 
       //Store a reference to the list (item container)
       this.$list = $el.is('[data-items]') ? $el : $el.find('[data-items]');
@@ -315,7 +315,7 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
       }).render();
 
       //Create main element
-      var $el = $($.trim(this.template()));
+      var $el = $($.trim(this.template(_.result(this, 'templateData'))));
 
       $el.find('[data-editor]').append(this.editor.el);
 
