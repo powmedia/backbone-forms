@@ -823,7 +823,7 @@ To customise forms even further you can pass in a template to the form instance 
 
 ```js
 var form = new Backbone.Form({
-    template: _.template($('#formTpl').html()),
+    template: _.template($('#formTemplate').html()),
     model: new UserModel(), //defined elsewhere
     templateData: {heading1: 'Edit profile'}
 });
