@@ -224,6 +224,8 @@ var Form = Backbone.View.extend({
 
         $container.append(field.editor.render().el);
       });
+
+      _.result(this, 'onRender');
     });
 
     //Render standalone fields
@@ -716,6 +718,8 @@ Form.Fieldset = Backbone.View.extend({
 
     this.setElement($fieldset);
 
+    _.result(this, 'onRender');
+
     return this;
   },
 
@@ -910,6 +914,8 @@ Form.Field = Backbone.View.extend({
     });
 
     this.setElement($field);
+
+    _.result(this, 'onRender');
 
     return this;
   },
@@ -2081,6 +2087,8 @@ Form.editors.Object = Form.editors.Base.extend({
 
     if (this.hasFocus) this.trigger('blur', this);
 
+    _.result(this, 'onRender');
+
     return this;
   },
 
@@ -2176,6 +2184,8 @@ Form.editors.NestedModel = Form.editors.Object.extend({
     this.$el.html(this.nestedForm.render().el);
 
     if (this.hasFocus) this.trigger('blur', this);
+
+    _.result(this, 'onRender');
 
     return this;
   },

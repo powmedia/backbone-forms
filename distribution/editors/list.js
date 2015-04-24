@@ -81,7 +81,9 @@
       this.$el.attr('name', this.key);
             
       if (this.hasFocus) this.trigger('blur', this);
-      
+
+      _.result(this, 'onRender');
+
       return this;
     },
 
@@ -319,7 +321,9 @@
 
       //Replace the entire element so there isn't a wrapper tag
       this.setElement($el);
-        
+
+      _.result(this, 'onRender');
+
       return this;
     },
 
@@ -456,6 +460,8 @@
       }
 
       if (this.hasFocus) this.trigger('blur', this);
+
+      _.result(this, 'onRender');
 
       return this;
     },

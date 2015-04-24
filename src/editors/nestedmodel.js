@@ -38,6 +38,8 @@ Form.editors.NestedModel = Form.editors.Object.extend({
 
     if (this.hasFocus) this.trigger('blur', this);
 
+    _.result(this, 'onRender');
+
     return this;
   },
 

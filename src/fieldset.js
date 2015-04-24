@@ -96,6 +96,8 @@ Form.Fieldset = Backbone.View.extend({
 
     this.setElement($fieldset);
 
+    _.result(this, 'onRender');
+
     return this;
   },
 

@@ -166,6 +166,8 @@ Form.Field = Backbone.View.extend({
 
     this.setElement($field);
 
+    _.result(this, 'onRender');
+
     return this;
   },
 

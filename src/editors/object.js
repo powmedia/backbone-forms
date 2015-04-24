@@ -42,6 +42,8 @@ Form.editors.Object = Form.editors.Base.extend({
 
     if (this.hasFocus) this.trigger('blur', this);
 
+    _.result(this, 'onRender');
+
     return this;
   },
 

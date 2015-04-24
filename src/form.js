@@ -199,6 +199,8 @@ var Form = Backbone.View.extend({
 
         $container.append(field.editor.render().el);
       });
+
+      _.result(this, 'onRender');
     });
 
     //Render standalone fields
