@@ -1786,7 +1786,7 @@ Form.editors.Select = Form.editors.Base.extend({
    * @return {String} HTML
    */
   _arrayToHtml: function(array) {
-    var html = $();
+    var html = document.createDocumentFragment();
 
     //Generate HTML
     _.each(array, function(option) {
@@ -1795,14 +1795,14 @@ Form.editors.Select = Form.editors.Base.extend({
           var optgroup = $("<optgroup>")
             .attr("label",option.group)
             .html( this._getOptionsHtml(option.options) );
-          html = html.add(optgroup);
+          html.appendChild(optgroup[0]);
         } else {
           var val = (option.val || option.val === 0) ? option.val : '';
-          html = html.add( $('<option>').val(val).text(option.label) );
+          html.appendChild( $('<option>').val(val).text(option.label)[0] );
         }
       }
       else {
-        html = html.add( $('<option>').text(option) );
+        html.appendChild( $('<option>').text(option)[0] );
       }
     }, this);
 
@@ -1990,7 +1990,7 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
    * @return {String} HTML
    */
   _arrayToHtml: function (array) {
-    var html = $();
+    var html = document.createDocumentFragment();
     var self = this;
 
     _.each(array, function(option, index) {
@@ -2018,7 +2018,7 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
         itemHtml.append( $('<input type="checkbox" name="'+self.getName()+'" id="'+self.id+'-'+index+'" />').val(option) );
         itemHtml.append( $('<label for="'+self.id+'-'+index+'">').text(option) );
       }
-      html = html.add(itemHtml);
+      html.appendChild(itemHtml[0]);
     });
 
     return html;
