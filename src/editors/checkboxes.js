@@ -57,6 +57,12 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
     this.$('input[type=checkbox]:focus').blur();
   },
 
+  render: function() {
+    this.setOptions(this.schema.options);
+
+    return this;
+  },
+
   /**
    * Create the checkbox list HTML
    * @param {Array}   Options as a simple array e.g. ['option1', 'option2']
@@ -66,6 +72,7 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
   _arrayToHtml: function (array) {
     var html = $();
     var self = this;
+    var readonlyAttr = this.schema.readonly ? 'disabled' : '';
 
     _.each(array, function(option, index) {
       var itemHtml = $('<li>');
@@ -79,7 +86,7 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
           close = false;
         }else{
           var val = (option.val || option.val === 0) ? option.val : '';
-          itemHtml.append( $('<input type="checkbox" name="'+self.getName()+'" id="'+self.id+'-'+index+'" />').val(val) );
+          itemHtml.append( $('<input type="checkbox" name="'+self.getName()+'" id="'+self.id+'-'+index+'" ' + readonlyAttr + ' />').val(val) );
           if (option.labelHTML){
             itemHtml.append( $('<label for="'+self.id+'-'+index+'">').html(option.labelHTML) );
           }
@@ -89,7 +96,7 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
         }
       }
       else {
-        itemHtml.append( $('<input type="checkbox" name="'+self.getName()+'" id="'+self.id+'-'+index+'" />').val(option) );
+        itemHtml.append( $('<input type="checkbox" name="'+self.getName()+'" id="'+self.id+'-'+index+'" ' + readonlyAttr + ' />').val(option) );
         itemHtml.append( $('<label for="'+self.id+'-'+index+'">').text(option) );
       }
       html = html.add(itemHtml);

@@ -10,6 +10,12 @@ Form.editors.TextArea = Form.editors.Text.extend({
    */
   initialize: function(options) {
     Form.editors.Base.prototype.initialize.call(this, options);
-  }
+  },
+
+  setElAttributes: function() {
+    Form.editors.Base.prototype.setElAttributes.call(this);
+  }, 
+
+  readonlyTemplate: _.template('<textarea readonly></textarea>', null, Form.templateSettings)
 
 });

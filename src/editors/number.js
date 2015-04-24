@@ -12,14 +12,12 @@ Form.editors.Number = Form.editors.Text.extend({
     'change': 'onKeyPress'
   }),
 
-  initialize: function(options) {
-    Form.editors.Text.prototype.initialize.call(this, options);
+  setElAttributes: function() {
+    Form.editors.Text.prototype.setElAttributes.call(this);
 
-    var schema = this.schema;
+    this.$el.prop('type', 'number');
 
-    this.$el.attr('type', 'number');
-
-    if (!schema || !schema.editorAttrs || !schema.editorAttrs.step) {
+    if (!this.schema || !this.schema.editorAttrs || !this.schema.editorAttrs.step) {
       // provide a default for `step` attr,
       // but don't overwrite if already specified
       this.$el.attr('step', 'any');

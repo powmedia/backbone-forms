@@ -20,4 +20,15 @@
   });
 
 
+  module('TextArea#render');
+
+  test('readonly schema adds readonly attribute', function() {
+    var editor = new Editor({
+      schema: { readonly: true }
+    }).render();
+    
+    same(editor.$el.attr('readonly'), 'readonly');
+  });
+
+
 })(Backbone.Form, Backbone.Form.editors.TextArea);
