@@ -237,7 +237,6 @@
   });
   
   test('passes empty values', function() {
-    equal(fn(''), undefined)
     equal(fn(null), undefined)
     equal(fn(undefined), undefined)
   })
@@ -258,6 +257,11 @@
     };
     
     var err = fn('foo', attrs)
+    
+    equal(err.type, 'match')
+    equal(err.message, 'Must match field "confirm"')
+
+    err = fn('', attrs)
     
     equal(err.type, 'match')
     equal(err.message, 'Must match field "confirm"')

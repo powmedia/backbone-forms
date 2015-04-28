@@ -107,8 +107,8 @@ Form.validators = (function() {
         message: _.isFunction(options.message) ? options.message(options) : options.message
       };
       
-      //Don't check empty values (add a 'required' validator for this)
-      if (value === null || value === undefined || value === '') return;
+      //Don't check null/undefined values
+      if (value === null || value === undefined) return;
       
       if (value !== attrs[options.field]) return err;
     };
