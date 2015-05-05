@@ -34,7 +34,7 @@ Form.Editor = Form.editors.Base = Backbone.View.extend({
     if (this.value === undefined) this.value = this.defaultValue;
 
     //Store important data
-    _.extend(this, _.pick(options, 'key', 'form'));
+    _.extend(this, _.pick(options, 'key', 'form', 'schemaPath'));
 
     var schema = this.schema = options.schema || {};
 
@@ -88,7 +88,7 @@ Form.Editor = Form.editors.Base = Backbone.View.extend({
   focus: function() {
     throw new Error('Not implemented');
   },
-  
+
   /**
    * Remove focus from the editor
    * Extend and override this method
@@ -171,11 +171,11 @@ Form.Editor = Form.editors.Base = Backbone.View.extend({
     if (_.isRegExp(validator)) {
       return validators.regexp({ regexp: validator });
     }
-    
+
     //Use a built-in validator if given a string
     if (_.isString(validator)) {
       if (!validators[validator]) throw new Error('Validator "'+validator+'" not found');
-      
+
       return validators[validator]();
     }
 
@@ -185,10 +185,10 @@ Form.Editor = Form.editors.Base = Backbone.View.extend({
     //Use a customised built-in validator if given an object
     if (_.isObject(validator) && validator.type) {
       var config = validator;
-      
+
       return validators[config.type](config);
     }
-    
+
     //Unkown validator type
     throw new Error('Invalid validator: ' + validator);
   }

@@ -22,7 +22,7 @@ Form.Field = Backbone.View.extend({
     options = options || {};
 
     //Store important data
-    _.extend(this, _.pick(options, 'form', 'key', 'model', 'value', 'idPrefix'));
+    _.extend(this, _.pick(options, 'form', 'key', 'model', 'value', 'idPrefix', 'schemaPath'));
 
     //Create the full field schema, merging defaults etc.
     var schema = this.schema = this.createSchema(options.schema);
@@ -66,7 +66,7 @@ Form.Field = Backbone.View.extend({
   createEditor: function() {
     var options = _.extend(
       _.pick(this, 'schema', 'form', 'key', 'model', 'value'),
-      { id: this.createEditorId() }
+      { id: this.createEditorId(), schemaPath: this.schemaPath }
     );
 
     var constructorFn = this.schema.type;
