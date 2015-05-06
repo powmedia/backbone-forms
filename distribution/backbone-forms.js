@@ -37,7 +37,7 @@ var Form = Backbone.View.extend({
 
   /**
    * Constructor
-   * 
+   *
    * @param {Object} [options.schema]
    * @param {Backbone.Model} [options.model]
    * @param {Object} [options.data]
@@ -74,7 +74,7 @@ var Form = Backbone.View.extend({
     })();
 
     //Store important data
-    _.extend(this, _.pick(options, 'model', 'data', 'idPrefix', 'templateData'));
+    _.extend(this, _.pick(options, 'model', 'data', 'idPrefix', 'templateData', 'schemaPath'));
 
     //Override defaults
     var constructor = this.constructor;
@@ -143,6 +143,10 @@ var Form = Backbone.View.extend({
     } else {
       options.value = null;
     }
+
+    var path = this.schemaPath || []
+
+    options.schemaPath = path.concat(key);
 
     var field = new this.Field(options);
 
@@ -262,7 +266,7 @@ var Form = Backbone.View.extend({
 
     //Set the main element
     this.setElement($form);
-    
+
     //Set class
     $form.addClass(this.className);
 
@@ -355,7 +359,7 @@ var Form = Backbone.View.extend({
     }, options);
 
     this.model.set(this.getValue(), setOptions);
-    
+
     if (modelError) return modelError;
   },
 
@@ -490,8 +494,8 @@ var Form = Backbone.View.extend({
   ', null, this.templateSettings),
 
   templateSettings: {
-    evaluate: /<%([\s\S]+?)%>/g, 
-    interpolate: /<%=([\s\S]+?)%>/g, 
+    evaluate: /<%([\s\S]+?)%>/g,
+    interpolate: /<%=([\s\S]+?)%>/g,
     escape: /<%-([\s\S]+?)%>/g
   },
 
@@ -771,7 +775,7 @@ Form.Field = Backbone.View.extend({
     options = options || {};
 
     //Store important data
-    _.extend(this, _.pick(options, 'form', 'key', 'model', 'value', 'idPrefix'));
+    _.extend(this, _.pick(options, 'form', 'key', 'model', 'value', 'idPrefix', 'schemaPath'));
 
     //Create the full field schema, merging defaults etc.
     var schema = this.schema = this.createSchema(options.schema);
@@ -815,7 +819,7 @@ Form.Field = Backbone.View.extend({
   createEditor: function() {
     var options = _.extend(
       _.pick(this, 'schema', 'form', 'key', 'model', 'value'),
-      { id: this.createEditorId() }
+      { id: this.createEditorId(), schemaPath: this.schemaPath }
     );
 
     var constructorFn = this.schema.type;
@@ -1129,7 +1133,7 @@ Form.Editor = Form.editors.Base = Backbone.View.extend({
     if (this.value === undefined) this.value = this.defaultValue;
 
     //Store important data
-    _.extend(this, _.pick(options, 'key', 'form'));
+    _.extend(this, _.pick(options, 'key', 'form', 'schemaPath'));
 
     var schema = this.schema = options.schema || {};
 
@@ -1183,7 +1187,7 @@ Form.Editor = Form.editors.Base = Backbone.View.extend({
   focus: function() {
     throw new Error('Not implemented');
   },
-  
+
   /**
    * Remove focus from the editor
    * Extend and override this method
@@ -1266,11 +1270,11 @@ Form.Editor = Form.editors.Base = Backbone.View.extend({
     if (_.isRegExp(validator)) {
       return validators.regexp({ regexp: validator });
     }
-    
+
     //Use a built-in validator if given a string
     if (_.isString(validator)) {
       if (!validators[validator]) throw new Error('Validator "'+validator+'" not found');
-      
+
       return validators[validator]();
     }
 
@@ -1280,10 +1284,10 @@ Form.Editor = Form.editors.Base = Backbone.View.extend({
     //Use a customised built-in validator if given an object
     if (_.isObject(validator) && validator.type) {
       var config = validator;
-      
+
       return validators[config.type](config);
     }
-    
+
     //Unkown validator type
     throw new Error('Invalid validator: ' + validator);
   }
@@ -2175,6 +2179,7 @@ Form.editors.NestedModel = Form.editors.Object.extend({
     this.nestedForm = new NestedForm({
       model: modelInstance,
       idPrefix: this.id + '_',
+      schemaPath: this.schemaPath,
       fieldTemplate: 'nestedField'
     });
 
