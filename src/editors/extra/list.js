@@ -113,7 +113,8 @@
         value: value,
         Editor: this.Editor,
         key: this.key,
-        schemaPath: this.schemaPath.concat(valueID)
+        schemaPath: this.schemaPath.concat(valueID),
+        id: this.id + '_' + valueID
       }).render();
 
       var _addItem = function() {
@@ -310,6 +311,7 @@
       this.errorClassName = options.errorClassName || this.constructor.errorClassName;
       this.form = options.form;
       this.schemaPath = options.schemaPath;
+      this.id = options.id;
     },
 
     render: function() {
@@ -323,7 +325,8 @@
         list: this.list,
         item: this,
         form: this.form,
-        schemaPath: this.schemaPath
+        schemaPath: this.schemaPath,
+        id: this.id
       }).render();
 
       //Create main element
