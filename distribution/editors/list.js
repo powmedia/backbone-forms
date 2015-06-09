@@ -98,7 +98,7 @@
 
       var valueID = '';
       if (typeof value === 'object'){
-        if ('getID' in value) {
+        if (value && 'getID' in value) {
           valueID  = value.getID();
         }
       }else{
