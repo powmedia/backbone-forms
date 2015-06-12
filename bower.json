@@ -1,9 +1,7 @@
 {
   
   "name": "backbone-forms",
-  
-  "version": "0.14.0",
-  
+
   "main": [
     
     "distribution/backbone-forms.js"
