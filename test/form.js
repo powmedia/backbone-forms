@@ -430,6 +430,21 @@ test('creates a new instance of the Field defined on the form - without model', 
   same(optionsArg.value, 'John');
 });
 
+test('allows for overriding field constructor via schema', function () {
+  var CustomMockField = this.MockField.extend();
+
+  var form = new Form;
+
+  this.sinon.spy(CustomMockField.prototype, 'initialize');
+
+  var field = form.createField('name', {
+    type: 'Text',
+    field: CustomMockField
+  });
+
+  same(field instanceof CustomMockField, true);
+});
+
 test('adds listener to all editor events', function() {
   var MockField = this.MockField;
 
