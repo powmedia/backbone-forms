@@ -12,7 +12,7 @@ var Form = Backbone.View.extend({
 
   /**
    * Constructor
-   * 
+   *
    * @param {Object} [options.schema]
    * @param {Backbone.Model} [options.model]
    * @param {Object} [options.data]
@@ -235,7 +235,7 @@ var Form = Backbone.View.extend({
 
     //Set the main element
     this.setElement($form);
-    
+
     //Set class
     $form.addClass(this.className);
 
@@ -328,7 +328,7 @@ var Form = Backbone.View.extend({
     }, options);
 
     this.model.set(this.getValue(), setOptions);
-    
+
     if (modelError) return modelError;
   },
 
@@ -451,23 +451,22 @@ var Form = Backbone.View.extend({
   }
 
 }, {
+    editors: {}
 
-  //STATICS
-  template: _.template('\
+});
+
+//Statics to add on after Form is declared
+Form.templateSettings = {
+    evaluate: /<%([\s\S]+?)%>/g,
+    interpolate: /<%=([\s\S]+?)%>/g,
+    escape: /<%-([\s\S]+?)%>/g
+};
+
+Form.template = _.template('\
     <form>\
      <div data-fieldsets></div>\
       <% if (submitButton) { %>\
         <button type="submit"><%= submitButton %></button>\
       <% } %>\
     </form>\
-  ', null, this.templateSettings),
-
-  templateSettings: {
-    evaluate: /<%([\s\S]+?)%>/g, 
-    interpolate: /<%=([\s\S]+?)%>/g, 
-    escape: /<%-([\s\S]+?)%>/g
-  },
-
-  editors: {}
-
-});
+  ', null, Form.templateSettings);
