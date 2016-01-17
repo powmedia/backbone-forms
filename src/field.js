@@ -231,7 +231,7 @@ Form.Field = Backbone.View.extend({
     this.$el.addClass(this.errorClassName);
 
     //Set error message
-    this.$('[data-error]').html(msg);
+    this.$('[data-error]').last().html(msg);
   },
 
   /**
