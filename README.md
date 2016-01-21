@@ -77,9 +77,9 @@ $('body').append(form.el);
 
 
 ###Live editable demos
-- [User form](http://jsfiddle.net/evilcelery/dW2Qu/)
-- [Update form elements based on user input](http://jsfiddle.net/evilcelery/c5QHr/)
-- [Validate on blur](http://jsfiddle.net/evilcelery/FqLR2/)
+- [User form](http://jsfiddle.net/dW2Qu/823/)
+- [Update form elements based on user input](http://jsfiddle.net/glenpike/c5QHr/422/)
+- [Validate on blur](http://jsfiddle.net/glenpike/FqLR2/146/)
 
 
 
