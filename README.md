@@ -355,6 +355,14 @@ For each field definition in the schema you can use the following optional attri
 
   String of CSS class name(s) to add to the field
 
+- **`fieldPrefix`**
+
+  String of HTML to be added right before field
+
+- **`fieldSuffix`**
+
+  String of HTML to be added right after field
+
 - **`fieldAttrs`**
 
   A map of attributes to add to the field, e.g. `{ style: 'background: red', title: 'Tooltip help' }`
@@ -725,6 +733,7 @@ Validation runs when `form.commit()` or `form.validate()` are called.  If valida
         _others: ['Custom model.validate() error']                      //Error from model.validate()
     }
 
+If you need to get validation errors, but NOT add error message to the form on the screen, pass 'noSetError' to .validate() function, e.g. `form.validate({ noSetError: true })` or `field.validate({ noSetError: true })`.
 
 ###Customising error messages
 

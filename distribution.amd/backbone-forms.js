@@ -259,6 +259,9 @@ var Form = Backbone.View.extend({
   /**
    * Validate the data
    *
+   * @param {Object}  [options]             Options to pass to field.validate()
+   * @param {Boolean} [options.noSetError]  Set to true to disable built-in error setter
+   *
    * @return {Object}       Validation errors
    */
   validate: function(options) {
@@ -271,7 +274,7 @@ var Form = Backbone.View.extend({
 
     //Collect errors from schema validation
     _.each(fields, function(field) {
-      var error = field.validate();
+      var error = field.validate(options);
       if (error) {
         errors[field.key] = error;
       }
@@ -756,14 +759,14 @@ Form.Field = Backbone.View.extend({
     options = options || {};
 
     //Store important data
-    _.extend(this, _.pick(options, 'form', 'key', 'model', 'value', 'idPrefix'));
+    _.extend(this, _.pick(options, 'form', 'key', 'model', 'value', 'idPrefix', 'fieldClass'));
 
     //Create the full field schema, merging defaults etc.
     var schema = this.schema = this.createSchema(options.schema);
 
     //Override defaults
     this.template = options.template || schema.template || this.template || this.constructor.template;
-    this.errorClassName = options.errorClassName || this.errorClassName || this.constructor.errorClassName;
+    this.errorClassName = options.errorClassName || schema.errorClassNamethis.errorClassName || this.constructor.errorClassName;
 
     //Create editor
     this.editor = this.createEditor();
@@ -849,6 +852,25 @@ Form.Field = Backbone.View.extend({
   },
 
   /**
+   * Create class name to use on field wrapper.
+   *
+   * @return {String}
+   */
+  getClass: function() {
+      if (! this.fieldClass) {
+          var name = this.schema.name;
+
+          if (! name) {
+              name = this.createTitle();
+          }
+
+          this.fieldClass = 'form-input input-' + name.toLowerCase().replace(/\W+/g, '-');
+      }
+
+      return this.fieldClass;
+  },
+
+  /**
    * Returns the data to be passed to the template
    *
    * @return {Object}
@@ -863,7 +885,10 @@ Form.Field = Backbone.View.extend({
       fieldAttrs: schema.fieldAttrs,
       editorAttrs: schema.editorAttrs,
       key: this.key,
-      editorId: this.editor.id
+      fieldClass: this.getClass(),
+      editorId: this.editor.id,
+      fieldPrefix: schema.fieldPrefix,
+      fieldSuffix: schema.fieldSuffix
     };
   },
 
@@ -938,10 +963,17 @@ Form.Field = Backbone.View.extend({
   /**
    * Check the validity of the field
    *
+   * @param {Object}  [options]             Options to pass to field.validate()
+   * @param {Boolean} [options.noSetError]  Set to true to disable built-in error setter
+   *
    * @return {String}
    */
-  validate: function() {
+  validate: function(options) {
     var error = this.editor.validate();
+
+    if (options && options.noSetError) {
+        return error;
+    }
 
     if (error) {
       this.setError(error.message);
@@ -1033,7 +1065,8 @@ Form.Field = Backbone.View.extend({
   //STATICS
 
   template: _.template('\
-    <div>\
+    <div class="<%= fieldClass %>">\
+      <%= fieldPrefix %>\
       <label for="<%= editorId %>">\
         <% if (titleHTML){ %><%= titleHTML %>\
         <% } else { %><%- title %><% } %>\
@@ -1043,6 +1076,7 @@ Form.Field = Backbone.View.extend({
         <div data-error></div>\
         <div><%= help %></div>\
       </div>\
+      <%= fieldSuffix %>\
     </div>\
   ', null, Form.templateSettings),
 
@@ -1827,6 +1861,7 @@ Form.editors.Radio = Form.editors.Select.extend({
   events: {
     'change input[type=radio]': function() {
       this.trigger('change', this);
+      this._addClasses();
     },
     'focus input[type=radio]': function() {
       if (this.hasFocus) return;
@@ -1857,6 +1892,7 @@ Form.editors.Radio = Form.editors.Select.extend({
 
   setValue: function(value) {
     this.$('input[type=radio]').val([value]);
+    this._addClasses();
   },
 
   focus: function() {
@@ -1875,6 +1911,11 @@ Form.editors.Radio = Form.editors.Select.extend({
     if (!this.hasFocus) return;
 
     this.$('input[type=radio]:focus').blur();
+  },
+
+  _addClasses: function() {
+    this.$el.find("li").removeClass("selected");
+    this.$el.find(":checked").parents('li:first').addClass("selected");
   },
 
   /**

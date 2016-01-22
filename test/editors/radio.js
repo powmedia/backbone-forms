@@ -343,7 +343,11 @@
     }, 0);
   });
 
-
+  test("'change' event - set 'selected' class for checkbox's parent <li>", function() {
+    var editor = this.editor;
+    editor.$("input[type=radio]:not(:checked)").first().click();
+    ok(editor.$("input[type=radio]:checked").first().parents('li').first().hasClass("selected"));
+  });
 
   module('Radio Text Escaping', {
     setup: function() {

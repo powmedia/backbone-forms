@@ -14,6 +14,7 @@ Form.editors.Radio = Form.editors.Select.extend({
   events: {
     'change input[type=radio]': function() {
       this.trigger('change', this);
+      this._addClasses();
     },
     'focus input[type=radio]': function() {
       if (this.hasFocus) return;
@@ -45,6 +46,7 @@ Form.editors.Radio = Form.editors.Select.extend({
   setValue: function(value) {
     this.value = value;
     this.$('input[type=radio]').val([value]);
+    this._addClasses();
   },
 
   focus: function() {
@@ -63,6 +65,11 @@ Form.editors.Radio = Form.editors.Select.extend({
     if (!this.hasFocus) return;
 
     this.$('input[type=radio]:focus').blur();
+  },
+
+  _addClasses: function() {
+    this.$el.find("li").removeClass("selected");
+    this.$el.find(":checked").parents('li:first').addClass("selected");
   },
 
   /**

@@ -13,6 +13,15 @@ module('Form#initialize', {
   }
 });
 
+test('accepts an errorClassName in schema', function() {
+  var form = new Form({
+    schema: {
+      name: {type: 'Text', errorClassName: 'custom-error'}
+    }
+  });
+  same(form.fields.name.errorClassName, 'custom-error')
+});
+
 test('prefers schema from options over model', function() {
   var model = new Backbone.Model();
 
@@ -35,7 +44,7 @@ test('prefers schema from options over model - when schema is a function', funct
 
   var schema = function() {
     return { fromOptions: 'Text' };
-  }
+  };
 
   var form = new Form({
     schema: schema,
@@ -703,7 +712,20 @@ test('skips model validation if { skipModelValidate: true } is passed', function
   same(err, null);
 });
 
+test('skips showing validation errors if { noSetError: true } is passed', function() {
+  var form = new Form({
+    schema: {
+      title: {validators: ['required']}
+    }
+  }).render();
 
+  var err = form.validate({ noSetError: true });
+
+  same(err.title.type, 'required');
+  same(err.title.message, 'Required');
+
+  ok(form.$el.html().indexOf('Required') === -1, "Validation message was found.");
+});
 
 module('Form#commit');
 
