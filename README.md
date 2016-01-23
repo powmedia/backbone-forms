@@ -592,9 +592,33 @@ This is a special editor which is in **a separate file and must be included**:
 
     <script src="backbone-forms/distribution/editors/list.min.js" />
 
-**If using the `Object` or `NestedModel` itemType**, you will need to include a modal adapter on the page. [Backbone.BootstrapModal](http://github.com/powmedia/backbone.bootstrap-modal) is provided for this purpose. It must be included on the page:
+###Modal Adapter
 
-    <script src="backbone-forms/distribution/adapters/backbone.bootstrap-modal.min.js" />
+By default, the `List` editor uses modal views to render editors for `Object` or `Nested Model` item types. To use the default modal adapter, you must include the [`Backbone.BootstrapModal`](http://github.com/powmedia/backbone.bootstrap-modal) library on the page:
+
+```html
+<script src="backbone-forms/distribution/adapters/backbone.bootstrap-modal.min.js" />
+```
+
+You may also specify your own modal adapter, as long use you follow the interface of the `Backbone.BootstrapModal` class.
+
+```js
+var MyModalAdapter = Backbone.BootstrapModal.extend({
+  // ...
+});
+
+Form.editors.List.Modal.ModalAdapter = MyModalAdapter;
+```
+
+If you prefer non-modal editors, you may override the default list editors like so:
+
+```js
+// Use standard 'Object' editor for list items.
+Form.editors.List.Object = Form.editors.Object;
+
+// Use standard 'NestedModel' editor for list items.
+Form.editors.List.NestedModel = Form.editors.NestedModel;
+```
 
 
 ###Attributes
