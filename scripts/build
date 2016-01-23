@@ -18,6 +18,7 @@ var fileList = [
   'fieldset.js',
   'field.js',
   'nestedField.js',
+  'nestedForm.js',
   'editor.js',
   'editors/text.js',
   'editors/textarea.js',
