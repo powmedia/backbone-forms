@@ -405,25 +405,26 @@
 
   test('options content gets properly escaped', function() {
 
+    var editor = this.editor;
+    var options = this.options;
+
+    same( editor.schema.options, this.options );
+
+    same( editor.$('script').length, 0);
+    same( editor.$('b').length, 0);
+
+    var inputs = editor.$('input');
+
+    editor.$('label').each(function(index) {
+        same( editor.$(inputs[index]).val(), options[index].val );
+
+        same( editor.$(this).text(),  options[index].label );
+        notDeepEqual( editor.$(this).html(), options[index].label );
+        notEqual( editor.$(this).html().indexOf('&lt;'), -1);
+    });
+
     same( this.editor.schema.options, this.options );
 
-    //What an awful string.
-    //CAN'T have white-space on the left, or the string will no longer match
-    //If this bothers you aesthetically, can switch it to concat syntax
-    var escapedHTML = "<li><input type=\"checkbox\" name=\"\" id=\"undefined-0\" value=\"&quot;\
-/><script>throw(&quot;XSS Success&quot;);</script>\"><label for=\"undefined-0\">\"/&gt;&lt;script\
-&gt;throw(\"XSS Success\");&lt;/script&gt;</label></li><li><input type=\"checkbox\" name=\"\" \
-id=\"undefined-1\" value=\"&quot;?'/><script>throw(&quot;XSS Success&quot;);</script>\"><label \
-for=\"undefined-1\">\"?'/&gt;&lt;script&gt;throw(\"XSS Success\");&lt;/script&gt;</label></li><li>\
-<input type=\"checkbox\" name=\"\" id=\"undefined-2\" value=\"><b>HTML</b><\"><label \
-for=\"undefined-2\">&gt;&lt;div class=&gt;HTML&lt;/b&gt;&lt;</label></li>";
-
-    same( this.editor.$el.html(), escapedHTML );
-
-    same( this.editor.$('input').val(), this.options[0].val );
-    same( this.editor.$('label').first().text(), this.options[0].label );
-    same( this.editor.$('label').first().html(), '\"/&gt;&lt;script&gt;throw(\"XSS Success\");&lt;/script&gt;' );
-    same( this.editor.$('label').text(), "\"/><script>throw(\"XSS Success\");</script>\"?'/><script>throw(\"XSS Success\");</script>><div class=>HTML</b><" );
   });
 
   test('options object content gets properly escaped', function() {
@@ -439,22 +440,21 @@ for=\"undefined-2\">&gt;&lt;div class=&gt;HTML&lt;/b&gt;&lt;</label></li>";
         }
       }).render();
 
+    var optionKeys = _.keys(options);
+    var inputs = editor.$('input');
+
     same( editor.schema.options, options );
 
-    //What an awful string.
-    //CAN'T have white-space on the left, or the string will no longer match
-    //If this bothers you aesthetically, can switch it to concat syntax
-    var escapedHTML = "<li><input type=\"checkbox\" name=\"\" id=\"undefined-0\" \
-value=\"key1\"><label for=\"undefined-0\">&gt;&lt;b&gt;HTML&lt;/b&gt;&lt;</label>\
-</li><li><input type=\"checkbox\" name=\"\" id=\"undefined-1\" value=\"key2\">\
-<label for=\"undefined-1\">&gt;&lt;div class=&gt;HTML&lt;/b&gt;&lt;</label></li>";
+    same( editor.$('b').length, 0);
 
-    same( editor.$el.html(), escapedHTML );
+    editor.$('label').each(function(index) {
+        var option = options[optionKeys[index]];
 
-    same( editor.$('input').val(), _.keys(options)[0] );
-    same( editor.$('label').first().text(), options.key1 );
-    same( editor.$('label').first().html(), '&gt;&lt;b&gt;HTML&lt;/b&gt;&lt;' );
-    same( editor.$('label').text(), '><b>HTML</b><><div class=>HTML</b><' );
+        same( editor.$(inputs[index]).val(), optionKeys[index] );
+        same( editor.$(this).text(),  option );
+        notDeepEqual( editor.$(this).html(), option );
+        notEqual( editor.$(this).html().indexOf('&lt;'), -1);
+    });
   });
 
   test('options labels can be labelHTML, which will not be escaped', function() {
@@ -475,21 +475,13 @@ value=\"key1\"><label for=\"undefined-0\">&gt;&lt;b&gt;HTML&lt;/b&gt;&lt;</label
 
     same( editor.schema.options, options );
 
-    //What an awful string.
-    //CAN'T have white-space on the left, or the string will no longer match
-    //If this bothers you aesthetically, can switch it to concat syntax
-    var escapedHTML = "<li><input type=\"checkbox\" name=\"\" id=\"undefined-0\" value=\"><b>\
-HTML</b><\"><label for=\"undefined-0\">&gt;<div class=\"\">HTML&lt;</div></label></li>";
-
-    same( editor.$el.html(), escapedHTML );
-
     same( editor.$('input').val(), options[0].val );
 
-    //Note that in these 3 results, the labelHTML has
+    //Note that in these 2 results, the labelHTML has
     //been transformed because the HTML was invalid
-    same( editor.$('label').first().text(), ">HTML<" );
+    same( editor.$('label').first().text().trim(), '>HTML<' );
     same( editor.$('label').first().html(), '&gt;<div class=\"\">HTML&lt;</div>' );
-    same( editor.$('label').text(), '>HTML<' );
+
   });
 
   test('option groups content gets properly escaped', function() {
@@ -518,25 +510,18 @@ HTML</b><\"><label for=\"undefined-0\">&gt;<div class=\"\">HTML&lt;</div></label
 
     same( editor.schema.options, options );
 
-    //What an awful string.
-    //CAN'T have white-space on the left, or the string will no longer match
-    //If this bothers you aesthetically, can switch it to concat syntax
-    var escapedHTML = "<fieldset class=\"group\"><legend>\"/&gt;&lt;script&gt;\
-throw(\"XSS Success\");&lt;/script&gt;</legend><li><input type=\"checkbox\" \
-name=\"\" id=\"undefined-0-0\" value=\"&quot;/><script>throw(&quot;XSS Success&quot;)\
-;</script>\"><label for=\"undefined-0-0\">\"/&gt;&lt;script&gt;throw(\"XSS Success\");\
-&lt;/script&gt;</label></li><li><input type=\"checkbox\" name=\"\" id=\"undefined-0-1\" \
-value=\"&quot;?'/><script>throw(&quot;XSS Success&quot;);</script>\"><label for=\"undefined-\
-0-1\">\"?'/&gt;&lt;script&gt;throw(\"XSS Success\");&lt;/script&gt;</label></li><li>\
-<input type=\"checkbox\" name=\"\" id=\"undefined-0-2\" value=\"><b>HTML</b><\"><label \
-for=\"undefined-0-2\">&gt;&lt;div class=&gt;HTML&lt;/b&gt;&lt;</label></li></fieldset>";
+    same( editor.$('script').length, 0);
+    same( editor.$('b').length, 0);
 
-    same( editor.$el.html(), escapedHTML );
+    var inputs = editor.$('input');
 
-    same( editor.$('input').val(), options[0].options[0].val );
-    same( editor.$('label').first().text(), options[0].options[0].label );
-    same( editor.$('label').first().html(), '\"/&gt;&lt;script&gt;throw(\"XSS Success\");&lt;/script&gt;' );
-    same( editor.$('label').text(), "\"/><script>throw(\"XSS Success\");</script>\"?'/><script>throw(\"XSS Success\");</script>><div class=>HTML</b><" );
+    editor.$('label').each(function(index) {
+        same( editor.$(inputs[index]).val(), options[0].options[index].val );
+
+        same( editor.$(this).text(),  options[0].options[index].label );
+        notDeepEqual( editor.$(this).html(), options[0].options[index].label );
+        notEqual( editor.$(this).html().indexOf('&lt;'), -1);
+    });
   });
 
 })(Backbone.Form, Backbone.Form.editors.Checkboxes);
