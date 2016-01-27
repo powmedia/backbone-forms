@@ -183,6 +183,20 @@
     ok(fn('foo?bar@example.com'))
     ok(fn('foo@exa#mple.com'))
     ok(fn(234))
+    ok(fn('#@%^%#$@#$@#.com'))
+    ok(fn('@domain.com'))
+    ok(fn('Joe Smith <email@domain.com>'))
+    ok(fn('email.domain.com'))
+    ok(fn('email@domain@domain.com'))
+    ok(fn('.email@domain.com'))
+    ok(fn('email.@domain.com'))
+    ok(fn('email..email@domain.com'))
+    ok(fn('あいうえお@domain.com'))
+    ok(fn('email@domain.com (Joe Smith)'))
+    ok(fn('email@-domain.com'))
+    //ok(fn('email@domain.web')) //@todo: validate TLD
+    //ok(fn('email@111.222.333.44444')) //@todo: check for valid IP
+    ok(fn('email@domain..com'))
   })
   
   test('accepts valid emails', function() {
@@ -191,6 +205,12 @@
     equal(fn('john.smith@example.co.uk'), undefined)
     equal(fn('john-smith@example.com'), undefined)
     equal(fn('john+smith@example.com'), undefined)
+    equal(fn('john\'s.email@example.com'), undefined)
+    equal(fn('email@123.123.123.123'), undefined)
+    equal(fn('1234567890@domain.com'), undefined)
+    equal(fn('email@domain-one.com'), undefined)
+    equal(fn('_______@domain.com'), undefined)
+    equal(fn('email@domain.name'), undefined)
   })
   
 })();
