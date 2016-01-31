@@ -671,6 +671,16 @@ test('with data-fieldsets placeholder, on outermost element', function() {
   same(form.$el.html(), '<fieldset></fieldset>');
 });
 
+test('with attributes on form element', function() {
+  var form = new Form({
+    attributes: {
+      autocomplete: "off"
+    },
+    schema: { name: 'Text', password: 'Password' }
+  }).render();
+  same(form.$el.attr("autocomplete"), "off");
+});
+
 
 
 module('Form#validate');
