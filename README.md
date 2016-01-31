@@ -327,7 +327,7 @@ For each field definition in the schema you can use the following optional attri
 
 - **`title`**
 
-  Defines the text that appears in a form field's `<label>`. If not defined, defaults to a formatted version of the camelCased field key. E.g. `firstName` becomes `First Name`. This behaviour can be changed by assigning your own function to `Backbone.Form.helpers.keyToTitle`.
+  Defines the text that appears in a form field's `<label>`. If not defined, defaults to a formatted version of the camelCased field key. E.g. `firstName` becomes `First Name`. This behaviour can be changed by assigning your own function to `Backbone.Form.Field.prototype.createTitle`.
 
   Title is escaped by default, to allow using special characters such as < and >, as well as to prevent possible XSS vulnerabilities in user generated content.
 
