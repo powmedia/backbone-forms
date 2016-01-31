@@ -1021,12 +1021,12 @@ var CustomEditor = Backbone.Form.editors.Base.extend({
 - Fix bootstrap3 class list name #329
 - Add 'match' option to regexp validator
 
-###0.14.0
+###0.14.0 - 28/Nov/2013
 - Add Bootstrap 3 templates (powmedia)
 - Being consistent with throwing `Error`s rather than strings (philfreo)
 - Save templateData when passed as an option (BradDenver)
 
-###0.13.0
+###0.13.0 - 3/Nov/2013
 - Confirming compatibility with Backbone 1.1.0 (still supporting 1.0.0)
 - Fix form.commit() to only run model-level validation if {validate:true} passed (cmaher)
 - Allow for setting defaults on the prototype (patbenatar)
@@ -1045,13 +1045,13 @@ var CustomEditor = Backbone.Form.editors.Base.extend({
 - Allow overriding 'step' attribute in Number editor (jarek)
 - Allow most falsey values as an Editor value (ewang)
 
-###0.12.0
+###0.12.0 - 3/Apr/2013
 - Update for Backbone 1.0
 - Overhaul templating and rendering
 - List: Set focus on newly added simple list items
 - Select: Add option group support (khepin)
 
-###0.11.0
+###0.11.0 - 21/Feb/2013
 - Update for Backbone 0.9.10
 - Pass editor instance as second parameter to Select options function
 - Fix for jQuery 1.9
@@ -1084,7 +1084,7 @@ var CustomEditor = Backbone.Form.editors.Base.extend({
 - Email validator should accept "+" sign (#70)
 
 
-###0.10.0
+###0.10.0 - 1/Jun/2012
 - update build scripts & package.json for jam packaging (dstendardi)
 - Fields with options, such as Select, should handle 0 as value (torbjorntorbjorn)
 - Update backbone.bootstrap-modal adapter
@@ -1108,7 +1108,7 @@ var CustomEditor = Backbone.Form.editors.Base.extend({
     - Change 'listType' to 'itemType' in schema definition.
     - Make sure you have a modal adapter included if using Object and NestedModel itemTypes. See the List editor section.
 
-###0.9.0
+###0.9.0 - 4/May/2012
 - Added ability to use a custom template compiler (geowa4)
 - Added distribution files (development and minified production versions)
 - Added AMD-compatible version (development and minified production versions)
