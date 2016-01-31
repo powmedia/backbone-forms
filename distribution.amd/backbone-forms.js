@@ -253,6 +253,11 @@ var Form = Backbone.View.extend({
     //Set class
     $form.addClass(this.className);
 
+    //Set attributes
+    if (this.attributes) {
+      $form.attr(this.attributes)
+    }
+
     return this;
   },
 
@@ -562,7 +567,7 @@ Form.validators = (function() {
     options = _.extend({
       type: 'email',
       message: this.errMessages.email,
-      regexp: /^[\w\-]{1,}([\w\-\+.]{1,1}[\w\-]{1,}){0,}[@][\w\-]{1,}([.]([\w\-]{1,})){1,3}$/
+      regexp: /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i
     }, options);
     
     return validators.regexp(options);
