@@ -698,10 +698,11 @@ Validators can be defined in several ways:
 
 ###Built-in validators
 
-- **required**: Checks the field has been filled in
-- **number**: Checks it is a number, allowing a decimal point
-- **email**: Checks it is a valid email address
-- **url**: Checks it is a valid URL
+- **required**: Checks the field has been filled in.
+- **number**: Checks it is a number, allowing a decimal point and negative values.
+- **range**: Checks it is a number in a range defined by `min` and `max` options. Message if it is not a number can be set with the `numberMessage` option.
+- **email**: Checks it is a valid email address.
+- **url**: Checks it is a valid URL.
 - **match**: Checks that the field matches another. The other field name must be set in the `field` option.
 - **regexp**: Runs a regular expression. Requires the `regexp` option, which takes a compiled regular expression. Setting the `match` option to `false` ensures that the regexp does NOT pass.
 
