@@ -46,6 +46,7 @@ Form.editors.Checkbox = Form.editors.Base.extend({
     }else{
       this.$el.prop('checked', false);
     }
+    this.value = !!value;
   },
 
   focus: function() {

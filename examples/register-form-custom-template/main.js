@@ -27,6 +27,9 @@ $(function() {
           'required',
           { type: 'match', field: 'password', message: 'Passwords must match!' }
         ]
+      },
+      active: {
+        type: 'Checkbox'
       }
     }
     

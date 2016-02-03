@@ -37,7 +37,7 @@ var Form = Backbone.View.extend({
 
   /**
    * Constructor
-   * 
+   *
    * @param {Object} [options.schema]
    * @param {Backbone.Model} [options.model]
    * @param {Object} [options.data]
@@ -260,9 +260,14 @@ var Form = Backbone.View.extend({
 
     //Set the main element
     this.setElement($form);
-    
+
     //Set class
     $form.addClass(this.className);
+
+    //Set attributes
+    if (this.attributes) {
+      $form.attr(this.attributes)
+    }
 
     return this;
   },
@@ -353,7 +358,7 @@ var Form = Backbone.View.extend({
     }, options);
 
     this.model.set(this.getValue(), setOptions);
-    
+
     if (modelError) return modelError;
   },
 
@@ -476,26 +481,25 @@ var Form = Backbone.View.extend({
   }
 
 }, {
+    editors: {}
 
-  //STATICS
-  template: _.template('\
+});
+
+//Statics to add on after Form is declared
+Form.templateSettings = {
+    evaluate: /<%([\s\S]+?)%>/g,
+    interpolate: /<%=([\s\S]+?)%>/g,
+    escape: /<%-([\s\S]+?)%>/g
+};
+
+Form.template = _.template('\
     <form>\
      <div data-fieldsets></div>\
       <% if (submitButton) { %>\
         <button type="submit"><%= submitButton %></button>\
       <% } %>\
     </form>\
-  ', null, this.templateSettings),
-
-  templateSettings: {
-    evaluate: /<%([\s\S]+?)%>/g, 
-    interpolate: /<%=([\s\S]+?)%>/g, 
-    escape: /<%-([\s\S]+?)%>/g
-  },
-
-  editors: {}
-
-});
+  ', null, Form.templateSettings);
 
 
 //==================================================================================================
@@ -530,7 +534,7 @@ Form.validators = (function() {
         message: _.isFunction(options.message) ? options.message(options) : options.message
       };
 
-      if (value === null || value === undefined || value === false || value === '') return err;
+      if (value === null || value === undefined || value === false || value === '' || $.trim(value) === '' ) return err;
     };
   };
 
@@ -604,7 +608,7 @@ Form.validators = (function() {
     options = _.extend({
       type: 'email',
       message: this.errMessages.email,
-      regexp: /^[\w\-]{1,}([\w\-\+.]{1,1}[\w\-]{1,}){0,}[@][\w\-]{1,}([.]([\w\-]{1,})){1,3}$/
+      regexp: /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i
     }, options);
 
     return validators.regexp(options);
@@ -782,7 +786,7 @@ Form.Field = Backbone.View.extend({
 
   /**
    * Constructor
-   * 
+   *
    * @param {Object} options.key
    * @param {Object} options.form
    * @param {Object} [options.schema]
@@ -900,6 +904,7 @@ Form.Field = Backbone.View.extend({
     return {
       help: schema.help || '',
       title: schema.title,
+      titleHTML: schema.titleHTML,
       fieldAttrs: schema.fieldAttrs,
       editorAttrs: schema.editorAttrs,
       key: this.key,
@@ -917,8 +922,8 @@ Form.Field = Backbone.View.extend({
         editor = this.editor,
         $ = Backbone.$;
 
-    //Only render the editor if Hidden
-    if (schema.type == Form.editors.Hidden) {
+    //Only render the editor if requested
+    if (this.editor.noField === true) {
       return this.setElement(editor.render().el);
     }
 
@@ -941,6 +946,38 @@ Form.Field = Backbone.View.extend({
     this.setElement($field);
 
     return this;
+  },
+
+  /**
+   * Disable the field's editor
+   * Will call the editor's disable method if it exists
+   * Otherwise will add the disabled attribute to all inputs in the editor
+   */
+  disable: function(){
+    if ( _.isFunction(this.editor.disable) ){
+      this.editor.disable();
+    }
+    else {
+      $input = this.editor.$el;
+      $input = $input.is("input") ? $input : $input.find("input");
+      $input.attr("disabled",true);
+    }
+  },
+
+  /**
+   * Enable the field's editor
+   * Will call the editor's disable method if it exists
+   * Otherwise will remove the disabled attribute to all inputs in the editor
+   */
+  enable: function(){
+    if ( _.isFunction(this.editor.enable) ){
+      this.editor.enable();
+    }
+    else {
+      $input = this.editor.$el;
+      $input = $input.is("input") ? $input : $input.find("input");
+      $input.attr("disabled",false);
+    }
   },
 
   /**
@@ -1042,7 +1079,10 @@ Form.Field = Backbone.View.extend({
 
   template: _.template('\
     <div>\
-      <label for="<%= editorId %>"><%= title %></label>\
+      <label for="<%= editorId %>">\
+        <% if (titleHTML){ %><%= titleHTML %>\
+        <% } else { %><%- title %><% } %>\
+      </label>\
       <div>\
         <span data-editor></span>\
         <div data-error></div>\
@@ -1067,11 +1107,15 @@ Form.NestedField = Form.Field.extend({
 
   template: _.template('\
     <div>\
-      <span data-editor></span>\
-      <% if (help) { %>\
-        <div><%= help %></div>\
-      <% } %>\
-      <div data-error></div>\
+      <label for="<%= editorId %>">\
+        <% if (titleHTML){ %><%= titleHTML %>\
+        <% } else { %><%- title %><% } %>\
+      </label>\
+      <div>\
+        <span data-editor></span>\
+        <div class="error-text" data-error></div>\
+        <div class="error-help"><%= help %></div>\
+      </div>\
     </div>\
   ', null, Form.templateSettings)
 
@@ -1352,6 +1396,7 @@ Form.editors.Text = Form.Editor.extend({
    * @param {String}
    */
   setValue: function(value) {
+    this.value = value;
     this.$el.val(value);
   },
 
@@ -1479,7 +1524,7 @@ Form.editors.Number = Form.editors.Text.extend({
     })();
 
     if (_.isNaN(value)) value = null;
-
+    this.value = value;
     Form.editors.Text.prototype.setValue.call(this, value);
   }
 
@@ -1491,6 +1536,8 @@ Form.editors.Number = Form.editors.Text.extend({
 Form.editors.Hidden = Form.editors.Text.extend({
 
   defaultValue: '',
+
+  noField: true,
 
   initialize: function(options) {
     Form.editors.Text.prototype.initialize.call(this, options);
@@ -1556,6 +1603,7 @@ Form.editors.Checkbox = Form.editors.Base.extend({
     }else{
       this.$el.prop('checked', false);
     }
+    this.value = !!value;
   },
 
   focus: function() {
@@ -1702,7 +1750,7 @@ Form.editors.Select = Form.editors.Base.extend({
       html = this._getOptionsHtml(newOptions);
     //Or any object
     }else{
-      html=this._objectToHtml(options);
+      html = this._objectToHtml(options);
     }
 
     return html;
@@ -1724,6 +1772,7 @@ Form.editors.Select = Form.editors.Base.extend({
   },
 
   setValue: function(value) {
+    this.value = value;
     this.$el.val(value);
   },
 
@@ -1785,26 +1834,27 @@ Form.editors.Select = Form.editors.Base.extend({
    * @return {String} HTML
    */
   _arrayToHtml: function(array) {
-    var html = [];
+    var html = $();
 
     //Generate HTML
     _.each(array, function(option) {
       if (_.isObject(option)) {
         if (option.group) {
-          html.push('<optgroup label="'+option.group+'">');
-          html.push(this._getOptionsHtml(option.options))
-          html.push('</optgroup>');
+          var optgroup = $("<optgroup>")
+            .attr("label",option.group)
+            .html( this._getOptionsHtml(option.options) );
+          html = html.add(optgroup);
         } else {
           var val = (option.val || option.val === 0) ? option.val : '';
-          html.push('<option value="'+val+'">'+option.label+'</option>');
+          html = html.add( $('<option>').val(val).text(option.label) );
         }
       }
       else {
-        html.push('<option>'+option+'</option>');
+        html = html.add( $('<option>').text(option) );
       }
     }, this);
 
-    return html.join('');
+    return html;
   }
 
 });
@@ -1854,6 +1904,7 @@ Form.editors.Radio = Form.editors.Select.extend({
   },
 
   setValue: function(value) {
+    this.value = value;
     this.$('input[type=radio]').val([value]);
   },
 
@@ -1892,11 +1943,12 @@ Form.editors.Radio = Form.editors.Select.extend({
       var item = {
         name: name,
         id: id + '-' + index
-      }
+      };
 
       if (_.isObject(option)) {
         item.value = (option.val || option.val === 0) ? option.val : '';
         item.label = option.label;
+        item.labelHTML = option.labelHTML;
       } else {
         item.value = option;
         item.label = option;
@@ -1914,8 +1966,8 @@ Form.editors.Radio = Form.editors.Select.extend({
   template: _.template('\
     <% _.each(items, function(item) { %>\
       <li>\
-        <input type="radio" name="<%= item.name %>" value="<%= item.value %>" id="<%= item.id %>" />\
-        <label for="<%= item.id %>"><%= item.label %></label>\
+        <input type="radio" name="<%= item.name %>" value="<%- item.value %>" id="<%= item.id %>" />\
+        <label for="<%= item.id %>"><% if (item.labelHTML){ %><%= item.labelHTML %><% }else{ %><%- item.label %><% } %></label>\
       </li>\
     <% }); %>\
   ', null, Form.templateSettings)
@@ -1957,14 +2009,16 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
 
   getValue: function() {
     var values = [];
+    var self = this;
     this.$('input[type=checkbox]:checked').each(function() {
-      values.push($(this).val());
+      values.push(self.$(this).val());
     });
     return values;
   },
 
   setValue: function(values) {
     if (!_.isArray(values)) values = [values];
+    this.value = values;
     this.$('input[type=checkbox]').val(values);
   },
 
@@ -1987,38 +2041,38 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
    * @return {String} HTML
    */
   _arrayToHtml: function (array) {
-    var html = [];
+    var html = $();
     var self = this;
 
     _.each(array, function(option, index) {
-      var itemHtml = '<li>';
-			var close = true;
+      var itemHtml = $('<li>');
       if (_.isObject(option)) {
         if (option.group) {
           var originalId = self.id;
-          self.id += "-" + self.groupNumber++; 
-          itemHtml = ('<fieldset class="group"> <legend>'+option.group+'</legend>');
-          itemHtml += (self._arrayToHtml(option.options));
-          itemHtml += ('</fieldset>');
+          self.id += "-" + self.groupNumber++;
+          itemHtml = $('<fieldset class="group">').append( $('<legend>').text(option.group) );
+          itemHtml = itemHtml.append( self._arrayToHtml(option.options) );
           self.id = originalId;
-					close = false;
+          close = false;
         }else{
           var val = (option.val || option.val === 0) ? option.val : '';
-          itemHtml += ('<input type="checkbox" name="'+self.getName()+'" value="'+val+'" id="'+self.id+'-'+index+'" />');
-          itemHtml += ('<label for="'+self.id+'-'+index+'">'+option.label+'</label>');
+          itemHtml.append( $('<input type="checkbox" name="'+self.getName()+'" id="'+self.id+'-'+index+'" />').val(val) );
+          if (option.labelHTML){
+            itemHtml.append( $('<label for="'+self.id+'-'+index+'" />').html(option.labelHTML) );
+          }
+          else {
+            itemHtml.append( $('<label for="'+self.id+'-'+index+'" />').text(option.label) );
+          }
         }
       }
       else {
-        itemHtml += ('<input type="checkbox" name="'+self.getName()+'" value="'+option+'" id="'+self.id+'-'+index+'" />');
-        itemHtml += ('<label for="'+self.id+'-'+index+'">'+option+'</label>');
+        itemHtml.append( $('<input type="checkbox" name="'+self.getName()+'" id="'+self.id+'-'+index+'" />').val(option) );
+        itemHtml.append( $('<label for="'+self.id+'-'+index+'" />').text(option) );
       }
-			if(close){
-				itemHtml += '</li>';
-			}
-      html.push(itemHtml);
+      html = html.add(itemHtml);
     });
 
-    return html.join('');
+    return html;
   }
 
 });
@@ -2101,7 +2155,11 @@ Form.editors.Object = Form.editors.Base.extend({
   },
 
   validate: function() {
-    return this.nestedForm.validate();
+    var errors = _.extend({}, 
+      Form.editors.Base.prototype.validate.call(this),
+      this.nestedForm.validate()
+    );
+    return _.isEmpty(errors)?false:errors;
   },
 
   _observeFormEvents: function() {
@@ -2321,6 +2379,7 @@ Form.editors.Date = Form.editors.Base.extend({
    * @param {Date} date
    */
   setValue: function(date) {
+    this.value = date;
     this.$date.val(date.getDate());
     this.$month.val(date.getMonth());
     this.$year.val(date.getFullYear());
@@ -2488,7 +2547,7 @@ Form.editors.DateTime = Form.editors.Base.extend({
    */
   setValue: function(date) {
     if (!_.isDate(date)) date = new Date(date);
-
+    this.value = date;
     this.dateEditor.setValue(date);
 
     this.$hour.val(date.getHours());

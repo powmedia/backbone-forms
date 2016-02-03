@@ -33,14 +33,16 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
 
   getValue: function() {
     var values = [];
+    var self = this;
     this.$('input[type=checkbox]:checked').each(function() {
-      values.push($(this).val());
+      values.push(self.$(this).val());
     });
     return values;
   },
 
   setValue: function(values) {
     if (!_.isArray(values)) values = [values];
+    this.value = values;
     this.$('input[type=checkbox]').val(values);
   },
 
@@ -63,38 +65,38 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
    * @return {String} HTML
    */
   _arrayToHtml: function (array) {
-    var html = [];
+    var html = $();
     var self = this;
 
     _.each(array, function(option, index) {
-      var itemHtml = '<li>';
-			var close = true;
+      var itemHtml = $('<li>');
       if (_.isObject(option)) {
         if (option.group) {
           var originalId = self.id;
-          self.id += "-" + self.groupNumber++; 
-          itemHtml = ('<fieldset class="group"> <legend>'+option.group+'</legend>');
-          itemHtml += (self._arrayToHtml(option.options));
-          itemHtml += ('</fieldset>');
+          self.id += "-" + self.groupNumber++;
+          itemHtml = $('<fieldset class="group">').append( $('<legend>').text(option.group) );
+          itemHtml = itemHtml.append( self._arrayToHtml(option.options) );
           self.id = originalId;
-					close = false;
+          close = false;
         }else{
           var val = (option.val || option.val === 0) ? option.val : '';
-          itemHtml += ('<input type="checkbox" name="'+self.getName()+'" value="'+val+'" id="'+self.id+'-'+index+'" />');
-          itemHtml += ('<label for="'+self.id+'-'+index+'">'+option.label+'</label>');
+          itemHtml.append( $('<input type="checkbox" name="'+self.getName()+'" id="'+self.id+'-'+index+'" />').val(val) );
+          if (option.labelHTML){
+            itemHtml.append( $('<label for="'+self.id+'-'+index+'" />').html(option.labelHTML) );
+          }
+          else {
+            itemHtml.append( $('<label for="'+self.id+'-'+index+'" />').text(option.label) );
+          }
         }
       }
       else {
-        itemHtml += ('<input type="checkbox" name="'+self.getName()+'" value="'+option+'" id="'+self.id+'-'+index+'" />');
-        itemHtml += ('<label for="'+self.id+'-'+index+'">'+option+'</label>');
+        itemHtml.append( $('<input type="checkbox" name="'+self.getName()+'" id="'+self.id+'-'+index+'" />').val(option) );
+        itemHtml.append( $('<label for="'+self.id+'-'+index+'" />').text(option) );
       }
-			if(close){
-				itemHtml += '</li>';
-			}
-      html.push(itemHtml);
+      html = html.add(itemHtml);
     });
 
-    return html.join('');
+    return html;
   }
 
 });

@@ -31,7 +31,7 @@ Form.validators = (function() {
         message: _.isFunction(options.message) ? options.message(options) : options.message
       };
 
-      if (value === null || value === undefined || value === false || value === '') return err;
+      if (value === null || value === undefined || value === false || value === '' || $.trim(value) === '' ) return err;
     };
   };
 
@@ -105,7 +105,7 @@ Form.validators = (function() {
     options = _.extend({
       type: 'email',
       message: this.errMessages.email,
-      regexp: /^[\w\-]{1,}([\w\-\+.]{1,1}[\w\-]{1,}){0,}[@][\w\-]{1,}([.]([\w\-]{1,})){1,3}$/
+      regexp: /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i
     }, options);
 
     return validators.regexp(options);

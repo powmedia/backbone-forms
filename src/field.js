@@ -7,7 +7,7 @@ Form.Field = Backbone.View.extend({
 
   /**
    * Constructor
-   * 
+   *
    * @param {Object} options.key
    * @param {Object} options.form
    * @param {Object} [options.schema]
@@ -125,6 +125,7 @@ Form.Field = Backbone.View.extend({
     return {
       help: schema.help || '',
       title: schema.title,
+      titleHTML: schema.titleHTML,
       fieldAttrs: schema.fieldAttrs,
       editorAttrs: schema.editorAttrs,
       key: this.key,
@@ -142,8 +143,8 @@ Form.Field = Backbone.View.extend({
         editor = this.editor,
         $ = Backbone.$;
 
-    //Only render the editor if Hidden
-    if (schema.type == Form.editors.Hidden) {
+    //Only render the editor if requested
+    if (this.editor.noField === true) {
       return this.setElement(editor.render().el);
     }
 
@@ -166,6 +167,38 @@ Form.Field = Backbone.View.extend({
     this.setElement($field);
 
     return this;
+  },
+
+  /**
+   * Disable the field's editor
+   * Will call the editor's disable method if it exists
+   * Otherwise will add the disabled attribute to all inputs in the editor
+   */
+  disable: function(){
+    if ( _.isFunction(this.editor.disable) ){
+      this.editor.disable();
+    }
+    else {
+      $input = this.editor.$el;
+      $input = $input.is("input") ? $input : $input.find("input");
+      $input.attr("disabled",true);
+    }
+  },
+
+  /**
+   * Enable the field's editor
+   * Will call the editor's disable method if it exists
+   * Otherwise will remove the disabled attribute to all inputs in the editor
+   */
+  enable: function(){
+    if ( _.isFunction(this.editor.enable) ){
+      this.editor.enable();
+    }
+    else {
+      $input = this.editor.$el;
+      $input = $input.is("input") ? $input : $input.find("input");
+      $input.attr("disabled",false);
+    }
   },
 
   /**
@@ -267,7 +300,10 @@ Form.Field = Backbone.View.extend({
 
   template: _.template('\
     <div>\
-      <label for="<%= editorId %>"><%= title %></label>\
+      <label for="<%= editorId %>">\
+        <% if (titleHTML){ %><%= titleHTML %>\
+        <% } else { %><%- title %><% } %>\
+      </label>\
       <div>\
         <span data-editor></span>\
         <div data-error></div>\

@@ -333,7 +333,7 @@
     equal(newOptions.first().html(), 'Yes');
     equal(newOptions.last().html(), 'No');
   });
-  
+
   test('Options as function that calls back with options', function() {
     var editor = new Editor({
       schema: {
@@ -577,6 +577,138 @@
 
     ok(spy.calledOnce);
     ok(spy.alwaysCalledWith(editor));
+  });
+
+
+
+  module('Select Text Escaping', {
+    setup: function() {
+      this.sinon = sinon.sandbox.create();
+
+      this.options = [
+        {
+          val: '"/><script>throw("XSS Success");</script>',
+          label: '"/><script>throw("XSS Success");</script>'
+        },
+        {
+          val: '\"?\'\/><script>throw("XSS Success");</script>',
+          label: '\"?\'\/><script>throw("XSS Success");</script>',
+        },
+        {
+          val: '><b>HTML</b><',
+          label: '><div class=>HTML</b><',
+        }
+      ];
+
+      this.editor = new Editor({
+        schema: {
+          options: this.options
+        }
+      }).render();
+
+      $('body').append(this.editor.el);
+    },
+
+    teardown: function() {
+      this.sinon.restore();
+
+      this.editor.remove();
+    }
+  });
+
+  test('options content gets properly escaped', function() {
+
+    same( this.editor.schema.options, this.options );
+
+    //What an awful string.
+    //CAN'T have white-space on the left, or the string will no longer match
+    //If this bothers you aesthetically, can switch it to concat syntax
+    var escapedHTML = "<option value=\"&quot;/><script>throw(&quot;XSS Success&quot;);\
+</script>\">\"/&gt;&lt;script&gt;throw(\"XSS Success\");&lt;/script&gt;</option><option \
+value=\"&quot;?'/><script>throw(&quot;XSS Success&quot;);</script>\">\"?'/&gt;&lt;script&gt;\
+throw(\"XSS Success\");&lt;/script&gt;</option><option value=\"><b>HTML</b><\">&gt;&lt;div \
+class=&gt;HTML&lt;/b&gt;&lt;</option>";
+
+    same( this.editor.$el.html(), escapedHTML );
+
+    same( this.editor.$('option').val(), this.options[0].val );
+    same( this.editor.$('option').first().text(), this.options[0].label );
+    same( this.editor.$('option').first().html(), '\"/&gt;&lt;script&gt;throw(\"XSS Success\");&lt;/script&gt;' );
+    same( this.editor.$('option').text(), "\"/><script>throw(\"XSS Success\");</script>\"?'/><script>throw(\"XSS Success\");</script>><div class=>HTML</b><" );
+  });
+
+  test('options object content gets properly escaped', function() {
+
+      var options = {
+        key1: '><b>HTML</b><',
+        key2: '><div class=>HTML</b><'
+      };
+
+      var editor = new Editor({
+        schema: {
+          options: options
+        }
+      }).render();
+
+    same( editor.schema.options, options );
+
+    //What an awful string.
+    //CAN'T have white-space on the left, or the string will no longer match
+    //If this bothers you aesthetically, can switch it to concat syntax
+    var escapedHTML = "<option value=\"key1\">&gt;&lt;b&gt;HTML&lt;/b&gt;&lt;</option>\
+<option value=\"key2\">&gt;&lt;div class=&gt;HTML&lt;/b&gt;&lt;</option>";
+
+    same( editor.$el.html(), escapedHTML );
+
+    same( editor.$('option').val(), _.keys(options)[0] );
+    same( editor.$('option').first().text(), options.key1 );
+    same( editor.$('option').first().html(), '&gt;&lt;b&gt;HTML&lt;/b&gt;&lt;' );
+    same( editor.$('option').text(), '><b>HTML</b><><div class=>HTML</b><' );
+  });
+
+  test('option groups content gets properly escaped', function() {
+    var options = [{
+      group: '"/><script>throw("XSS Success");</script>',
+      options: [
+        {
+          val: '"/><script>throw("XSS Success");</script>',
+          label: '"/><script>throw("XSS Success");</script>'
+        },
+        {
+          val: '\"?\'\/><script>throw("XSS Success");</script>',
+          label: '\"?\'\/><script>throw("XSS Success");</script>',
+        },
+        {
+          val: '><b>HTML</b><',
+          label: '><div class=>HTML</b><',
+        }
+      ]
+    }];
+    var editor = new Editor({
+      schema: {
+        options: options
+      }
+    }).render();
+
+    same( editor.schema.options, options );
+
+    //What an awful string.
+    //CAN'T have white-space on the left, or the string will no longer match
+    //If this bothers you aesthetically, can switch it to concat syntax
+    var escapedHTML = "<optgroup label=\"&quot;/>\<script>throw(&quot;XSS \
+Success&quot;);</script>\"><option value=\"&quot;/>\
+<script>throw(&quot;XSS Success&quot;);</script>\">\"/&gt;&lt;script&gt;throw\
+(\"XSS Success\");&lt;/script&gt;</option><option value=\"&quot;?'/><script>\
+throw(&quot;XSS Success&quot;);</script>\">\"?'/&gt;&lt;script&gt;throw(\"XSS \
+Success\");&lt;/script&gt;</option><option value=\"><b>HTML</b><\">&gt;&lt;\
+div class=&gt;HTML&lt;/b&gt;&lt;</option></optgroup>";
+
+    same( editor.$el.html(), escapedHTML );
+
+    same( editor.$('option').val(), options[0].options[0].val );
+    same( editor.$('option').first().text(), options[0].options[0].label );
+    same( editor.$('option').first().html(), '\"/&gt;&lt;script&gt;throw(\"XSS Success\");&lt;/script&gt;' );
+    same( editor.$('option').text(), "\"/><script>throw(\"XSS Success\");</script>\"?'/><script>throw(\"XSS Success\");</script>><div class=>HTML</b><" );
   });
 
 })(Backbone.Form, Backbone.Form.editors.Select);

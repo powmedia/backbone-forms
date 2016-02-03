@@ -139,6 +139,7 @@ Form.editors.Date = Form.editors.Base.extend({
    * @param {Date} date
    */
   setValue: function(date) {
+    this.value = date;
     this.$date.val(date.getDate());
     this.$month.val(date.getMonth());
     this.$year.val(date.getFullYear());
