@@ -1274,6 +1274,12 @@ test('initialize() - sets the nestedSchema, when schema is function', function()
     deepEqual(_.keys(editor.nestedSchema), ['id', 'name']);
 });
 
+
+test('Check validation of list nested models', function() {
+
+    deepEqual(_.keys(form.validate().nestedModelList.errors[0]), ['name', 'email']);
+});
+
 test('getStringValue() - uses model.toString() if available', function() {
     this.Model.prototype.toString = function() {
         return 'foo!';
