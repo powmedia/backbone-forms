@@ -1274,6 +1274,25 @@ test('initialize() - sets the nestedSchema, when schema is function', function()
     deepEqual(_.keys(editor.nestedSchema), ['id', 'name']);
 });
 
+
+test('Check validation of list nested models', function() {
+
+     Backbone.Form.editors.List.NestedModel = Backbone.Form.editors.NestedModel;
+     var NestedModel = Backbone.Model.extend({
+       schema: {
+         name: { validators: ['required']},
+      }
+     });
+     var schema = {
+       nestedModelList: { type: 'List', itemType: 'NestedModel', model: NestedModel }
+     };
+     var form = new Backbone.Form({
+       schema: schema,
+     }).render();
+
+     deepEqual(_.keys(form.validate().nestedModelList.errors[0]), ['name']);
+});
+
 test('getStringValue() - uses model.toString() if available', function() {
     this.Model.prototype.toString = function() {
         return 'foo!';

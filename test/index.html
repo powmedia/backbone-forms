@@ -126,6 +126,7 @@
 
         //List
         textList: { type: 'List', itemType: 'Text', validators: ['required', 'email'] },
+        nestedModelList: { type: 'List', itemType: 'NestedModel', model: NestedModel },
         objList: { type: 'List', itemType: 'Object', subSchema: {
           name: { type: 'Text', validators: ['required'] },
           age: 'Number'
@@ -144,7 +145,7 @@
         schema: schema,
         fieldsets: [
           ['email', 'tel', 'number', 'hidden', 'checkbox', 'radio', 'select', 'groupSelect', 'checkboxes', 'customTemplate', 'shorthand', 'date', 'dateTime'],
-          { legend: 'Lists', fields: ['textList', 'objList'] },
+          { legend: 'Lists', fields: ['textList', 'objList', 'nestedModelList'] },
           { legend: 'Nested editors', fields: ['object', 'nestedModel'] }
         ]
       });
