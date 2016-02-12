@@ -80,6 +80,7 @@ $('body').append(form.el);
 - [User form](http://jsfiddle.net/gfaq5km1/)
 - [Update form elements based on user input](http://jsfiddle.net/wc7e97v1/)
 - [Validate on blur](http://jsfiddle.net/68s6ynfh/)
+- [Built-in Validators](http://jsfiddle.net/glenpike/63tj1ynk/7/)
 
 
 
@@ -705,6 +706,8 @@ Validators can be defined in several ways:
 - **url**: Checks it is a valid URL.
 - **match**: Checks that the field matches another. The other field name must be set in the `field` option.
 - **regexp**: Runs a regular expression. Requires the `regexp` option, which takes a compiled regular expression. Setting the `match` option to `false` ensures that the regexp does NOT pass.
+
+[Built-in Validators Demo](http://jsfiddle.net/glenpike/63tj1ynk/7/)
 
 ####Examples
 
