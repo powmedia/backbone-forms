@@ -77,9 +77,10 @@ $('body').append(form.el);
 
 
 ###Live editable demos
-- [User form](http://jsfiddle.net/evilcelery/dW2Qu/)
-- [Update form elements based on user input](http://jsfiddle.net/evilcelery/c5QHr/)
-- [Validate on blur](http://jsfiddle.net/evilcelery/FqLR2/)
+- [User form](http://jsfiddle.net/gfaq5km1/)
+- [Update form elements based on user input](http://jsfiddle.net/wc7e97v1/)
+- [Validate on blur](http://jsfiddle.net/68s6ynfh/)
+- [Built-in Validators](http://jsfiddle.net/glenpike/63tj1ynk/7/)
 
 
 
@@ -327,7 +328,7 @@ For each field definition in the schema you can use the following optional attri
 
 - **`title`**
 
-  Defines the text that appears in a form field's `<label>`. If not defined, defaults to a formatted version of the camelCased field key. E.g. `firstName` becomes `First Name`. This behaviour can be changed by assigning your own function to `Backbone.Form.helpers.keyToTitle`.
+  Defines the text that appears in a form field's `<label>`. If not defined, defaults to a formatted version of the camelCased field key. E.g. `firstName` becomes `First Name`. This behaviour can be changed by assigning your own function to `Backbone.Form.Field.prototype.createTitle`.
 
   Title is escaped by default, to allow using special characters such as < and >, as well as to prevent possible XSS vulnerabilities in user generated content.
 
@@ -592,9 +593,33 @@ This is a special editor which is in **a separate file and must be included**:
 
     <script src="backbone-forms/distribution/editors/list.min.js" />
 
-**If using the `Object` or `NestedModel` itemType**, you will need to include a modal adapter on the page. [Backbone.BootstrapModal](http://github.com/powmedia/backbone.bootstrap-modal) is provided for this purpose. It must be included on the page:
+###Modal Adapter
 
-    <script src="backbone-forms/distribution/adapters/backbone.bootstrap-modal.min.js" />
+By default, the `List` editor uses modal views to render editors for `Object` or `Nested Model` item types. To use the default modal adapter, you must include the [`Backbone.BootstrapModal`](http://github.com/powmedia/backbone.bootstrap-modal) library on the page:
+
+```html
+<script src="backbone-forms/distribution/adapters/backbone.bootstrap-modal.min.js" />
+```
+
+You may also specify your own modal adapter, as long use you follow the interface of the `Backbone.BootstrapModal` class.
+
+```js
+var MyModalAdapter = Backbone.BootstrapModal.extend({
+  // ...
+});
+
+Form.editors.List.Modal.ModalAdapter = MyModalAdapter;
+```
+
+If you prefer non-modal editors, you may override the default list editors like so:
+
+```js
+// Use standard 'Object' editor for list items.
+Form.editors.List.Object = Form.editors.Object;
+
+// Use standard 'NestedModel' editor for list items.
+Form.editors.List.NestedModel = Form.editors.NestedModel;
+```
 
 
 ###Attributes
@@ -674,12 +699,15 @@ Validators can be defined in several ways:
 
 ###Built-in validators
 
-- **required**: Checks the field has been filled in
-- **number**: Checks it is a number, allowing a decimal point
-- **email**: Checks it is a valid email address
-- **url**: Checks it is a valid URL
+- **required**: Checks the field has been filled in.
+- **number**: Checks it is a number, allowing a decimal point and negative values.
+- **range**: Checks it is a number in a range defined by `min` and `max` options. Message if it is not a number can be set with the `numberMessage` option.
+- **email**: Checks it is a valid email address.
+- **url**: Checks it is a valid URL.
 - **match**: Checks that the field matches another. The other field name must be set in the `field` option.
 - **regexp**: Runs a regular expression. Requires the `regexp` option, which takes a compiled regular expression. Setting the `match` option to `false` ensures that the regexp does NOT pass.
+
+[Built-in Validators Demo](http://jsfiddle.net/glenpike/63tj1ynk/7/)
 
 ####Examples
 
@@ -823,7 +851,7 @@ To customise forms even further you can pass in a template to the form instance 
 
 ```js
 var form = new Backbone.Form({
-    template: _.template($('#formTpl').html()),
+    template: _.template($('#formTemplate').html()),
     model: new UserModel(), //defined elsewhere
     templateData: {heading1: 'Edit profile'}
 });

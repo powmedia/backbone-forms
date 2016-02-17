@@ -75,7 +75,7 @@ Form.editors.Number = Form.editors.Text.extend({
     })();
 
     if (_.isNaN(value)) value = null;
-
+    this.value = value;
     Form.editors.Text.prototype.setValue.call(this, value);
   }
 

@@ -26,7 +26,7 @@ var Form = Backbone.View.extend({
 
   /**
    * Constructor
-   * 
+   *
    * @param {Object} [options.schema]
    * @param {Backbone.Model} [options.model]
    * @param {Object} [options.data]
@@ -249,9 +249,14 @@ var Form = Backbone.View.extend({
 
     //Set the main element
     this.setElement($form);
-    
+
     //Set class
     $form.addClass(this.className);
+
+    //Set attributes
+    if (this.attributes) {
+      $form.attr(this.attributes)
+    }
 
     return this;
   },
@@ -342,7 +347,7 @@ var Form = Backbone.View.extend({
     }, options);
 
     this.model.set(this.getValue(), setOptions);
-    
+
     if (modelError) return modelError;
   },
 
@@ -465,28 +470,27 @@ var Form = Backbone.View.extend({
   }
 
 }, {
+    editors: {}
 
-  //STATICS
-  template: _.template('\
+});
+
+//Statics to add on after Form is declared
+Form.templateSettings = {
+    evaluate: /<%([\s\S]+?)%>/g,
+    interpolate: /<%=([\s\S]+?)%>/g,
+    escape: /<%-([\s\S]+?)%>/g
+};
+
+Form.template = _.template('\
     <form>\
      <div data-fieldsets></div>\
       <% if (submitButton) { %>\
         <button type="submit"><%= submitButton %></button>\
       <% } %>\
     </form>\
-  ', null, this.templateSettings),
+  ', null, Form.templateSettings);
 
-  templateSettings: {
-    evaluate: /<%([\s\S]+?)%>/g, 
-    interpolate: /<%=([\s\S]+?)%>/g, 
-    escape: /<%-([\s\S]+?)%>/g
-  },
 
-  editors: {}
-
-});
-
-  
 //==================================================================================================
 //VALIDATORS
 //==================================================================================================
@@ -499,46 +503,47 @@ Form.validators = (function() {
     required: 'Required',
     regexp: 'Invalid',
     number: 'Must be a number',
+    range: _.template('Must be a number between <%= min %> and <%= max %>', null, Form.templateSettings),
     email: 'Invalid email address',
     url: 'Invalid URL',
     match: _.template('Must match field "<%= field %>"', null, Form.templateSettings)
   };
-  
+
   validators.required = function(options) {
     options = _.extend({
       type: 'required',
       message: this.errMessages.required
     }, options);
-     
+
     return function required(value) {
       options.value = value;
-      
+
       var err = {
         type: options.type,
         message: _.isFunction(options.message) ? options.message(options) : options.message
       };
-      
-      if (value === null || value === undefined || value === false || value === '') return err;
+
+      if (value === null || value === undefined || value === false || value === '' || $.trim(value) === '' ) return err;
     };
   };
-  
+
   validators.regexp = function(options) {
     if (!options.regexp) throw new Error('Missing required "regexp" option for "regexp" validator');
-  
+
     options = _.extend({
       type: 'regexp',
       match: true,
       message: this.errMessages.regexp
     }, options);
-    
+
     return function regexp(value) {
       options.value = value;
-      
+
       var err = {
         type: options.type,
         message: _.isFunction(options.message) ? options.message(options) : options.message
       };
-      
+
       //Don't check empty values (add a 'required' validator for this)
       if (value === null || value === undefined || value === '') return;
 
@@ -553,51 +558,80 @@ Form.validators = (function() {
     options = _.extend({
       type: 'number',
       message: this.errMessages.number,
-      regexp: /^[0-9]*\.?[0-9]*?$/
+      regexp: /^[-+]?([0-9]*.[0-9]+|[0-9]+)$/
     }, options);
-    
+
     return validators.regexp(options);
   };
-  
+
+  validators.range = function(options) {
+    options = _.extend({
+      type: 'range',
+      message: this.errMessages.range,
+      numberMessage: this.errMessages.number,
+      min: 0,
+      max: 100
+    }, options);
+
+    return function range(value) {
+      options.value = value;
+      var err = {
+        type: options.type,
+        message: _.isFunction(options.message) ? options.message(options) : options.message
+      };
+
+      //Don't check empty values (add a 'required' validator for this)
+      if (value === null || value === undefined || value === '') return;
+
+      // check value is a number
+      var numberCheck = validators.number({message: options.numberMessage})(value);
+      if (numberCheck) return numberCheck;
+
+      // check value is in range
+      var number = parseFloat(options.value);
+      if (number < options.min || number > options.max) return err;
+    }
+  }
+
   validators.email = function(options) {
     options = _.extend({
       type: 'email',
       message: this.errMessages.email,
-      regexp: /^[\w\-]{1,}([\w\-\+.]{1,1}[\w\-]{1,}){0,}[@][\w\-]{1,}([.]([\w\-]{1,})){1,3}$/
+      regexp: /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/i
     }, options);
-    
+
     return validators.regexp(options);
   };
-  
+
   validators.url = function(options) {
     options = _.extend({
       type: 'url',
       message: this.errMessages.url,
       regexp: /^(http|https):\/\/(([A-Z0-9][A-Z0-9_\-]*)(\.[A-Z0-9][A-Z0-9_\-]*)+)(:(\d+))?\/?/i
     }, options);
-    
+
     return validators.regexp(options);
   };
-  
+
   validators.match = function(options) {
     if (!options.field) throw new Error('Missing required "field" options for "match" validator');
-    
+
     options = _.extend({
       type: 'match',
       message: this.errMessages.match
     }, options);
-    
+
     return function match(value, attrs) {
       options.value = value;
-      
+
       var err = {
         type: options.type,
         message: _.isFunction(options.message) ? options.message(options) : options.message
       };
-      
+
       //Don't check empty values (add a 'required' validator for this)
       if (value === null || value === undefined || value === '') return;
-      
+
       if (value !== attrs[options.field]) return err;
     };
   };
@@ -1351,6 +1385,7 @@ Form.editors.Text = Form.Editor.extend({
    * @param {String}
    */
   setValue: function(value) {
+    this.value = value;
     this.$el.val(value);
   },
 
@@ -1478,7 +1513,7 @@ Form.editors.Number = Form.editors.Text.extend({
     })();
 
     if (_.isNaN(value)) value = null;
-
+    this.value = value;
     Form.editors.Text.prototype.setValue.call(this, value);
   }
 
@@ -1557,6 +1592,7 @@ Form.editors.Checkbox = Form.editors.Base.extend({
     }else{
       this.$el.prop('checked', false);
     }
+    this.value = !!value;
   },
 
   focus: function() {
@@ -1725,6 +1761,7 @@ Form.editors.Select = Form.editors.Base.extend({
   },
 
   setValue: function(value) {
+    this.value = value;
     this.$el.val(value);
   },
 
@@ -1856,6 +1893,7 @@ Form.editors.Radio = Form.editors.Select.extend({
   },
 
   setValue: function(value) {
+    this.value = value;
     this.$('input[type=radio]').val([value]);
   },
 
@@ -1960,14 +1998,16 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
 
   getValue: function() {
     var values = [];
+    var self = this;
     this.$('input[type=checkbox]:checked').each(function() {
-      values.push($(this).val());
+      values.push(self.$(this).val());
     });
     return values;
   },
 
   setValue: function(values) {
     if (!_.isArray(values)) values = [values];
+    this.value = values;
     this.$('input[type=checkbox]').val(values);
   },
 
@@ -2007,16 +2047,16 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
           var val = (option.val || option.val === 0) ? option.val : '';
           itemHtml.append( $('<input type="checkbox" name="'+self.getName()+'" id="'+self.id+'-'+index+'" />').val(val) );
           if (option.labelHTML){
-            itemHtml.append( $('<label for="'+self.id+'-'+index+'">').html(option.labelHTML) );
+            itemHtml.append( $('<label for="'+self.id+'-'+index+'" />').html(option.labelHTML) );
           }
           else {
-            itemHtml.append( $('<label for="'+self.id+'-'+index+'">').text(option.label) );
+            itemHtml.append( $('<label for="'+self.id+'-'+index+'" />').text(option.label) );
           }
         }
       }
       else {
         itemHtml.append( $('<input type="checkbox" name="'+self.getName()+'" id="'+self.id+'-'+index+'" />').val(option) );
-        itemHtml.append( $('<label for="'+self.id+'-'+index+'">').text(option) );
+        itemHtml.append( $('<label for="'+self.id+'-'+index+'" />').text(option) );
       }
       html = html.add(itemHtml);
     });
@@ -2328,6 +2368,7 @@ Form.editors.Date = Form.editors.Base.extend({
    * @param {Date} date
    */
   setValue: function(date) {
+    this.value = date;
     this.$date.val(date.getDate());
     this.$month.val(date.getMonth());
     this.$year.val(date.getFullYear());
@@ -2495,7 +2536,7 @@ Form.editors.DateTime = Form.editors.Base.extend({
    */
   setValue: function(date) {
     if (!_.isDate(date)) date = new Date(date);
-
+    this.value = date;
     this.dateEditor.setValue(date);
 
     this.$hour.val(date.getHours());

@@ -77,6 +77,7 @@ Form.editors.Text = Form.Editor.extend({
    * @param {String}
    */
   setValue: function(value) {
+    this.value = value;
     this.$el.val(value);
   },
 

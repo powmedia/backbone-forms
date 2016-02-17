@@ -150,6 +150,7 @@ Form.editors.Select = Form.editors.Base.extend({
   },
 
   setValue: function(value) {
+    this.value = value;
     this.$el.val(value);
   },
 

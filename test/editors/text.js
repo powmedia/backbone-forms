@@ -48,6 +48,17 @@
     equal(editor.getValue(), 'Danger Zone!');
   });
 
+  test('Value updates model', function() {
+		var model = new Backbone.Model({ title: 'Danger Zone!' });
+    var editor = new Editor({
+      model: model,
+      key: 'title'
+    }).render();
+    editor.setValue("Updated Value");
+		editor.render();
+		equal(editor.getValue(),"Updated Value");
+  });
+
 
 
   module('Text#setValue');
