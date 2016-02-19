@@ -91,7 +91,7 @@ define(['jquery', 'underscore', 'backbone', 'backbone-forms'], function($, _, Ba
           editors = Form.editors;
 
       //Create the item
-      var item = new editors.List.Item({
+      var item = new this.constructor.Item({
         list: this,
         form: this.form,
         schema: this.schema,
