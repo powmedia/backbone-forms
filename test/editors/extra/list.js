@@ -21,7 +21,7 @@ var same = deepEqual;
             slug: 'danger-zone',
             weapons: ['uzi', '9mm', 'sniper rifle']
         },
-        
+
         schema: {
             title:      { type: 'Text' },
             content:    { type: 'TextArea' },
@@ -119,7 +119,7 @@ var same = deepEqual;
         same(list.items.length, 1);
 
         list.$('[data-action="add"]').click();
-        
+
         same(list.items.length, 2);
     });
 
@@ -185,9 +185,47 @@ var same = deepEqual;
         same(actualOptions, expectedOptions);
     });
 
+    test('addItem() - with no value and a defaultValue on the itemType', function() {
+        var form = new Form();
+
+        editors.defaultValue = editors.Text.extend({
+            defaultValue: 'defaultValue'
+        });
+
+        var list = new List({
+            form: form,
+            schema: {
+                itemType: "defaultValue"
+            }
+        }).render();
+
+        var spy = this.sinon.spy(editors.List.Item.prototype, 'initialize');
+
+        list.addItem();
+
+        var expectedOptions = {
+            form: form,
+            list: list,
+            schema: list.schema,
+            value: undefined,
+            Editor: editors.defaultValue,
+            key: list.key
+        };
+
+        var actualOptions = spy.lastCall.args[0];
+
+        same(spy.callCount, 1);
+        same(list.items.length, 2);
+        same(_.last(list.items).editor.value, 'defaultValue');
+        same(_.last(list.items).getValue(), 'defaultValue');
+
+        //Test options
+        same(actualOptions, expectedOptions);
+    });
+
     test('addItem() - with value', function() {
         var form = new Form();
-        
+
         var list = new List({
             form: form
         }).render();
@@ -242,7 +280,7 @@ var same = deepEqual;
 
     test('addItem() - sets editor focus if editor is not isAsync', function() {
         var list = new List().render();
-        
+
         this.sinon.spy(list.Editor.prototype, 'focus');
 
         list.addItem();
@@ -308,7 +346,7 @@ var same = deepEqual;
         //And item was removed
         same(list.items.length, 1, 'Removed item');
     });
-    
+
     test("focus() - gives focus to editor and its first item's editor", function() {
         var field = new List({
             model: new Post,
@@ -320,7 +358,7 @@ var same = deepEqual;
 
         ok(field.items[0].editor.hasFocus);
         ok(field.hasFocus);
-        
+
         field.remove();
     });
 
@@ -403,7 +441,7 @@ var same = deepEqual;
         ok(spy.called);
         ok(spy.calledWith(field));
     });
-    
+
     test("'change' event - is triggered when an item is added", function() {
         var field = new List({
             model: new Post,
@@ -411,7 +449,7 @@ var same = deepEqual;
         }).render();
 
         var spy = this.sinon.spy();
-        
+
         field.on('change', spy);
 
         var item = field.addItem(null, true);
@@ -419,7 +457,7 @@ var same = deepEqual;
         ok(spy.called);
         ok(spy.calledWith(field));
     });
-    
+
     test("'change' event - is triggered when an item is removed", function() {
         var field = new List({
             model: new Post,
@@ -427,7 +465,7 @@ var same = deepEqual;
         }).render();
 
         var spy = this.sinon.spy();
-        
+
         var item = field.items[0];
 
         field.on('change', spy);
@@ -542,7 +580,7 @@ var same = deepEqual;
             start();
         }, 0);
     });
-    
+
     test("'add' event - is triggered when an item is added", function() {
         var field = new List({
             model: new Post,
@@ -550,7 +588,7 @@ var same = deepEqual;
         }).render();
 
         var spy = this.sinon.spy();
-        
+
         field.on('add', spy);
 
         var item = field.addItem(null, true);
@@ -558,7 +596,7 @@ var same = deepEqual;
         ok(spy.called);
         ok(spy.calledWith(field, item.editor));
     });
-    
+
     test("'remove' event - is triggered when an item is removed", function() {
         var field = new List({
             model: new Post,
@@ -617,7 +655,7 @@ module('List.Item', {
       var CustomItem = List.Item.extend({}, {
         template: constructorTemplate
       });
-      
+
       //Options
       var item = new CustomItem({
         template: optionsTemplate,
@@ -793,7 +831,7 @@ module('List.Modal', {
         this.editor = new editors.List.Modal({
             form: new Form()
         });
-        
+
         //Force nestedSchema because this is usually done by Object or NestedModel constructors
         this.editor.nestedSchema = {
             id: { type: 'Number' },

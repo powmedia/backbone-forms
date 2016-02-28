@@ -359,6 +359,68 @@ test('submitButton still rendered properly if _ templateSettings are changed', f
 });
 
 
+module('Form#EditorValues');
+
+test('Form with editor with basic schema should return defaultValues', function() {
+  var form = new Form({
+    schema: {
+      name: {
+        type: 'Text'
+      }
+    }
+  }).render();
+
+  same( form.fields.name.editor.value, "" );
+  same( form.getValue(), { name: "" } );
+});
+
+test('Form with model with defaults should return defaults', function() {
+  var model = Backbone.Model.extend({
+    defaults: { name: "Default Name" }
+  });
+  var form = new Form({
+    schema: {
+      name: {
+        type: 'Text'
+      }
+    },
+    model: new model()
+  }).render();
+
+  same( form.fields.name.editor.value, "Default Name" );
+  same( form.getValue(), { name: "Default Name" } );
+});
+
+test('Form with data passed in should return data', function() {
+  var form = new Form({
+    schema: {
+      name: {
+        type: 'Text'
+      }
+    },
+    data: { name: "Default Name" }
+  }).render();
+
+  same( form.fields.name.editor.value, "Default Name" );
+  same( form.getValue(), { name: "Default Name" } );
+});
+
+test('Form should not clobber defaultValue of Editors', function() {
+  Form.editors.DefaultText = Form.editors.Text.extend({
+    defaultValue: "Default Name"
+  });
+  var form = new Form({
+    schema: {
+      name: {
+        type: 'DefaultText'
+      }
+    }
+  }).render();
+
+  same( form.fields.name.editor.value, "Default Name" );
+  same( form.getValue(), { name: "Default Name" } );
+});
+
 
 module('Form#createFieldset', {
   setup: function() {
