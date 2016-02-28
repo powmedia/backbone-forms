@@ -162,7 +162,7 @@ var same = deepEqual;
             form: form
         }).render();
 
-        var spy = this.sinon.spy(List, 'Item');
+        var spy = this.sinon.spy(editors.List.Item.prototype, 'initialize');
 
         list.addItem();
 
@@ -230,7 +230,7 @@ var same = deepEqual;
             form: form
         }).render();
 
-        var spy = this.sinon.spy(List, 'Item');
+        var spy = this.sinon.spy(editors.List.Item.prototype, 'initialize');
 
         list.addItem('foo');
 
@@ -1315,6 +1315,9 @@ test('initialize() - sets the nestedSchema, when schema is function', function()
 
 test('Check validation of list nested models', function() {
 
+    //Save proto for restoring after the test otherwise next fails alternately.
+    var tmpNestedModel = Backbone.Form.editors.List.NestedModel;
+
      Backbone.Form.editors.List.NestedModel = Backbone.Form.editors.NestedModel;
      var NestedModel = Backbone.Model.extend({
        schema: {
@@ -1328,6 +1331,8 @@ test('Check validation of list nested models', function() {
        schema: schema,
      }).render();
 
+     Backbone.Form.editors.List.NestedModel = tmpNestedModel;
+
      deepEqual(_.keys(form.validate().nestedModelList.errors[0]), ['name']);
 });
 
@@ -1337,6 +1342,8 @@ test('getStringValue() - uses model.toString() if available', function() {
     }
 
     this.editor.setValue({ id: 1, name: 'foo' });
+
+    console.log('editor ', this.editor);
 
     equal(this.editor.getStringValue(), 'foo!');
 });
