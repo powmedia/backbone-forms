@@ -199,7 +199,7 @@ var same = deepEqual;
             }
         }).render();
 
-        var spy = this.sinon.spy(List, 'Item');
+        var spy = this.sinon.spy(editors.List.Item.prototype, 'initialize');
 
         list.addItem();
 
