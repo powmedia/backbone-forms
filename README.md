@@ -644,6 +644,10 @@ Form.editors.List.NestedModel = Form.editors.NestedModel;
 
   The default class wraps each editor in a `<div>` and adds a "delete" button on each row. Provide this argument and `List` will use your custom item class, allowing you to customize this behavior.
 
+- **`addLabel`**
+
+  Label of the button used to add a new item in the list. Defaults to 'Add'.
+
 ###Events
 
 - **`add`**
