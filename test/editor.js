@@ -30,11 +30,21 @@ test('make sure value is not undefined if it is false', function() {
   var editor = new Editor({
     value: false
   });
-  
+
   same(editor.value, false);
 });
 
 test('sets to defaultValue if options.model and options.value are not set', function() {
+  var DefaultValueEditor = Editor.extend({
+    defaultValue: 'defaultValue'
+  });
+
+  var editor = new DefaultValueEditor();
+
+  same(editor.value, 'defaultValue');
+});
+
+test('base Editor defaultValue is null if nothing else is set', function() {
   var editor = new Editor();
 
   same(editor.value, null);
@@ -268,7 +278,7 @@ test('Given a string, a bundled validator is returned', function() {
 
   var required = editor.getValidator('required'),
       email = editor.getValidator('email');
-  
+
   equal(required(null).type, 'required');
   equal(email('invalid').type, 'email');
 });
@@ -288,14 +298,14 @@ test('Given an object, a customised bundled validator is returned', function() {
 
   //Can customise error message
   var required = editor.getValidator({ type: 'required', message: 'Custom message' });
-  
+
   var err = required('');
   equal(err.type, 'required');
   equal(err.message, 'Custom message');
-  
+
   //Can customise options on certain validators
   var regexp = editor.getValidator({ type: 'regexp', regexp: /foobar/, message: 'Must include "foobar"' });
-  
+
   var err = regexp('invalid');
   equal(err.type, 'regexp');
   equal(err.message, 'Must include "foobar"');
@@ -305,7 +315,7 @@ test('Given a regular expression, returns a regexp validator', function() {
   var editor = new Editor();
 
   var regexp = editor.getValidator(/hello/);
-  
+
   equal(regexp('invalid').type, 'regexp');
 });
 
@@ -319,7 +329,7 @@ test('Given a function, it is returned', function () {
   equal(validator, myValidator);
 });
 
-test('Given an unknown type, an error is thrown', 1, function () {    
+test('Given an unknown type, an error is thrown', 1, function () {
   var editor = new Editor();
 
   try {

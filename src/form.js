@@ -116,7 +116,7 @@ var Form = Backbone.View.extend({
     } else if (this.data) {
       options.value = this.data[key];
     } else {
-      options.value = null;
+      options.value = undefined;
     }
 
     var field = new this.Field(options);
