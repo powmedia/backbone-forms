@@ -1343,8 +1343,6 @@ test('getStringValue() - uses model.toString() if available', function() {
 
     this.editor.setValue({ id: 1, name: 'foo' });
 
-    console.log('editor ', this.editor);
-
     equal(this.editor.getStringValue(), 'foo!');
 });
 
