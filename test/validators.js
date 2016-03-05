@@ -232,8 +232,6 @@
   test('fails invalid emails', function() {
     ok(fn('invalid'))
     ok(fn('email@example'))
-    ok(fn('foo/bar@example.com'))
-    ok(fn('foo?bar@example.com'))
     ok(fn('foo@exa#mple.com'))
     ok(fn(234))
     ok(fn('#@%^%#$@#$@#.com'))
@@ -253,6 +251,8 @@
   })
 
   test('accepts valid emails', function() {
+    equal(fn('foo/bar@example.com'), undefined)
+    equal(fn('foo?bar@example.com'), undefined)
     equal(fn('test@example.com'), undefined)
     equal(fn('john.smith@example.com'), undefined)
     equal(fn('john.smith@example.co.uk'), undefined)
