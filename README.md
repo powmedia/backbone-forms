@@ -81,6 +81,7 @@ $('body').append(form.el);
 - [Update form elements based on user input](http://jsfiddle.net/wc7e97v1/)
 - [Validate on blur](http://jsfiddle.net/68s6ynfh/)
 - [Built-in Validators](http://jsfiddle.net/glenpike/63tj1ynk/7/)
+- [Nested Models & List Editors](https://jsfiddle.net/glenpike/wtruLbs1/19/)
 
 
 
@@ -620,7 +621,7 @@ Form.editors.List.Object = Form.editors.Object;
 // Use standard 'NestedModel' editor for list items.
 Form.editors.List.NestedModel = Form.editors.NestedModel;
 ```
-
+See an editable demo of [using the Nested Model, List and Modal Adapter](https://jsfiddle.net/glenpike/wtruLbs1/19/) together.
 
 ###Attributes
 
