@@ -118,6 +118,18 @@
 
 
 
+  module('Number#render');
+
+  test('readonly schema adds readonly attribute', function() {
+    var editor = new Editor({
+      schema: { readonly: true }
+    }).render();
+    
+    same(editor.$el.attr('readonly'), 'readonly');
+  });
+
+
+
   module('Number events', {
     setup: function() {
       this.sinon = sinon.sandbox.create();
