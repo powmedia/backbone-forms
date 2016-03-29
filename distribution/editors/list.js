@@ -14,6 +14,7 @@
     events: {
       'click [data-action="add"]': function(event) {
         event.preventDefault();
+        event.stopPropagation();
         this.addItem(null, true);
       }
     },
