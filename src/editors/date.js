@@ -65,7 +65,11 @@ Form.editors.Date = Form.editors.Base.extend({
     }
 
     //Template
-    this.template = options.template || this.constructor.template;
+    if (this.schema.readonly && this.readonlyTemplate)
+      this.template = this.readonlyTemplate;
+
+    else
+      this.template = options.template || this.constructor.template;
   },
 
   render: function() {
@@ -169,7 +173,15 @@ Form.editors.Date = Form.editors.Base.extend({
     if (_.isDate(val)) val = val.toISOString();
 
     this.$hidden.val(val);
-  }
+  },
+
+  readonlyTemplate: _.template('\
+    <div>\
+      <select disabled data-type="date"><%= dates %></select>\
+      <select disabled data-type="month"><%= months %></select>\
+      <select disabled data-type="year"><%= years %></select>\
+    </div>\
+  ', null, Form.templateSettings)
 
 }, {
   //STATICS

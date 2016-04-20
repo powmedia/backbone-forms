@@ -46,7 +46,11 @@ Form.editors.DateTime = Form.editors.Base.extend({
     this.value = this.dateEditor.value;
 
     //Template
-    this.template = options.template || this.constructor.template;
+    if (this.schema.readonly && this.readonlyTemplate)
+      this.template = this.readonlyTemplate;
+    
+    else
+      this.template = options.template || this.constructor.template;
   },
 
   render: function() {
@@ -155,7 +159,16 @@ Form.editors.DateTime = Form.editors.Base.extend({
     this.dateEditor.remove();
 
     Form.editors.Base.prototype.remove.call(this);
-  }
+  },
+
+  readonlyTemplate: _.template('\
+    <div class="bbf-datetime">\
+      <div class="bbf-date-container" data-date></div>\
+      <select disabled data-type="hour"><%= hours %></select>\
+      :\
+      <select disabled data-type="min"><%= mins %></select>\
+    </div>\
+  ', null, Form.templateSettings)
 
 }, {
   //STATICS

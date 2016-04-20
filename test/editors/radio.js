@@ -92,6 +92,20 @@
   });
 
 
+  module('#render()');
+
+  test('readonly schema adds disabled attribute', function() {
+    var editor = new Editor({
+      schema: $.extend({ readonly: true }, schema)
+    }).render();
+    
+    var radioInputs = $(editor.el).find('input[type=radio]');
+    for(var i = 0; i < radioInputs.length; i++) {
+      same($(radioInputs[i]).attr('disabled'), 'disabled');
+    }
+  });
+
+
   module('#getTemplate()');
 
   test('returns schema template first', function() {
@@ -109,6 +123,7 @@
       schema: { options: [] }
     });
 
+    $(editor.el).find('input[type=radio]')
     equal(editor.getTemplate(), Editor.template);
   });
 
