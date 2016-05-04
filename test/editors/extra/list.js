@@ -47,6 +47,14 @@ var same = deepEqual;
         same(list.Editor, editors.List.Object);
     });
 
+    test('Uses custom list template if defined', function() {
+        var list = new List({
+            schema: { listTemplate: _.template('<div>Custom<div/>') }
+        });
+
+        same(list.template(), '<div>Custom<div/>');
+    });
+
     test('Uses regular editor if there is no list version', function() {
         var list = new List({
             schema: { itemType: 'Number' }

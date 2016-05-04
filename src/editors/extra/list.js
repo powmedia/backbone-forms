@@ -32,7 +32,7 @@
         addLabel: 'Add'
       }, schema);
 
-      this.template = options.template || this.constructor.template;
+      this.template = options.template || schema.listTemplate || this.constructor.template;
 
       //Determine the editor to use
       this.Editor = (function() {
