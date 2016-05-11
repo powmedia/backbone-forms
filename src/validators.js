@@ -115,7 +115,7 @@ Form.validators = (function() {
     options = _.extend({
       type: 'url',
       message: this.errMessages.url,
-      regexp: /^(http|https):\/\/(([A-Z0-9][A-Z0-9_\-]*)(\.[A-Z0-9][A-Z0-9_\-]*)+)(:(\d+))?\/?/i
+      regexp: /^((http|https):\/\/)?(([A-Z0-9][A-Z0-9_\-]*)(\.[A-Z0-9][A-Z0-9_\-]*)+)(:(\d+))?\/?/i
     }, options);
 
     return validators.regexp(options);
