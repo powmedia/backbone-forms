@@ -282,17 +282,19 @@
 
   test('fails invalid url', function() {
     ok(fn('invalid'))
-    ok(fn('example.com'))
-    ok(fn('www.example.com'))
+    ok(fn('.example.com'))
     ok(fn('htp://example.com'))
     ok(fn('http://example'))
     ok(fn(234))
   })
 
   test('accepts valid urls', function() {
+    equal(fn('example.com'))
+    equal(fn('www.example.com'))
     equal(fn('http://example.com'), undefined)
     equal(fn('http://example.co.uk'), undefined)
     equal(fn('http://www.example.com'), undefined)
+    equal(fn('http://www.example.com:8081'), undefined)
     equal(fn('http://subdomain.domain.co.uk'), undefined)
     equal(fn('http://example.com/path'), undefined)
     equal(fn('http://www.example.com/path/1/2'), undefined)
