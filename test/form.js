@@ -13,6 +13,15 @@ module('Form#initialize', {
   }
 });
 
+test('accepts an errorClassName in schema', function() {
+  var form = new Form({
+    schema: {
+      name: {type: 'Text', errorClassName: 'custom-error'}
+    }
+  });
+  same(form.fields.name.errorClassName, 'custom-error')
+});
+
 test('prefers schema from options over model', function() {
   var model = new Backbone.Model();
 
