@@ -7,6 +7,7 @@ module('List', {
 
     teardown: function() {
         this.sinon.restore();
+        $('#qunit-fixture').remove('.cardinality-test')
     }
 });
 
@@ -88,8 +89,66 @@ var same = deepEqual;
         var list = new List({
             schema: { addLabel: 'Agregar' }
         }).render();
-        
+
         same(list.$('[data-action="add"]').text(), 'Agregar');
+    });
+
+    test('cardinality: Add button is hidden if maxCardinality is reached', function() {
+        var maxLength = 10;
+        var list = new List({
+            schema: { maxCardinality: maxLength }
+        }).render();
+
+        $('#qunit-fixture').append(list.el);
+
+        same(list.$('[data-action="add"]').is(':visible'), true);
+
+        for(var i = 1;i < maxLength;i++) {
+            list.addItem('foo_' + i);
+        }
+
+        same(list.items.length, maxLength);
+
+        same(list.$('[data-action="add"]').is(':visible'), false);
+    });
+
+    function createListWithMaxItems(maxLength) {
+        var items = [];
+        for(var i = 0;i < maxLength;i++) {
+            items.push('foo_' + i);
+        }
+
+        var list = new List({
+            className: 'cardinality-test',
+            schema: { maxCardinality: maxLength },
+            value: items
+        }).render();
+
+        $('#qunit-fixture').append(list.el);
+
+        same(list.items.length, maxLength);
+
+        same(list.$('[data-action="add"]').is(':visible'), false);
+
+        return list;
+    }
+
+    test('cardinality: Add button is hidden if initial items >= maxCardinality', function() {
+        var maxLength = 10;
+
+        createListWithMaxItems(maxLength);
+    });
+
+    test('cardinality: Add button is shown again if num items < maxCardinality', function() {
+        var maxLength = 10;
+
+        var list = createListWithMaxItems(maxLength);
+
+        for(i = 1;i < maxLength / 2;i++) {
+            list.removeItem(list.items[i]);
+        }
+
+        same(list.$('[data-action="add"]').is(':visible'), true);
     });
 
     test('Value from model', function() {
@@ -133,6 +192,16 @@ var same = deepEqual;
         var errs = list.validate();
 
         same(errs, null);
+    });
+
+    test('event: clicking something with data-action="add" adds an item', function() {
+        var list = new List().render();
+
+        same(list.items.length, 1);
+
+        list.$('[data-action="add"]').click();
+
+        same(list.items.length, 2);
     });
 
     test('event: clicking something with data-action="add" adds an item', function() {
