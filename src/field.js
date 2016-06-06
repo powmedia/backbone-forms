@@ -170,6 +170,29 @@ Form.Field = Backbone.View.extend({
   },
 
   /**
+   * Check if the $element is a jQuery :input
+   *
+   * @param  {jQuery selector}  $input the item to check
+   * @return {Boolean}        true if it satisfies
+   * http://api.jquery.com/input-selector/
+   */
+  _isInput: function($input) {
+    return $input.is('input') || $input.is('textarea') ||
+        $input.is('select') || $input.is('button');
+  },
+
+  /**
+   * Return all the :input elements inside $el
+   *
+   * @param  {jQuery selector}  $el the item to search
+   * @return {Array}       Any elements that would be found by $el.find(':input')
+   * http://api.jquery.com/input-selector/
+   */
+  _getInputs: function($el) {
+    return $el.find('input,textarea,select,button');
+  },
+
+  /**
    * Disable the field's editor
    * Will call the editor's disable method if it exists
    * Otherwise will add the disabled attribute to all inputs in the editor
@@ -180,7 +203,7 @@ Form.Field = Backbone.View.extend({
     }
     else {
       $input = this.editor.$el;
-      $input = $input.is("input") ? $input : $input.find("input");
+      $input = this._isInput($input) ? $input : this._getInputs($input);
       $input.attr("disabled",true);
     }
   },
@@ -196,7 +219,7 @@ Form.Field = Backbone.View.extend({
     }
     else {
       $input = this.editor.$el;
-      $input = $input.is("input") ? $input : $input.find("input");
+      $input = this._isInput($input) ? $input : this._getInputs($input);
       $input.attr("disabled",false);
     }
   },
