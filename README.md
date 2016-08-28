@@ -1035,6 +1035,9 @@ var CustomEditor = Backbone.Form.editors.Base.extend({
 - Fix bootstrap3 class list name #329
 - Add 'match' option to regexp validator
 
+###0.14.1
+- Bugfix - incorrect versioning in files for 0.14.0 release - update and tag.
+
 ###0.14.0
 - Add Bootstrap 3 templates (powmedia)
 - Being consistent with throwing `Error`s rather than strings (philfreo)
