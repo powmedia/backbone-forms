@@ -60,6 +60,16 @@
     equal(required(' test '), undefined)
   })
 
+  test('required uses Backbone.$ not global #519', function() {
+    var old$ = window.$;
+
+    window.$ = null;
+
+    ok(required("   "))
+
+    window.$ = old$;
+  })
+
 })();
 
 
