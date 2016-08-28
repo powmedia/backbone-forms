@@ -88,7 +88,7 @@ var same = deepEqual;
         var list = new List({
             schema: { addLabel: 'Agregar' }
         }).render();
-        
+
         same(list.$('[data-action="add"]').text(), 'Agregar');
     });
 
@@ -153,16 +153,40 @@ var same = deepEqual;
         ok(list.$list.hasClass('customList'));
     });
 
-    test('render() - creates items for each item in value array', function() {
-        var list = new List({
-            value: [1,2,3]
-        });
-
+    function testItemCreate(list, values) {
         same(list.items.length, 0);
 
         list.render();
 
         same(list.items.length, 3);
+
+        same(values, _.pluck(list.items, 'value'));
+    }
+
+    test('render() - creates items for each item in value array', function() {
+        var values = [1,2,3];
+
+        var list = new List({
+            schema: { itemType: 'Number' },
+            value: values
+        });
+
+        testItemCreate(list, values);
+    });
+
+    test('render() - creates items for each item in value collection', function() {
+        var values = [
+            { value: 1 },
+            { value: 2 },
+            { value: 3 }
+        ];
+        var list = new List({
+            schema: { itemType: 'Number' },
+            key: 'value',
+            value: new Backbone.Collection(values)
+        });
+
+        testItemCreate(list, values);
     });
 
     test('render() - creates an initial empty item for empty array', function() {

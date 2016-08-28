@@ -66,9 +66,12 @@
       //Store a reference to the list (item container)
       this.$list = $el.is('[data-items]') ? $el : $el.find('[data-items]');
 
+      if (value instanceof Backbone.Collection) {
+        value = value.toJSON();
+      }
       //Add existing items
       if (value.length) {
-        _.each(value, function(itemValue) {
+        _.each(value, function addItem(itemValue) {
           self.addItem(itemValue);
         });
       }
