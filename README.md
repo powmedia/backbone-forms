@@ -637,7 +637,29 @@ See an editable demo of [using the Nested Model, List and Modal Adapter](https:/
 
   A function that returns a string representing how the object should be displayed in a list item.
 
-  Optional, but recommended when using itemType 'Object'. When itemType is 'NestedModel', the model's `toString()` method will be used, unless a specific `itemToString()` function is defined on the schema.
+  Optional, but recommended when using itemType 'Object'. When itemType is 'NestedModel', the model's `toString()` method will be used, unless a specific `itemToString()` function is defined on the schema.  If your Object keys can contain HTML, you may be vulnerable to XSS attacks ([Bug #516](https://github.com/powmedia/backbone-forms/issues/516)):
+
+  ```js
+
+    function itemToString(value) {
+      var safeString = '';
+      Object.keys(value).forEach(function(key) {
+      	safeString += key + ':' + $('<div>').html(value[key]).text() + '<br/>';
+      });
+      
+      return safeString;
+    };
+    
+    var schema = {
+        users: {
+            type: 'List',
+            itemType: 'Object',
+            itemToString: itemToString
+        }
+    };
+    
+    ```
+    See a working example [here](https://jsfiddle.net/glenpike/00vwmzmv/)
 
 - **`itemClass`**
 
