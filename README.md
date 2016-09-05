@@ -80,7 +80,7 @@ $('body').append(form.el);
 - [User form](http://jsfiddle.net/gfaq5km1/)
 - [Update form elements based on user input](http://jsfiddle.net/wc7e97v1/)
 - [Validate on blur](http://jsfiddle.net/68s6ynfh/)
-- [Built-in Validators](http://jsfiddle.net/glenpike/63tj1ynk/7/)
+- [Built-in Validators](http://jsfiddle.net/glenpike/63tj1ynk/)
 - [Nested Models & List Editors](https://jsfiddle.net/glenpike/wtruLbs1/19/)
 
 
@@ -715,9 +715,9 @@ Validators can be defined in several ways:
 - **email**: Checks it is a valid email address.
 - **url**: Checks it is a valid URL.
 - **match**: Checks that the field matches another. The other field name must be set in the `field` option.
-- **regexp**: Runs a regular expression. Requires the `regexp` option, which takes a compiled regular expression. Setting the `match` option to `false` ensures that the regexp does NOT pass.
+- **regexp**: Runs a regular expression. Requires the `regexp` option, which takes a compiled regular expression or a string value. Setting the `match` option to `false` ensures that the regexp does NOT pass.  If you set the `regexp` option to a string, it will also pass the `flags` option, if set, directly to the [RegExp constructor's 'flags' argument](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp) - see below / demo.
 
-[Built-in Validators Demo](http://jsfiddle.net/glenpike/63tj1ynk/7/)
+[Built-in Validators Demo](http://jsfiddle.net/glenpike/63tj1ynk/)
 
 ####Examples
 
@@ -735,6 +735,16 @@ Validators can be defined in several ways:
 
         //Regular expression
         foo: { validators: [/foo/] },
+        
+        //Regular expression with flags - if using flags, regexp must be string
+        baz: {
+            validators: [{
+                type: 'regexp',
+                regexp: 'baz',
+                flags: 'i',
+                message: 'Must type \'baz\' - case insensitive'
+            }]
+        },
 
         //Custom function
         username: { validators: [
