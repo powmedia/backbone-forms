@@ -29,7 +29,8 @@ Form.validators = (function() {
       var err = {
         type: options.type,
         message: _.isFunction(options.message) ? options.message(options) : options.message
-      };
+      },
+      $ = Backbone.$;
 
       if (value === null || value === undefined || value === false || value === '' || $.trim(value) === '' ) return err;
     };
