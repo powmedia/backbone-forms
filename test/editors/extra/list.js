@@ -7,7 +7,7 @@ module('List', {
 
     teardown: function() {
         this.sinon.restore();
-        $('#qunit-fixture').remove('.cardinality-test')
+        $('#qunit-fixture').remove('.length-test')
     }
 });
 
@@ -93,10 +93,10 @@ var same = deepEqual;
         same(list.$('[data-action="add"]').text(), 'Agregar');
     });
 
-    test('cardinality: Add button is hidden if maxCardinality is reached', function() {
+    test('length: Add button is hidden if maxListLength is reached', function() {
         var maxLength = 10;
         var list = new List({
-            schema: { maxCardinality: maxLength }
+            schema: { maxListLength: maxLength }
         }).render();
 
         $('#qunit-fixture').append(list.el);
@@ -119,8 +119,8 @@ var same = deepEqual;
         }
 
         var list = new List({
-            className: 'cardinality-test',
-            schema: { maxCardinality: maxLength },
+            className: 'length-test',
+            schema: { maxListLength: maxLength },
             value: items
         }).render();
 
@@ -133,13 +133,13 @@ var same = deepEqual;
         return list;
     }
 
-    test('cardinality: Add button is hidden if initial items >= maxCardinality', function() {
+    test('length: Add button is hidden if initial items >= maxListLength', function() {
         var maxLength = 10;
 
         createListWithMaxItems(maxLength);
     });
 
-    test('cardinality: Add button is shown again if num items < maxCardinality', function() {
+    test('length: Add button is shown again if num items < maxListLength', function() {
         var maxLength = 10;
 
         var list = createListWithMaxItems(maxLength);

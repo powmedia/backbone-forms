@@ -90,13 +90,13 @@
     },
 
     /**
-     * If number of items exceeds the maxCardinality value set on the schema,
+     * If number of items exceeds the maxListLength value set on the schema,
      * hide any 'add' button in the passed in $element
      *
      * @param {jQuery selector} [$el] Where to look for the add button
      */
     _checkMaxCardinalityReached: function($el) {
-      if (this.schema.maxCardinality && this.items.length >= this.schema.maxCardinality) {
+      if (this.schema.maxListLength && this.items.length >= this.schema.maxListLength) {
         $el.find('button[data-action="add"]').hide();
       }
     },
@@ -205,8 +205,8 @@
 
       if (!this.items.length && !this.Editor.isAsync) this.addItem();
 
-      // show the "add" button in case the cardinality has not been reached
-      if (this.schema.maxCardinality && this.items.length < this.schema.maxCardinality) {
+      // show the "add" button in case the max-length has not been reached
+      if (this.schema.maxListLength && this.items.length < this.schema.maxListLength) {
         this.$el.find('button[data-action="add"]').show();
       }
     },
