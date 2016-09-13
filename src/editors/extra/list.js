@@ -81,6 +81,8 @@
         if (!this.Editor.isAsync) this.addItem();
       }
 
+      this._checkMaxCardinalityReached($el);
+
       this.setElement($el);
       this.$el.attr('id', this.id);
       this.$el.attr('name', this.key);
@@ -88,6 +90,18 @@
       if (this.hasFocus) this.trigger('blur', this);
 
       return this;
+    },
+
+    /**
+     * If number of items exceeds the maxListLength value set on the schema,
+     * hide any 'add' button in the passed in $element
+     *
+     * @param {jQuery selector} [$el] Where to look for the add button
+     */
+    _checkMaxCardinalityReached: function($el) {
+      if (this.schema.maxListLength && this.items.length >= this.schema.maxListLength) {
+        $el.find('button[data-action="add"]').hide();
+      }
     },
 
     /**
@@ -112,6 +126,8 @@
       var _addItem = function() {
         self.items.push(item);
         self.$list.append(item.el);
+
+        self._checkMaxCardinalityReached(self.$el);
 
         item.editor.on('all', function(event) {
           if (event === 'change') return;
@@ -191,6 +207,11 @@
       }
 
       if (!this.items.length && !this.Editor.isAsync) this.addItem();
+
+      // show the "add" button in case the max-length has not been reached
+      if (this.schema.maxListLength && this.items.length < this.schema.maxListLength) {
+        this.$el.find('button[data-action="add"]').show();
+      }
     },
 
     getValue: function() {
