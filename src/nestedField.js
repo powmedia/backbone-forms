@@ -3,7 +3,7 @@
 //NESTEDFIELD
 //==================================================================================================
 
-Form.NestedField = Form.Field.extend({
+Form.NestedField = Form.Field.extend({}, {
 
   template: _.template('\
     <div>\
