@@ -144,8 +144,8 @@
     editor.on('change', spy);
 
     // Pressing a valid key
-    editor.$el.keypress($.Event("keypress", { charCode: 48 }));
-    editor.$el.val('0');
+    editor.$el.keypress($.Event("keypress", { charCode: 49 }));
+    editor.$el.val('1');
 
     stop();
     setTimeout(function(){
@@ -181,6 +181,39 @@
         }, 0);
       }, 0);
     }, 0);
+  });
+
+  test("'change' event - isn't triggered if the value doesn't change", function() {
+    var editor = this.editor;
+
+    var spy = this.sinon.spy();
+
+    editor.on('change', spy);
+
+    // Number is 0 by default, pressing 0 again
+    editor.$el.keypress($.Event("keypress", { charCode: 48 }));
+    editor.$el.val('0');
+
+    stop();
+    setTimeout(function(){
+
+      ok(spy.callCount === 0);
+      start();
+
+    }, 0);
+  });
+
+  test("'change' event - is triggered when clicking the spinner ('input' event)", function() {
+    var editor = this.editor;
+
+    var spy = this.sinon.spy();
+
+    editor.on('change', spy);
+
+    editor.$el.val('10');
+    editor.$el.trigger('input');
+
+    ok(spy.callCount === 1);
   });
 
 
