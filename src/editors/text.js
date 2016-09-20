@@ -79,6 +79,7 @@ Form.editors.Text = Form.Editor.extend({
   setValue: function(value) {
     this.value = value;
     this.$el.val(value);
+    this.previousValue = this.$el.val();
   },
 
   focus: function() {
