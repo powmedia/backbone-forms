@@ -178,6 +178,16 @@ var same = deepEqual;
         same(list.getValue(), ['d', 'e', 'f']);
     });
 
+    test('setValue() - add button works after calling setValue', function() {
+        var list = new List().render();
+
+        list.setValue(['a', 'b', 'c']);
+
+        list.$('[data-action="add"]').click();
+
+        same(list.items.length, 4);
+    });
+
     test('validate() - returns validation errors', function() {
         var list = new List({
             schema: { validators: ['required', 'email'] },
