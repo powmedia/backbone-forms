@@ -83,7 +83,16 @@
 
       this._checkMaxCardinalityReached($el);
 
+      //Save a copy of the pre-exising element, if exists
+      var domReferencedElement = this.el;
+
       this.setElement($el);
+
+      //In case of there was a pre-existing element already placed in the DOM, then update it
+      if (domReferencedElement) {
+        $(domReferencedElement).replaceWith(this.el);
+      }
+
       this.$el.attr('id', this.id);
       this.$el.attr('name', this.key);
 
@@ -224,6 +233,7 @@
     },
 
     setValue: function(value) {
+      this.items = [];
       this.value = value;
       this.render();
     },
