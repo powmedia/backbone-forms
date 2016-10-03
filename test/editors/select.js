@@ -410,6 +410,29 @@
     equal(newOptions.last().html(), 'Phil');
   });
 
+
+  test('Rendering: Only adds options to the DOM with one function call ', function() {
+    var options = [],
+        length = 4000;
+
+    for(var i = 0;i < length;i++) {
+      options.push('option-' + i);
+    }
+
+    var editor = new Editor({
+      schema: {
+        options: options
+      }
+    });
+
+    var spy = sinon.spy($.fn, 'add');
+
+    editor.render();
+
+    equal(spy.callCount, 1);
+
+  });
+
   test("setValue() - updates the input value", function() {
     var editor = new Editor({
       value: 'Pam',
