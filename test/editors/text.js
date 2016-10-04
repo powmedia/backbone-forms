@@ -29,6 +29,24 @@
     equal(editor.previousValue, 'Test');
   });
 
+  test('Uses Backbone.$ not global', function() {
+    var old$ = window.$,
+      exceptionCaught = false;
+
+    window.$ = null;
+
+    try {
+      var editor = new Editor({
+        value: 'Test'
+      }).render();
+    } catch(e) {
+      exceptionCaught = true;
+    }
+
+    window.$ = old$;
+
+    ok(!exceptionCaught, ' using global \'$\' to render');
+  });
 
 
   module('Text#getValue()');
@@ -105,7 +123,7 @@
 
     teardown: function() {
       this.sinon.restore();
-      
+
       //Remove the editor from the page
       this.editor.remove();
     }
