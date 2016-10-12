@@ -23,19 +23,19 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
     },
     'blur input[type=checkbox]':  function() {
       if (!this.hasFocus) return;
-      var self = this;
-      setTimeout(function() {
+
+      _.defer(function(self) {
         if (self.$('input[type=checkbox]:focus')[0]) return;
         self.trigger('blur', self);
-      }, 0);
+      }, this);
     }
   },
 
   getValue: function() {
     var values = [];
-    var self = this;
+
     this.$('input[type=checkbox]:checked').each(function() {
-      values.push(self.$(this).val());
+      values.push(this.value);
     });
     return values;
   },
@@ -66,35 +66,34 @@ Form.editors.Checkboxes = Form.editors.Select.extend({
    */
   _arrayToHtml: function (array) {
     var html = $();
-    var self = this;
 
-    _.each(array, function(option, index) {
+    _.each(array, _.bind(function(option, index) {
       var itemHtml = $('<li>');
       if (_.isObject(option)) {
         if (option.group) {
-          var originalId = self.id;
-          self.id += "-" + self.groupNumber++;
+          var originalId = this.id;
+          this.id += "-" + this.groupNumber++;
           itemHtml = $('<fieldset class="group">').append( $('<legend>').text(option.group) );
-          itemHtml = itemHtml.append( self._arrayToHtml(option.options) );
-          self.id = originalId;
+          itemHtml = itemHtml.append( this._arrayToHtml(option.options) );
+          this.id = originalId;
           close = false;
         }else{
           var val = (option.val || option.val === 0) ? option.val : '';
-          itemHtml.append( $('<input type="checkbox" name="'+self.getName()+'" id="'+self.id+'-'+index+'" />').val(val) );
+          itemHtml.append( $('<input type="checkbox" name="'+this.getName()+'" id="'+this.id+'-'+index+'" />').val(val) );
           if (option.labelHTML){
-            itemHtml.append( $('<label for="'+self.id+'-'+index+'" />').html(option.labelHTML) );
+            itemHtml.append( $('<label for="'+this.id+'-'+index+'" />').html(option.labelHTML) );
           }
           else {
-            itemHtml.append( $('<label for="'+self.id+'-'+index+'" />').text(option.label) );
+            itemHtml.append( $('<label for="'+this.id+'-'+index+'" />').text(option.label) );
           }
         }
       }
       else {
-        itemHtml.append( $('<input type="checkbox" name="'+self.getName()+'" id="'+self.id+'-'+index+'" />').val(option) );
-        itemHtml.append( $('<label for="'+self.id+'-'+index+'" />').text(option) );
+        itemHtml.append( $('<input type="checkbox" name="'+this.getName()+'" id="'+this.id+'-'+index+'" />').val(option) );
+        itemHtml.append( $('<label for="'+this.id+'-'+index+'" />').text(option) );
       }
       html = html.add(itemHtml);
-    });
+    }, this));
 
     return html;
   }
