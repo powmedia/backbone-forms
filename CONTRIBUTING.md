@@ -3,6 +3,8 @@ Pull Requests are happily accepted, provided that you add or update QUnit tests 
 ## Development
 
 Please set your editors to use spaces, rather than tabs, (2 spaces per tab) and trim empty lines if possible.
+We have included an [EditorConfig](http://editorconfig.org/) file in the repository so you can configure
+your favourite editor to use this.
 
 If you want to run your tests, or open the ./tests/index.html page, or:
 
