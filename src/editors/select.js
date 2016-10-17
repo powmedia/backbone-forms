@@ -221,14 +221,14 @@ Form.editors.Select = Form.editors.Base.extend({
           var optgroup = $("<optgroup>")
             .attr("label",option.group)
             .html( this._getOptionsHtml(option.options) );
-          html[html.length] = optgroup[0];
+          html.push(optgroup[0]);
         } else {
           var val = (option.val || option.val === 0) ? option.val : '';
-          html[html.length] = $('<option>').val(val).text(option.label)[0];
+          html.push($('<option>').val(val).text(option.label)[0]);
         }
       }
       else {
-        html[html.length] = $('<option>').text(option)[0];
+        html.push($('<option>').text(option)[0]);
       }
     }, this);
 
