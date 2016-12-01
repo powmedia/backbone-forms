@@ -23,6 +23,8 @@ var fileList = [
   'editors/textarea.js',
   'editors/password.js',
   'editors/number.js',
+  'editors/tel.js',
+  'editors/email.js',
   'editors/hidden.js',
   'editors/checkbox.js',
   'editors/select.js',
