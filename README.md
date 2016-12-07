@@ -229,6 +229,10 @@ If a form has a model attached to it, the initial values are taken from the mode
 
   The model to tie the form to. Calling `form.commit()` will update the model with new values.
 
+- **`className`**
+  
+  A string with the name of the class that will be apply to the form.
+ 
 - **`data`**
 
   If not using the `model` option, pass a native object through the `data` option. Then use `form.getValue()` to get the new values.
@@ -258,6 +262,11 @@ If a form has a model attached to it, the initial values are taken from the mode
 - **`template`**
 
   The compiled template to use for generating the form.
+  
+- **`merge`**
+
+  A boolean value. You must have a `schema` in the model and other as parameter. This option allow do a merge between both schemas only for these form, avoids override the model schema.
+
 
 
 ###Events

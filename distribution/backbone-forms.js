@@ -59,6 +59,11 @@ var Form = Backbone.View.extend({
 
     //Find the schema to use
     var schema = this.schema = (function() {
+      //Merge schemas from options and on model
+      if(options.merge){
+          return $.extend(true, {}, options.model.schema, options.schema);
+      }
+      
       //Prefer schema from options
       if (options.schema) return _.result(options, 'schema');
 
@@ -258,6 +263,9 @@ var Form = Backbone.View.extend({
       });
     });
 
+    //Set class
+    $form.addClass(self.className);
+    
     //Set the main element
     this.setElement($form);
 
