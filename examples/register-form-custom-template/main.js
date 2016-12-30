@@ -14,6 +14,10 @@ $(function() {
       birthday: {
         type: 'Date'
       },
+      salary: {
+        type: 'Number',
+        validators: ['required']
+      },
       email: {
         validators: ['required', 'email']
       },

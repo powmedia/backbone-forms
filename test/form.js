@@ -627,9 +627,12 @@ test('triggers general form events', function() {
   form.on('blur', blurSpy);
   form.handleEditorEvent('blur', editor);
 
+  stop();
+
   setTimeout(function() {
     same(blurSpy.callCount, 1);
     same(blurSpy.args[0][0], form);
+    start();
   }, 0);
 });
 
