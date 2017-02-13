@@ -502,6 +502,10 @@ The Object editor creates an embedded child form representing a Javascript objec
 
   A schema object which defines the field schema for each attribute in the object
 
+- **`order`**
+
+  An array of field names (keys). Only the fields defined here will be added to the form. You can also use this to re-order the fields.
+
 ###Events
 
 - **`<key>:<event>`**
@@ -511,11 +515,15 @@ The Object editor creates an embedded child form representing a Javascript objec
 ####Examples
 
     var schema = {
-        address: { type: 'Object', subSchema: {
-            street: {},
-            zip: { type: 'Number' },
-            country: { 'Select', options: countries }
-        }}
+        address: { 
+            type: 'Object',
+            subSchema: {
+                street: {},
+                zip: { type: 'Number' },
+                country: { 'Select', options: countries }
+            },
+            order: [ 'street', 'zip', 'country' ]
+        }
     };
 
     addressEditor.on('zip:change', function(addressEditor, zipEditor) {

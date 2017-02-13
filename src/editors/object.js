@@ -31,6 +31,7 @@ Form.editors.Object = Form.editors.Base.extend({
     //Create the nested form
     this.nestedForm = new NestedForm({
       schema: this.schema.subSchema,
+      fields: this.schema.order || undefined,
       data: this.value,
       idPrefix: this.id + '_',
       Field: NestedForm.NestedField

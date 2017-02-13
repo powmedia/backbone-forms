@@ -29,6 +29,34 @@
     deepEqual(editor.getValue(), { id: 0, name: '' });
   });
 
+  test('Order property', function() {
+    var orderedSchema = {
+      subSchema: {
+        id: {
+          type: 'Number'
+        },
+        name: {
+          type: 'Text'
+        },
+        description: {
+          type: 'Text'
+        }
+      },
+      order: [
+        'description',
+        'name',
+        'id'
+      ]
+    };
+
+    var editor = new Editor({
+      form: new Form(),
+      schema: orderedSchema
+    }).render();
+
+    deepEqual(editor.nestedForm.options.fields, orderedSchema.order);
+  });
+
   test('Custom value', function() {
     var editor = new Editor({
       form: new Form(),
