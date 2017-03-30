@@ -116,7 +116,24 @@
     same(editor.getValue(), null);
   });
 
+  test('Uses Backbone.$ not global', function() {
+    var old$ = window.$,
+      exceptionCaught = false;
 
+    window.$ = null;
+
+    try {
+      var editor = new Editor({
+        value: 123
+      }).render();
+    } catch(e) {
+      exceptionCaught = true;
+    }
+
+    window.$ = old$;
+
+    ok(!exceptionCaught, ' using global \'$\' to render');
+  });
 
   module('Number events', {
     setup: function() {
@@ -129,7 +146,7 @@
 
     teardown: function() {
       this.sinon.restore();
-      
+
       this.editor.remove();
     }
   });

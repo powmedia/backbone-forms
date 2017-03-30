@@ -124,6 +124,25 @@
     notEqual($(editor.el).find('input[type=checkbox]').length, 0);
   });
 
+  test('Uses Backbone.$ not global', function() {
+    var old$ = window.$,
+      exceptionCaught = false;
+
+    window.$ = null;
+
+    try {
+      var editor = new Editor({
+        schema: schema
+      }).render();
+    } catch(e) {
+      exceptionCaught = true;
+    }
+
+    window.$ = old$;
+
+    ok(!exceptionCaught, ' using global \'$\' to render');
+  });
+
   test('setting value with one item', function() {
     var editor = new Editor({
       schema: schema

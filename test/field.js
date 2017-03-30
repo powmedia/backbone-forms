@@ -146,7 +146,27 @@ test('fourth, uses template defined on constructor', function() {
   same(field.template, constructorTemplate);
 });
 
+test('Uses Backbone.$ not global', function() {
+  var old$ = window.$,
+    exceptionCaught = false;
 
+  window.$ = null;
+
+  try {
+     var options = {
+        key: 'title',
+        schema: { type: 'Text', title: 'Title' }
+      };
+
+      var field = new Field(options).render();
+  } catch(e) {
+    exceptionCaught = true;
+  }
+
+  window.$ = old$;
+
+  ok(!exceptionCaught, ' using global \'$\' to render');
+});
 
 module('Field#createSchema');
 

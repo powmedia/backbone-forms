@@ -212,6 +212,7 @@ Form.editors.Select = Form.editors.Base.extend({
    * @return {String} HTML
    */
   _arrayToHtml: function(array) {
+    var $ = Backbone.$;
     var html = $();
 
     //Generate HTML

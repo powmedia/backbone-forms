@@ -112,6 +112,26 @@ var same = deepEqual;
         same(list.$('[data-action="add"]').is(':visible'), false);
     });
 
+    test('Uses Backbone.$ not global', function() {
+      var old$ = window.$,
+        exceptionCaught = false;
+
+      window.$ = null;
+
+      try {
+        var editor = new List({
+          schema: { itemType: 'Number' },
+          value: [1,2,3]
+        }).render();
+      } catch(e) {
+        exceptionCaught = true;
+      }
+
+      window.$ = old$;
+
+      ok(!exceptionCaught, ' using global \'$\' to render');
+    });
+
     function createListWithMaxItems(maxLength) {
         var items = [];
         for(var i = 0;i < maxLength;i++) {

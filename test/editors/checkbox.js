@@ -72,7 +72,7 @@
 
     deepEqual(editor.getValue(), true);
     deepEqual($(editor.el).prop('checked'), true);
-    
+
     editor.setValue(false);
 
     deepEqual(editor.getValue(), false);
@@ -89,13 +89,31 @@
     editor.render();
     deepEqual(editor.getValue(), true);
     deepEqual($(editor.el).prop('checked'), true);
-    
+
     editor.setValue(false);
 
     deepEqual(editor.getValue(), false);
     deepEqual($(editor.el).prop('checked'), false);
   });
 
+  test('Uses Backbone.$ not global', function() {
+    var old$ = window.$,
+      exceptionCaught = false;
+
+    window.$ = null;
+
+    try {
+      var editor = new Editor({
+        value: true
+      }).render();
+    } catch(e) {
+      exceptionCaught = true;
+    }
+
+    window.$ = old$;
+
+    ok(!exceptionCaught, ' using global \'$\' to render');
+  });
 
   module('Checkbox events', {
     setup: function() {
