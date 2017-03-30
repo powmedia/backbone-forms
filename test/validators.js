@@ -309,6 +309,8 @@
     equal(fn('http://example.com/path'), undefined)
     equal(fn('http://www.example.com/path/1/2'), undefined)
     equal(fn('http://www.example.com/path/1/2?q=str'), undefined)
+    equal(fn('email@domain.name.name.name.name'), undefined)
+    equal(fn('email.john+smith@domain.name'), undefined)
   })
 
 })();
