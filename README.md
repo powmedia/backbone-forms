@@ -719,6 +719,8 @@ built-in Backbone model validation. Backbone Forms will run both when
 `form.validate()` is called. Calling `form.commit()` will run schema
 level validation by default, and can also run model validation if `{ validate: true }` is passed.
 
+Calling `form.commit({ schemaValidate: false })` will skip schema level 
+validation and allow you to write dirty form data to the model. Use with care.
 
 ###Schema validation
 

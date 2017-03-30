@@ -846,6 +846,25 @@ test('returns validation errors', function() {
   same(err.foo, 'bar');
 });
 
+test('does not return schema validation errors if commit({ schemaValidate: false })', function() {
+  var model = new Backbone.Model;
+
+  model.validate = function() {
+    return 'FOO';
+  };
+
+  var form = new Form({
+    model: model,
+    schema: {
+      title: {validators: ['required']}
+    }
+  });
+
+  var err = form.commit({schemaValidate: false});
+
+  same(err, undefined);
+});
+
 test('does not return  model validation errors by default', function() {
   var model = new Backbone.Model();
 
