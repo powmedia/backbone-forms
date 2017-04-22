@@ -31,6 +31,7 @@ var fileList = [
   'editors/object.js',
   'editors/nestedmodel.js',
   'editors/date.js',
+  'editors/datepicker.js',
   'editors/datetime.js',
 ];
 
@@ -111,3 +112,14 @@ builder(baseDir)
   .save('distribution/adapters/backbone.bootstrap-modal.js')
   .uglify()
   .save('distribution/adapters/backbone.bootstrap-modal.min.js');
+
+//BootstrapDatepicker adapters
+builder(baseDir)
+  .load('lib/bootstrap-datepicker/js/bootstrap-datepicker.js')
+  .save('distribution/adapters/bootstrap-datepicker.js')
+  .uglify()
+  .save('distribution/adapters/bootstrap-datepicker.min.js');
+
+builder(baseDir)
+  .load('lib/bootstrap-datepicker/css/datepicker.css')
+  .save('distribution/templates/datepicker.css')
