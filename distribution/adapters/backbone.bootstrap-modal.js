@@ -22,22 +22,26 @@
   }
 
   var template = _.template('\
-    <% if (title) { %>\
-      <div class="modal-header">\
-        <% if (allowCancel) { %>\
-          <a class="close">×</a>\
+    <div class="modal-dialog">\
+      <div class="modal-content">\
+        <% if (title) { %>\
+          <div class="modal-header">\
+            <% if (allowCancel) { %>\
+              <a class="close">×</a>\
+            <% } %>\
+            <h3>{{title}}</h3>\
+          </div>\
         <% } %>\
-        <h3>{{title}}</h3>\
+        <div class="modal-body">{{content}}</div>\
+        <div class="modal-footer">\
+          <% if (allowCancel) { %>\
+            <% if (cancelText) { %>\
+              <a href="#" class="btn cancel">{{cancelText}}</a>\
+            <% } %>\
+          <% } %>\
+          <a href="#" class="btn ok btn-primary">{{okText}}</a>\
+        </div>\
       </div>\
-    <% } %>\
-    <div class="modal-body">{{content}}</div>\
-    <div class="modal-footer">\
-      <% if (allowCancel) { %>\
-        <% if (cancelText) { %>\
-          <a href="#" class="btn cancel">{{cancelText}}</a>\
-        <% } %>\
-      <% } %>\
-      <a href="#" class="btn ok btn-primary">{{okText}}</a>\
     </div>\
   ');
 
