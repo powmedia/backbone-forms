@@ -65,8 +65,12 @@
     same(editor.$el.attr('min'), '150');
   });
 
-  test("TODO: Restricts non-numeric characters", function() {
-    ok(1);
+  test("Restricts non-numeric characters", function() {
+    var editor = new Editor({
+      value: 'abc'
+    }).render();
+
+    same(editor.getValue(), null);
   });
 
   test("setValue() - updates the input value", function() {
@@ -80,6 +84,7 @@
     same(editor.getValue(), 2.4);
     equal($(editor.el).val(), 2.4);
   });
+
   test("setValue() - updates the model value", function() {
     var editor = new Editor({
       model: new Backbone.Model(),
