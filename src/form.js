@@ -379,6 +379,18 @@ var Form = Backbone.View.extend({
   },
 
   /**
+   * Returns true if form has editor for a given field key
+   *
+   * @param {String} key
+   *
+   * @return {Boolean}
+   */
+  hasEditor: function(key) {
+    var field = this.fields[key];
+    return typeof(field) != 'undefined';
+  },
+
+  /**
    * Returns the editor for a given field key
    *
    * @param {String} key
