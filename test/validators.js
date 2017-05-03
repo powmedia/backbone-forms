@@ -274,6 +274,8 @@
     equal(fn('email@domain-one.com'), undefined)
     equal(fn('_______@domain.com'), undefined)
     equal(fn('email@domain.name'), undefined)
+    equal(fn('email@domain.name.name.name.name'), undefined)
+    equal(fn('email.john+smith@domain.name'), undefined)
   })
 
 })();
