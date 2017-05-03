@@ -26,15 +26,16 @@ Form.editors.Object = Form.editors.Base.extend({
 
   render: function() {
     //Get the constructor for creating the nested form; i.e. the same constructor as used by the parent form
-    var NestedForm = this.form.constructor;
+    var NestedForm = this.schema.formClass || this.form.constructor;
 
-    //Create the nested form
-    this.nestedForm = new NestedForm({
+    var formOptions = _.extend({
       schema: this.schema.subSchema,
       data: this.value,
       idPrefix: this.id + '_',
       Field: NestedForm.NestedField
-    });
+    }, _.result(this.schema, 'formOptions') || {});
+
+    this.nestedForm = new NestedForm(formOptions);
 
     this._observeFormEvents();
 
