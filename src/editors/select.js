@@ -216,7 +216,7 @@ Form.editors.Select = Form.editors.Base.extend({
     var html = $();
 
     //Generate HTML
-    _.each(array, function(option) {
+    _.each(array, _.bind(function(option) {
       if (_.isObject(option)) {
         if (option.group) {
           var optgroup = $("<optgroup>")
@@ -231,7 +231,7 @@ Form.editors.Select = Form.editors.Base.extend({
       else {
         html = html.add( $('<option>').text(option) );
       }
-    }, this);
+    }, this));
 
     return html;
   }

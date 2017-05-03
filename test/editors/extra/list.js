@@ -249,7 +249,7 @@ var same = deepEqual;
 
         same(list.items.length, 3);
 
-        same(values, _.pluck(list.items, 'value'));
+        same(values, _.map(list.items, 'value'));
     }
 
     test('render() - creates items for each item in value array', function() {

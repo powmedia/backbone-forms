@@ -114,17 +114,17 @@
     var options = _.map($('option', group), function(el) {
         return $(el).text();
     });
-    ok(_.contains(options, 'Paris'));
-    ok(_.contains(options, 'Beijing'));
-    ok(_.contains(options, 'San Francisco'));
+    ok(~options.indexOf('Paris'));
+    ok(~options.indexOf('Beijing'));
+    ok(~options.indexOf('San Francisco'));
 
     var group = editor.$('optgroup').last();
     equal($('option', group).length, 2);
     var options = _.map($('option', group), function(el) {
         return $(el).text();
     });
-    ok(_.contains(options, 'France'));
-    ok(_.contains(options, 'China'));
+    ok(~options.indexOf('France'));
+    ok(~options.indexOf('China'));
   });
 
   test('Option groups allow to specify option value / label', function() {
