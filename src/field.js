@@ -123,11 +123,11 @@ Form.Field = Backbone.View.extend({
     var schema = this.schema;
 
     return {
-      help: schema.help || '',
-      title: schema.title,
-      titleHTML: schema.titleHTML,
-      fieldAttrs: schema.fieldAttrs,
-      editorAttrs: schema.editorAttrs,
+      help: _.result(schema, 'help') || '',
+      title: _.result(schema, 'title'),
+      titleHTML: _.result(schema, 'titleHTML'),
+      fieldAttrs: _.result(schema, 'fieldAttrs'),
+      editorAttrs: _.result(schema, 'editorAttrs'),
       key: this.key,
       editorId: this.editor.id
     };
