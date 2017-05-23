@@ -1,21 +1,13 @@
 {
-  
   "name": "backbone-forms",
-
   "main": [
-    
     "distribution/backbone-forms.js"
-    
   ],
-  
   "dependencies": {
-    
     "backbone": ">=1.0.0"
-    
   },
-  
   "devDependencies": {
-    
+    "lodash": "~4.16.4",
+    "backbone-deep-model": "~0.10.4"
   }
-  
 }

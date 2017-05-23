@@ -175,7 +175,24 @@
     same(hiddenVal.getDate(), 13);
   });
 
+  test('Uses Backbone.$ not global', function() {
+    var old$ = window.$,
+      exceptionCaught = false;
 
+    window.$ = null;
+
+    try {
+      var editor = new Editor({
+        value: new Date()
+      }).render();
+    } catch(e) {
+      exceptionCaught = true;
+    }
+
+    window.$ = old$;
+
+    ok(!exceptionCaught, ' using global \'$\' to render');
+  });
 
   module('Date events', {
     setup: function() {

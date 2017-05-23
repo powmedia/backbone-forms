@@ -133,7 +133,32 @@ test('fourth, uses template defined on constructor', function() {
   same(fieldset.template, constructorTemplate);
 });
 
+test('Uses Backbone.$ not global', function() {
+  var old$ = window.$,
+    exceptionCaught = false;
 
+  window.$ = null;
+
+  try {
+     var fields = {
+        title: new Form.Field({ key: 'title' }),
+        author: new Form.Field({ key: 'author' })
+      };
+
+      var options = {
+        fields: fields,
+        schema: { legend: 'Test', fields: ['title', 'author'] }
+      };
+
+      var fs = new Fieldset(options).render();
+  } catch(e) {
+    exceptionCaught = true;
+  }
+
+  window.$ = old$;
+
+  ok(!exceptionCaught, ' using global \'$\' to render');
+});
 
 module('Fieldset#createSchema', {
   setup: function() {
@@ -285,7 +310,7 @@ module('Form#remove', {
   }
 });
 
-test('removes fieldsets, fields and self', function() {  
+test('removes fieldsets, fields and self', function() {
   var fs = new Fieldset({
     fields: {
       title: new Form.Field({ key: 'title' }),
@@ -293,7 +318,7 @@ test('removes fieldsets, fields and self', function() {
     },
     schema: { legend: 'Main', fields: ['title', 'author'] }
   });
-  
+
   fs.remove();
 
   same(Form.Field.prototype.remove.callCount, 2);

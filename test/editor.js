@@ -125,6 +125,25 @@ test('options.schema.editorAttrs option - Adds custom attributes', function() {
 });
 
 
+  test('Uses Backbone.$ not global', function() {
+    var old$ = window.$,
+      exceptionCaught = false;
+
+    window.$ = null;
+
+    try {
+      var editor = new Editor({
+        value: 'Hello'
+      }).render();
+    } catch(e) {
+      exceptionCaught = true;
+    }
+
+    window.$ = old$;
+
+    ok(!exceptionCaught, ' using global \'$\' to render');
+  });
+
 
 module('Editor#getName');
 

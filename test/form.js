@@ -367,6 +367,26 @@ test('submitButton still rendered properly if _ templateSettings are changed', f
   _.templateSettings = oldSettings;
 });
 
+test('Uses Backbone.$ not global', function() {
+  var old$ = window.$,
+    exceptionCaught = false;
+
+  window.$ = null;
+
+  try {
+     var form = new Form({
+      schema: { name: 'Text' },
+      submitButton: 'Next'
+    }).render();
+  } catch(e) {
+    exceptionCaught = true;
+  }
+
+  window.$ = old$;
+
+  ok(!exceptionCaught, ' using global \'$\' to render');
+});
+
 
 module('Form#EditorValues');
 

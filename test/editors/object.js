@@ -146,7 +146,25 @@
     equal(errs.modelCheck, true);
   });
 
+  test('Uses Backbone.$ not global', function() {
+    var old$ = window.$,
+      exceptionCaught = false;
 
+    window.$ = null;
+
+    try {
+      var editor = new Editor({
+        form: new Form(),
+        schema: schema
+      }).render();
+    } catch(e) {
+      exceptionCaught = true;
+    }
+
+    window.$ = old$;
+
+    ok(!exceptionCaught, ' using global \'$\' to render');
+  });
 
   module('Object events', {
     setup: function() {
