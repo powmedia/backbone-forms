@@ -15,7 +15,7 @@
     "jquery": "~2.1.0",
     "browserify": "~3.38.0"
   },
-  "main": "distribution.amd/backbone-forms.js",
+  "main": "distribution/backbone-forms.js",
   "browser": "distribution/backbone-forms.js",
   "scripts": {
     "test": "open test/index.html"
