@@ -10,6 +10,8 @@ var Form = Backbone.View.extend({
     }
   },
 
+  options: {},
+
   /**
    * Constructor
    *
@@ -30,7 +32,7 @@ var Form = Backbone.View.extend({
     //Merge default options
     options = this.options = _.extend({
       submitButton: false
-    }, options);
+    }, this.options, options);
 
     //Find the schema to use
     var schema = this.schema = (function() {
